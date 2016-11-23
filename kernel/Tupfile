@@ -1,0 +1,14 @@
+include_rules
+
+INCLUDES=-I../include
+
+ifeq (@(TARGET_ARCH),i686)
+	OBJECTS=$(OBJECTS) i686/*.o i686/boot/*.o
+else
+ifeq (@(TARGET_ARCH),x86_64)
+	OBJECTS=$(OBJECTS) x86_64/*.o x86_64/boot/*.o
+endif
+endif
+
+: foreach *.s *.c *.cpp                  |> !COMPILER_CPP $(CPP_FLAGS)       |>
+: *.o $(OBJECTS) | $(KERNEL_LINK_SCRIPT) |> !LINKER -T $(KERNEL_LINK_SCRIPT) |> $(P_EXEC).bin

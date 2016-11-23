@@ -1,0 +1,15 @@
+VERSION_FLAGS=-DSYSTEM_ARCH_@(TARGET_ARCH) -DSYSTEM_ARCH=\"@(TARGET_ARCH)\" -DLYRA_VERSION_MAJOR=\"$(P_VERSION_MAJOR)\" -DLYRA_VERSION_MINOR=\"$(P_VERSION_MINOR)\" -DLYRA_VERSION_RELEASE=\"$(P_VERSION_RELEASE)\"
+
+COMMON_FLAGS=-std=gnu++11 -O2 -Wall -Wextra -fno-rtti -ffreestanding -nostdlib -fpic -lgcc -fno-exceptions -fno-rtti
+
+ifeq (@(TARGET_ARCH),i686)
+	OBJECTS=
+	CPP_FLAGS=$(COMMON_FLAGS) $(VERSION_FLAGS)
+	KERNEL_LINK_SCRIPT=i686/linker.ld
+else
+ifeq (@(TARGET_ARCH),x86_64)
+	OBJECTS=
+	CPP_FLAGS=$(COMMON_FLAGS) -mcmodel=large -mno-red-zone -mno-mmx -mno-sse -mno-sse2 -z max-page-size=4096 $(VERSION_FLAGS)
+	KERNEL_LINK_SCRIPT=x86_64/linker.ld
+endif
+endif
