@@ -44,7 +44,7 @@ namespace tupai
 
 		const umem GDT_SIZE = 3;
 
-		gdt_entry gdt[GDT_SIZE];
+		static gdt_entry gdt[GDT_SIZE];
 
 		extern "C" gdt_desc gdt_ptr;
 		gdt_desc gdt_ptr;
@@ -72,7 +72,7 @@ namespace tupai
 			gdt_ptr.offset = (uint32)&gdt;
 
 			gdt_ptr_ptr = (umem)&gdt_ptr;
-			asm volatile ("lgdt gdt_ptr_ptr");
+			asm volatile ("lgdt (((gdt_ptr)))");
 		}
 
 		void gdt_set_entry(umem n, uint32 base, uint32 limit, uint8 access, uint8 gran)

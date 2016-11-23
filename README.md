@@ -1,3 +1,3 @@
-# Lyra
+# Tupai
 
-Lyra is a simple, monolithic, unix-inspired operating system
+A simple monolithic operating system created for educational purposes

@@ -33,36 +33,47 @@
 
 namespace tupai
 {
+	void tty_write_check(const char* str, int error = 0)
+	{
+		tty_write_str("[ ");
+		tty_set_fg_color(0x0A);
+		tty_write_str("OK");
+		tty_set_fg_color(0x0F);
+		tty_write_str(" ] ");
+		tty_write_str(str);
+		tty_write('\n');
+	}
+
 	// Kernel early
 	extern "C" void kearly()
 	{
 		tty_init();
-		tty_write_str("[ OK ] Started kernel TTY\n");
+		tty_write_check("Started kernel TTY");
 
 		#if defined(SYSTEM_ARCH_i686)
 			i686::gdt_init();
-			tty_write_str("[ OK ] Initiated GDT\n");
+			tty_write_check("Initiated GDT");
 
-			//i686::idt_init();
-			//tty_write_str("[ OK ] Initiated IDT\n");
+			i686::idt_init();
+			tty_write_str("[ OK ] Initiated IDT\n");
 
 			//i686::interrupt_enable();
 			//tty_write_str("[ OK ] Enabled interrupts\n");
 
 			i686::kbd_init();
-			tty_write_str("[ OK ] Initiated keyboard\n");
+			tty_write_check("Initiated keyboard");
 		#endif
 
 		mempool_init((ubyte*)0x1000000, 0x100000, 64); // At 16 MB, 1 MB in size, composed of blocks of 64 B
-		tty_write_str("[ OK ] Initiated dynamic memory pool\n");
+		tty_write_check("Initiated dynamic memory pool");
 
-		tty_write_str("[ OK ] Finished early kernel boot\n");
+		tty_write_check("Finished early kernel boot");
 	}
 
 	// Kernel main
 	extern "C" void kmain()
 	{
-		tty_write_str("[ OK ] Main kernel boot complete\n");
+		tty_write_check("Main kernel boot complete");
 
 		tty_write_str("\n");
 		tty_write_str("Welcome to Tupai OS v0.1.0\n");

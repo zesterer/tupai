@@ -82,6 +82,20 @@ namespace tupai
 			tty_write(str[i]);
 	}
 
+	void tty_set_fg_color(ubyte color)
+	{
+		#if defined(SYSTEM_ARCH_i686)
+			tty_vga_fg = (i686::vga_color)color;
+		#endif
+	}
+
+	void tty_set_bg_color(ubyte color)
+	{
+		#if defined(SYSTEM_ARCH_i686)
+			tty_vga_bg = (i686::vga_color)color;
+		#endif
+	}
+
 	void tty_clear()
 	{
 		#if defined(SYSTEM_ARCH_i686)

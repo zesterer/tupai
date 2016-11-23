@@ -82,7 +82,7 @@ namespace tupai
 
 			// Fill with the blank interrupt handler for now
 			for (uint16 i = 0; i < IDT_SIZE - IDT_REMAP_OFFSET; i ++)
-				idt_set_entry(i, (uint32)default_irq_handler, 0x10);
+				idt_set_entry(i, (uint32)default_irq_handler, 0x01);
 		}
 
 		void idt_install()
@@ -91,7 +91,7 @@ namespace tupai
 			idt_ptr.offset = (umem)idt >> 16;
 
 			idt_ptr_ptr = (umem)&idt_ptr;
-			//asm volatile ("lidt ((idt_ptr_ptr))");
+			asm volatile ("lidt (((idt_ptr)))");
 		}
 
 		void idt_set_entry(umem irq, uint32 address, uint16 selector)

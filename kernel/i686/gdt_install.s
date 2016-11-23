@@ -24,7 +24,7 @@
 
 .section .text
 	.global gdt_install
-	gdt_install:
+	//gdt_install:
 		mov 4(%esp), %eax
 		mov %eax, (_gdt_ptr + 2)
 		mov 8(%esp), %ax
