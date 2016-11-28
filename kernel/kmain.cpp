@@ -54,6 +54,18 @@ namespace tupai
 		tty_write('\n');
 	}
 
+	void kernel_welcome()
+	{
+		const char GPL3_LICENCE_SHORT[] = "Copyright (C) 2016 Joshua Barretto\n" \
+		"This program comes with ABSOLUTELY NO WARRANTY.\nThis is free software, and you are " \
+		"welcome to\nredistribute it under certain conditions.\n\nYou should have received a copy" \
+		" of the GNU\nGeneral Public License along with this program.\nIf not, see <http://www.gn" \
+		"u.org/licenses/>.\n";
+
+		tty_write_str("Welcome to Tupai 0.1.0\n\n");
+		tty_write_str(GPL3_LICENCE_SHORT);
+	}
+
 	// Kernel early
 	extern "C" void kearly()
 	{
@@ -85,8 +97,8 @@ namespace tupai
 	{
 		kmain_write_check("Main kernel boot complete");
 
-		tty_write_str("\n");
-		tty_write_str("Welcome to Tupai OS v0.1.0\n");
+		tty_clear();
+		kernel_welcome();
 
 		while (prompt() == 0);
 	}

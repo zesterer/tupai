@@ -56,7 +56,7 @@ namespace tupai
 
 		void vga_place_entry(char c, ubyte color, uint16 col, uint16 row)
 		{
-			const uint32 index = row * VGA_COLS + col;
+			uint32 index = row * VGA_COLS + col;
 			VGA_BUFFER[index] = ((uint16)color << 8) | (uint16)c;
 		}
 
@@ -70,6 +70,32 @@ namespace tupai
 			// Cursor high bits
 			port_out8(0x3D4, 0x0E);
 			port_out8(0x3D5, (ubyte)((index >> 8) & 0xFF));
+		}
+
+		void vga_shift_rows(sint16 n, vga_color fg, vga_color bg)
+		{
+			for (umem row = 0; row < VGA_ROWS; row ++)
+			{
+				if (row + n < VGA_ROWS)
+				{
+					// Set row equal to the row n below
+					for (umem col = 0; col < VGA_COLS; col ++)
+					{
+						uint32 src_index = (row + n) * VGA_COLS + col;
+						uint32 tgt_index = row * VGA_COLS + col;
+
+						VGA_BUFFER[tgt_index] = VGA_BUFFER[src_index];
+					}
+				}
+				else
+				{
+					// Wipe the row
+					for (umem col = 0; col < VGA_COLS; col ++)
+					{
+						vga_place_entry(' ', vga_make_color(fg, bg), col, row);
+					}
+				}
+			}
 		}
 	}
 }

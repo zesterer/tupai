@@ -69,7 +69,8 @@ namespace tupai
 
 			if (tty_vga_row >= tty_vga_info.rows) // We've gone past the last row
 			{
-				tty_vga_row = 0;
+				tty_vga_row = tty_vga_info.rows - 1;
+				i686::vga_shift_rows(1, tty_vga_fg, tty_vga_bg);
 			}
 
 			i686::vga_place_cursor(tty_vga_col, tty_vga_row); // Update the cursor
