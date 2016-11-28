@@ -1,5 +1,5 @@
 /*
-* 	file : kbd.hpp
+* 	file : cpp.cpp
 *
 * 	This file is part of Tupai.
 *
@@ -17,19 +17,31 @@
 * 	along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TUPAI_I686_KBD_HPP
-#define TUPAI_I686_KBD_HPP
-
 // Tupai
-#include <tupai/type.hpp>
+#include <tupai/mempool.hpp>
 
-namespace tupai
+// GCC
+#include <stddef.h>
+
+void* operator new(size_t size)
 {
-	namespace i686
-	{
-		extern char key_char;
-		void kbd_init();
-	}
+	return tupai::mempool_alloc(size);
 }
 
-#endif
+void* operator new[](size_t size)
+{
+	return tupai::mempool_alloc(size);
+}
+
+void operator delete(void* ptr)
+{
+	tupai::mempool_dealloc(ptr);
+}
+
+void operator delete[](void* ptr)
+{
+	tupai::mempool_dealloc(ptr);
+}
+
+void* __dso_handle;
+void* __cxa_atexit;

@@ -61,9 +61,9 @@ namespace tupai
 						".section .text \n"
 						"	.align 4 \n"
 		 				"	default_irq_handler: \n"
-						"		xchgw %bx, %bx \n"
+						"		pushal \n"
 						"		call default_irq_handler_main \n"
-						"		xchgw %bx, %bx \n"
+						"		popal \n"
 						"		iret \n"
 						);
 
@@ -125,7 +125,7 @@ namespace tupai
 
 			idt_ptr_ptr = (umem)&idt_ptr;
 			asm volatile (
-							"lidt (((idt_ptr))) \n"
+							"lidt (((idt_ptr))) \n" // Set the IDT
 							"ljmp $8, $_idt_longjump \n"
 							"_idt_longjump: \n"
 							);

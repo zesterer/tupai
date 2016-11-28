@@ -17,8 +17,8 @@
 * 	along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef LYRA_TTY_HPP
-#define LYRA_TTY_HPP
+#ifndef TUPAI_TTY_HPP
+#define TUPAI_TTY_HPP
 
 // Tupai
 #include <tupai/type.hpp>

@@ -17,8 +17,8 @@
 * 	along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef LYRA_KMAIN_HPP
-#define LYRA_KMAIN_HPP
+#ifndef TUPAI_KMAIN_HPP
+#define TUPAI_KMAIN_HPP
 
 namespace tupai
 {

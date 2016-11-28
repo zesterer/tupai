@@ -21,12 +21,24 @@
 #include <tupai/prompt.hpp>
 #include <tupai/tty.hpp>
 
+#include <tupai/i686/kbd.hpp>
+
 namespace tupai
 {
 	int prompt()
 	{
 		//tty_clear();
 		tty_write_str(">");
+
+		volatile unsigned long i = 0;
+		while (true)
+		{
+			i = (i + 1) % 40000000;
+
+			if (i == 0) tty_write('@');
+			//if (i686::key_char != '\0')
+			//	tty_write(i686::key_char % 128);
+		}
 
 		while (true) asm volatile ("hlt");
 	}

@@ -17,8 +17,8 @@
 * 	along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef LYRA_I686_GDT_HPP
-#define LYRA_I686_GDT_HPP
+#ifndef TUPAI_I686_GDT_HPP
+#define TUPAI_I686_GDT_HPP
 
 // Tupai
 #include <tupai/type.hpp>

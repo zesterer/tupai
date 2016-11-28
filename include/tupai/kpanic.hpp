@@ -17,8 +17,8 @@
 * 	along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef LYRA_KPANIC_HPP
-#define LYRA_KPANIC_HPP
+#ifndef TUPAI_KPANIC_HPP
+#define TUPAI_KPANIC_HPP
 
 // Tupai
 #include <tupai/type.hpp>
@@ -29,7 +29,7 @@ namespace tupai
 	extern "C" void kbreak();
 	extern "C" void khalt();
 
-	extern "C" void kfault();
+	extern "C" void kfault(unsigned long isr_id);
 }
 
 #endif

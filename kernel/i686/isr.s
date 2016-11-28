@@ -205,8 +205,7 @@
 		mov %ax, %fs
 		mov %ax, %gs
 
-		//movl 36(%esp), %eax // Push ISR identifer as first parameter
-		//pushl %eax
+		pushl 0x28(%esp) // Push ISR identifer as first parameter
 		call kfault
 
 		pop %gs

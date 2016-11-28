@@ -101,7 +101,10 @@
 
 		// Show an error message
 		mov $(VGA_BUFFER + 2 * (1 + VGA_W * 5)), %ebx
-		mov (_kpanic_errormsg), %ecx
+		mov $_kpanic_errormsg, %ecx
+		//call kbreak
+		mov (%ecx), %ecx
+		//call kbreak
 		// TODO
 		//cmp $0, %ecx
 		//jne  _kpanic_errormsg_continue

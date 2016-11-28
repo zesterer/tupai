@@ -1,5 +1,5 @@
 /*
-* 	file : kbd.hpp
+* 	file : pit.hpp
 *
 * 	This file is part of Tupai.
 *
@@ -17,8 +17,8 @@
 * 	along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TUPAI_I686_KBD_HPP
-#define TUPAI_I686_KBD_HPP
+#ifndef TUPAI_I686_PIT_HPP
+#define TUPAI_I686_PIT_HPP
 
 // Tupai
 #include <tupai/type.hpp>
@@ -27,8 +27,7 @@ namespace tupai
 {
 	namespace i686
 	{
-		extern char key_char;
-		void kbd_init();
+		void pit_init();
 	}
 }
 

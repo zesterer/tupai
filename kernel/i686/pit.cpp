@@ -1,5 +1,5 @@
 /*
-* 	file : kbd.cpp
+* 	file : pit.cpp
 *
 * 	This file is part of Tupai.
 *
@@ -18,68 +18,47 @@
 */
 
 // Tupai
-#include <tupai/i686/kbd.hpp>
+#include <tupai/i686/pit.hpp>
 #include <tupai/i686/idt.hpp>
 #include <tupai/i686/gdt.hpp>
 #include <tupai/i686/port.hpp>
 #include <tupai/kpanic.hpp>
 #include <tupai/tty.hpp>
-#include <tupai/generic/ringbuff.hpp>
 
 namespace tupai
 {
 	namespace i686
 	{
 		// Default interrupt handler
-		extern "C" void kbd_irq_handler();
-		//asm volatile ("kbd_irq_handler: \n call kbd_irq_handler_main \n iret");
+		extern "C" void pit_irq_handler();
+		//asm volatile ("pit_irq_handler: \n call pit_irq_handler_main \n iret");
 		asm volatile (
 						".section .text \n"
 						"	.align 4 \n"
-		 				"	kbd_irq_handler: \n"
+		 				"	pit_irq_handler: \n"
 						"		pushal \n"
-						"		call kbd_irq_handler_main \n"
+						"		call pit_irq_handler_main \n"
 						"		popal \n"
 						"		iret \n"
 						);
 
-		const char* scancode_table = "!!1234567890-=!!qwertyuiop[]!!asdfghjkl;'#!\\zxcvbnm,./!!! !FFFFFFFFFF!";
-
-		// A 256-character keyboard ring buffer
-		//generic::ringbuff<char> kbd_ringbuff;
-		char key_char = '\0';
-
-		void kbd_init()
+		void pit_init()
 		{
-			// Set the keyboard IRQ handler
-			idt_set_entry(1, (uint32)kbd_irq_handler, sizeof(gdt_entry) * 1);
+			// Set the PIT IRQ handler
+			idt_set_entry(0, (uint32)pit_irq_handler, sizeof(gdt_entry) * 1);
 
 			/* 0xFD is 11111101 - enables only IRQ1 (keyboard)*/
 			port_out8(0x21 , 0xFD);
 
-			// Allocate space for the ring buffer
-			//kbd_ringbuff.init(10);
+
 		}
 
-		extern "C" void kbd_irq_handler_main()
+		extern "C" void pit_irq_handler_main()
 		{
 			/* write EOI */
 			port_out8(0x20, 0x20);
 
-			ubyte status = port_in8(0x60);//KEYBOARD_STATUS_PORT);
-			/* Lowest bit of status will be set if buffer is not empty */
-			if (status > 0)
-			{
-				char keycode = port_in8(0x60);//KEYBOARD_DATA_PORT);
-				if (keycode < 0)
-					return;
-
-				char character = scancode_table[(umem)keycode];
-
-				tty_write(character);
-				//kbd_ringbuff.push(character);
-				//key = character;
-			}
+			tty_write_str("PIT!");
 		}
 	}
 }

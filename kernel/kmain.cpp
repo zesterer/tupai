@@ -60,6 +60,9 @@ namespace tupai
 		tty_init();
 		kmain_write_check("Started kernel TTY");
 
+		mempool_init((ubyte*)0x1000000, 0x100000, 64); // At 16 MB, 1 MB in size, composed of blocks of 64 B
+		kmain_write_check("Initiated dynamic memory pool");
+
 		#if defined(SYSTEM_ARCH_i686)
 			i686::gdt_init();
 			kmain_write_check("Initiated GDT");
@@ -73,9 +76,6 @@ namespace tupai
 			i686::kbd_init();
 			kmain_write_check("Initiated keyboard");
 		#endif
-
-		mempool_init((ubyte*)0x1000000, 0x100000, 64); // At 16 MB, 1 MB in size, composed of blocks of 64 B
-		kmain_write_check("Initiated dynamic memory pool");
 
 		kmain_write_check("Finished early kernel boot");
 	}

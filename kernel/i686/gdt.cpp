@@ -53,6 +53,12 @@ namespace tupai
 
 			gdt_ptr_ptr = (umem)&gdt_ptr;
 			asm volatile ("lgdt (((gdt_ptr)))");
+
+			/*asm volatile (
+							"lgdt (((gdt_ptr))) \n" // Set the GDT
+							"ljmp $0x08, $_gdt_longjump \n" // We need to perform a long jump (just next door! to flush all the GDT-related internal registers)
+							"_gdt_longjump: \n"
+							);*/
 		}
 
 		void gdt_set_entry(umem n, uint32 base, uint32 limit, uint8 access, uint8 gran)

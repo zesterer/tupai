@@ -17,8 +17,8 @@
 * 	along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef LYRA_I686_INTERRUPT_HPP
-#define LYRA_I686_INTERRUPT_HPP
+#ifndef TUPAI_I686_INTERRUPT_HPP
+#define TUPAI_I686_INTERRUPT_HPP
 
 // Tupai
 #include <tupai/type.hpp>
