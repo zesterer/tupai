@@ -20,26 +20,71 @@
 // Tupai
 #include <tupai/prompt.hpp>
 #include <tupai/tty.hpp>
+#include <tupai/kpanic.hpp>
 
 #include <tupai/i686/kbd.hpp>
 
 namespace tupai
 {
+	bool cmp_str(const char* str0, const char* str1)
+	{
+		for (umem i = 0; str0[i] != '\0' && str1[i] != '\0'; i ++)
+		{
+			if (str0[i] != str1[i])
+				return false;
+		}
+		return true;
+	}
+
 	int prompt()
 	{
 		//tty_clear();
-		tty_write_str(">");
+		tty_write_str("\n>");
 
-		volatile unsigned long i = 0;
+		const umem INPUT_BUFFER_LENGTH = 1024;
+		char buffer[INPUT_BUFFER_LENGTH];
+		umem buffer_pos = 0;
 		while (true)
 		{
-			i = (i + 1) % 40000000;
+			char input_char = i686::key_char;
+			i686::key_char = '\0';
 
-			if (i == 0) tty_write('@');
-			//if (i686::key_char != '\0')
-			//	tty_write(i686::key_char % 128);
+			if (input_char != '\0')
+			{
+				if (input_char == '\n' || buffer_pos == INPUT_BUFFER_LENGTH - 1)
+				{
+					buffer[buffer_pos] = '\0';
+					break;
+				}
+				else
+				{
+					tty_write(input_char);
+
+					buffer[buffer_pos] = input_char;
+					buffer_pos ++;
+				}
+			}
 		}
 
-		while (true) asm volatile ("hlt");
+		tty_write('\n');
+
+		if (cmp_str(buffer, "help"))
+		{
+			tty_write_str("--- Help ---\n");
+			tty_write_str("sys   - Show system information\n");
+			tty_write_str("panic - Perform a kernel panic\n");
+		}
+		else if (cmp_str(buffer, "sys"))
+		{
+			tty_write_str("Tupai OS 0.1.0 on ");
+			tty_write_str(SYSTEM_ARCH);
+			tty_write('\n');
+		}
+		else if (cmp_str(buffer, "panic"))
+		{
+			kpanic();
+		}
+
+		return 0;
 	}
 }

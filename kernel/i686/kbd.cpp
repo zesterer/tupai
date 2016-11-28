@@ -43,11 +43,11 @@ namespace tupai
 						"		iret \n"
 						);
 
-		const char* scancode_table = "!!1234567890-=!!qwertyuiop[]!!asdfghjkl;'#!\\zxcvbnm,./!!! !FFFFFFFFFF!";
+		const char* scancode_table = "!!1234567890-=!!qwertyuiop[]\n!asdfghjkl;'#!\\zxcvbnm,./!!! !FFFFFFFFFF!";
 
 		// A 256-character keyboard ring buffer
 		//generic::ringbuff<char> kbd_ringbuff;
-		char key_char = '\0';
+		volatile char key_char = '\0';
 
 		void kbd_init()
 		{
@@ -59,6 +59,7 @@ namespace tupai
 
 			// Allocate space for the ring buffer
 			//kbd_ringbuff.init(10);
+			 key_char = '\0';
 		}
 
 		extern "C" void kbd_irq_handler_main()
@@ -76,9 +77,9 @@ namespace tupai
 
 				char character = scancode_table[(umem)keycode];
 
-				tty_write(character);
+				//tty_write(character);
 				//kbd_ringbuff.push(character);
-				//key = character;
+				key_char = character;
 			}
 		}
 	}

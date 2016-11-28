@@ -27,7 +27,7 @@ namespace tupai
 {
 	namespace i686
 	{
-		extern char key_char;
+		extern volatile char key_char;
 		void kbd_init();
 	}
 }

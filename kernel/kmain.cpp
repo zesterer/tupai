@@ -87,7 +87,6 @@ namespace tupai
 
 		tty_write_str("\n");
 		tty_write_str("Welcome to Tupai OS v0.1.0\n");
-		tty_write_str("\n");
 
 		while (prompt() == 0);
 	}
