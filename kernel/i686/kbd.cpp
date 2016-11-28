@@ -20,7 +20,9 @@
 // Tupai
 #include <tupai/i686/kbd.hpp>
 #include <tupai/i686/idt.hpp>
+#include <tupai/i686/gdt.hpp>
 #include <tupai/i686/port.hpp>
+#include <tupai/kpanic.hpp>
 #include <tupai/tty.hpp>
 
 namespace tupai
@@ -29,12 +31,14 @@ namespace tupai
 	{
 		// Default interrupt handler
 		extern "C" void kbd_irq_handler();
-		asm volatile ("kbd_irq_handler: \n cli \n call kbd_irq_handler_main \n sti \n iret");
+		asm volatile ("kbd_irq_handler: \n call kbd_irq_handler_main \n call kbreak \n iret");
+
+		const char* scancode_table = "!!1234567890-=!!qwertyuiop[]!!asdfghjkl;'#!\\zxcvbnm,./!!! !FFFFFFFFFF!";
 
 		void kbd_init()
 		{
 			// Set the keyboard IRQ handler
-			//idt_set_entry(1, (uint32)kbd_irq_handler, 0x08);
+			idt_set_entry(1, (uint32)kbd_irq_handler, sizeof(gdt_entry) * 1);
 
 			/* 0xFD is 11111101 - enables only IRQ1 (keyboard)*/
 			port_out8(0x21 , 0xFD);
@@ -42,7 +46,20 @@ namespace tupai
 
 		extern "C" void kbd_irq_handler_main()
 		{
-			tty_write_str("Interrupt!\n");
+			/* write EOI */
+			port_out8(0x20, 0x20);
+
+			ubyte status = port_in8(0x60);//KEYBOARD_STATUS_PORT);
+			/* Lowest bit of status will be set if buffer is not empty */
+			if (status > 0)
+			{
+				char keycode = port_in8(0x60);//KEYBOARD_DATA_PORT);
+				if (keycode < 0)
+					return;
+				tty_write(scancode_table[(umem)keycode]);//'a';// + keycode;//keyboard_map[keycode];
+			}
+
+			kbreak();
 		}
 	}
 }

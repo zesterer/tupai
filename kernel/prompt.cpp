@@ -1,5 +1,5 @@
 /*
-* 	file : kprompt.cpp
+* 	file : prompt.cpp
 *
 * 	This file is part of Tupai.
 *
@@ -18,11 +18,12 @@
 */
 
 // Tupai
+#include <tupai/prompt.hpp>
 #include <tupai/tty.hpp>
 
 namespace tupai
 {
-	int kprompt()
+	int prompt()
 	{
 		//tty_clear();
 		tty_write_str(">");

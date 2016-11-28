@@ -19,34 +19,36 @@
 
 // Tupai
 #include <tupai/i686/idt.hpp>
+#include <tupai/i686/gdt.hpp>
 #include <tupai/i686/port.hpp>
 #include <tupai/tty.hpp>
+#include <tupai/kpanic.hpp>
 
 namespace tupai
 {
 	namespace i686
 	{
-		struct idt_entry
-		{
-			uint16 base_addr_low;
-			uint16 selector;
-			uint8  zero;
-			uint8  type_attr;
-			uint16 base_addr_high;
+		extern "C" void _isr_0();
+		extern "C" void _isr_1();
+		extern "C" void _isr_2();
+		extern "C" void _isr_3();
+		extern "C" void _isr_4();
+		extern "C" void _isr_5();
+		extern "C" void _isr_6();
+		extern "C" void _isr_7();
+		extern "C" void _isr_8();
+		extern "C" void _isr_9();
+		extern "C" void _isr_10();
+		extern "C" void _isr_11();
+		extern "C" void _isr_12();
+		extern "C" void _isr_13();
+		extern "C" void _isr_14();
+		extern "C" void _isr_15();
+		extern "C" void _isr_16();
+		extern "C" void _isr_17();
+		extern "C" void _isr_18();
 
-		} __attribute((packed));
-
-		struct idt_desc
-		{
-			uint16 size;
-			uint32 offset;
-
-		} __attribute((packed));
-
-		const umem IDT_SIZE = 256;
-		const umem IDT_REMAP_OFFSET = 0x20;
-
-		idt_entry idt[IDT_SIZE];
+		idt_entry idt[IDT_SIZE] __attribute__((aligned(8)));
 
 		extern "C" idt_desc idt_ptr;
 		idt_desc idt_ptr;
@@ -55,7 +57,15 @@ namespace tupai
 
 		// Default interrupt handler
 		extern "C" void default_irq_handler();
-		asm volatile ("default_irq_handler: \n cli \n call default_irq_handler_main \n sti \n iret");
+		asm volatile (
+						".section .text \n"
+						"	.align 4 \n"
+		 				"	default_irq_handler: \n"
+						"		xchgw %bx, %bx \n"
+						"		call default_irq_handler_main \n"
+						"		xchgw %bx, %bx \n"
+						"		iret \n"
+						);
 
 		void idt_init()
 		{
@@ -80,9 +90,32 @@ namespace tupai
 			port_out8(0x21, 0xFF); // Master PIC Data
 			port_out8(0xA1, 0xFF); // Slave PIC Data
 
+			const uint16 code_segment_index = 0x08;//sizeof(gdt_entry) * 1;
+
+			// Assign exception ISRs
+			idt_set_entry(0 - IDT_REMAP_OFFSET, (uint32)_isr_0, code_segment_index);
+			idt_set_entry(1 - IDT_REMAP_OFFSET, (uint32)_isr_1, code_segment_index);
+			idt_set_entry(2 - IDT_REMAP_OFFSET, (uint32)_isr_2, code_segment_index);
+			idt_set_entry(3 - IDT_REMAP_OFFSET, (uint32)_isr_3, code_segment_index);
+			idt_set_entry(4 - IDT_REMAP_OFFSET, (uint32)_isr_4, code_segment_index);
+			idt_set_entry(5 - IDT_REMAP_OFFSET, (uint32)_isr_5, code_segment_index);
+			idt_set_entry(6 - IDT_REMAP_OFFSET, (uint32)_isr_6, code_segment_index);
+			idt_set_entry(7 - IDT_REMAP_OFFSET, (uint32)_isr_7, code_segment_index);
+			idt_set_entry(8 - IDT_REMAP_OFFSET, (uint32)_isr_8, code_segment_index);
+			idt_set_entry(9 - IDT_REMAP_OFFSET, (uint32)_isr_9, code_segment_index);
+			idt_set_entry(10 - IDT_REMAP_OFFSET, (uint32)_isr_10, code_segment_index);
+			idt_set_entry(11 - IDT_REMAP_OFFSET, (uint32)_isr_11, code_segment_index);
+			idt_set_entry(12 - IDT_REMAP_OFFSET, (uint32)_isr_12, code_segment_index);
+			idt_set_entry(13 - IDT_REMAP_OFFSET, (uint32)_isr_13, code_segment_index);
+			idt_set_entry(14 - IDT_REMAP_OFFSET, (uint32)_isr_14, code_segment_index);
+			idt_set_entry(15 - IDT_REMAP_OFFSET, (uint32)_isr_15, code_segment_index);
+			idt_set_entry(16 - IDT_REMAP_OFFSET, (uint32)_isr_16, code_segment_index);
+			idt_set_entry(17 - IDT_REMAP_OFFSET, (uint32)_isr_17, code_segment_index);
+			idt_set_entry(18 - IDT_REMAP_OFFSET, (uint32)_isr_18, code_segment_index);
+
 			// Fill with the blank interrupt handler for now
-			for (uint16 i = 0; i < IDT_SIZE - IDT_REMAP_OFFSET; i ++)
-				idt_set_entry(i, (uint32)default_irq_handler, 0x01);
+			for (int16 i = 0; i < (int16)IDT_SIZE; i ++)
+				idt_set_entry(i, (uint32)default_irq_handler, code_segment_index);
 		}
 
 		void idt_install()
@@ -91,10 +124,14 @@ namespace tupai
 			idt_ptr.offset = (umem)idt >> 16;
 
 			idt_ptr_ptr = (umem)&idt_ptr;
-			asm volatile ("lidt (((idt_ptr)))");
+			asm volatile (
+							"lidt (((idt_ptr))) \n"
+							"ljmp $8, $_idt_longjump \n"
+							"_idt_longjump: \n"
+							);
 		}
 
-		void idt_set_entry(umem irq, uint32 address, uint16 selector)
+		void idt_set_entry(smem irq, uint32 address, uint16 selector)
 		{
 			// Base address
 			idt[IDT_REMAP_OFFSET + irq].base_addr_low = address & 0xFFFF;
@@ -109,6 +146,10 @@ namespace tupai
 
 		extern "C" void default_irq_handler_main()
 		{
+			/* write EOI */
+			//port_out8(0x20, 0x20);
+			//kbreak();
+
 			tty_write_str("Interrupt!\n");
 		}
 	}

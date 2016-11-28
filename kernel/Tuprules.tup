@@ -1,6 +1,6 @@
 VERSION_FLAGS=-DSYSTEM_ARCH_@(TARGET_ARCH) -DSYSTEM_ARCH=\"@(TARGET_ARCH)\" -DLYRA_VERSION_MAJOR=\"$(P_VERSION_MAJOR)\" -DLYRA_VERSION_MINOR=\"$(P_VERSION_MINOR)\" -DLYRA_VERSION_RELEASE=\"$(P_VERSION_RELEASE)\"
 
-COMMON_FLAGS=-std=gnu++11 -O2 -Wall -Wextra -fno-rtti -ffreestanding -nostdlib -fpic -lgcc -fno-exceptions -fno-rtti
+COMMON_FLAGS=-std=gnu++11 -O2 -Wall -Wextra -pedantic -fno-rtti -ffreestanding -nostdlib -fpic -lgcc -fno-exceptions -fno-rtti
 
 ifeq (@(TARGET_ARCH),i686)
 	OBJECTS=

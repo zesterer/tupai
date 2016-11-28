@@ -1,5 +1,5 @@
 /*
-* 	file : kprompt.hpp
+* 	file : prompt.hpp
 *
 * 	This file is part of Tupai.
 *
@@ -17,12 +17,12 @@
 * 	along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef LYRA_KPROMPT_HPP
-#define LYRA_KPROMPT_HPP
+#ifndef LYRA_PROMPT_HPP
+#define LYRA_PROMPT_HPP
 
 namespace tupai
 {
-	int kprompt();
+	int prompt();
 }
 
 #endif

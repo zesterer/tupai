@@ -19,13 +19,42 @@
 
 // Tupai
 #include <tupai/kpanic.hpp>
+#include <tupai/tty.hpp>
 
 namespace tupai
 {
+	extern "C" void _kpanic() __attribute__((noreturn));
+	extern "C" long _kpanic_errormsg;
+	extern "C" long _kpanic_errorcode;
+
+	extern "C" void _khalt() __attribute__((noreturn));
+
 	void kpanic(const char* msg, long code)
 	{
 		_kpanic_errormsg = (long)msg;
 		_kpanic_errorcode = code;
 		_kpanic();
+	}
+
+	void khalt()
+	{
+		_khalt();
+	}
+
+	void kbreak()
+	{
+		// Magic bochs breakpoint
+		asm volatile ("xchgw %bx, %bx");
+	}
+
+	void kfault() // To be called by ISRs only!
+	{
+		uint32 isr_id = 0;
+		tty_write_str("Exception ");
+		tty_write('0' + ((isr_id / 100) % 10));
+		tty_write('0' + ((isr_id / 10) % 10));
+		tty_write('0' + (isr_id % 10));
+		tty_write_str(" occured!\n");
+		kbreak();
 	}
 }

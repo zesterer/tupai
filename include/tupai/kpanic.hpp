@@ -20,12 +20,16 @@
 #ifndef LYRA_KPANIC_HPP
 #define LYRA_KPANIC_HPP
 
+// Tupai
+#include <tupai/type.hpp>
+
 namespace tupai
 {
-	void kpanic(const char* msg = nullptr, long code = 0x0) __attribute__((noreturn));
-	extern "C" void _kpanic();
-	extern "C" long _kpanic_errormsg;
-	extern "C" long _kpanic_errorcode;
+	extern "C" void kpanic(const char* msg = nullptr, long code = 0x0) __attribute__((noreturn));
+	extern "C" void kbreak();
+	extern "C" void khalt();
+
+	extern "C" void kfault();
 }
 
 #endif

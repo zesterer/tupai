@@ -19,32 +19,13 @@
 
 // Tupai
 #include <tupai/i686/gdt.hpp>
+//#include <tupai/tty.hpp>
 
 namespace tupai
 {
 	namespace i686
 	{
-		struct gdt_entry
-		{
-			uint16 limit_low;
-			uint16 base_addr_low;
-			uint8  base_addr_mid;
-			uint8  access;
-			uint8  granularity;
-			uint8  base_addr_high;
-
-		} __attribute((packed));
-
-		struct gdt_desc
-		{
-			uint16 size;
-			uint32 offset;
-
-		} __attribute((packed));
-
-		const umem GDT_SIZE = 3;
-
-		static gdt_entry gdt[GDT_SIZE];
+		static gdt_entry gdt[GDT_SIZE] __attribute__((aligned(8)));
 
 		extern "C" gdt_desc gdt_ptr;
 		gdt_desc gdt_ptr;
@@ -57,10 +38,9 @@ namespace tupai
 			gdt_set_entry(0, 0, 0, 0, 0);
 
 			// Code segment
-			gdt_set_entry(1, 0x0, 0xFFFFFFFF, 0x9A, 0xCF);
-
+			gdt_set_entry(1, 0x0, 0xFFFFF, 0x9A, 0xCF);
 			// Data segment
-			gdt_set_entry(2, 0x0, 0xFFFFFFFF, 0x92, 0xCF);
+			gdt_set_entry(2, 0x0, 0xFFFFF, 0x92, 0xCF);
 
 			gdt_install();//&gdt, sizeof(gdt));
 		}
@@ -91,6 +71,8 @@ namespace tupai
 			gdt[n].access = access;
 
 			gdt_install();//&gdt, sizeof(gdt));
+
+			//tty_write_str("Created GDT entry\n");
 		}
 	}
 }

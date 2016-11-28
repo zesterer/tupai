@@ -21,7 +21,7 @@
 #include <tupai/kmain.hpp>
 #include <tupai/kpanic.hpp>
 #include <tupai/tty.hpp>
-#include <tupai/kprompt.hpp>
+#include <tupai/prompt.hpp>
 #include <tupai/mempool.hpp>
 
 #if defined(SYSTEM_ARCH_i686)
@@ -33,13 +33,23 @@
 
 namespace tupai
 {
-	void tty_write_check(const char* str, int error = 0)
+	void kmain_write_check(const char* str, int error = 0)
 	{
-		tty_write_str("[ ");
-		tty_set_fg_color(0x0A);
-		tty_write_str("OK");
+		tty_write('[');
+
+		if (error == 0)
+		{
+			tty_set_fg_color(0x0A);
+			tty_write_str(" OK ");
+		}
+		else
+		{
+			tty_set_fg_color(0x0C);
+			tty_write_str("FAIL");
+		}
+
 		tty_set_fg_color(0x0F);
-		tty_write_str(" ] ");
+		tty_write_str("] ");
 		tty_write_str(str);
 		tty_write('\n');
 	}
@@ -48,37 +58,37 @@ namespace tupai
 	extern "C" void kearly()
 	{
 		tty_init();
-		tty_write_check("Started kernel TTY");
+		kmain_write_check("Started kernel TTY");
 
 		#if defined(SYSTEM_ARCH_i686)
 			i686::gdt_init();
-			tty_write_check("Initiated GDT");
+			kmain_write_check("Initiated GDT");
 
 			i686::idt_init();
-			tty_write_str("[ OK ] Initiated IDT\n");
+			kmain_write_check("Initiated IDT");
 
-			//i686::interrupt_enable();
-			//tty_write_str("[ OK ] Enabled interrupts\n");
+			i686::interrupt_enable();
+			kmain_write_check("Enabled interrupts");
 
 			i686::kbd_init();
-			tty_write_check("Initiated keyboard");
+			kmain_write_check("Initiated keyboard");
 		#endif
 
 		mempool_init((ubyte*)0x1000000, 0x100000, 64); // At 16 MB, 1 MB in size, composed of blocks of 64 B
-		tty_write_check("Initiated dynamic memory pool");
+		kmain_write_check("Initiated dynamic memory pool");
 
-		tty_write_check("Finished early kernel boot");
+		kmain_write_check("Finished early kernel boot");
 	}
 
 	// Kernel main
 	extern "C" void kmain()
 	{
-		tty_write_check("Main kernel boot complete");
+		kmain_write_check("Main kernel boot complete");
 
 		tty_write_str("\n");
 		tty_write_str("Welcome to Tupai OS v0.1.0\n");
 		tty_write_str("\n");
 
-		while (kprompt() == 0);
+		while (prompt() == 0);
 	}
 }
