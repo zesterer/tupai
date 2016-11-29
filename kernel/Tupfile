@@ -3,10 +3,10 @@ include_rules
 INCLUDES=-I../include
 
 ifeq (@(TARGET_ARCH),i686)
-	OBJECTS=$(OBJECTS) i686/*.o i686/boot/*.o
+	OBJECTS=$(OBJECTS) i686/*.o i686/boot/*.o i686/util/*.o
 else
 ifeq (@(TARGET_ARCH),x86_64)
-	OBJECTS=$(OBJECTS) x86_64/*.o x86_64/boot/*.o
+	OBJECTS=$(OBJECTS) x86_64/*.o x86_64/boot/*.o x86_64/util/*.o
 endif
 endif
 

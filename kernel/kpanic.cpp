@@ -75,7 +75,7 @@ namespace tupai
 	void kfault(unsigned long isr_id) // To be called by ISRs only!
 	{
 		/* write EOI */
-		i686::port_out8(0x20, 0x20);
+		port_out8(0x20, 0x20);
 
 		tty_write_str(exceptions[isr_id % (sizeof(exceptions) / sizeof(char*))]);
 		tty_write_str(" exception occured!\n");

@@ -25,10 +25,7 @@
 
 namespace tupai
 {
-	namespace i686
-	{
-		void pit_init();
-	}
+	void pit_init();
 }
 
 #endif

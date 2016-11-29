@@ -25,32 +25,29 @@
 
 namespace tupai
 {
-	namespace i686
+	struct idt_entry
 	{
-		struct idt_entry
-		{
-			uint16 base_addr_low;
-			uint16 selector;
-			uint8  zero;
-			uint8  type_attr;
-			uint16 base_addr_high;
+		uint16 base_addr_low;
+		uint16 selector;
+		uint8  zero;
+		uint8  type_attr;
+		uint16 base_addr_high;
 
-		} __attribute((packed));
+	} __attribute((packed));
 
-		struct idt_desc
-		{
-			uint32 size;
-			uint32 offset;
+	struct idt_desc
+	{
+		uint32 size;
+		uint32 offset;
 
-		} __attribute((packed));
+	} __attribute((packed));
 
-		const umem IDT_REMAP_OFFSET = 0x20;
-		const umem IDT_SIZE = 256 + IDT_REMAP_OFFSET;
+	const umem IDT_REMAP_OFFSET = 0x20;
+	const umem IDT_SIZE = 256 + IDT_REMAP_OFFSET;
 
-		void idt_init();
-		void idt_install();
-		void idt_set_entry(smem irq, uint32 address, uint16 selector = 0x08);
-	}
+	void idt_init();
+	void idt_install();
+	void idt_set_entry(smem irq, uint32 address, uint16 selector = 0x08);
 }
 
 #endif

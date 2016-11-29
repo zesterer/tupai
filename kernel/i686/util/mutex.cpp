@@ -1,5 +1,5 @@
 /*
-* 	file : gdt.hpp
+* 	file : mutex.cpp
 *
 * 	This file is part of Tupai.
 *
@@ -17,38 +17,19 @@
 * 	along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TUPAI_I686_GDT_HPP
-#define TUPAI_I686_GDT_HPP
-
 // Tupai
-#include <tupai/type.hpp>
+#include <tupai/util/mutex.hpp>
 
 namespace tupai
 {
-	struct gdt_entry
+	namespace util
 	{
-		uint16 limit_low;
-		uint16 base_addr_low;
-		uint8  base_addr_mid;
-		uint8  access;
-		uint8  granularity;
-		uint8  base_addr_high;
+		void mutex::lock()
+		{
+		}
 
-	} __attribute((packed));
-
-	struct gdt_desc
-	{
-		uint16 size;
-		uint32 offset;
-
-	} __attribute((packed));
-
-	const umem GDT_SIZE = 3;
-
-	void gdt_init();
-	void gdt_install();
-	//extern "C" void gdt_install(void* ptr, umem size);
-	void gdt_set_entry(umem n, uint32 base, uint32 limit, uint8 access, uint8 gran);
+		void mutex::unlock()
+		{
+		}
+	}
 }
-
-#endif

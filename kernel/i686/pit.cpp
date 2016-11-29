@@ -27,38 +27,35 @@
 
 namespace tupai
 {
-	namespace i686
+// Default interrupt handler
+	extern "C" void pit_irq_handler();
+	//asm volatile ("pit_irq_handler: \n call pit_irq_handler_main \n iret");
+	asm volatile (
+					".section .text \n"
+					"	.align 4 \n"
+	 				"	pit_irq_handler: \n"
+					"		pushal \n"
+					"		call pit_irq_handler_main \n"
+					"		popal \n"
+					"		iret \n"
+					);
+
+	void pit_init()
 	{
-		// Default interrupt handler
-		extern "C" void pit_irq_handler();
-		//asm volatile ("pit_irq_handler: \n call pit_irq_handler_main \n iret");
-		asm volatile (
-						".section .text \n"
-						"	.align 4 \n"
-		 				"	pit_irq_handler: \n"
-						"		pushal \n"
-						"		call pit_irq_handler_main \n"
-						"		popal \n"
-						"		iret \n"
-						);
+		// Set the PIT IRQ handler
+		idt_set_entry(0, (uint32)pit_irq_handler, sizeof(gdt_entry) * 1);
 
-		void pit_init()
-		{
-			// Set the PIT IRQ handler
-			idt_set_entry(0, (uint32)pit_irq_handler, sizeof(gdt_entry) * 1);
-
-			/* 0xFD is 11111101 - enables only IRQ1 (keyboard)*/
-			port_out8(0x21 , 0xFD);
+		/* 0xFD is 11111101 - enables only IRQ1 (keyboard)*/
+		port_out8(0x21 , 0xFD);
 
 
-		}
+	}
 
-		extern "C" void pit_irq_handler_main()
-		{
-			/* write EOI */
-			port_out8(0x20, 0x20);
+	extern "C" void pit_irq_handler_main()
+	{
+		/* write EOI */
+		port_out8(0x20, 0x20);
 
-			tty_write_str("PIT!");
-		}
+		tty_write_str("PIT!");
 	}
 }

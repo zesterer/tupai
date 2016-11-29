@@ -25,16 +25,13 @@
 
 namespace tupai
 {
-	namespace i686
-	{
-		void port_out8(uint16 _port, uint8 _value);
-		void port_out16(uint16 _port, uint16 _value);
-		void port_out32(uint16 _port, uint32 _value);
+	void port_out8(uint16 _port, uint8 _value);
+	void port_out16(uint16 _port, uint16 _value);
+	void port_out32(uint16 _port, uint32 _value);
 
-		uint8  port_in8(uint16 _port);
-		uint16 port_in16(uint16 _port);
-		uint32 port_in32(uint16 _port);
-	}
+	uint8  port_in8(uint16 _port);
+	uint16 port_in16(uint16 _port);
+	uint32 port_in32(uint16 _port);
 }
 
 #endif

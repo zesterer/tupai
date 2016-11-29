@@ -22,16 +22,13 @@
 
 namespace tupai
 {
-	namespace i686
+	void interrupt_enable()
 	{
-		void interrupt_enable()
-		{
-			asm volatile ("sti");
-		}
+		asm volatile ("sti");
+	}
 
-		void interrupt_disable()
-		{
-			asm volatile ("cli");
-		}
+	void interrupt_disable()
+	{
+		asm volatile ("cli");
 	}
 }

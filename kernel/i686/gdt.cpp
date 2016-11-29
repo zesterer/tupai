@@ -23,62 +23,59 @@
 
 namespace tupai
 {
-	namespace i686
+	static gdt_entry gdt[GDT_SIZE] __attribute__((aligned(8)));
+
+	extern "C" gdt_desc gdt_ptr;
+	gdt_desc gdt_ptr;
+	extern "C" umem gdt_ptr_ptr;
+	umem gdt_ptr_ptr;
+
+	void gdt_init()
 	{
-		static gdt_entry gdt[GDT_SIZE] __attribute__((aligned(8)));
+		// The null gdt entry
+		gdt_set_entry(0, 0, 0, 0, 0);
 
-		extern "C" gdt_desc gdt_ptr;
-		gdt_desc gdt_ptr;
-		extern "C" umem gdt_ptr_ptr;
-		umem gdt_ptr_ptr;
+		// Code segment
+		gdt_set_entry(1, 0x0, 0xFFFFF, 0x9A, 0xCF);
+		// Data segment
+		gdt_set_entry(2, 0x0, 0xFFFFF, 0x92, 0xCF);
 
-		void gdt_init()
-		{
-			// The null gdt entry
-			gdt_set_entry(0, 0, 0, 0, 0);
+		gdt_install();//&gdt, sizeof(gdt));
+	}
 
-			// Code segment
-			gdt_set_entry(1, 0x0, 0xFFFFF, 0x9A, 0xCF);
-			// Data segment
-			gdt_set_entry(2, 0x0, 0xFFFFF, 0x92, 0xCF);
+	void gdt_install()
+	{
+		// Set the GDT pointer
+		gdt_ptr.size = (sizeof(gdt_entry) * GDT_SIZE) - 1;
+		gdt_ptr.offset = (uint32)&gdt;
 
-			gdt_install();//&gdt, sizeof(gdt));
-		}
+		gdt_ptr_ptr = (umem)&gdt_ptr;
+		asm volatile ("lgdt (((gdt_ptr)))");
 
-		void gdt_install()
-		{
-			// Set the GDT pointer
-			gdt_ptr.size = (sizeof(gdt_entry) * GDT_SIZE) - 1;
-			gdt_ptr.offset = (uint32)&gdt;
+		/*asm volatile (
+						"lgdt (((gdt_ptr))) \n" // Set the GDT
+						"ljmp $0x08, $_gdt_longjump \n" // We need to perform a long jump (just next door! to flush all the GDT-related internal registers)
+						"_gdt_longjump: \n"
+						);*/
+	}
 
-			gdt_ptr_ptr = (umem)&gdt_ptr;
-			asm volatile ("lgdt (((gdt_ptr)))");
+	void gdt_set_entry(umem n, uint32 base, uint32 limit, uint8 access, uint8 gran)
+	{
+		// Base address
+		gdt[n].base_addr_low = (base & 0xFFFF);
+		gdt[n].base_addr_mid = ((base >> 16) & 0xFF);
+		gdt[n].base_addr_high = ((base >> 24) & 0xFF);
 
-			/*asm volatile (
-							"lgdt (((gdt_ptr))) \n" // Set the GDT
-							"ljmp $0x08, $_gdt_longjump \n" // We need to perform a long jump (just next door! to flush all the GDT-related internal registers)
-							"_gdt_longjump: \n"
-							);*/
-		}
+		// Descriptor limits
+		gdt[n].limit_low = (limit & 0xFFFF);
+		gdt[n].granularity = ((limit >> 16) & 0x0F);
 
-		void gdt_set_entry(umem n, uint32 base, uint32 limit, uint8 access, uint8 gran)
-		{
-			// Base address
-			gdt[n].base_addr_low = (base & 0xFFFF);
-			gdt[n].base_addr_mid = ((base >> 16) & 0xFF);
-			gdt[n].base_addr_high = ((base >> 24) & 0xFF);
+		// Granularity and access flags
+		gdt[n].granularity |= (gran & 0xF0);
+		gdt[n].access = access;
 
-			// Descriptor limits
-			gdt[n].limit_low = (limit & 0xFFFF);
-			gdt[n].granularity = ((limit >> 16) & 0x0F);
+		gdt_install();//&gdt, sizeof(gdt));
 
-			// Granularity and access flags
-			gdt[n].granularity |= (gran & 0xF0);
-			gdt[n].access = access;
-
-			gdt_install();//&gdt, sizeof(gdt));
-
-			//tty_write_str("Created GDT entry\n");
-		}
+		//tty_write_str("Created GDT entry\n");
 	}
 }

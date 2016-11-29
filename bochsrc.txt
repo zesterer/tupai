@@ -47,3 +47,4 @@ com1: enabled=1, mode=null
 com2: enabled=0
 com3: enabled=0
 com4: enabled=0
+display_library: x, options = "gui_debug"

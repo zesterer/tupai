@@ -25,43 +25,40 @@
 
 namespace tupai
 {
-	namespace i686
+void port_out8(uint16 _port, uint8 _value)
 	{
-		void port_out8(uint16 _port, uint8 _value)
-		{
-			asm volatile ("outb %0, %1" : : "a"(_value), "Nd"(_port));
-		}
+		asm volatile ("outb %0, %1" : : "a"(_value), "Nd"(_port));
+	}
 
-		void port_out16(uint16 _port, uint16 _value)
-		{
-			asm volatile ("outw %0, %1" : : "a"(_value), "Nd"(_port));
-		}
+	void port_out16(uint16 _port, uint16 _value)
+	{
+		asm volatile ("outw %0, %1" : : "a"(_value), "Nd"(_port));
+	}
 
-		void port_out32(uint16 _port, uint32 _value)
-		{
-			asm volatile ("outl %0, %1" : : "a"(_value), "Nd"(_port));
-		}
+	void port_out32(uint16 _port, uint32 _value)
+	{
+		asm volatile ("outl %0, %1" : : "a"(_value), "Nd"(_port));
+	}
 
-		uint8 port_in8(uint16 _port)
-		{
-			uint8 ret;
-			asm volatile ("inb %1, %0" : "=a"(ret) : "Nd"(_port));
-			return ret;
-		}
+	uint8 port_in8(uint16 _port)
+	{
+		uint8 ret;
+		asm volatile ("inb %1, %0" : "=a"(ret) : "Nd"(_port));
+		return ret;
+	}
 
-		uint16 port_in16(uint16 _port)
-		{
-			uint16 ret;
-			asm volatile ("inw %1, %0" : "=a"(ret) : "Nd"(_port));
-			return ret;
-		}
+	uint16 port_in16(uint16 _port)
+	{
+		uint16 ret;
+		asm volatile ("inw %1, %0" : "=a"(ret) : "Nd"(_port));
+		return ret;
+	}
 
-		uint32 port_in32(uint16 _port)
-		{
-			uint32 ret;
-			asm volatile ("inl %1, %0" : "=a"(ret) : "Nd"(_port));
-			return ret;
-		}
+	uint32 port_in32(uint16 _port)
+	{
+		uint32 ret;
+		asm volatile ("inl %1, %0" : "=a"(ret) : "Nd"(_port));
+		return ret;
 	}
 }
 

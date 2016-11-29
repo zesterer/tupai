@@ -25,11 +25,8 @@
 
 namespace tupai
 {
-	namespace i686
-	{
-		void interrupt_enable();
-		void interrupt_disable();
-	}
+	void interrupt_enable();
+	void interrupt_disable();
 }
 
 #endif

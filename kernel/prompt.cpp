@@ -90,8 +90,8 @@ namespace tupai
 			volatile uint32 i = 0;
 			for (i = 0; i < gap; i ++);
 
-			char k = i686::key_char;
-			i686::key_char = '\0';
+			char k = key_char;
+			key_char = '\0';
 			if (k == 'w' && dy <= 0) { dx = +0; dy = -1; }
 			if (k == 'a' && dx <= 0) { dx = -1; dy = +0; }
 			if (k == 's' && dy >= 0) { dx = +0; dy = +1; }
@@ -162,15 +162,12 @@ namespace tupai
 
 	int prompt()
 	{
-		tty_write_str("\nType 'help' for more information\n");
+		tty_write_str("Type 'help' for more information\n");
 
 		while (true)
 		{
 			//tty_clear();
-			tty_set_fg_color(0x2);
-			tty_write_str("kernel");
-			tty_set_fg_color(0xF);
-			tty_write_str("@");
+			tty_write_str("");
 			tty_set_fg_color(0x4);
 			tty_write_str("tupai");
 			tty_set_fg_color(0xF);
@@ -181,8 +178,8 @@ namespace tupai
 			umem buffer_pos = 0;
 			while (true)
 			{
-				char input_char = i686::key_char;
-				i686::key_char = '\0';
+				char input_char = key_char;
+				key_char = '\0';
 
 				if (input_char != '\0')
 				{
@@ -221,7 +218,14 @@ namespace tupai
 			}
 			else if (cmp_str(buffer, "sys"))
 			{
-				tty_write_str("Tupai 0.1.0 on ");
+				tty_write_str(SYSTEM_NAME_DECORATIVE);
+				tty_write_str(" ");
+				tty_write_str(SYSTEM_VERSION_MAJOR);
+				tty_write_str(".");
+				tty_write_str(SYSTEM_VERSION_MINOR);
+				tty_write_str(".");
+				tty_write_str(SYSTEM_VERSION_RELEASE);
+				tty_write_str(" on ");
 				tty_write_str(SYSTEM_ARCH);
 				tty_write('\n');
 			}

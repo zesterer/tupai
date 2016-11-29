@@ -62,8 +62,21 @@ namespace tupai
 		" of the GNU\nGeneral Public License along with this program.\nIf not, see <http://www.gn" \
 		"u.org/licenses/>.\n";
 
-		tty_write_str("Welcome to Tupai 0.1.0\n\n");
-		tty_write_str(GPL3_LICENCE_SHORT);
+		tty_write_str("\nWelcome to ");
+		tty_write_str(SYSTEM_NAME_DECORATIVE);
+		tty_write_str(" ");
+		tty_write_str(SYSTEM_VERSION_MAJOR);
+		tty_write_str(".");
+		tty_write_str(SYSTEM_VERSION_MINOR);
+		tty_write_str(".");
+		tty_write_str(SYSTEM_VERSION_RELEASE);
+		tty_write_str("\n");
+
+		#if defined(CFG_SHOW_LICENSE_AT_BOOT)
+			tty_write('\n');
+			tty_write_str(GPL3_LICENCE_SHORT);
+			tty_write('\n');
+		#endif
 	}
 
 	// Kernel early
@@ -71,21 +84,22 @@ namespace tupai
 	{
 		tty_init();
 		kmain_write_check("Started kernel TTY");
+		kbreak();
 
 		mempool_init((ubyte*)0x1000000, 0x100000, 64); // At 16 MB, 1 MB in size, composed of blocks of 64 B
 		kmain_write_check("Initiated dynamic memory pool");
 
 		#if defined(SYSTEM_ARCH_i686)
-			i686::gdt_init();
+			gdt_init();
 			kmain_write_check("Initiated GDT");
 
-			i686::idt_init();
+			idt_init();
 			kmain_write_check("Initiated IDT");
 
-			i686::interrupt_enable();
+			interrupt_enable();
 			kmain_write_check("Enabled interrupts");
 
-			i686::kbd_init();
+			kbd_init();
 			kmain_write_check("Initiated keyboard");
 		#endif
 
@@ -97,7 +111,6 @@ namespace tupai
 	{
 		kmain_write_check("Main kernel boot complete");
 
-		tty_clear();
 		kernel_welcome();
 
 		while (prompt() == 0);
