@@ -97,6 +97,14 @@ namespace tupai
 		#endif
 	}
 
+	void tty_place_cursor(uint16 col, uint16 row)
+	{
+		#if defined(SYSTEM_ARCH_i686)
+			tty_vga_col = col;
+			tty_vga_row = row;
+		#endif
+	}
+
 	void tty_clear()
 	{
 		#if defined(SYSTEM_ARCH_i686)

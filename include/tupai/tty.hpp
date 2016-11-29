@@ -30,6 +30,7 @@ namespace tupai
 	void tty_write_str(const char* str);
 	void tty_set_fg_color(ubyte color = 0x0F);
 	void tty_set_bg_color(ubyte color = 0x00);
+	void tty_place_cursor(uint16 col, uint16 row);
 	void tty_clear();
 }
 

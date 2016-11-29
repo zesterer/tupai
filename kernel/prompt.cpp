@@ -43,6 +43,123 @@ namespace tupai
 		return i;
 	}
 
+	int r = 1337;
+	int rand()
+	{
+		r = (r * 1337 - r) ^ r;
+		return r;
+	}
+
+	int abs(int i)
+	{
+		return i < 0 ? -i : i;
+	}
+
+	void writeint(int i)
+	{
+		tty_write('0' + (i / 100000) % 10);
+		tty_write('0' + (i / 10000) % 10);
+		tty_write('0' + (i / 1000) % 10);
+		tty_write('0' + (i / 100) % 10);
+		tty_write('0' + (i / 10) % 10);
+		tty_write('0' + (i / 1) % 10);
+	}
+
+	int snake()
+	{
+		int dx = 1;
+		int dy = 0;
+		int sx = 0;
+		int sy = 0;
+
+		int slen = 0;
+		int body_x[256];
+		int body_y[256];
+		int score = 0;
+
+		int foodx = abs(rand()) % 80;
+		int foody = abs(rand()) % 24;
+
+		uint32 gap = 20000000;
+		while (true)
+		{
+			if (slen < 4)
+				slen ++;
+
+			score ++;
+			volatile uint32 i = 0;
+			for (i = 0; i < gap; i ++);
+
+			char k = i686::key_char;
+			i686::key_char = '\0';
+			if (k == 'w' && dy <= 0) { dx = +0; dy = -1; }
+			if (k == 'a' && dx <= 0) { dx = -1; dy = +0; }
+			if (k == 's' && dy >= 0) { dx = +0; dy = +1; }
+			if (k == 'd' && dx >= 0) { dx = +1; dy = +0; }
+			if (k == 'i') gap *= 2;
+			if (k == 'k') gap /= 2;
+			if (k == '\b') break;
+
+			sx += dx;
+			sy += dy;
+
+			sx = (sx + 80) % 80;
+			sy = (sy + 24) % 24;
+
+			if (foodx == sx && foody == sy)
+			{
+				foodx = abs(rand()) % 80;
+				foody = abs(rand()) % 24;
+				score += 500;
+				slen ++;
+			}
+
+			// Graphics
+			body_x[0] = sx;
+			body_y[0] = sy;
+
+			for (int i = 256 - 2; i >= 0; i --)
+			{
+				body_x[i + 1] = body_x[i];
+				body_y[i + 1] = body_y[i];
+			}
+
+			bool gameover = false;
+			for (int i = 2; i < slen && i < 256; i ++)
+			{
+				if (body_x[i] == sx && body_y[i] == sy)
+					gameover = true;
+			}
+			if (gameover)
+				break;
+
+			tty_clear();
+			for (int i = 0; i < slen; i ++)
+			{
+				tty_place_cursor(body_x[i], body_y[i] + 1);
+				tty_write('@');
+			}
+			tty_place_cursor(foodx, foody + 1);
+			tty_write('#');
+
+			// Banner
+			tty_place_cursor(0, 0);
+			tty_set_bg_color(0x2);
+			for (int i = 0; i < 80; i ++) tty_write(' ');
+			tty_place_cursor(0, 0);
+			tty_write_str("Snake    Score: ");
+			writeint(score);
+			tty_set_bg_color(0x0);
+		}
+
+		tty_place_cursor(0, 24);
+		tty_write_str("Game Over!\n");
+		tty_write_str("Score: ");
+		writeint(score);
+		tty_write('\n');
+		return 0;
+	}
+
 	int prompt()
 	{
 		tty_write_str("\nType 'help' for more information\n");
@@ -96,8 +213,10 @@ namespace tupai
 				tty_write_str("--- Help ---\n");
 				tty_write_str("help  - Show this help screen\n");
 				tty_write_str("sys   - Show system information\n");
+				tty_write_str("snake - Play a demo snake game\n");
 				tty_write_str("panic - Perform a kernel panic\n");
 				tty_write_str("exit  - Close the prompt session\n");
+				tty_write_str("clear - Clear the screen\n");
 				tty_write_str("halt  - Halt the system\n");
 			}
 			else if (cmp_str(buffer, "sys"))
@@ -118,6 +237,14 @@ namespace tupai
 			{
 				tty_write_str("Halting...\n");
 				khalt();
+			}
+			else if (cmp_str(buffer, "snake"))
+			{
+				snake();
+			}
+			else if (cmp_str(buffer, "clear"))
+			{
+				tty_clear();
 			}
 			else
 			{
