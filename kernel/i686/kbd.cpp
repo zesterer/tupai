@@ -41,7 +41,7 @@ namespace tupai
 					"		iret \n"
 					);
 
-	const char* scancode_table = "!!1234567890-=\b!qwertyuiop[]\n!asdfghjkl;'#!\\zxcvbnm,./!!! !FFFFFFFFFF!";
+	const char* scancode_table = "!!1234567890-=\b\tqwertyuiop[]\n!asdfghjkl;'#!\\zxcvbnm,./!!! !FFFFFFFFFF!";
 
 	// A 256-character keyboard ring buffer
 	//generic::ringbuff<char> kbd_ringbuff;

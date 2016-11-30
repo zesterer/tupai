@@ -48,10 +48,10 @@ namespace libk
 	float  strtof(const char* str, char** endptr);
 	slong  strtol(const char* str, char** endptr, sint base);
 	squad  strtoll(const char* str, char** endptr, sint base);
-	ulong strtoul(const char* str, char** endptr, sint base);
+	ulong  strtoul(const char* str, char** endptr, sint base);
 	uquad  strtoull(const char* str, char** endptr, sint base);
 
-	char* itoa(sint value, char* str, sint base);
+	char* itoa(sint value, char* str = nullptr, sint base = 10);
 
 	/* Pseudo-Random Sequence Generation */
 
@@ -68,8 +68,8 @@ namespace libk
 	/* Environment */
 
 	void  abort();
-	sint  atexit(void (*func)(void));
-	sint  at_quick_exit(void (*func)(void));
+	sint  atexit(void (*func)());
+	sint  at_quick_exit(void (*func)());
 	void  exit(sint status);
 	char* getenv(const char* name);
 	void  quick_exit(sint status);
@@ -85,9 +85,9 @@ namespace libk
 
 	sint    abs(sint n);
 	div_t   div(sint number, sint denom);
-	slong   labs(slong x);
+	slong   labs(slong n);
 	ldiv_t  ldiv(slong numer, slong denom);
-	squad   llabs(squad x);
+	squad   llabs(squad n);
 	lldiv_t lldiv(squad numer, squad denom);
 
 	/* Multibyte Characters */

@@ -22,6 +22,9 @@
 #include <tupai/i686/vga.hpp>
 #include <tupai/kpanic.hpp>
 
+// Libk
+#include <libk/ctype.hpp>
+
 namespace tupai
 {
 	uint16 tty_vga_col;
@@ -31,6 +34,8 @@ namespace tupai
 
 	vga_color tty_vga_fg = vga_color::WHITE;
 	vga_color tty_vga_bg = vga_color::BLACK;
+
+	const uint16 TTY_TAB_SIZE = 4;
 
 	static void tty_shift_rows(sint16 n, vga_color fg, vga_color bg);
 
@@ -43,20 +48,24 @@ namespace tupai
 
 	void tty_write(char c)
 	{
-		if (c == '\0') // Null character
+		if (libk::isprint(c)) // Normal printable character
 		{
-			return;
+			vga_place_entry(c, vga_make_color(tty_vga_fg, tty_vga_bg), tty_vga_col, tty_vga_row);
+			tty_vga_col ++;
 		}
 		else if (c == '\n') // Newline character
 		{
 			tty_vga_col = 0;
 			tty_vga_row ++;
 		}
-		else // Normal printable character
-		{
-			vga_place_entry(c, vga_make_color(tty_vga_fg, tty_vga_bg), tty_vga_col, tty_vga_row);
-			tty_vga_col ++;
-		}
+		#ifdef CFG_TTY_INTERPRET_TAB
+			else if (c == '\t') // Tab character
+			{
+				tty_vga_col ++;
+				while (tty_vga_col % TTY_TAB_SIZE != 0)
+					tty_vga_col ++;
+			}
+		#endif
 
 		if (tty_vga_col >= tty_vga_info.cols) // We've gone past the last column
 		{

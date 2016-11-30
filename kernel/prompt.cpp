@@ -55,12 +55,13 @@ namespace tupai
 
 	void writeint(int i)
 	{
-		tty_write('0' + (i / 100000) % 10);
+		tty_write_str(libk::itoa(i));
+		/*tty_write('0' + (i / 100000) % 10);
 		tty_write('0' + (i / 10000) % 10);
 		tty_write('0' + (i / 1000) % 10);
 		tty_write('0' + (i / 100) % 10);
 		tty_write('0' + (i / 10) % 10);
-		tty_write('0' + (i / 1) % 10);
+		tty_write('0' + (i / 1) % 10);*/
 	}
 
 	int snake()
@@ -209,10 +210,9 @@ namespace tupai
 				tty_write_str("help  - Show this help screen\n");
 				tty_write_str("sys   - Show system information\n");
 				tty_write_str("snake - Play a demo snake game\n");
-				tty_write_str("panic - Perform a kernel panic\n");
 				tty_write_str("exit  - Close the prompt session\n");
 				tty_write_str("clear - Clear the screen\n");
-				tty_write_str("halt  - Halt the system\n");
+				tty_write_str("abort - Abort the system\n");
 			}
 			else if (cmp_str(buffer, "sys"))
 			{
@@ -227,18 +227,14 @@ namespace tupai
 				tty_write_str(SYSTEM_ARCH);
 				tty_write('\n');
 			}
-			else if (cmp_str(buffer, "panic"))
-			{
-				kpanic();
-			}
 			else if (cmp_str(buffer, "exit"))
 			{
 				return 0;
 			}
-			else if (cmp_str(buffer, "halt"))
+			else if (cmp_str(buffer, "abort"))
 			{
-				tty_write_str("Halting...\n");
-				khalt();
+				tty_write_str("Aborting...\n");
+				libk::abort();
 			}
 			else if (cmp_str(buffer, "snake"))
 			{
