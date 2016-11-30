@@ -5,6 +5,7 @@ ifeq (@(CFG_SHOW_LICENCE_AT_BOOT),TRUE)
 endif
 
 COMMON_FLAGS=-std=gnu++11 -O2 -Wall -Wextra -pedantic -fno-rtti -ffreestanding -nostdlib -fpic -lgcc -fno-exceptions -fno-rtti
+COMMON_FLAGS=$(COMMON_FLAGS) -fstack-protector-all
 
 ifeq (@(TARGET_ARCH),i686)
 	OBJECTS=

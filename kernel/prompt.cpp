@@ -24,6 +24,9 @@
 
 #include <tupai/i686/kbd.hpp>
 
+// Libk
+#include <libk/stdlib.hpp>
+
 namespace tupai
 {
 	bool cmp_str(const char* str0, const char* str1)
@@ -50,11 +53,6 @@ namespace tupai
 		return r;
 	}
 
-	int abs(int i)
-	{
-		return i < 0 ? -i : i;
-	}
-
 	void writeint(int i)
 	{
 		tty_write('0' + (i / 100000) % 10);
@@ -77,8 +75,8 @@ namespace tupai
 		int body_y[256];
 		int score = 0;
 
-		int foodx = abs(rand()) % 80;
-		int foody = abs(rand()) % 24;
+		int foodx = libk::abs(rand()) % 80;
+		int foody = libk::abs(rand()) % 24;
 
 		uint32 gap = 20000000;
 		while (true)
@@ -108,8 +106,8 @@ namespace tupai
 
 			if (foodx == sx && foody == sy)
 			{
-				foodx = abs(rand()) % 80;
-				foody = abs(rand()) % 24;
+				foodx = libk::abs(rand()) % 80;
+				foody = libk::abs(rand()) % 24;
 				score += 500;
 				slen ++;
 			}

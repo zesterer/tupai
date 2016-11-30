@@ -75,12 +75,13 @@ namespace tupai
 		#if defined(CFG_SHOW_LICENSE_AT_BOOT)
 			tty_write('\n');
 			tty_write_str(GPL3_LICENCE_SHORT);
-			tty_write('\n');
 		#endif
+
+		tty_write('\n');
 	}
 
 	// Kernel early
-	extern "C" void kearly()
+	void kearly()
 	{
 		tty_init();
 		kmain_write_check("Started kernel TTY");
@@ -107,7 +108,7 @@ namespace tupai
 	}
 
 	// Kernel main
-	extern "C" void kmain()
+	void kmain()
 	{
 		kmain_write_check("Main kernel boot complete");
 
