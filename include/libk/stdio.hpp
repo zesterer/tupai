@@ -23,37 +23,97 @@
 // Tupai
 #include <tupai/type.hpp>
 
+// GCC
+#include <stdarg.h>
+
 namespace libk
 {
-	/* Copying */
+	/* Types */
 
-	void* memcpy(void* destination, const void* source, umem num);
-	void* memmove(void* destination, const void* source, umem num);
-	char* strcpy(char* destination, const char* source);
-	char* strncpy(char* destination, const char* source, umem num);
+	struct _file_handle
+	{
+		ulong id;
+	};
 
-	/* Concatenation */
+	typedef _file_handle FILE;
+	typedef umem fpos_t;
 
-	char* strcat(char* destination, const char* source);
-	char* strncat(char* destination, const char* source, umem num);
+	/* Macros */
 
-	/* Comparision */
+	const uint BUFSIZ = 512;
+	const uint EOF = -1;
+	const uint FILENAME_MAX = 255;
+	const uint FOPEN_MAX = 8;
+	const uint L_tmpnam = 8;
+	const uint TMP_MAX = 8;
 
-	sint memcmp(const void* ptr1, const void* ptr2, umem num);
-	sint strcmp(const char* str1, const char* str2);
-	sint strcoll(const char* str1, const char* str2);
-	sint strncmp(const char* str1, const char* str2, umem num);
-	umem strxfrm(char* destination, const char* source, umem num);
+	/* Operations On Files */
 
-	/* Searching */
+	sint  remove(const char* filename);
+	sint  rename(const char* oldname, const char* newname);
+	FILE* tmpfile();
+	char* tmpnam(char* str);
 
-	void* memchr(void* ptr, sint value, umem num);
+	// File Access */
 
-	/* Other */
+	sint  fclose(FILE* stream);
+	sint  fflush(FILE* stream);
+	FILE* fopen(const char* filename, const char* mode);
+	FILE* freopen(const char* filename, const char* mode, FILE* stream);
+	void  setbuf(FILE* stream, char* buffer);
+	sint  setvbuf(FILE* stream, char* buffer, sint mode, umem size);
 
-	void* memset(void* ptr, sint value, umem num);
-	char* strerror(sint errnum);
-	umem  strlen(const char* str);
+	/* Formatted Input/Output */
+
+	sint fprintf(FILE* stream, const char* format, ...);
+	sint fscanf(FILE* stream, const char* format, ...);
+	sint printf(const char* format, ...);
+	sint scanf(const char* format, ...);
+	sint snprintf(char* s, umem n, const char* format, ...);
+	sint sprintf(char* str, const char* format, ...);
+	sint sscanf(const char* s, const char* format, ...);
+	sint vfprintf(FILE* stream, const char* format, va_list arg);
+	sint vfscanf(FILE* stream, const char* format, va_list arg);
+	sint vprintf(const char* format, va_list arg);
+	sint vscanf(const char* format, va_list arg);
+	sint vsnprintf(char* s, umem n, const char* format, va_list arg);
+	sint vsprintf(char* s, const char* format, va_list arg);
+	sint vsscanf(const char* s, const char* format, va_list arg);
+
+	/* Character Input/Output */
+
+	sint  fgetc(FILE* stream);
+	char* fgets(char* str, sint n, FILE* stream);
+	sint  fputc(sint c, FILE* stream);
+	sint  fputs(const char* str, FILE* stream);
+	sint  getc(FILE* stream);
+	sint  getchar();
+	char* gets(char* str);
+	sint  putc(sint c, FILE* stream);
+	sint  putchar(sint c);
+	sint  puts(const char* str);
+	sint  putsn(const char* str, umem n);
+	sint  ungetc(sint c, FILE* stream);
+
+	/* Direct Input/Output */
+
+	umem fread(void* ptr, umem size, umem nmemb, FILE* stream);
+	umem fwrite(const void* ptr, umem size, umem nmemb, FILE* stream);
+
+	/* File Positioning */
+
+	sint  fgetpos(FILE* stream, fpos_t* pos);
+	sint  fseek(FILE* stream, slong offset, sint origin);
+	sint  fsetpos(FILE* stream, const fpos_t* pos);
+	slong tell(FILE* stream);
+	void  ewind(FILE* stream);
+
+	/* Error Handling */
+
+	void clearerr(FILE* stream);
+	sint feof(FILE* stream);
+	sint ferror(FILE* stream);
+	void perror(const char* str);
 }
 
 #endif

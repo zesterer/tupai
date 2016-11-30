@@ -26,6 +26,8 @@
 
 // Libk
 #include <libk/stdlib.hpp>
+#include <libk/stdio.hpp>
+#include <libk/string.hpp>
 
 namespace tupai
 {
@@ -37,31 +39,6 @@ namespace tupai
 				return false;
 		}
 		return true;
-	}
-
-	umem str_len(const char* str)
-	{
-		umem i;
-		for (i = 0; str[i] != '\0'; i ++);
-		return i;
-	}
-
-	int r = 1337;
-	int rand()
-	{
-		r = (r * 1337 - r) ^ r;
-		return r;
-	}
-
-	void writeint(int i)
-	{
-		tty_write_str(libk::itoa(i));
-		/*tty_write('0' + (i / 100000) % 10);
-		tty_write('0' + (i / 10000) % 10);
-		tty_write('0' + (i / 1000) % 10);
-		tty_write('0' + (i / 100) % 10);
-		tty_write('0' + (i / 10) % 10);
-		tty_write('0' + (i / 1) % 10);*/
 	}
 
 	int snake()
@@ -76,8 +53,8 @@ namespace tupai
 		int body_y[256];
 		int score = 0;
 
-		int foodx = libk::abs(rand()) % 80;
-		int foody = libk::abs(rand()) % 24;
+		int foodx = libk::abs(libk::rand()) % 80;
+		int foody = libk::abs(libk::rand()) % 24;
 
 		uint32 gap = 20000000;
 		while (true)
@@ -107,8 +84,8 @@ namespace tupai
 
 			if (foodx == sx && foody == sy)
 			{
-				foodx = libk::abs(rand()) % 80;
-				foody = libk::abs(rand()) % 24;
+				foodx = libk::abs(libk::rand()) % 80;
+				foody = libk::abs(libk::rand()) % 24;
 				score += 500;
 				slen ++;
 			}
@@ -146,15 +123,14 @@ namespace tupai
 			tty_set_bg_color(0x2);
 			for (int i = 0; i < 80; i ++) tty_write(' ');
 			tty_place_cursor(0, 0);
-			tty_write_str("Snake    Score: ");
-			writeint(score);
+			libk::printf("Snake   Score: %i", score);
 			tty_set_bg_color(0x0);
 		}
 
 		tty_place_cursor(0, 24);
 		tty_write_str("Game Over!\n");
 		tty_write_str("Score: ");
-		writeint(score);
+		libk::printf("Score: %i", score);
 		tty_write('\n');
 		return 0;
 	}
@@ -165,8 +141,10 @@ namespace tupai
 
 		while (true)
 		{
-			//tty_clear();
-			tty_write_str("");
+			tty_set_fg_color(0x3);
+			tty_write_str("kernel");
+			tty_set_fg_color(0xF);
+			tty_write('@');
 			tty_set_fg_color(0x4);
 			tty_write_str("tupai");
 			tty_set_fg_color(0xF);
@@ -246,7 +224,7 @@ namespace tupai
 			}
 			else
 			{
-				if (str_len(buffer) > 0)
+				if (libk::strlen(buffer) > 0)
 				{
 					tty_write_str(buffer);
 					tty_write_str(": command not found\n");
