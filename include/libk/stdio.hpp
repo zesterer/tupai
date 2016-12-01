@@ -82,13 +82,15 @@ namespace libk
 
 	/* Character Input/Output */
 
+	bool  fgetisempty(FILE* stream);
 	sint  fgetc(FILE* stream);
 	char* fgets(char* str, sint n, FILE* stream);
 	sint  fputc(sint c, FILE* stream);
 	sint  fputs(const char* str, FILE* stream);
 	sint  getc(FILE* stream);
+	bool  getisempty();
 	sint  getchar();
-	char* gets(char* str);
+	char* gets(char* str = nullptr);
 	sint  putc(sint c, FILE* stream);
 	sint  putchar(sint c);
 	sint  puts(const char* str);

@@ -85,7 +85,6 @@ namespace tupai
 	{
 		tty_init();
 		kmain_write_check("Started kernel TTY");
-		kbreak();
 
 		mempool_init((ubyte*)0x1000000, 0x100000, 64); // At 16 MB, 1 MB in size, composed of blocks of 64 B
 		kmain_write_check("Initiated dynamic memory pool");

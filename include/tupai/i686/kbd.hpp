@@ -22,10 +22,12 @@
 
 // Tupai
 #include <tupai/type.hpp>
+#include <tupai/generic/ringbuff.hpp>
 
 namespace tupai
 {
 	extern volatile char key_char;
+	extern generic::ringbuff<char> kbd_ringbuffer;
 	void kbd_init();
 }
 

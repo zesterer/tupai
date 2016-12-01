@@ -23,32 +23,40 @@
 // Tupai
 #include <tupai/type.hpp>
 #include <tupai/kpanic.hpp>
-#include <tupai/tty.hpp>
+
+// Libk
+#include <libk/stdio.hpp>
 
 namespace tupai
 {
 	namespace generic
 	{
-		extern "C" umem tmp_var;
-		umem tmp_var;
-
 		template<typename T>
 		struct ringbuff
 		{
-			T* data = nullptr;
-			umem size = 0;
+		private:
 
-			umem len = 0;
-			umem front = 0;
-			umem back = 0;
+			T* data = nullptr;
+			volatile umem size = 0;
+
+			volatile umem len = 0;
+			volatile umem front = 0;
+			volatile umem back = 0;
+
+			volatile bool allow_overflow = true;
+
+		public:
 
 			void init(umem size)
 			{
 				this->size = size;
+				this->data = new T[this->size];
+
 				this->len = 0;
 				this->front = 0;
 				this->back = 0;
-				this->data = new T[this->size];
+
+				allow_overflow = true;
 			}
 
 			ringbuff()
@@ -72,38 +80,30 @@ namespace tupai
 
 			void push(T& item)
 			{
-				if (this->len >= this->size)
+				if (this->len >= this->size && !this->allow_overflow)
 					kpanic("Attempted to push to full ring buffer");
-
-				tty_write_str("Data location is ");
-				tty_write('0' + ((umem)this->data / 1000000000) % 10);
-				tty_write('0' + ((umem)this->data / 100000000) % 10);
-				tty_write('0' + ((umem)this->data / 10000000) % 10);
-				tty_write('0' + ((umem)this->data / 1000000) % 10);
-				tty_write('0' + ((umem)this->data / 100000) % 10);
-				tty_write('0' + ((umem)this->data / 10000) % 10);
-				tty_write('0' + ((umem)this->data / 1000) % 10);
-				tty_write('0' + ((umem)this->data / 100) % 10);
-				tty_write('0' + ((umem)this->data / 10) % 10);
-				tty_write('0' + ((umem)this->data / 1) % 10);
-				tty_write_str("!\n");
 
 				this->data[this->front] = item;
 
-				tty_write_str("Push 1!\n");
-				this->front = (this->front + 1) % this->len;
-				tty_write_str("Push 2!\n");
+				this->front = (this->front + 1) % this->size;
 				this->len ++;
+
+				if (this->len >= this->size) // Overflow onto last entry
+				{
+					this->back = (this->back + 1) % this->size;
+					this->len  = this->size;
+				}
 			}
 
 			T& pop()
 			{
+				//return this->data[0];
 				if (this->len <= 0)
 					kpanic("Attempted to pop from empty ring buffer");
 
 				umem tmp_back = this->back;
 
-				this->back = (this->back + 1) % this->len;
+				this->back = (this->back + 1) % this->size;
 				this->len --;
 
 				return this->data[tmp_back];

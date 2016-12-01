@@ -28,6 +28,10 @@
 #include <tupai/kpanic.hpp>
 #include <tupai/mempool.hpp>
 
+#if defined(SYSTEM_ARCH_i686)
+	#include <tupai/i686/kbd.hpp>
+#endif
+
 namespace libk
 {
 	/* Operations On Files */
@@ -155,14 +159,56 @@ namespace libk
 
 	/* Character Input/Output */
 
+	bool  fgetisempty(FILE* stream);
 	sint  fgetc(FILE* stream);
 	char* fgets(char* str, sint n, FILE* stream);
 	sint  fputc(sint c, FILE* stream);
 	sint  fputs(const char* str, FILE* stream);
 	sint  getc(FILE* stream);
-	sint  getchar();
-	char* gets(char* str);
-	sint  putc(sint c, FILE* stream);
+
+	bool getisempty()
+	{
+		#if defined(SYSTEM_ARCH_i686)
+			return tupai::kbd_ringbuffer.length() <= 0;
+		#else
+			true;
+		#endif
+	}
+
+	sint getchar()
+	{
+		#if defined(SYSTEM_ARCH_i686)
+			while (true)
+			{
+				if (tupai::kbd_ringbuffer.length() > 0)
+					return tupai::kbd_ringbuffer.pop();
+			}
+		#else
+			return '\0';
+		#endif
+	}
+
+	char* gets(char* str)
+	{
+		if (str == nullptr)
+			str = (char*)malloc(sizeof(char) * BUFSIZ);
+
+		for (umem i = 0; i < BUFSIZ; i ++)
+		{
+			char c = getchar();
+			if (c == '\n' || c == '\0')
+			{
+				str[i] = '\0';
+				break;
+			}
+			else
+				str[i] = c;
+		}
+
+		return str;
+	}
+
+	sint putc(sint c, FILE* stream);
 
 	sint putchar(sint c)
 	{
@@ -184,7 +230,7 @@ namespace libk
 		return 0;
 	}
 
-	sint  ungetc(sint c, FILE* stream);
+	sint ungetc(sint c, FILE* stream);
 
 	/* Direct Input/Output */
 

@@ -66,15 +66,17 @@ namespace tupai
 			volatile uint32 i = 0;
 			for (i = 0; i < gap; i ++);
 
-			char k = key_char;
-			key_char = '\0';
-			if (k == 'w' && dy <= 0) { dx = +0; dy = -1; }
-			if (k == 'a' && dx <= 0) { dx = -1; dy = +0; }
-			if (k == 's' && dy >= 0) { dx = +0; dy = +1; }
-			if (k == 'd' && dx >= 0) { dx = +1; dy = +0; }
-			if (k == 'i') gap *= 2;
-			if (k == 'k') gap /= 2;
-			if (k == '\b') break;
+			if (!libk::getisempty())
+			{
+				char k = libk::getchar();
+				if (k == 'w' && dy <= 0) { dx = +0; dy = -1; }
+				if (k == 'a' && dx <= 0) { dx = -1; dy = +0; }
+				if (k == 's' && dy >= 0) { dx = +0; dy = +1; }
+				if (k == 'd' && dx >= 0) { dx = +1; dy = +0; }
+				if (k == 'i') gap *= 2;
+				if (k == 'k') gap /= 2;
+				if (k == '\b') break;
+			}
 
 			sx += dx;
 			sy += dy;
@@ -129,7 +131,6 @@ namespace tupai
 
 		tty_place_cursor(0, 24);
 		tty_write_str("Game Over!\n");
-		tty_write_str("Score: ");
 		libk::printf("Score: %i", score);
 		tty_write('\n');
 		return 0;
@@ -155,8 +156,7 @@ namespace tupai
 			umem buffer_pos = 0;
 			while (true)
 			{
-				char input_char = key_char;
-				key_char = '\0';
+				char input_char = libk::getchar();
 
 				if (input_char != '\0')
 				{

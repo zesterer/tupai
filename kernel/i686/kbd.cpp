@@ -24,7 +24,6 @@
 #include <tupai/i686/port.hpp>
 #include <tupai/kpanic.hpp>
 #include <tupai/tty.hpp>
-#include <tupai/generic/ringbuff.hpp>
 
 namespace tupai
 {
@@ -44,7 +43,7 @@ namespace tupai
 	const char* scancode_table = "!!1234567890-=\b\tqwertyuiop[]\n!asdfghjkl;'#!\\zxcvbnm,./!!! !FFFFFFFFFF!";
 
 	// A 256-character keyboard ring buffer
-	//generic::ringbuff<char> kbd_ringbuff;
+	generic::ringbuff<char> kbd_ringbuffer;
 	volatile char key_char = '\0';
 
 	void kbd_init()
@@ -56,8 +55,8 @@ namespace tupai
 		port_out8(0x21 , 0xFD);
 
 		// Allocate space for the ring buffer
-		//kbd_ringbuff.init(10);
-		 key_char = '\0';
+		kbd_ringbuffer.init(256);
+		key_char = '\0';
 	}
 
 	extern "C" void kbd_irq_handler_main()
@@ -75,9 +74,8 @@ namespace tupai
 
 			char character = scancode_table[(umem)keycode];
 
-			//tty_write(character);
-			//kbd_ringbuff.push(character);
-			key_char = character;
+			kbd_ringbuffer.push(character);
+			//key_char = character;
 		}
 	}
 }
