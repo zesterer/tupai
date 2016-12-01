@@ -44,7 +44,6 @@ namespace tupai
 
 	// A 256-character keyboard ring buffer
 	generic::ringbuff<char> kbd_ringbuffer;
-	volatile char key_char = '\0';
 
 	void kbd_init()
 	{
@@ -56,7 +55,6 @@ namespace tupai
 
 		// Allocate space for the ring buffer
 		kbd_ringbuffer.init(256);
-		key_char = '\0';
 	}
 
 	extern "C" void kbd_irq_handler_main()
@@ -75,7 +73,6 @@ namespace tupai
 			char character = scancode_table[(umem)keycode];
 
 			kbd_ringbuffer.push(character);
-			//key_char = character;
 		}
 	}
 }
