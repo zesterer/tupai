@@ -1,4 +1,5 @@
 # Tupai
+Copyright 2016-2017
 ---
 
 A simple monolithic operating system created for educational purposes.
@@ -37,7 +38,7 @@ _See `docs/BUILDING.md`_
 
 Tupai is currently licensed under GNU General Public License version 3 and is copyrighted 2016-2017.
 
-[GNU General Public License version 3](https://www.gnu.org/licenses/gpl-3.0.html)
+_See `docs/LICENSE` or [GNU General Public License version 3](https://www.gnu.org/licenses/gpl-3.0.html)_
 
 ![GNU GPLv3](https://www.gnu.org/graphics/gplv3-127x51.png)
 
@@ -53,4 +54,4 @@ Tupai is currently licensed under GNU General Public License version 3 and is co
 
 * Resources
 	* The OSDev Wiki (wiki.osdev.org)
-	* Operating Concepts, Sixth Edition (Silberschatz, Galvin, Gagne)
+	* Operating System Concepts, Sixth Edition (Silberschatz, Galvin, Gagne)
