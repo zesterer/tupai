@@ -35,9 +35,11 @@ _See `docs/BUILDING.md`_
 ## Licensing
 ---
 
-Tupai is currently licensed under GNU Public License version 3.
+Tupai is currently licensed under GNU General Public License version 3 and is copyrighted 2016-2017.
 
-[link](https://www.gnu.org/licenses/gpl-3.0.html)
+[GNU General Public License version 3](https://www.gnu.org/licenses/gpl-3.0.html)
+
+![GNU GPLv3](https://www.gnu.org/graphics/gplv3-127x51.png)
 
 ## Contributors
 ---
