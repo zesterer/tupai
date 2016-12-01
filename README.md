@@ -52,5 +52,5 @@ Tupai is currently licensed under GNU General Public License version 3 and is co
 	* Numerous members of the OSDev Forums (forum.osdev.org)
 
 * Resources
-	The OSDev Wiki (wiki.osdev.org)
-	Operating Concepts, Sixth Edition (Silberschatz, Galvin, Gagne)
+	* The OSDev Wiki (wiki.osdev.org)
+	* Operating Concepts, Sixth Edition (Silberschatz, Galvin, Gagne)
