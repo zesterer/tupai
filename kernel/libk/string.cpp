@@ -37,7 +37,18 @@ namespace libk
 	/* Comparasion */
 
 	sint memcmp(const void* ptr1, const void* ptr2, umem num);
-	sint strcmp(const char* str1, const char* str2);
+
+	sint strcmp(const char* str1, const char* str2)
+	{
+		for (umem i = 0; str1[i] != '\0' || str2[i] != '\0'; i ++)
+		{
+			if (str1[i] != str2[i])
+				return (sint)str1[i] - (sint)str2[i];
+		}
+
+		return 0;
+	}
+
 	sint strcoll(const char* str1, const char* str2);
 	sint strncmp(const char* str1, const char* str2, umem num);
 	umem strxfrm(char* destination, const char* source, umem num);

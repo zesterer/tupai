@@ -25,6 +25,7 @@
 	- [ ] Kernel multi-tasking
 	- [ ] Fully implement libk
 	- [ ] Atomic concurrency objects (mutex, semaphore, etc.) implementation
+	- [ ] Properly implement keyboard scancode translation
 
 ## Planned
 ---
