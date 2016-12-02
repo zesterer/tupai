@@ -65,6 +65,8 @@ namespace tupai
 		enum { I_APPLE = 1, I_SWORD = 2, I_TORCH = 3, };
 		const char* itemnames[] = { "", "apple", "sword", "torch" };
 
+		const sint inventory_size = 8;
+		Item player_inv[8];
 		sint player_x;
 		sint player_y;
 
@@ -118,11 +120,33 @@ namespace tupai
 				break;
 			}
 
+			sint j = 0;
 			for (sint i = 0; i < item_cell_count; i ++)
 			{
 				if (cell.items[i].type != 0)
-					libk::printf("There is a %s on the floor.\n", itemnames[cell.items[i].type]);
+				{
+					j ++;
+					libk::printf("[%i] There is a %s on the floor.\n", j, itemnames[cell.items[i].type]);
+				}
 			}
+		}
+
+		void show_inv()
+		{
+			libk::printf("Your inventory:\n");
+
+			bool has_item = false;
+			for (sint i = 0; i < inventory_size; i ++)
+			{
+				if (player_inv[i].type != 0)
+				{
+					libk::printf("[%i] A %i / %i %s.\n", i + 1, player_inv[i].count, 100, itemnames[player_inv[i].type]);
+					has_item = true;
+				}
+			}
+
+			if (!has_item)
+				libk::printf("There are no items in your inventory!\n");
 		}
 
 		bool do_move(sint x, sint y)
@@ -137,6 +161,61 @@ namespace tupai
 			if (player_y >= world_size) { player_y = world_size - 1; fixed = true; }
 
 			return !fixed;
+		}
+
+		bool inv_add(Item item)
+		{
+			for (int i = 0; i < inventory_size; i ++)
+			{
+				if (player_inv[i].type == 0)
+				{
+					player_inv[i] = item;
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		void do_pick()
+		{
+			libk::printf("Which item (enter number)?\n");
+			libk::puts("> ");
+			char* line = get_line();
+			libk::putchar('\n');
+
+			sint n = libk::atoi(line);
+			libk::free(line);
+
+			if (n == 0)
+			{
+				libk::printf("Invalid item!\n");
+				return;
+			}
+
+			Cell& cell = world.cells[player_x][player_y];
+			sint j = 0;
+			for (sint i = 0; i < item_cell_count; i ++)
+			{
+				if (cell.items[i].type != 0)
+				{
+					j ++;
+					if (n == j)
+					{
+						bool worked = inv_add(cell.items[i]);
+						if (worked)
+						{
+							libk::printf("Picked up the %s.\n", itemnames[cell.items[i].type]);
+							cell.items[i].type = 0;
+							return;
+						}
+						else
+							libk::printf("No space left in inventory!\n");
+					}
+				}
+			}
+
+			libk::printf("No item picked!\n");
 		}
 
 		void do_walk()
@@ -180,6 +259,10 @@ namespace tupai
 		{
 			generate();
 
+			// Clear inv
+			for (sint i = 0; i < inventory_size; i ++)
+				player_inv[i] = Item(0, 0);
+
 			player_x = world_size / 2;
 			player_y = world_size / 2;
 
@@ -198,6 +281,10 @@ namespace tupai
 					show_look();
 				else if (libk::strcmp(line, "walk") == 0)
 					do_walk();
+				else if (libk::strcmp(line, "inv") == 0)
+					show_inv();
+				else if (libk::strcmp(line, "pick") == 0)
+					do_pick();
 				else
 					libk::printf("I don't understand!\n");
 
