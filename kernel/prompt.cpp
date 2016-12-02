@@ -24,6 +24,7 @@
 
 #include <tupai/prog/snake.hpp>
 #include <tupai/prog/adventure.hpp>
+#include <tupai/prog/sys.hpp>
 
 // Libk
 #include <libk/stdlib.hpp>
@@ -101,16 +102,7 @@ namespace tupai
 			}
 			else if (cmp_str(buffer, "sys"))
 			{
-				tty_write_str(SYSTEM_NAME_DECORATIVE);
-				tty_write_str(" ");
-				tty_write_str(SYSTEM_VERSION_MAJOR);
-				tty_write_str(".");
-				tty_write_str(SYSTEM_VERSION_MINOR);
-				tty_write_str(".");
-				tty_write_str(SYSTEM_VERSION_RELEASE);
-				tty_write_str(" on ");
-				tty_write_str(SYSTEM_ARCH);
-				tty_write('\n');
+				prog::sys_main(0, nullptr);
 			}
 			else if (cmp_str(buffer, "exit"))
 			{

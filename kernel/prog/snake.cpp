@@ -30,7 +30,7 @@ namespace tupai
 {
 	namespace prog
 	{
-		int snake_main(int argc, char* argv[])
+		int snake_main(int argc __attribute__ ((unused)), char* argv[] __attribute__ ((unused)))
 		{
 			int dx = 1;
 			int dy = 0;

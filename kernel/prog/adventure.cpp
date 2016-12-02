@@ -255,7 +255,7 @@ namespace tupai
 			libk::free(line);
 		}
 
-		int adventure_main(int argc, char* argv[])
+		int adventure_main(int argc __attribute__ ((unused)), char* argv[] __attribute__ ((unused)))
 		{
 			generate();
 
