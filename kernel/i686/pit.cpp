@@ -35,6 +35,9 @@ namespace tupai
 	const uint16 PIT_DATA_CH1_PORT = 0x41;
 	const uint16 PIT_DATA_CH2_PORT = 0x42;
 
+	volatile counter_t pit_counter = 0;
+	volatile uint16    pit_rate = 256;
+
 	// Default interrupt handler
 	extern "C" void pit_irq_handler();
 	//asm volatile ("pit_irq_handler: \n call pit_irq_handler_main \n iret");
@@ -50,7 +53,9 @@ namespace tupai
 
 	void pit_set_rate(uint16 rate)
 	{
-		uint16 div = PIT_MIN_RATE / rate;
+		pit_rate = rate;
+
+		uint16 div = PIT_MIN_RATE / pit_rate;
 
 		byte cmd_byte = (0x0 << 0) | (0x3 << 1) | (0x3 << 4) | (0x0 << 6);
 		port_out8(PIT_CMD_PORT, cmd_byte);
@@ -69,18 +74,11 @@ namespace tupai
 		pic_set_mask(0, true);
 	}
 
-	uint16 counter = 0;
 	extern "C" void pit_irq_handler_main()
 	{
 		/* write EOI */
 		port_out8(0x20, 0x20);
 
-		counter ++;
-
-		if (counter % 100 == 0)
-		{
-			//tty_write_str("One second has passed.\n");
-			counter = 0;
-		}
+		pit_counter ++;
 	}
 }

@@ -1,5 +1,5 @@
 /*
-* 	file : pit.hpp
+* 	file : time.cpp
 *
 * 	This file is part of Tupai.
 *
@@ -17,19 +17,27 @@
 * 	along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TUPAI_I686_PIT_HPP
-#define TUPAI_I686_PIT_HPP
+// Libk
+#include <libk/time.hpp>
+#include <tupai/i686/pit.hpp>
 
-// Tupai
-#include <tupai/type.hpp>
-
-namespace tupai
+namespace libk
 {
-	extern volatile counter_t pit_counter;
-	extern volatile uint16    pit_rate;
+	/* Time functions */
 
-	void pit_init();
-	void pit_set_rate(uint16 rate);
+	void sleep(useconds_t sec)
+	{
+		counter_t ctime = tupai::pit_counter;
+		counter_t elapsed = sec * tupai::pit_rate;
+
+		while (tupai::pit_counter - ctime < elapsed);
+	}
+
+	void usleep(useconds_t usec)
+	{
+		counter_t ctime = tupai::pit_counter;
+		counter_t elapsed = (usec * tupai::pit_rate) / 1000;
+
+		while (tupai::pit_counter - ctime < elapsed);
+	}
 }
-
-#endif

@@ -25,6 +25,7 @@
 #include <tupai/prog/snake.hpp>
 #include <tupai/prog/adventure.hpp>
 #include <tupai/prog/sys.hpp>
+#include <tupai/prog/timer.hpp>
 
 // Libk
 #include <libk/stdlib.hpp>
@@ -96,6 +97,7 @@ namespace tupai
 				tty_write_str("sys       - Show system information\n");
 				tty_write_str("snake     - Play a demo snake game\n");
 				tty_write_str("adventure - Play an adventure game\n");
+				tty_write_str("timer     - Timer test program\n");
 				tty_write_str("exit      - Close the prompt session\n");
 				tty_write_str("clear     - Clear the screen\n");
 				tty_write_str("abort     - Abort the system\n");
@@ -103,6 +105,10 @@ namespace tupai
 			else if (cmp_str(buffer, "sys"))
 			{
 				prog::sys_main(0, nullptr);
+			}
+			else if (cmp_str(buffer, "timer"))
+			{
+				prog::timer_main(0, nullptr);
 			}
 			else if (cmp_str(buffer, "exit"))
 			{

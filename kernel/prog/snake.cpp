@@ -25,6 +25,7 @@
 // Libk
 #include <libk/stdio.hpp>
 #include <libk/stdlib.hpp>
+#include <libk/time.hpp>
 
 namespace tupai
 {
@@ -45,15 +46,20 @@ namespace tupai
 			int foodx = libk::abs(libk::rand()) % 16;
 			int foody = libk::abs(libk::rand()) % 16;
 
-			uint32 gap = 20000000;
+			int level = 1;
+
 			while (true)
 			{
 				if (slen < 4)
 					slen ++;
 
 				score ++;
-				volatile uint32 i = 0;
-				for (i = 0; i < gap; i ++);
+
+				level = score / 1000;
+				if (level > 10)
+					level = 10;
+
+				libk::usleep(300 - level * 26);
 
 				if (!libk::getisempty())
 				{
@@ -62,8 +68,6 @@ namespace tupai
 					if (k == 'a' && dx <= 0) { dx = -1; dy = +0; }
 					if (k == 's' && dy >= 0) { dx = +0; dy = +1; }
 					if (k == 'd' && dx >= 0) { dx = +1; dy = +0; }
-					if (k == 'i') gap *= 2;
-					if (k == 'k') gap /= 2;
 					if (k == '\b') break;
 				}
 
@@ -141,7 +145,7 @@ namespace tupai
 				tty_set_bg_color(0x2);
 				for (int i = 0; i < 80; i ++) tty_write(' ');
 				tty_place_cursor(0, 0);
-				libk::printf("Snake   Score: %i", score);
+				libk::printf("Snake   Score : %i   Level : %i", score, level);
 				tty_set_bg_color(0x0);
 			}
 

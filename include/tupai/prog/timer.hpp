@@ -1,5 +1,5 @@
 /*
-* 	file : pit.hpp
+* 	file : timer.hpp
 *
 * 	This file is part of Tupai.
 *
@@ -17,19 +17,15 @@
 * 	along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TUPAI_I686_PIT_HPP
-#define TUPAI_I686_PIT_HPP
-
-// Tupai
-#include <tupai/type.hpp>
+#ifndef TUPAI_PROG_TIMER_HPP
+#define TUPAI_PROG_TIMER_HPP
 
 namespace tupai
 {
-	extern volatile counter_t pit_counter;
-	extern volatile uint16    pit_rate;
-
-	void pit_init();
-	void pit_set_rate(uint16 rate);
+	namespace prog
+	{
+		int timer_main(int argc, char* argv[]);
+	}
 }
 
 #endif

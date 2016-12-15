@@ -1,5 +1,5 @@
 /*
-* 	file : pit.hpp
+* 	file : timer.cpp
 *
 * 	This file is part of Tupai.
 *
@@ -17,19 +17,40 @@
 * 	along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TUPAI_I686_PIT_HPP
-#define TUPAI_I686_PIT_HPP
-
 // Tupai
-#include <tupai/type.hpp>
+#include <tupai/prog/timer.hpp>
+
+// Libk
+#include <libk/stdio.hpp>
+#include <libk/time.hpp>
+
+using namespace libk;
 
 namespace tupai
 {
-	extern volatile counter_t pit_counter;
-	extern volatile uint16    pit_rate;
+	namespace prog
+	{
+		int timer_main(int argc __attribute__ ((unused)), char* argv[] __attribute__ ((unused)))
+		{
+			printf("Counting 5 seconds in second increments...\n");
 
-	void pit_init();
-	void pit_set_rate(uint16 rate);
+			for (int i = 0; i < 5; i ++)
+			{
+				libk::sleep(1);
+				printf("Second %i.\n", i + 1);
+			}
+
+			printf("Counting 1 second in 50 millisecond increments...\n");
+
+			for (int i = 0; i < 20; i ++)
+			{
+				libk::usleep(50);
+				printf("Millisecond %i.\n", (i + 1) * 50);
+			}
+
+			printf("Done!\n");
+
+			return 0;
+		}
+	}
 }
-
-#endif
