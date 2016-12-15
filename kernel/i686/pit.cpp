@@ -79,7 +79,7 @@ namespace tupai
 
 		if (counter % 100 == 0)
 		{
-			tty_write_str("One second has passed.\n");
+			//tty_write_str("One second has passed.\n");
 			counter = 0;
 		}
 	}

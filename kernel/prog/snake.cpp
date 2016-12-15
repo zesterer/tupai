@@ -42,8 +42,8 @@ namespace tupai
 			int body_y[256];
 			int score = 0;
 
-			int foodx = libk::abs(libk::rand()) % 80;
-			int foody = libk::abs(libk::rand()) % 24;
+			int foodx = libk::abs(libk::rand()) % 16;
+			int foody = libk::abs(libk::rand()) % 16;
 
 			uint32 gap = 20000000;
 			while (true)
@@ -70,13 +70,13 @@ namespace tupai
 				sx += dx;
 				sy += dy;
 
-				sx = (sx + 80) % 80;
-				sy = (sy + 24) % 24;
+				sx = (sx + 16) % 16;
+				sy = (sy + 16) % 16;
 
 				if (foodx == sx && foody == sy)
 				{
-					foodx = libk::abs(libk::rand()) % 80;
-					foody = libk::abs(libk::rand()) % 24;
+					foodx = libk::abs(libk::rand()) % 16;
+					foody = libk::abs(libk::rand()) % 16;
 					score += 500;
 					slen ++;
 				}
@@ -101,13 +101,40 @@ namespace tupai
 					break;
 
 				tty_clear();
+
+				int offx = (80 - 16) / 2;
+				int offy = (25 - 16) / 2;
+
+				// Background
+				for (int yy = -1; yy < 17; yy ++)
+				{
+					for (int xx = -1; xx < 17; xx ++)
+					{
+						tty_place_cursor(xx + offx, yy + offy);
+						if (xx == -1 || yy == -1 || xx == 16 || yy == 16)
+						{
+							tty_set_bg_color(0xA);
+							tty_write('#');
+						}
+						else
+						{
+							tty_set_bg_color(0x9);
+							tty_write(' ');
+						}
+					}
+				}
+				tty_set_bg_color(0x9);
+
 				for (int i = 0; i < slen; i ++)
 				{
-					tty_place_cursor(body_x[i], body_y[i] + 1);
-					tty_write('@');
+					tty_place_cursor(body_x[i] + offx, body_y[i] + offy);
+					tty_write('0');
 				}
-				tty_place_cursor(foodx, foody + 1);
-				libk::putchar('#');
+
+				tty_place_cursor(foodx + offx, foody + offy);
+				libk::putchar('@');
+
+				tty_set_bg_color(0x0);
 
 				// Banner
 				tty_place_cursor(0, 0);
