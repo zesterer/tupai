@@ -29,6 +29,7 @@
 	#include <tupai/i686/idt.hpp>
 	#include <tupai/i686/interrupt.hpp>
 	#include <tupai/i686/kbd.hpp>
+	#include <tupai/i686/pit.hpp>
 #endif
 
 namespace tupai
@@ -56,12 +57,6 @@ namespace tupai
 
 	void kernel_welcome()
 	{
-		const char GPL3_LICENCE_SHORT[] = "Copyright (C) 2016 Joshua Barretto\n" \
-		"This program comes with ABSOLUTELY NO WARRANTY.\nThis is free software, and you are " \
-		"welcome to\nredistribute it under certain conditions.\n\nYou should have received a copy" \
-		" of the GNU\nGeneral Public License along with this program.\nIf not, see <http://www.gn" \
-		"u.org/licenses/>.\n";
-
 		tty_write_str("\nWelcome to ");
 		tty_write_str(SYSTEM_NAME_DECORATIVE);
 		tty_write_str(" ");
@@ -73,6 +68,12 @@ namespace tupai
 		tty_write_str("\n");
 
 		#if defined(CFG_SHOW_LICENSE_AT_BOOT)
+			const char GPL3_LICENCE_SHORT[] = "Copyright (C) 2016 Joshua Barretto\n" \
+			"This program comes with ABSOLUTELY NO WARRANTY.\nThis is free software, and you are " \
+			"welcome to\nredistribute it under certain conditions.\n\nYou should have received a copy" \
+			" of the GNU\nGeneral Public License along with this program.\nIf not, see <http://www.gn" \
+			"u.org/licenses/>.\n";
+
 			tty_write('\n');
 			tty_write_str(GPL3_LICENCE_SHORT);
 		#endif
@@ -98,6 +99,9 @@ namespace tupai
 
 			interrupt_enable();
 			kmain_write_check("Enabled interrupts");
+
+			pit_init();
+			kmain_write_check("Initiated PIT");
 
 			kbd_init();
 			kmain_write_check("Initiated keyboard");

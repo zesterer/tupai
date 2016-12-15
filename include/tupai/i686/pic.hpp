@@ -1,5 +1,5 @@
 /*
-* 	file : pit.hpp
+* 	file : pic.hpp
 *
 * 	This file is part of Tupai.
 *
@@ -17,16 +17,15 @@
 * 	along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TUPAI_I686_PIT_HPP
-#define TUPAI_I686_PIT_HPP
+#ifndef TUPAI_I686_PIC_HPP
+#define TUPAI_I686_PIC_HPP
 
 // Tupai
 #include <tupai/type.hpp>
 
 namespace tupai
 {
-	void pit_init();
-	void pit_set_rate(uint16 rate);
+	void pic_set_mask(byte irq_line, bool enabled);
 }
 
 #endif

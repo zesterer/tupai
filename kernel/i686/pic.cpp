@@ -1,5 +1,5 @@
 /*
-* 	file : pit.hpp
+* 	file : pic.cpp
 *
 * 	This file is part of Tupai.
 *
@@ -17,16 +17,37 @@
 * 	along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TUPAI_I686_PIT_HPP
-#define TUPAI_I686_PIT_HPP
-
 // Tupai
-#include <tupai/type.hpp>
+#include <tupai/i686/pic.hpp>
+#include <tupai/i686/port.hpp>
 
 namespace tupai
 {
-	void pit_init();
-	void pit_set_rate(uint16 rate);
-}
+	const uint16 PIC1      = 0x20;
+	const uint16 PIC2      = 0xA0;
+	const uint16 PIC1_CMD  = PIC1;
+	const uint16 PIC1_DATA = PIC1 + 1;
+	const uint16 PIC2_CMD  = PIC2;
+	const uint16 PIC2_DATA = PIC2 + 1;
 
-#endif
+	void pic_set_mask(byte irq_line, bool enabled)
+	{
+		uint16 port;
+		uint8  value;
+
+		if (irq_line < 8)
+			port = PIC1_DATA;
+		else
+		{
+			port = PIC2_DATA;
+			irq_line -= 8;
+		}
+
+		if (enabled)
+			value = port_in8(port) & ~(1 << irq_line);
+		else
+			value = port_in8(port) | (1 << irq_line);
+
+		port_out8(port, value);
+	}
+}

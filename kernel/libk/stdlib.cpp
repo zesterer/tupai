@@ -191,7 +191,7 @@ namespace libk
 		return 0;
 	}
 
-	void exit(sint status)
+	void exit(sint status __attribute__ ((unused)))
 	{
 		for (; exit_func_index > 0; exit_func_index --)
 		{
@@ -204,7 +204,7 @@ namespace libk
 
 	char* getenv(const char* name);
 
-	void quick_exit(sint status)
+	void quick_exit(sint status __attribute__ ((unused)))
 	{
 		for (; quick_exit_func_index > 0; quick_exit_func_index --)
 		{

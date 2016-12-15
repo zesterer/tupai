@@ -4,7 +4,7 @@ ifeq (@(CFG_SHOW_LICENCE_AT_BOOT),TRUE)
 	DEFINITION_FLAGS=-DCFG_SHOW_LICENSE_AT_BOOT $(DEFINITION_FLAGS)
 endif
 
-COMMON_FLAGS=-std=gnu++11 -O2 -Wall -Wextra -pedantic -fno-rtti -ffreestanding -nostdlib -fpic -lgcc -fno-exceptions -fno-rtti
+COMMON_FLAGS=-std=gnu++14 -O2 -Wall -Wextra -pedantic -fno-rtti -ffreestanding -nostdlib -fpic -lgcc -fno-exceptions -fno-rtti
 
 ifeq (@(CFG_ENABLE_SSP),TRUE)
 	COMMON_FLAGS=$(COMMON_FLAGS) -fstack-protector-all

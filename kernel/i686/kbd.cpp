@@ -22,6 +22,7 @@
 #include <tupai/i686/idt.hpp>
 #include <tupai/i686/gdt.hpp>
 #include <tupai/i686/port.hpp>
+#include <tupai/i686/pic.hpp>
 #include <tupai/kpanic.hpp>
 #include <tupai/tty.hpp>
 
@@ -50,8 +51,8 @@ namespace tupai
 		// Set the keyboard IRQ handler
 		idt_set_entry(1, (uint32)kbd_irq_handler, sizeof(gdt_entry) * 1);
 
-		/* 0xFD is 11111101 - enables only IRQ1 (keyboard)*/
-		port_out8(0x21 , 0xFD);
+		// Enable IRQ1 (keyboard)
+		pic_set_mask(1, true);
 
 		// Allocate space for the ring buffer
 		kbd_ringbuffer.init(256);

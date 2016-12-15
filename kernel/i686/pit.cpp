@@ -22,12 +22,20 @@
 #include <tupai/i686/idt.hpp>
 #include <tupai/i686/gdt.hpp>
 #include <tupai/i686/port.hpp>
+#include <tupai/i686/pic.hpp>
 #include <tupai/kpanic.hpp>
 #include <tupai/tty.hpp>
 
 namespace tupai
 {
-// Default interrupt handler
+	const uint32 PIT_MIN_RATE = 1193180;
+
+	const uint16 PIT_CMD_PORT = 0x43;
+	const uint16 PIT_DATA_CH0_PORT = 0x40;
+	const uint16 PIT_DATA_CH1_PORT = 0x41;
+	const uint16 PIT_DATA_CH2_PORT = 0x42;
+
+	// Default interrupt handler
 	extern "C" void pit_irq_handler();
 	//asm volatile ("pit_irq_handler: \n call pit_irq_handler_main \n iret");
 	asm volatile (
@@ -40,22 +48,39 @@ namespace tupai
 					"		iret \n"
 					);
 
+	void pit_set_rate(uint16 rate)
+	{
+		uint16 div = PIT_MIN_RATE / rate;
+
+		byte cmd_byte = (0x0 << 0) | (0x3 << 1) | (0x3 << 4) | (0x0 << 6);
+		port_out8(PIT_CMD_PORT, cmd_byte);
+		port_out8(PIT_DATA_CH0_PORT, (div >> 0) & 0xFF); // LSB
+		port_out8(PIT_DATA_CH0_PORT, (div >> 8) & 0xFF); // MSB
+	}
+
 	void pit_init()
 	{
 		// Set the PIT IRQ handler
 		idt_set_entry(0, (uint32)pit_irq_handler, sizeof(gdt_entry) * 1);
 
-		/* 0xFD is 11111101 - enables only IRQ1 (keyboard)*/
-		port_out8(0x21 , 0xFD);
+		pit_set_rate(100);
 
-
+		// Enable IRQ0 (PIT)
+		pic_set_mask(0, true);
 	}
 
+	uint16 counter = 0;
 	extern "C" void pit_irq_handler_main()
 	{
 		/* write EOI */
 		port_out8(0x20, 0x20);
 
-		tty_write_str("PIT!");
+		counter ++;
+
+		if (counter % 100 == 0)
+		{
+			tty_write_str("One second has passed.\n");
+			counter = 0;
+		}
 	}
 }

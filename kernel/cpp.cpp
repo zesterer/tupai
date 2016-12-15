@@ -43,5 +43,15 @@ void operator delete[](void* ptr)
 	tupai::mempool_dealloc(ptr);
 }
 
+void operator delete(void* ptr, unsigned long n __attribute__ ((unused)))
+{
+	tupai::mempool_dealloc(ptr);
+}
+
+void operator delete[](void* ptr, unsigned long n __attribute__ ((unused)))
+{
+	tupai::mempool_dealloc(ptr);
+}
+
 void* __dso_handle;
 void* __cxa_atexit;
