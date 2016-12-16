@@ -50,12 +50,37 @@ namespace libk
 	}
 
 	sint strcoll(const char* str1, const char* str2);
-	sint strncmp(const char* str1, const char* str2, umem num);
+
+	sint strncmp(const char* str1, const char* str2, umem num)
+	{
+		for (umem i = 0; i < num && (str1[i] != '\0' || str2[i] != '\0'); i ++)
+		{
+			if (str1[i] != str2[i])
+				return (sint)str1[i] - (sint)str2[i];
+		}
+
+		return 0;
+	}
+
 	umem strxfrm(char* destination, const char* source, umem num);
 
 	/* Searching */
 
 	void* memchr(void* ptr, sint value, umem num);
+
+	const char* strchr(const char* str, sint character)
+	{
+		if (character == '\0')
+			return str + sizeof(char) * strlen(str);
+
+		for (umem i = 0; str[i] != '\0'; i ++)
+		{
+			if (str[i] == character)
+				return str + sizeof(char) * i;
+		}
+
+		return nullptr;
+	}
 
 	/* Other */
 

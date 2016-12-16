@@ -25,8 +25,8 @@
 
 namespace tupai
 {
-	void interrupt_enable();
-	void interrupt_disable();
+	void interrupt_enable(bool enabled = true);
+	void interrupt_send_eoi();
 }
 
 #endif

@@ -34,18 +34,28 @@
 
 namespace tupai
 {
-	bool cmp_str(const char* str0, const char* str1)
+	struct command_pair
 	{
-		for (umem i = 0; str0[i] != '\0' || str1[i] != '\0'; i ++)
+		int (*main_func)(int argc, char* argv[]);
+		const char* cmd_name;
+
+		command_pair(int (*main_func)(int argc, char* argv[]), const char* cmd_name)
 		{
-			if (str0[i] != str1[i])
-				return false;
+			this->main_func = main_func;
+			this->cmd_name = cmd_name;
 		}
-		return true;
-	}
+	};
 
 	int prompt()
 	{
+		command_pair commands[] =
+		{
+			command_pair(prog::sys_main, "sys"),
+			command_pair(prog::snake_main, "snake"),
+			command_pair(prog::adventure_main, "adventure"),
+			command_pair(prog::timer_main, "timer"),
+		};
+
 		tty_write_str("Type 'help' for more information\n");
 
 		while (true)
@@ -90,7 +100,7 @@ namespace tupai
 
 			tty_write('\n');
 
-			if (cmp_str(buffer, "help"))
+			if (libk::strcmp(buffer, "help") == 0)
 			{
 				tty_write_str("--- Help ---\n");
 				tty_write_str("help      - Show this help screen\n");
@@ -102,38 +112,34 @@ namespace tupai
 				tty_write_str("clear     - Clear the screen\n");
 				tty_write_str("abort     - Abort the system\n");
 			}
-			else if (cmp_str(buffer, "sys"))
-			{
-				prog::sys_main(0, nullptr);
-			}
-			else if (cmp_str(buffer, "timer"))
-			{
-				prog::timer_main(0, nullptr);
-			}
-			else if (cmp_str(buffer, "exit"))
+			else if (libk::strcmp(buffer, "exit") == 0)
 			{
 				return 0;
 			}
-			else if (cmp_str(buffer, "abort"))
+			else if (libk::strcmp(buffer, "abort") == 0)
 			{
 				tty_write_str("Aborting...\n");
 				libk::abort();
 			}
-			else if (cmp_str(buffer, "snake"))
-			{
-				prog::snake_main(0, nullptr);
-			}
-			else if (cmp_str(buffer, "adventure"))
-			{
-				prog::adventure_main(0, nullptr);
-			}
-			else if (cmp_str(buffer, "clear"))
+			else if (libk::strcmp(buffer, "clear") == 0)
 			{
 				tty_clear();
 			}
 			else
 			{
-				if (libk::strlen(buffer) > 0)
+				// Search for a command
+				bool found = false;
+				for (umem i = 0; i < sizeof(commands) / sizeof(command_pair); i ++)
+				{
+					if (libk::strcmp(commands[i].cmd_name, buffer) == 0)
+					{
+						commands[i].main_func(0, nullptr);
+						found = true;
+					}
+				}
+
+				// It's not been found
+				if (!found && libk::strlen(buffer) > 0)
 				{
 					tty_write_str(buffer);
 					tty_write_str(": command not found\n");

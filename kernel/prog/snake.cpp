@@ -53,8 +53,6 @@ namespace tupai
 				if (slen < 4)
 					slen ++;
 
-				score ++;
-
 				level = score / 1000;
 				if (level > 10)
 					level = 10;

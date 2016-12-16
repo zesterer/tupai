@@ -47,7 +47,8 @@ namespace libk
 
 	/* Searching */
 
-	void* memchr(void* ptr, sint value, umem num);
+	void*       memchr(void* ptr, sint value, umem num);
+	const char* strchr(const char* str, sint character);
 
 	/* Other */
 

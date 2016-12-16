@@ -22,6 +22,7 @@
 #include <tupai/i686/idt.hpp>
 #include <tupai/i686/gdt.hpp>
 #include <tupai/i686/port.hpp>
+#include <tupai/i686/interrupt.hpp>
 #include <tupai/i686/pic.hpp>
 #include <tupai/kpanic.hpp>
 #include <tupai/tty.hpp>
@@ -76,8 +77,7 @@ namespace tupai
 
 	extern "C" void pit_irq_handler_main()
 	{
-		/* write EOI */
-		port_out8(0x20, 0x20);
+		interrupt_send_eoi();
 
 		pit_counter ++;
 	}

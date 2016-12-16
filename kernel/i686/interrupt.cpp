@@ -19,16 +19,21 @@
 
 // Tupai
 #include <tupai/i686/interrupt.hpp>
+#include <tupai/i686/port.hpp>
 
 namespace tupai
 {
-	void interrupt_enable()
+	void interrupt_enable(bool enabled)
 	{
-		asm volatile ("sti");
+		if (enabled)
+			asm volatile ("sti");
+		else
+			asm volatile ("cli");
 	}
 
-	void interrupt_disable()
+	void interrupt_send_eoi()
 	{
-		asm volatile ("cli");
+		/* write EOI */
+		port_out8(0x20, 0x20);
 	}
 }
