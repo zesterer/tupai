@@ -3,6 +3,8 @@
 
 ## Implemented
 
+### 0.1.0
+
 	- [x] Simple i686 VGA driver
 	- [x] Simple ring-buffer i686 keyboard driver
 	- [x] i686 GDT manager
@@ -16,10 +18,19 @@
 	- [x] Simple stack-smashing detection
 	- [x] Basic Multiboot support
 
+### 0.2.0
+
+	- [x] i686 PIT driver
+	- [x] Improved snake
+	- [x] Improved libk implementation
+	- [x] Improved kernel prompt
+	- [x] Added timer test program
+	- [x] Improved system status program
+	- [x] Added basic text adventure program
+
 ## Tasks
 ---
 
-	- [ ] i686 PIT driver
 	- [ ] Advanced kernel prompt
 	- [ ] Paging support
 	- [ ] Kernel multi-tasking

@@ -53,7 +53,7 @@ namespace tupai
 				if (slen < 4)
 					slen ++;
 
-				level = score / 1000;
+				level = 1 + (score / 5000);
 				if (level > 10)
 					level = 10;
 
@@ -115,26 +115,34 @@ namespace tupai
 						tty_place_cursor(xx + offx, yy + offy);
 						if (xx == -1 || yy == -1 || xx == 16 || yy == 16)
 						{
-							tty_set_bg_color(0xA);
-							tty_write('#');
+							tty_set_bg_color(0x6);
+							tty_write(' ');
 						}
 						else
 						{
-							tty_set_bg_color(0x9);
+							tty_set_bg_color(0x7);
 							tty_write(' ');
 						}
 					}
 				}
-				tty_set_bg_color(0x9);
+				tty_set_bg_color(0x7);
 
 				for (int i = 0; i < slen; i ++)
 				{
-					tty_place_cursor(body_x[i] + offx, body_y[i] + offy);
-					tty_write('0');
-				}
+					if (i % 2 < 1)
+						tty_set_fg_color(0xA);
+					else
+						tty_set_fg_color(0x2);
 
+					tty_place_cursor(body_x[i] + offx, body_y[i] + offy);
+					tty_write('O');
+				}
+				tty_set_fg_color(0xF);
+
+				tty_set_fg_color(0xC);
 				tty_place_cursor(foodx + offx, foody + offy);
 				libk::putchar('@');
+				tty_set_fg_color(0xF);
 
 				tty_set_bg_color(0x0);
 
@@ -143,7 +151,7 @@ namespace tupai
 				tty_set_bg_color(0x2);
 				for (int i = 0; i < 80; i ++) tty_write(' ');
 				tty_place_cursor(0, 0);
-				libk::printf("Snake   Score : %i   Level : %i", score, level);
+				libk::printf("Snake   Score : %i   Level : %i   WASD to move, Backspace to exit", score, level);
 				tty_set_bg_color(0x0);
 			}
 
