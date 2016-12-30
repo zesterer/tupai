@@ -6,6 +6,8 @@ Copyright 2016-2017
 
 A simple monolithic operating system created for educational purposes.
 
+![Tupai 0.2.0](doc/images/tupai-0-2-0.png)
+
 ## What is Tupai?
 ---
 
@@ -56,4 +58,4 @@ _See `docs/LICENSE` or [GNU General Public License version 3](https://www.gnu.or
 
 * Resources
 	* The OSDev Wiki (wiki.osdev.org)
-	* Operating System Concepts, Sixth Edition (Silberschatz, Galvin, Gagne)
+	* Operating System Concepts, Sixth Edition (Silberschatz, Galvin, Gagne))
