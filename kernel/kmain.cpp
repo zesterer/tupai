@@ -24,6 +24,7 @@
 #include <tupai/prompt.hpp>
 #include <tupai/mempool.hpp>
 #include <tupai/syscall.hpp>
+#include <tupai/task.hpp>
 
 #if defined(SYSTEM_ARCH_i686)
 	#include <tupai/i686/gdt.hpp>
@@ -110,6 +111,9 @@ namespace tupai
 
 		syscall_init();
 		kmain_write_check("Initiated syscall routine");
+
+		task_init();
+		kmain_write_check("Initiated task scheduler");
 
 		kmain_write_check("Finished early kernel boot");
 	}

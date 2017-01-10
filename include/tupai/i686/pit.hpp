@@ -23,6 +23,8 @@
 // Tupai
 #include <tupai/type.hpp>
 
+#include <tupai/i686/cpu.hpp>
+
 namespace tupai
 {
 	extern volatile counter_t pit_counter;
@@ -30,6 +32,7 @@ namespace tupai
 
 	void pit_init();
 	void pit_set_rate(uint16 rate);
+	void pit_set_tick_func(void (*func)(cpu_pushal, cpu_int));
 }
 
 #endif

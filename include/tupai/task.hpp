@@ -1,5 +1,5 @@
 /*
-* 	file : cpu.hpp
+* 	file : task.hpp
 *
 * 	This file is part of Tupai.
 *
@@ -17,40 +17,30 @@
 * 	along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TUPAI_I686_CPU_HPP
-#define TUPAI_I686_CPU_HPP
+#ifndef TUPAI_TASK_HPP
+#define TUPAI_TASK_HPP
 
 // Tupai
 #include <tupai/type.hpp>
 
+#if defined(SYSTEM_ARCH_i686)
+	#include <tupai/i686/cpu.hpp>
+#endif
+
 namespace tupai
 {
-	struct cpu_state
+	struct task
 	{
-		// Segment registers
-		uint32 gs, fs, es, ds;
+		const char* name = nullptr;
+		uint32 id = 0;
+		uint16 priority = 0;
 
-		// General-purpose registers
-		uint32 edi, esi, ebp, esp, ebx, edx, ecx, eax;
-
-		// Method state stuff
-		uint32 eip, cs, eflags, useresp, ss;
+		cpu_task_state state;
 	};
 
-	struct cpu_task_state
-	{
-		uint32 eax, ebx, ecx, edx, esi, edi, esp, ebp, eip, eflags, cr3;
-	};
-
-	struct cpu_pushal
-	{
-		uint32 edi, esi, ebp, esp, ebx, edx, ecx, eax;
-	};
-
-	struct cpu_int
-	{
-		uint32 eip, cs, eflags;
-	};
+	void task_init();
+	void task_preempt();
+	task task_create(const char* name, void (*main)(), uint32 eflags, uint32* page_dir);
 }
 
 #endif

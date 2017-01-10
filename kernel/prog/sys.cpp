@@ -39,7 +39,7 @@ namespace tupai
 
 		int sys_main(int argc __attribute__ ((unused)), char* argv[] __attribute__ ((unused)))
 		{
-			asm volatile ("int $0x80");
+			asm volatile ("mov $0x500, %ecx \n int $0x80");
 
 			printf("--- Brief ---\n");
 			printf("%s %s.%s.%s on %s\n", SYSTEM_NAME_DECORATIVE, SYSTEM_VERSION_MAJOR, SYSTEM_VERSION_MINOR, SYSTEM_VERSION_RELEASE, SYSTEM_ARCH);
