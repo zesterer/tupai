@@ -39,7 +39,7 @@ namespace tupai
 	volatile counter_t pit_counter = 0;
 	volatile uint16    pit_rate = 256;
 
-	// Default interrupt handler
+	// PIT interrupt handler
 	extern "C" void pit_irq_handler();
 	//asm volatile ("pit_irq_handler: \n call pit_irq_handler_main \n iret");
 	asm volatile (
@@ -67,7 +67,7 @@ namespace tupai
 	void pit_init()
 	{
 		// Set the PIT IRQ handler
-		idt_set_entry(0, (uint32)pit_irq_handler, sizeof(gdt_entry) * 1);
+		idt_set_entry(IDT_REMAP_OFFSET + 0x0, (uint32)pit_irq_handler, sizeof(gdt_entry) * 1);
 
 		pit_set_rate(100);
 
@@ -77,7 +77,7 @@ namespace tupai
 
 	extern "C" void pit_irq_handler_main()
 	{
-		interrupt_send_eoi();
+		interrupt_ack(IDT_REMAP_OFFSET + 0x0);
 
 		pit_counter ++;
 	}

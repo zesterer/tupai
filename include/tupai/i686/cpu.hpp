@@ -1,5 +1,5 @@
 /*
-* 	file : pic.hpp
+* 	file : cpu.hpp
 *
 * 	This file is part of Tupai.
 *
@@ -17,28 +17,28 @@
 * 	along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TUPAI_I686_PIC_HPP
-#define TUPAI_I686_PIC_HPP
+#ifndef TUPAI_I686_CPU_HPP
+#define TUPAI_I686_CPU_HPP
 
 // Tupai
 #include <tupai/type.hpp>
 
 namespace tupai
 {
-	const uint16 PIC1      = 0x20;
-	const uint16 PIC2      = 0xA0;
-	const uint16 PIC1_CMD  = PIC1;
-	const uint16 PIC1_DATA = PIC1 + 1;
-	const uint16 PIC2_CMD  = PIC2;
-	const uint16 PIC2_DATA = PIC2 + 1;
+	struct cpu_state
+	{
+		// Segment registers
+		uint32 gs, fs, es, ds;
 
-	const uint16 PIC1_START = 0x20; // Or at least it will be after remapping...
-	const uint16 PIC2_START = 0x28; // Same as PIC1_START + 1
-	const uint16 PIC2_END   = PIC2_START + 8; // Handles 8 (so this is actually the first non-PIC2 interrupt)
+		// General-purpose registers
+		uint32 edi, esi, ebp, esp, ebx, edx, ecx, eax;
 
-	const uint8 PIC_ACK = 0x20;
+		// Interrupt-stuff. TODO: Remove this, un-pollute CPU header with interrupt stuff
+		uint32 interrupt, error;
 
-	void pic_set_mask(byte irq_line, bool enabled);
+		// Method state stuff
+		uint32 eip, cs, eflags, useresp, ss;
+	};
 }
 
 #endif

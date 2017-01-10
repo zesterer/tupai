@@ -20,6 +20,7 @@
 // Tupai
 #include <tupai/i686/interrupt.hpp>
 #include <tupai/i686/port.hpp>
+#include <tupai/i686/pic.hpp>
 
 namespace tupai
 {
@@ -31,9 +32,17 @@ namespace tupai
 			asm volatile ("cli");
 	}
 
-	void interrupt_send_eoi()
+	void interrupt_ack(uint8 interrupt)
 	{
 		/* write EOI */
-		port_out8(0x20, 0x20);
+
+		if (interrupt < PIC1_START) // It's before the remapped boundary - this is an invalid interrupt
+			return;
+		else if (interrupt >= PIC2_END) // It's outside the remapped PIC2 boundary - must be a software interrupt, hence doesn't need ack-ing
+			return;
+		else if (interrupt < PIC2_START) // It's a PIC1
+			port_out8(PIC1, PIC_ACK);
+		else // PIC2
+			port_out8(PIC2, PIC_ACK);
 	}
 }

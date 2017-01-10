@@ -23,6 +23,7 @@
 #include <tupai/tty.hpp>
 #include <tupai/prompt.hpp>
 #include <tupai/mempool.hpp>
+#include <tupai/syscall.hpp>
 
 #if defined(SYSTEM_ARCH_i686)
 	#include <tupai/i686/gdt.hpp>
@@ -106,6 +107,9 @@ namespace tupai
 			kbd_init();
 			kmain_write_check("Initiated keyboard");
 		#endif
+
+		syscall_init();
+		kmain_write_check("Initiated syscall routine");
 
 		kmain_write_check("Finished early kernel boot");
 	}

@@ -91,28 +91,28 @@ namespace tupai
 		const uint16 code_segment_index = 0x08;//sizeof(gdt_entry) * 1;
 
 		// Assign exception ISRs
-		idt_set_entry(0 - IDT_REMAP_OFFSET, (uint32)_isr_0, code_segment_index);
-		idt_set_entry(1 - IDT_REMAP_OFFSET, (uint32)_isr_1, code_segment_index);
-		idt_set_entry(2 - IDT_REMAP_OFFSET, (uint32)_isr_2, code_segment_index);
-		idt_set_entry(3 - IDT_REMAP_OFFSET, (uint32)_isr_3, code_segment_index);
-		idt_set_entry(4 - IDT_REMAP_OFFSET, (uint32)_isr_4, code_segment_index);
-		idt_set_entry(5 - IDT_REMAP_OFFSET, (uint32)_isr_5, code_segment_index);
-		idt_set_entry(6 - IDT_REMAP_OFFSET, (uint32)_isr_6, code_segment_index);
-		idt_set_entry(7 - IDT_REMAP_OFFSET, (uint32)_isr_7, code_segment_index);
-		idt_set_entry(8 - IDT_REMAP_OFFSET, (uint32)_isr_8, code_segment_index);
-		idt_set_entry(9 - IDT_REMAP_OFFSET, (uint32)_isr_9, code_segment_index);
-		idt_set_entry(10 - IDT_REMAP_OFFSET, (uint32)_isr_10, code_segment_index);
-		idt_set_entry(11 - IDT_REMAP_OFFSET, (uint32)_isr_11, code_segment_index);
-		idt_set_entry(12 - IDT_REMAP_OFFSET, (uint32)_isr_12, code_segment_index);
-		idt_set_entry(13 - IDT_REMAP_OFFSET, (uint32)_isr_13, code_segment_index);
-		idt_set_entry(14 - IDT_REMAP_OFFSET, (uint32)_isr_14, code_segment_index);
-		idt_set_entry(15 - IDT_REMAP_OFFSET, (uint32)_isr_15, code_segment_index);
-		idt_set_entry(16 - IDT_REMAP_OFFSET, (uint32)_isr_16, code_segment_index);
-		idt_set_entry(17 - IDT_REMAP_OFFSET, (uint32)_isr_17, code_segment_index);
-		idt_set_entry(18 - IDT_REMAP_OFFSET, (uint32)_isr_18, code_segment_index);
+		idt_set_entry(0, (uint32)_isr_0, code_segment_index);
+		idt_set_entry(1, (uint32)_isr_1, code_segment_index);
+		idt_set_entry(2, (uint32)_isr_2, code_segment_index);
+		idt_set_entry(3, (uint32)_isr_3, code_segment_index);
+		idt_set_entry(4, (uint32)_isr_4, code_segment_index);
+		idt_set_entry(5, (uint32)_isr_5, code_segment_index);
+		idt_set_entry(6, (uint32)_isr_6, code_segment_index);
+		idt_set_entry(7, (uint32)_isr_7, code_segment_index);
+		idt_set_entry(8, (uint32)_isr_8, code_segment_index);
+		idt_set_entry(9, (uint32)_isr_9, code_segment_index);
+		idt_set_entry(10, (uint32)_isr_10, code_segment_index);
+		idt_set_entry(11, (uint32)_isr_11, code_segment_index);
+		idt_set_entry(12, (uint32)_isr_12, code_segment_index);
+		idt_set_entry(13, (uint32)_isr_13, code_segment_index);
+		idt_set_entry(14, (uint32)_isr_14, code_segment_index);
+		idt_set_entry(15, (uint32)_isr_15, code_segment_index);
+		idt_set_entry(16, (uint32)_isr_16, code_segment_index);
+		idt_set_entry(17, (uint32)_isr_17, code_segment_index);
+		idt_set_entry(18, (uint32)_isr_18, code_segment_index);
 
 		// Fill with the blank interrupt handler for now
-		for (int16 i = 0; i < (int16)(IDT_SIZE - IDT_REMAP_OFFSET); i ++)
+		for (int16 i = IDT_REMAP_OFFSET; i < (int16)(IDT_SIZE); i ++)
 			idt_set_entry(i, (uint32)default_irq_handler, code_segment_index);
 	}
 
@@ -132,12 +132,12 @@ namespace tupai
 	void idt_set_entry(smem irq, uint32 address, uint16 selector)
 	{
 		// Base address
-		idt[IDT_REMAP_OFFSET + irq].base_addr_low = address & 0xFFFF;
-		idt[IDT_REMAP_OFFSET + irq].base_addr_high = (address & 0xFFFF0000) >> 16;
+		idt[irq].base_addr_low = address & 0xFFFF;
+		idt[irq].base_addr_high = (address & 0xFFFF0000) >> 16;
 
-		idt[IDT_REMAP_OFFSET + irq].selector = selector;
-		idt[IDT_REMAP_OFFSET + irq].zero = 0;
-		idt[IDT_REMAP_OFFSET + irq].type_attr = 0x8E;
+		idt[irq].selector = selector;
+		idt[irq].zero = 0;
+		idt[irq].type_attr = 0x8E;
 
 		idt_install();
 	}

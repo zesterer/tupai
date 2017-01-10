@@ -23,13 +23,6 @@
 
 namespace tupai
 {
-	const uint16 PIC1      = 0x20;
-	const uint16 PIC2      = 0xA0;
-	const uint16 PIC1_CMD  = PIC1;
-	const uint16 PIC1_DATA = PIC1 + 1;
-	const uint16 PIC2_CMD  = PIC2;
-	const uint16 PIC2_DATA = PIC2 + 1;
-
 	void pic_set_mask(byte irq_line, bool enabled)
 	{
 		uint16 port;

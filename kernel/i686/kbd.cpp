@@ -29,7 +29,7 @@
 
 namespace tupai
 {
-	// Default interrupt handler
+	// Kbd interrupt handler
 	extern "C" void kbd_irq_handler();
 	//asm volatile ("kbd_irq_handler: \n call kbd_irq_handler_main \n iret");
 	asm volatile (
@@ -50,7 +50,7 @@ namespace tupai
 	void kbd_init()
 	{
 		// Set the keyboard IRQ handler
-		idt_set_entry(1, (uint32)kbd_irq_handler, sizeof(gdt_entry) * 1);
+		idt_set_entry(IDT_REMAP_OFFSET + 0x1, (uint32)kbd_irq_handler, sizeof(gdt_entry) * 1);
 
 		// Enable IRQ1 (keyboard)
 		pic_set_mask(1, true);
@@ -61,7 +61,7 @@ namespace tupai
 
 	extern "C" void kbd_irq_handler_main()
 	{
-		interrupt_send_eoi();
+		interrupt_ack(IDT_REMAP_OFFSET + 0x1);
 
 		ubyte status = port_in8(0x60);//KEYBOARD_STATUS_PORT);
 		/* Lowest bit of status will be set if buffer is not empty */
