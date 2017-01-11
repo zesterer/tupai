@@ -30,10 +30,10 @@
 .section .bss
 	.global _kpanic_errormsg
 	_kpanic_errormsg:
-		.long
+		.skip 4
 	.global _kpanic_errorcode
 	_kpanic_errorcode:
-		.long
+		.skip 4
 
 .section .rodata
 	.skip 16
@@ -55,11 +55,13 @@
 	_kpanic:
 		cli
 
-		// Store the kernel panic error code and message
-		//movl $_kpanic_errorcode, %edx
-		//movl %eax, (%edx)
-		//movl $_kpanic_errormsg, %edx
-		//movl %ebx, (%edx)
+		movl $_kpanic_errormsg, %edx
+		movl 4(%esp), %eax
+		movl %eax, (%edx)
+
+		movl $_kpanic_errorcode, %edx
+		movl 8(%esp), %eax
+		movl %eax, (%edx)
 
 		// Clear the screen
 		mov $0, %ecx
@@ -106,8 +108,8 @@
 		mov (%ecx), %ecx
 		//call kbreak
 		// TODO
-		//cmp $0, %ecx
-		//jne  _kpanic_errormsg_continue
+		cmp $0, %ecx
+		jne  _kpanic_errormsg_continue
 		mov $_kpanic_message_noerror, %ecx
 		_kpanic_errormsg_continue:
 		// Loop through characters

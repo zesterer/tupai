@@ -89,7 +89,7 @@ namespace tupai
 		cpu_task_state nil;
 		cpu_task_state regs = tasks[current_task].state;
 		in_task = true;
-		KBREAK();
+		//KBREAK();
 		_task_switch(&nil, &regs);
 	}
 

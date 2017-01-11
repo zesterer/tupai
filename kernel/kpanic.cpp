@@ -28,17 +28,17 @@
 
 namespace tupai
 {
-	extern "C" void _kpanic() __attribute__((noreturn));
+	extern "C" void _kpanic(const char* msg, uint32 code) __attribute__((noreturn));
 	extern "C" umem _kpanic_errormsg;
 	extern "C" long _kpanic_errorcode;
 
 	extern "C" void _khalt() __attribute__((noreturn));
 
-	void kpanic(const char* msg, long code)
+	void kpanic(const char* msg, uint32 code)
 	{
-		_kpanic_errormsg = (umem)msg;
-		_kpanic_errorcode = code;
-		_kpanic();
+		//_kpanic_errormsg = (umem)msg;
+		//_kpanic_errorcode = code;
+		_kpanic(msg, code);
 	}
 
 	void khalt()
@@ -80,7 +80,9 @@ namespace tupai
 		/* write EOI */
 		port_out8(0x20, 0x20);
 
-		libk::printf("ERROR: %i %s exception occured (code = %X)!\n", isr_id, exceptions[isr_id % (sizeof(exceptions) / sizeof(char*))], error);
+		const char* exception_msg = exceptions[isr_id % (sizeof(exceptions) / sizeof(char*))];
+		libk::printf("ERROR: %i %s exception occured (code = %X)!\n", isr_id, exception_msg, error);
+		kpanic(exception_msg, error);
 		khalt();
 	}
 }
