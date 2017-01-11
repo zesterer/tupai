@@ -1,5 +1,5 @@
 /*
-* 	file : mempool.hpp
+* 	file : safeptr.hpp
 *
 * 	This file is part of Tupai.
 *
@@ -17,21 +17,35 @@
 * 	along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TUPAI_MEMPOOL_HPP
-#define TUPAI_MEMPOOL_HPP
+#ifndef TUPAI_SAFEPTR_HPP
+#define TUPAI_SAFEPTR_HPP
 
 // Tupai
 #include <tupai/type.hpp>
+#include <tupai/kpanic.hpp>
 
 namespace tupai
 {
-	const umem mempool_begin = 0x1000000; // 16M offset
-	const umem mempool_size   = 0x100000; // 1M size
+	namespace util
+	{
+		template <typename T>
+		struct safeptr
+		{
+		private:
+			T* ptr;
 
-	void  mempool_init(void* ptr, umem size, umem blocksize);
-	void* mempool_alloc(umem n);
-	void* mempool_realloc(void* ptr, umem n);
-	void  mempool_dealloc(void* ptr);
+		public:
+			safeptr(T* ptr)
+			{
+				this->ptr = ptr;
+			}
+
+			void lock();
+			void unlock();
+
+			static
+		};
+	}
 }
 
 #endif

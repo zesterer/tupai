@@ -7,43 +7,46 @@ SECTIONS
 	. = 1M;
 
 	/* Place executable boot code within a 4KB-aligned block */
-	.text BLOCK(4K) : ALIGN(4K)
+	.rodata BLOCK(4K) : ALIGN(4K)
 	{
 		*(.multiboot)
-		*(.boot_text)
-	}
-
-	/* Read-write data (uninitialized) */
-	.bss BLOCK(4K) : ALIGN(4K)
-	{
-		*(.boot_stack)
 	}
 
 	/* Main kernel code */
 	.text BLOCK(4K) : ALIGN(4K)
 	{
+		*(.text_begin)
+		*(.boot_text)
 		*(.text)
 		*(.init)
 		*(.fini)
+		*(.text_end)
 	}
 
 	/* Read-only data */
 	.rodata BLOCK(4K) : ALIGN(4K)
 	{
+		*(.rodata_begin)
 		*(.rodata)
+		*(.rodata_end)
 	}
 
 	/* Read-write data (initialized) */
 	.data BLOCK(4K) : ALIGN(4K)
 	{
+		*(.data_begin)
 		*(.data)
+		*(.data_end)
 	}
 
 	/* Read-write data (uninitialized) */
 	.bss BLOCK(4K) : ALIGN(4K)
 	{
+		*(.bss_begin)
+		*(.boot_stack)
 		*(COMMON)
 		*(.bss)
+		*(.bss_end)
 	}
 
 	/* Any other sections produced by the compiler *should* be placed after this point */

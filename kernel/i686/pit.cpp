@@ -36,7 +36,7 @@ namespace tupai
 	const uint16 PIT_DATA_CH2_PORT = 0x42;
 
 	volatile counter_t pit_counter = 0;
-	volatile uint16    pit_rate = 2560;
+	volatile uint16    pit_rate = 0;
 
 	void (*pit_tick_func)(cpu_pushal, cpu_int) = nullptr;
 

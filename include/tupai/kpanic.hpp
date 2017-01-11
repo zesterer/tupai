@@ -30,8 +30,6 @@ namespace tupai
 	extern "C" void kpanic(const char* msg = nullptr, uint32 code = 0x0) __attribute__((noreturn));
 	extern "C" void kbreak();
 	extern "C" void khalt();
-
-	extern "C" void kfault(uint32 isr_id, uint32 error);
 }
 
 #endif

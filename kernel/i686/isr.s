@@ -191,7 +191,6 @@
 	/* Please note: ISRs 19-31 are reserved and will be implemented later! */
 
 	_isr_common: // Common ISR routine (must be jumped to by an ISR defined above)
-		xchgw %bx, %bx
 		//pushal
 
 		//push %ds

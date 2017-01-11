@@ -21,6 +21,7 @@
 #include <tupai/prompt.hpp>
 #include <tupai/tty.hpp>
 #include <tupai/kpanic.hpp>
+#include <tupai/task.hpp>
 
 #include <tupai/prog/snake.hpp>
 #include <tupai/prog/adventure.hpp>
@@ -108,6 +109,7 @@ namespace tupai
 				tty_write_str("snake     - Play a demo snake game\n");
 				tty_write_str("adventure - Play an adventure game\n");
 				tty_write_str("timer     - Timer test program\n");
+				tty_write_str("etasks    - Enable multitasking\n");
 				tty_write_str("exit      - Close the prompt session\n");
 				tty_write_str("clear     - Clear the screen\n");
 				tty_write_str("abort     - Abort the system\n");
@@ -124,6 +126,11 @@ namespace tupai
 			else if (libk::strcmp(buffer, "clear") == 0)
 			{
 				tty_clear();
+			}
+			else if (libk::strcmp(buffer, "etasks") == 0)
+			{
+				// Enable the scheduler
+				task_enable_scheduler();
 			}
 			else
 			{

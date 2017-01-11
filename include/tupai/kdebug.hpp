@@ -1,5 +1,5 @@
 /*
-* 	file : mempool.hpp
+* 	file : kdebug.hpp
 *
 * 	This file is part of Tupai.
 *
@@ -17,21 +17,19 @@
 * 	along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TUPAI_MEMPOOL_HPP
-#define TUPAI_MEMPOOL_HPP
+#ifndef TUPAI_KDEBUG_HPP
+#define TUPAI_KDEBUG_HPP
 
 // Tupai
 #include <tupai/type.hpp>
 
+#define KBREAK() asm volatile ("xchgw %bx, %bx")
+
+#define kassert(expr) tupai::__kassert__(expr, #expr, __LINE__, __func__, __FILE__)
+
 namespace tupai
 {
-	const umem mempool_begin = 0x1000000; // 16M offset
-	const umem mempool_size   = 0x100000; // 1M size
-
-	void  mempool_init(void* ptr, umem size, umem blocksize);
-	void* mempool_alloc(umem n);
-	void* mempool_realloc(void* ptr, umem n);
-	void  mempool_dealloc(void* ptr);
+	bool __kassert__(bool expr, const char* expr_str, int line, const char* func, const char* file);
 }
 
 #endif

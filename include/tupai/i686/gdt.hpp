@@ -48,7 +48,7 @@ namespace tupai
 	void gdt_init();
 	void gdt_install();
 	//extern "C" void gdt_install(void* ptr, umem size);
-	void gdt_set_entry(umem n, uint32 base, uint32 limit, uint8 access, uint8 gran);
+	void gdt_set_entry(umem n, uint32 base, uint32 limit, uint8 access, uint8 granularity);
 }
 
 #endif

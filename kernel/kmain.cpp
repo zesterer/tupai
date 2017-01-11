@@ -25,6 +25,7 @@
 #include <tupai/mempool.hpp>
 #include <tupai/syscall.hpp>
 #include <tupai/task.hpp>
+#include <tupai/kdebug.hpp>
 
 #if defined(SYSTEM_ARCH_i686)
 	#include <tupai/i686/gdt.hpp>
@@ -93,7 +94,7 @@ namespace tupai
 		tty_init();
 		kmain_write_check("Started kernel TTY");
 
-		mempool_init((ubyte*)0x1000000, 0x100000, 64); // At 16 MB, 1 MB in size, composed of blocks of 64 B
+		mempool_init((ubyte*)mempool_begin, mempool_size, 64); // At 16 MB, 1 MB in size, composed of blocks of 64 B
 		kmain_write_check("Initiated dynamic memory pool");
 
 		#if defined(SYSTEM_ARCH_i686)
@@ -129,6 +130,8 @@ namespace tupai
 
 		libk::printf("\nAdding test tasks A and B...\n");
 
+		kassert(true == false);
+
 		// Get EFLAGS and CR3
 		uint32 cr3 = 0;
 		uint32 eflags = 0x202;
@@ -140,7 +143,7 @@ namespace tupai
 		//task_add("testc", kernel_task_test_c, eflags, (uint32*)cr3);
 
 		// Enable the scheduler
-		task_enable_scheduler();
+		//task_enable_scheduler();
 
 		kernel_welcome();
 

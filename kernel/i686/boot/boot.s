@@ -62,3 +62,36 @@
 
 	// Set the size of the _boot_entry label to the current location minus its beginning position
 	.size _boot_entry, . - _boot_entry
+
+// Section sizes - for the GDT
+.section .text_begin
+	.global _text_begin
+	_text_begin:
+
+.section .text_end
+	.global _text_end
+	_text_end:
+
+.section .rodata_begin
+	.global _rodata_begin
+	_rodata_begin:
+
+.section .rodata_end
+	.global _rodata_end
+	_rodata_end:
+
+.section .data_begin
+	.global _data_begin
+	_data_begin:
+
+.section .data_end
+	.global _data_end
+	_data_end:
+
+.section .bss_begin
+	.global _bss_begin
+	_bss_begin:
+
+.section .bss_end
+	.global _bss_end
+	_bss_end:

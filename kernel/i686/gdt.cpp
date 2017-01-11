@@ -19,7 +19,11 @@
 
 // Tupai
 #include <tupai/i686/gdt.hpp>
-//#include <tupai/tty.hpp>
+#include <tupai/kpanic.hpp>
+#include <tupai/mempool.hpp>
+
+// Libk
+#include <libk/stdio.hpp>
 
 namespace tupai
 {
@@ -30,17 +34,55 @@ namespace tupai
 	extern "C" umem gdt_ptr_ptr;
 	umem gdt_ptr_ptr;
 
+	// Section constraints
+	extern "C" umem _text_begin;
+	extern "C" umem _text_end;
+	extern "C" umem _rodata_begin;
+	extern "C" umem _rodata_end;
+	extern "C" umem _data_begin;
+	extern "C" umem _data_end;
+	extern "C" umem _bss_begin;
+	extern "C" umem _bss_end;
+
+	static umem size_in_4kb(umem start, umem end)
+	{
+		if ((end - start) % 4096 == 0) // Perfectly aligned
+			return (end - start) / 4096;
+		else
+			return (end - start) / 4096 + 1;
+	}
+
 	void gdt_init()
 	{
 		// The null gdt entry
 		gdt_set_entry(0, 0, 0, 0, 0);
 
-		// Code segment
-		gdt_set_entry(1, 0x0, 0xFFFFF, 0x9A, 0xCF);
-		// Data segment
-		gdt_set_entry(2, 0x0, 0xFFFFF, 0x92, 0xCF);
+		// Segments - all using 4Kb alignment
 
-		gdt_install();//&gdt, sizeof(gdt));
+		//KBREAK();
+		//libk::printf("CODE SEGMENT : START = 0x%X, END = 0x%X, SIZE(4K) = 0x%X\n", _text_begin, _text_end, size_in_4kb(_text_begin, _text_end));
+
+		// Code segments
+		gdt_set_entry(1, 0x0, 0xFFFFFF, 0x9A, 0xC0);
+
+		// Data segments
+		gdt_set_entry(2, 0x0, 0xFFFFFF, 0x92, 0xC0);
+
+		/*
+		// Code segment
+		gdt_set_entry(1, 0x0, 0x180, 0x9A, 0xC0);
+		//gdt_set_entry(1, _text_begin / 4096, size_in_4kb(_text_begin, _text_end)*, 0x9A, 0xC0);
+		// Rodata segment
+		gdt_set_entry(2, _rodata_begin / 4096, size_in_4kb(_rodata_begin, _rodata_end), 0x92, 0xC0);
+		// Data segment
+		gdt_set_entry(3, _data_begin / 4096, size_in_4kb(_data_begin, _data_end), 0x92, 0xC0);
+		// Bss segment
+		gdt_set_entry(4, _bss_begin / 4096, size_in_4kb(_bss_begin, _bss_end), 0x92, 0xC0);
+		// Dynamic memory segment
+		gdt_set_entry(5, mempool_begin / 4096, size_in_4kb(mempool_begin, mempool_begin + mempool_size), 0x92, 0xC0);
+		*/
+
+		gdt_install();
 	}
 
 	void gdt_install()
@@ -59,7 +101,7 @@ namespace tupai
 						);*/
 	}
 
-	void gdt_set_entry(umem n, uint32 base, uint32 limit, uint8 access, uint8 gran)
+	void gdt_set_entry(umem n, uint32 base, uint32 limit, uint8 access, uint8 granularity)
 	{
 		// Base address
 		gdt[n].base_addr_low = (base & 0xFFFF);
@@ -71,10 +113,10 @@ namespace tupai
 		gdt[n].granularity = ((limit >> 16) & 0x0F);
 
 		// Granularity and access flags
-		gdt[n].granularity |= (gran & 0xF0);
+		gdt[n].granularity |= (granularity & 0xF0);
 		gdt[n].access = access;
 
-		gdt_install();//&gdt, sizeof(gdt));
+		//gdt_install();//&gdt, sizeof(gdt));
 
 		//tty_write_str("Created GDT entry\n");
 	}

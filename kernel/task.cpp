@@ -28,6 +28,7 @@
 
 // Libk
 #include <libk/stdio.hpp>
+#include <libk/stdlib.hpp>
 
 namespace tupai
 {
@@ -82,6 +83,9 @@ namespace tupai
 	{
 		if (tasks.length() <= 0)
 			return; // Return if no tasks are running. We've probably not enabled multitasking yet!
+
+		if (libk::rand() % 2 == 0)
+			return;
 
 		current_task = (current_task + 1) % tasks.length();
 		libk::printf("Switched to task '%s' (%i)!\n", tasks[current_task].name, current_task);
