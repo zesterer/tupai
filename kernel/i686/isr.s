@@ -64,139 +64,140 @@
 	.align 4
 	_isr_0: // Division By Zero Exception
 		cli
-		push ISR_DUMMY_ERROR // Dummy error
-		push 0 // ISR identifer
+		push $ISR_DUMMY_ERROR // Dummy error
+		push $0 // ISR identifer
 		jmp _isr_common
 
 	.align 4
 	_isr_1: // Debug Exception
 		cli
-		push ISR_DUMMY_ERROR // Dummy error
-		push 1 // ISR identifer
+		push $ISR_DUMMY_ERROR // Dummy error
+		push $1 // ISR identifer
 		jmp _isr_common
 
 	.align 4
 	_isr_2: // Non-Maskable Interrupt Exception
 		cli
-		push ISR_DUMMY_ERROR // Dummy error
-		push 2 // ISR identifer
+		push $ISR_DUMMY_ERROR // Dummy error
+		push $2 // ISR identifer
 		jmp _isr_common
 
 	.align 4
 	_isr_3: // Breakpoint Exception
 		cli
-		push ISR_DUMMY_ERROR // Dummy error
-		push 3 // ISR identifer
+		push $ISR_DUMMY_ERROR // Dummy error
+		push $3 // ISR identifer
 		jmp _isr_common
 
 	.align 4
 	_isr_4: // Into Detected Overflow Exception
 		cli
-		push ISR_DUMMY_ERROR // Dummy error
-		push 4 // ISR identifer
+		push $ISR_DUMMY_ERROR // Dummy error
+		push $4 // ISR identifer
 		jmp _isr_common
 
 	.align 4
 	_isr_5: // Out Of Bounds Exception
 		cli
-		push ISR_DUMMY_ERROR // Dummy error
-		push 5 // ISR identifer
+		push $ISR_DUMMY_ERROR // Dummy error
+		push $5 // ISR identifer
 		jmp _isr_common
 
 	.align 4
 	_isr_6: // Invalid Opcode Exception
 		cli
-		push ISR_DUMMY_ERROR // Dummy error
-		push 6 // ISR identifer
+		push $ISR_DUMMY_ERROR // Dummy error
+		push $6 // ISR identifer
 		jmp _isr_common
 
 	.align 4
 	_isr_7: // No Coprocessor Exception
 		cli
-		push ISR_DUMMY_ERROR // Dummy error
-		push 7 // ISR identifer
+		push $ISR_DUMMY_ERROR // Dummy error
+		push $7 // ISR identifer
 		jmp _isr_common
 
 	.align 4
 	_isr_8: // Double Fault Exception
 		cli
-		push 8 // ISR identifer
+		push $8 // ISR identifer
 		jmp _isr_common
 
 	.align 4
 	_isr_9: // Coprocessor Segment Overrun Exception
 		cli
-		push ISR_DUMMY_ERROR // Dummy error
-		push 9 // ISR identifer
+		push $ISR_DUMMY_ERROR // Dummy error
+		push $9 // ISR identifer
 		jmp _isr_common
 
 	.align 4
 	_isr_10: // Bad TSS Exception
 		cli
-		push 10 // ISR identifer
+		push $10 // ISR identifer
 		jmp _isr_common
 
 	.align 4
 	_isr_11: // Segment Not Present Exception
 		cli
-		push 11 // ISR identifer
+		push $11 // ISR identifer
 		jmp _isr_common
 
 	.align 4
 	_isr_12: // Stack Fault Exception
 		cli
-		push 12 // ISR identifer
+		push $12 // ISR identifer
 		jmp _isr_common
 
 	.align 4
 	_isr_13: // General Protection Fault Exception
 		cli
-		push 13 // ISR identifer
+		push $13 // ISR identifer
 		jmp _isr_common
 
 	.align 4
 	_isr_14: // Page Fault Exception
 		cli
-		push 14 // ISR identifer
+		push $14 // ISR identifer
 		jmp _isr_common
 
 	.align 4
 	_isr_15: // Unknown Interrupt Exception
 		cli
-		push ISR_DUMMY_ERROR // Dummy error
-		push 15 // ISR identifer
+		push $ISR_DUMMY_ERROR // Dummy error
+		push $15 // ISR identifer
 		jmp _isr_common
 
 	.align 4
 	_isr_16: // Coprocessor Fault Exception
 		cli
-		push ISR_DUMMY_ERROR // Dummy error
-		push 16 // ISR identifer
+		push $ISR_DUMMY_ERROR // Dummy error
+		push $16 // ISR identifer
 		jmp _isr_common
 
 	.align 4
 	_isr_17: // Alignment Check Exception (486+)
 		cli
-		push ISR_DUMMY_ERROR // Dummy error
-		push 17 // ISR identifer
+		push $ISR_DUMMY_ERROR // Dummy error
+		push $17 // ISR identifer
 		jmp _isr_common
 
 	.align 4
 	_isr_18: // Machine Check Exception (Pentium/586+)
 		cli
-		push ISR_DUMMY_ERROR // Dummy error
-		push 18 // ISR identifer
+		push $ISR_DUMMY_ERROR // Dummy error
+		push $18 // ISR identifer
 		jmp _isr_common
 
 	/* Please note: ISRs 19-31 are reserved and will be implemented later! */
 
 	_isr_common: // Common ISR routine (must be jumped to by an ISR defined above)
-		pushal
+		xchgw %bx, %bx
+		//pushal
 
-		push %ds
-		push %es
-		push %fs
-		push %gs
+		//push %ds
+		//push %es
+		//push %fs
+		//push %gs
 
 		// Load the kernel data segment GDT descriptor
 		mov $0x10, %ax
@@ -205,7 +206,8 @@
 		mov %ax, %fs
 		mov %ax, %gs
 
-		pushl 0x28(%esp) // Push ISR identifer as first parameter
+		//pushl 0x52(%esp) // Push ISR error as second parameter
+		//pushl 0x44(%esp) // Push ISR identifer as first parameter
 		call kfault
 
 		pop %gs
@@ -215,5 +217,4 @@
 
 		popal
 		add $8, %esp
-		//xchgw %bx, %bx
 		iret // Standard interrupt return

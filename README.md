@@ -55,6 +55,9 @@ _See `docs/LICENSE` or [GNU General Public License version 3](https://www.gnu.or
 * Guidance and Advice
 	* Numerous members of the #osdev Freenode IRC channel (irc.freenode.net)
 	* Numerous members of the OSDev Forums (forum.osdev.org)
+		* sortie
+		* thePowersGang
+		* doug16k
 
 * Resources
 	* The OSDev Wiki (wiki.osdev.org)

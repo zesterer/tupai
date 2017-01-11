@@ -23,13 +23,15 @@
 // Tupai
 #include <tupai/type.hpp>
 
+#define KBREAK() asm volatile ("xchgw %bx, %bx")
+
 namespace tupai
 {
 	extern "C" void kpanic(const char* msg = nullptr, long code = 0x0) __attribute__((noreturn));
 	extern "C" void kbreak();
 	extern "C" void khalt();
 
-	extern "C" void kfault(unsigned long isr_id);
+	extern "C" void kfault(uint32 isr_id, uint32 error);
 }
 
 #endif

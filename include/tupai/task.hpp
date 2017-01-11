@@ -34,13 +34,16 @@ namespace tupai
 		const char* name = nullptr;
 		uint32 id = 0;
 		uint16 priority = 0;
+		void* stack = nullptr;
 
 		cpu_task_state state;
 	};
 
 	void task_init();
+	void task_enable_scheduler(bool enable = true);
 	void task_preempt();
 	task task_create(const char* name, void (*main)(), uint32 eflags, uint32* page_dir);
+	void task_add(const char* name, void (*main)(), uint32 eflags, uint32* page_dir);
 }
 
 #endif

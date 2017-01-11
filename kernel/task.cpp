@@ -20,6 +20,7 @@
 // Tupai
 #include <tupai/task.hpp>
 #include <tupai/generic/ringbuff.hpp>
+#include <tupai/kpanic.hpp>
 
 #if defined(SYSTEM_ARCH_i686)
 	#include <tupai/i686/pit.hpp>
@@ -34,10 +35,14 @@ namespace tupai
 	const uint32 MAX_TASK_NUM = 64;
 
 	uint32 current_task = 0;
+	bool in_task = false;
 	uint32 task_id_counter = 1;
+	bool task_scheduler_enabled = false;
 
 	static uint32 task_get_new_id();
 	static void task_save_state(cpu_pushal state_pushal, cpu_int state_int);
+
+	extern "C" void _task_switch(cpu_task_state* old, cpu_task_state* target);
 
 	void task_init()
 	{
@@ -45,19 +50,47 @@ namespace tupai
 		pit_set_tick_func(task_save_state);
 	}
 
+	void task_enable_scheduler(bool enable)
+	{
+		task_scheduler_enabled = enable;
+	}
+
 	static void task_save_state(cpu_pushal state_pushal, cpu_int state_int)
 	{
+		if (!task_scheduler_enabled) // If the task scheduler is not enabled yet
+			return;
+
+		if (in_task)
+		{
+			tasks[current_task].state.eax    = state_pushal.eax;
+			tasks[current_task].state.ebx    = state_pushal.ebx;
+			tasks[current_task].state.ecx    = state_pushal.ecx;
+			tasks[current_task].state.edx    = state_pushal.edx;
+			tasks[current_task].state.esi    = state_pushal.esi;
+			tasks[current_task].state.edi    = state_pushal.edi;
+			tasks[current_task].state.esp    = state_pushal.esp;
+			tasks[current_task].state.ebp    = state_pushal.ebp;
+			tasks[current_task].state.eip    = state_int.eip;
+			tasks[current_task].state.eflags = state_int.eflags;
+			//tasks[current_task].state.cr3    = ?;
+		}
+
 		task_preempt();
 	}
 
 	void task_preempt()
 	{
-		// Choose a task to run
 		if (tasks.length() <= 0)
 			return; // Return if no tasks are running. We've probably not enabled multitasking yet!
 
 		current_task = (current_task + 1) % tasks.length();
 		libk::printf("Switched to task '%s' (%i)!\n", tasks[current_task].name, current_task);
+
+		cpu_task_state nil;
+		cpu_task_state regs = tasks[current_task].state;
+		in_task = true;
+		KBREAK();
+		_task_switch(&nil, &regs);
 	}
 
 	static uint32 task_get_new_id()
@@ -73,6 +106,7 @@ namespace tupai
 		n_task.name = name;
 		n_task.id = task_get_new_id();
 		n_task.priority = 0;
+		n_task.stack = nullptr;
 
 		n_task.state.eax = 0;
 		n_task.state.ebx = 0;
@@ -86,5 +120,18 @@ namespace tupai
 		n_task.state.esp = (uint32)0; // MUST BE FILLED LATER!
 
 		return n_task;
+	}
+
+	void task_add(const char* name, void (*main)(), uint32 eflags, uint32* page_dir)
+	{
+		task n_task = task_create(name, main, eflags, page_dir);
+
+		// Create a stack for the task. Make it 4Kb (1024 stack elements) TODO: change this
+		uint32* stack = new uint32[1024];
+		uint32 stack_ptr = (uint32)stack + (sizeof(uint32) * (1024 - 4)); // The stack grows downwards on x86, so point to the end of the buffer
+		n_task.state.esp = stack_ptr;
+		n_task.stack = stack;
+
+		tasks.push(n_task);
 	}
 }

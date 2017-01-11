@@ -36,6 +36,10 @@
 
 namespace tupai
 {
+	static void kernel_task_test_a();
+	static void kernel_task_test_b();
+	static void kernel_task_test_c();
+
 	void kmain_write_check(const char* str, int error = 0)
 	{
 		tty_write('[');
@@ -123,8 +127,56 @@ namespace tupai
 	{
 		kmain_write_check("Main kernel boot complete");
 
+		libk::printf("\nAdding test tasks A and B...\n");
+
+		// Get EFLAGS and CR3
+		uint32 cr3 = 0;
+		uint32 eflags = 0x202;
+	    //asm volatile("movl %%cr3, %%eax; movl %%eax, %0;":"=m"(cr3)::"%eax");
+	    //asm volatile("pushfl; movl (%%esp), %%eax; movl %%eax, %0; popfl;":"=m"(eflags)::"%eax");
+
+		task_add("testa", kernel_task_test_a, eflags, (uint32*)cr3);
+		task_add("testb", kernel_task_test_b, eflags, (uint32*)cr3);
+		//task_add("testc", kernel_task_test_c, eflags, (uint32*)cr3);
+
+		// Enable the scheduler
+		task_enable_scheduler();
+
 		kernel_welcome();
 
 		while (prompt() == 0);
+	}
+
+	static void kernel_task_test_a()
+	{
+		while (true)
+		{
+			//volatile uint32 a = 0;
+			//while (a < 5000) a ++;
+
+			libk::printf("I am A!\n");
+		}
+	}
+
+	static void kernel_task_test_b()
+	{
+		while (true)
+		{
+			//volatile uint32 a = 0;
+			//while (a < 5000) a ++;
+
+			libk::printf("B is me!\n");
+		}
+	}
+
+	static void kernel_task_test_c()
+	{
+		while (true)
+		{
+			//volatile uint32 a = 0;
+			//while (a < 5000) a ++;
+
+			libk::printf("I'm C!\n");
+		}
 	}
 }

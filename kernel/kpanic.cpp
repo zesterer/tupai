@@ -23,6 +23,9 @@
 
 #include <tupai/i686/port.hpp>
 
+// Libk
+#include <libk/stdio.hpp>
+
 namespace tupai
 {
 	extern "C" void _kpanic() __attribute__((noreturn));
@@ -72,13 +75,12 @@ namespace tupai
 		"[18] Machine Check",              // 18
 	};
 
-	void kfault(unsigned long isr_id) // To be called by ISRs only!
+	void kfault(uint32 isr_id, uint32 error) // To be called by ISRs only!
 	{
 		/* write EOI */
 		port_out8(0x20, 0x20);
 
-		tty_write_str(exceptions[isr_id % (sizeof(exceptions) / sizeof(char*))]);
-		tty_write_str(" exception occured!\n");
+		libk::printf("ERROR: %i %s exception occured (code = %X)!\n", isr_id, exceptions[isr_id % (sizeof(exceptions) / sizeof(char*))], error);
 		khalt();
 	}
 }

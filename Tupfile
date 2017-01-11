@@ -1,3 +1,5 @@
 include_rules
 
 : kernel/$(P_EXEC).bin |> sh create-iso.sh |> %B.iso grub/isodir/boot/$(P_EXEC).bin grub/isodir/boot/grub/grub.cfg
+
+: kernel/$(P_EXEC).bin |> objdump --wide --syms kernel/$(P_EXEC).bin | grep -P '^[0-9A-Fa-f]+\s.*\s[a-zA-Z_][a-zA-Z0-9_]+$$' | sed -r 's/^(\S+)\s+.*\s+(\S+)$$/\1 \2/' | sort > ksymbols.txt |> ksymbols.txt
