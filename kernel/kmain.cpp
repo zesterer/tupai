@@ -67,7 +67,14 @@ namespace tupai
 
 	void kernel_welcome()
 	{
-		tty_write_str("\nWelcome to ");
+		#if defined(CFG_SHOW_LICENSE_AT_BOOT)
+			tty_clear();
+		#else
+			tty_write('\n');
+		#endif
+
+		tty_set_fg_color(tty_color::WHITE);
+		tty_write_str("Welcome to ");
 		tty_write_str(SYSTEM_NAME_DECORATIVE);
 		tty_write_str(" ");
 		tty_write_str(SYSTEM_VERSION_MAJOR);
@@ -78,7 +85,7 @@ namespace tupai
 		tty_write_str("\n");
 
 		#if defined(CFG_SHOW_LICENSE_AT_BOOT)
-			const char GPL3_LICENCE_SHORT[] = "Copyright (C) 2016 Joshua Barretto\n" \
+			const char GPL3_LICENCE_SHORT[] = "Copyright (C) 2016 Joshua Barretto\n\n" \
 			"This program comes with ABSOLUTELY NO WARRANTY.\nThis is free software, and you are " \
 			"welcome to\nredistribute it under certain conditions.\n\nYou should have received a copy" \
 			" of the GNU\nGeneral Public License along with this program.\nIf not, see <http://www.gn" \
@@ -89,13 +96,15 @@ namespace tupai
 		#endif
 
 		tty_write('\n');
+		tty_set_fg_color(tty_color::DEFAULT_FG);
 	}
 
 	// Kernel early
 	void kearly()
 	{
 		tty_init();
-		kmain_write_check("Started kernel TTY");
+		kmain_write_check("Initiated VGA driver");
+		kmain_write_check("Initiated kernel TTY");
 
 		mempool_init((ubyte*)mempool_begin, mempool_size, 64); // At 16 MB, 1 MB in size, composed of blocks of 64 B
 		kmain_write_check("Initiated dynamic memory pool");
@@ -107,14 +116,14 @@ namespace tupai
 			idt_init();
 			kmain_write_check("Initiated IDT");
 
-			interrupt_enable();
-			kmain_write_check("Enabled interrupts");
-
 			pit_init();
 			kmain_write_check("Initiated PIT");
 
 			kbd_init();
 			kmain_write_check("Initiated keyboard");
+
+			interrupt_enable();
+			kmain_write_check("Enabled interrupts");
 		#endif
 
 		syscall_init();
@@ -123,35 +132,33 @@ namespace tupai
 		task_init();
 		kmain_write_check("Initiated task scheduler");
 
-		kmain_write_check("Finished early kernel boot");
+		kmain_write_check("Kernel boot procedure complete");
 	}
 
 	// Kernel main
 	void kmain()
 	{
-		kmain_write_check("Main kernel boot complete");
-
-		libk::printf("\nAdding test tasks A and B...\n");
+		/*
+		// Get EFLAGS and CR3 TODO : Change this
+		uint32 cr3 = 0;
+		uint32 eflags = 0x202;
+		
+		libk::printf("\nAdding test tasks A, B and C...\n");
+		task_add("testa", kernel_task_test_a, eflags, (uint32*)cr3);
+		task_add("testb", kernel_task_test_b, eflags, (uint32*)cr3);
+		task_add("testc", kernel_task_test_c, eflags, (uint32*)cr3);
+		*/
 
 		//kassert(true == false);
 		safeptr<int> test(0x0);
-		//test2.val();
+		/*
 		libk::printf("Value is %i!\n", parse<int32>("1234").val());
 		libk::printf("Value is %i!\n", parse<int32>(" 	-47 ").val());
 		libk::printf("Value is %i!\n", parse<int32>("0x80").val());
 		libk::printf("Value is %i!\n", parse<int32>("-0b1010").val());
 		libk::printf("Value is %i!\n", parse<int64>("  0x47A4a ").val());
 		libk::printf("Value is %i!\n", parse<int16>("4765", 2).val());
-
-		// Get EFLAGS and CR3
-		uint32 cr3 = 0;
-		uint32 eflags = 0x202;
-	    //asm volatile("movl %%cr3, %%eax; movl %%eax, %0;":"=m"(cr3)::"%eax");
-	    //asm volatile("pushfl; movl (%%esp), %%eax; movl %%eax, %0; popfl;":"=m"(eflags)::"%eax");
-
-		task_add("testa", kernel_task_test_a, eflags, (uint32*)cr3);
-		task_add("testb", kernel_task_test_b, eflags, (uint32*)cr3);
-		//task_add("testc", kernel_task_test_c, eflags, (uint32*)cr3);
+		*/
 
 		// Enable the scheduler
 		//task_enable_scheduler();

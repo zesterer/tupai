@@ -47,7 +47,7 @@ namespace tupai
 
 	void tty_write(char c)
 	{
-		if (libk::isprint(c)) // Normal printable character
+		if (libk::isprint(c) || (ubyte)c >= 128) // Normal printable character + Extended ASCII
 		{
 			vga_place_entry(c, vga_make_color(tty_vga_fg, tty_vga_bg), tty_vga_col, tty_vga_row);
 			tty_vga_col ++;

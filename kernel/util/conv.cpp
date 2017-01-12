@@ -36,7 +36,7 @@ namespace tupai
 		enum class stage { START, SIGN, PREFIX, DIGITS, FINISH, INVALID };
 
 		stage state = stage::START;
-		char c = str[0];
+		char c;
 		bool cancel_incr = false; // To cancel a character increment
 		bool end = false;
 		bool prefix_start = false;
@@ -50,14 +50,16 @@ namespace tupai
 		{
 			if (!cancel_incr) // Cancel increment allows a state change to occur without missing a character
 			{
-				c = str[count];
-				count ++;
+				if (count == n) // If we've got to the end of the section, fake a string ending
+					c = '\0';
+				else
+				{
+					c = str[count];
+					count ++;
+				}
 			}
 			else
 				cancel_incr = false;
-
-			if (count == n) // If we've got to the end of the section, fake a string ending
-				c = '\0';
 
 			switch (state)
 			{

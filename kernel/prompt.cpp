@@ -109,6 +109,7 @@ namespace tupai
 				tty_write_str("adventure - Play an adventure game\n");
 				tty_write_str("timer     - Timer test program\n");
 				tty_write_str("etasks    - Enable multitasking\n");
+				tty_write_str("chars     - Display printable characters\n");
 				tty_write_str("exit      - Close the prompt session\n");
 				tty_write_str("clear     - Clear the screen\n");
 				tty_write_str("abort     - Abort the system\n");
@@ -130,6 +131,16 @@ namespace tupai
 			{
 				// Enable the scheduler
 				task_enable_scheduler();
+			}
+			else if (libk::strcmp(buffer, "chars") == 0)
+			{
+				for (int i = 32; i < 256; i ++)
+				{
+					tty_write(i);
+					tty_write(' ');
+					if ((i + 1) % 32 == 0)
+						tty_write('\n');
+				}
 			}
 			else
 			{

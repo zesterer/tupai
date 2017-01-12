@@ -56,7 +56,7 @@ namespace tupai
 	void vga_place_entry(char c, ubyte color, uint16 col, uint16 row)
 	{
 		uint32 index = row * VGA_COLS + col;
-		VGA_BUFFER[index] = ((uint16)color << 8) | (uint16)c;
+		VGA_BUFFER[index] = ((uint16)color << 8) | (uint8)c;
 	}
 
 	void vga_place_cursor(uint16 col, uint16 row)
