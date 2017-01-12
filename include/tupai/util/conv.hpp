@@ -27,8 +27,6 @@
 
 namespace tupai
 {
-	safeval<int> parse_int(const char* str, umem n = ~(umem)0);
-
 	template <typename T>
 	safeval<T> parse(const char* str, umem n = ~(umem)0);
 }

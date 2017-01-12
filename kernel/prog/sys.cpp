@@ -39,8 +39,6 @@ namespace tupai
 
 		int sys_main(int argc __attribute__ ((unused)), char* argv[] __attribute__ ((unused)))
 		{
-			asm volatile ("mov $0x500, %ecx \n int $0x80");
-
 			printf("--- Brief ---\n");
 			printf("%s %s.%s.%s on %s\n", SYSTEM_NAME_DECORATIVE, SYSTEM_VERSION_MAJOR, SYSTEM_VERSION_MINOR, SYSTEM_VERSION_RELEASE, SYSTEM_ARCH);
 
@@ -67,6 +65,11 @@ namespace tupai
 			printf("sizeof(float)       : %i\n", sizeof(float));
 			printf("sizeof(double)      : %i\n", sizeof(double));
 			printf("sizeof(long double) : %i\n", sizeof(long double));
+
+			sys_wait();
+
+			printf("--- Syscall ---\n");
+			asm volatile ("int $0x80");
 
 			sys_wait();
 

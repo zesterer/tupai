@@ -135,10 +135,13 @@ namespace tupai
 
 		//kassert(true == false);
 		safeptr<int> test(0x0);
-		//test.deref();
-		safeval<int> test2(0, false);
 		//test2.val();
-		int test3 = parse<int>("1234").val();
+		libk::printf("Value is %i!\n", parse<int32>("1234").val());
+		libk::printf("Value is %i!\n", parse<int32>(" 	-47 ").val());
+		libk::printf("Value is %i!\n", parse<int32>("0x80").val());
+		libk::printf("Value is %i!\n", parse<int32>("-0b1010").val());
+		libk::printf("Value is %i!\n", parse<int64>("  0x47A4a ").val());
+		libk::printf("Value is %i!\n", parse<int16>("4765", 2).val());
 
 		// Get EFLAGS and CR3
 		uint32 cr3 = 0;
