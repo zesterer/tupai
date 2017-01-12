@@ -25,6 +25,29 @@
 
 namespace tupai
 {
+	struct tty_color
+	{
+		static const byte BLACK         = 0x00;
+		static const byte BLUE          = 0x01;
+		static const byte GREEN         = 0x02;
+		static const byte CYAN          = 0x03;
+		static const byte RED           = 0x04;
+		static const byte MAGENTA       = 0x05;
+		static const byte BROWN         = 0x06;
+		static const byte LIGHT_GREY    = 0x07;
+		static const byte DARK_GREY     = 0x08;
+		static const byte LIGHT_BLUE    = 0x09;
+		static const byte LIGHT_GREEN   = 0x0A;
+		static const byte LIGHT_CYAN    = 0x0B;
+		static const byte LIGHT_RED     = 0x0C;
+		static const byte LIGHT_MAGENTA = 0x0D;
+		static const byte LIGHT_BROWN   = 0X0E;
+		static const byte WHITE         = 0x0F;
+
+		static const byte DEFAULT_FG = LIGHT_GREY;
+		static const byte DEFAULT_BG = BLACK;
+	};
+
 	void tty_init();
 	void tty_write(char c);
 	void tty_write_str(const char* str);

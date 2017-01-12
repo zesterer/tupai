@@ -1,5 +1,5 @@
 /*
-* 	file : kdebug.hpp
+* 	file : conv.cpp
 *
 * 	This file is part of Tupai.
 *
@@ -17,28 +17,20 @@
 * 	along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TUPAI_KDEBUG_HPP
-#define TUPAI_KDEBUG_HPP
-
 // Tupai
-#include <tupai/type.hpp>
-
-#define KBREAK() asm volatile ("xchgw %bx, %bx")
-#define kassert(expr) tupai::__kassert__(expr, #expr, __LINE__, __func__, __FILE__)
+#include <tupai/util/conv.hpp>
 
 namespace tupai
 {
-	enum class klog_level
+	safeval<int> parse_int(const char* str, umem n)
 	{
-		INFO,
-		WARNING,
-		ERROR,
-		PANIC,
-	};
 
-	void klog(const char* msg, klog_level level = klog_level::INFO);
-	void kpanic(const char* msg, uint32 error = 0x0) __attribute__((noreturn));
-	bool __kassert__(bool expr, const char* expr_str, int line, const char* func, const char* file);
+		return safeval<int>(0);
+	}
+
+	template<>
+	safeval<int> parse<int>(const char* str, umem n)
+	{
+		return parse_int(str, n);
+	}
 }
-
-#endif

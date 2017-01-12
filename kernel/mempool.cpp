@@ -19,7 +19,7 @@
 
 // Tupai
 #include <tupai/mempool.hpp>
-#include <tupai/kpanic.hpp>
+#include <tupai/kdebug.hpp>
 
 namespace tupai
 {

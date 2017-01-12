@@ -19,7 +19,6 @@
 
 // Tupai
 #include <tupai/i686/gdt.hpp>
-#include <tupai/kpanic.hpp>
 #include <tupai/mempool.hpp>
 
 // Libk

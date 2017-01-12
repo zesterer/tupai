@@ -1,5 +1,5 @@
 /*
-* 	file : kpanic.hpp
+* 	file : conv.hpp
 *
 * 	This file is part of Tupai.
 *
@@ -17,19 +17,17 @@
 * 	along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TUPAI_KPANIC_HPP
-#define TUPAI_KPANIC_HPP
+#ifndef TUPAI_STD_CONV_HPP
+#define TUPAI_STD_CONV_HPP
 
 // Tupai
 #include <tupai/type.hpp>
-
-#define KBREAK() asm volatile ("xchgw %bx, %bx")
+#include <tupai/kdebug.hpp>
 
 namespace tupai
 {
-	extern "C" void kpanic(const char* msg = nullptr, uint32 code = 0x0) __attribute__((noreturn));
-	extern "C" void kbreak();
-	extern "C" void khalt();
+	template <typename T>
+
 }
 
 #endif

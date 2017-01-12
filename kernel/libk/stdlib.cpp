@@ -21,7 +21,7 @@
 #include <libk/stdlib.hpp>
 
 // Tupai
-#include <tupai/kpanic.hpp>
+#include <tupai/kdebug.hpp>
 #include <tupai/mempool.hpp>
 
 namespace libk
@@ -199,7 +199,7 @@ namespace libk
 				exit_func[exit_func_index]();
 		}
 
-		tupai::khalt();
+		tupai::kpanic("Kernel 'exit' called");
 	}
 
 	char* getenv(const char* name);
@@ -212,7 +212,7 @@ namespace libk
 				quick_exit_func[quick_exit_func_index]();
 		}
 
-		tupai::khalt();
+		tupai::kpanic("Kernel 'quick_exit' called");
 	}
 
 	sint  system(const char* string);

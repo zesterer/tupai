@@ -25,7 +25,6 @@
 
 // Tupai
 #include <tupai/tty.hpp>
-#include <tupai/kpanic.hpp>
 #include <tupai/mempool.hpp>
 
 #if defined(SYSTEM_ARCH_i686)

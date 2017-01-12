@@ -20,7 +20,6 @@
 // Tupai
 #include <tupai/prompt.hpp>
 #include <tupai/tty.hpp>
-#include <tupai/kpanic.hpp>
 #include <tupai/task.hpp>
 
 #include <tupai/prog/snake.hpp>
@@ -63,11 +62,11 @@ namespace tupai
 		{
 			tty_set_fg_color(0x3);
 			tty_write_str("kernel");
-			tty_set_fg_color(0xF);
+			tty_set_fg_color(tty_color::DEFAULT_FG);
 			tty_write('@');
 			tty_set_fg_color(0x4);
 			tty_write_str("tupai");
-			tty_set_fg_color(0xF);
+			tty_set_fg_color(tty_color::DEFAULT_FG);
 			tty_write_str("> ");
 
 			const umem INPUT_BUFFER_LENGTH = 1024;

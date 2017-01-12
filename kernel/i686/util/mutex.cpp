@@ -22,14 +22,11 @@
 
 namespace tupai
 {
-	namespace util
+	void mutex::lock()
 	{
-		void mutex::lock()
-		{
-		}
+	}
 
-		void mutex::unlock()
-		{
-		}
+	void mutex::unlock()
+	{
 	}
 }

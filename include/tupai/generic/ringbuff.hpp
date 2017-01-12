@@ -22,7 +22,7 @@
 
 // Tupai
 #include <tupai/type.hpp>
-#include <tupai/kpanic.hpp>
+#include <tupai/kdebug.hpp>
 
 // Libk
 #include <libk/stdio.hpp>

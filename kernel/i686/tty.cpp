@@ -20,7 +20,6 @@
 // Tupai
 #include <tupai/tty.hpp>
 #include <tupai/i686/vga.hpp>
-#include <tupai/kpanic.hpp>
 
 // Libk
 #include <libk/ctype.hpp>
@@ -32,8 +31,8 @@ namespace tupai
 
 	vga_info tty_vga_info;
 
-	vga_color tty_vga_fg = vga_color::WHITE;
-	vga_color tty_vga_bg = vga_color::BLACK;
+	vga_color tty_vga_bg = (vga_color)tty_color::DEFAULT_BG;
+	vga_color tty_vga_fg = (vga_color)tty_color::DEFAULT_FG;
 
 	const uint16 TTY_TAB_SIZE = 4;
 

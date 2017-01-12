@@ -20,7 +20,6 @@
 // Tupai
 #include <tupai/task.hpp>
 #include <tupai/generic/ringbuff.hpp>
-#include <tupai/kpanic.hpp>
 
 #if defined(SYSTEM_ARCH_i686)
 	#include <tupai/i686/pit.hpp>

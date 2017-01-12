@@ -24,7 +24,6 @@
 #include <tupai/i686/port.hpp>
 #include <tupai/i686/interrupt.hpp>
 #include <tupai/i686/pic.hpp>
-#include <tupai/kpanic.hpp>
 
 namespace tupai
 {

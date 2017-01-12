@@ -1,5 +1,5 @@
 /*
-* 	file : safeptr.hpp
+* 	file : conv.hpp
 *
 * 	This file is part of Tupai.
 *
@@ -17,35 +17,20 @@
 * 	along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TUPAI_SAFEPTR_HPP
-#define TUPAI_SAFEPTR_HPP
+#ifndef TUPAI_UTIL_CONV_HPP
+#define TUPAI_UTIL_CONV_HPP
 
 // Tupai
 #include <tupai/type.hpp>
-#include <tupai/kpanic.hpp>
+#include <tupai/util/safetype.hpp>
+#include <tupai/kdebug.hpp>
 
 namespace tupai
 {
-	namespace util
-	{
-		template <typename T>
-		struct safeptr
-		{
-		private:
-			T* ptr;
+	safeval<int> parse_int(const char* str, umem n = ~(umem)0);
 
-		public:
-			safeptr(T* ptr)
-			{
-				this->ptr = ptr;
-			}
-
-			void lock();
-			void unlock();
-
-			static
-		};
-	}
+	template <typename T>
+	safeval<T> parse(const char* str, umem n = ~(umem)0);
 }
 
 #endif

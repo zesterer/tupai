@@ -19,7 +19,6 @@
 
 // Tupai
 #include <tupai/syscall.hpp>
-#include <tupai/kpanic.hpp>
 
 #if defined(SYSTEM_ARCH_i686)
 	#include <tupai/i686/interrupt.hpp>

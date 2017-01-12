@@ -19,13 +19,15 @@
 
 // Tupai
 #include <tupai/kmain.hpp>
-#include <tupai/kpanic.hpp>
 #include <tupai/tty.hpp>
 #include <tupai/prompt.hpp>
 #include <tupai/mempool.hpp>
 #include <tupai/syscall.hpp>
 #include <tupai/task.hpp>
 #include <tupai/kdebug.hpp>
+
+#include <tupai/util/safetype.hpp>
+#include <tupai/util/conv.hpp>
 
 #if defined(SYSTEM_ARCH_i686)
 	#include <tupai/i686/gdt.hpp>
@@ -43,6 +45,7 @@ namespace tupai
 
 	void kmain_write_check(const char* str, int error = 0)
 	{
+		tty_set_fg_color(tty_color::DEFAULT_FG);
 		tty_write('[');
 
 		if (error == 0)
@@ -56,7 +59,7 @@ namespace tupai
 			tty_write_str("FAIL");
 		}
 
-		tty_set_fg_color(0x0F);
+		tty_set_fg_color(tty_color::DEFAULT_FG);
 		tty_write_str("] ");
 		tty_write_str(str);
 		tty_write('\n');
@@ -130,7 +133,12 @@ namespace tupai
 
 		libk::printf("\nAdding test tasks A and B...\n");
 
-		kassert(true == false);
+		//kassert(true == false);
+		safeptr<int> test(0x0);
+		//test.deref();
+		safeval<int> test2(0, false);
+		//test2.val();
+		int test3 = parse<int>("1234").val();
 
 		// Get EFLAGS and CR3
 		uint32 cr3 = 0;

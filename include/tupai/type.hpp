@@ -55,4 +55,11 @@ typedef intptr_t  smem;
 
 typedef int32_t counter_t;
 
+template<typename T, typename U>
+struct __is_same { static const bool val = false; };
+template<typename T>
+struct __is_same<T, T> { static const bool val = true; };
+template<typename T, typename U>
+constexpr bool typematch() { return __is_same<T, U>::val && sizeof(T) == sizeof(U); }
+
 #endif

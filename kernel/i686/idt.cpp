@@ -22,7 +22,6 @@
 #include <tupai/i686/gdt.hpp>
 #include <tupai/i686/port.hpp>
 #include <tupai/tty.hpp>
-#include <tupai/kpanic.hpp>
 
 namespace tupai
 {

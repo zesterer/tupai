@@ -18,7 +18,7 @@
 */
 
 // Tupai
-#include <tupai/kpanic.hpp>
+#include <tupai/kdebug.hpp>
 
 // GCC
 #include <stdint.h>

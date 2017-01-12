@@ -17,24 +17,21 @@
 * 	along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TUPAI_MUTEX_HPP
-#define TUPAI_MUTEX_HPP
+#ifndef TUPAI_UTIL_MUTEX_HPP
+#define TUPAI_UTIL_MUTEX_HPP
 
 // Tupai
 #include <tupai/type.hpp>
 
 namespace tupai
 {
-	namespace util
+	struct mutex
 	{
-		struct mutex
-		{
-			byte locked;
+		byte locked;
 
-			void lock();
-			void unlock();
-		};
-	}
+		void lock();
+		void unlock();
+	};
 }
 
 #endif
