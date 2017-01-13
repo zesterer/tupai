@@ -28,6 +28,7 @@
 
 #include <tupai/util/safetype.hpp>
 #include <tupai/util/conv.hpp>
+#include <tupai/util/str.hpp>
 
 #if defined(SYSTEM_ARCH_i686)
 	#include <tupai/i686/gdt.hpp>
@@ -142,7 +143,7 @@ namespace tupai
 		// Get EFLAGS and CR3 TODO : Change this
 		uint32 cr3 = 0;
 		uint32 eflags = 0x202;
-		
+
 		libk::printf("\nAdding test tasks A, B and C...\n");
 		task_add("testa", kernel_task_test_a, eflags, (uint32*)cr3);
 		task_add("testb", kernel_task_test_b, eflags, (uint32*)cr3);
@@ -159,6 +160,14 @@ namespace tupai
 		libk::printf("Value is %i!\n", parse<int64>("  0x47A4a ").val());
 		libk::printf("Value is %i!\n", parse<int16>("4765", 2).val());
 		*/
+
+		auto strtest1 = makestr("13");
+		auto strtest2 = makestr("47");
+		auto strtest3 = strtest1 + strtest2;
+		libk::printf("String is '%s', size = %i!\n", strtest3.raw(), strtest3.len());
+		libk::printf("Value is %s.\n", compose<int32>(parse<int32>(strtest3).val()).val());
+
+		libk::printf((makestr("Number ") + compose<int32>(parse<int32>("650").val(), 16).val() + makestr(" haha\n")).raw());
 
 		// Enable the scheduler
 		//task_enable_scheduler();

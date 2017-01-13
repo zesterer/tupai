@@ -23,12 +23,17 @@
 // Tupai
 #include <tupai/type.hpp>
 #include <tupai/util/safetype.hpp>
-#include <tupai/kdebug.hpp>
+#include <tupai/util/str.hpp>
 
 namespace tupai
 {
 	template <typename T>
 	safeval<T> parse(const char* str, umem n = ~(umem)0);
+	template <typename T, umem N>
+	safeval<T> parse(str<char, N> str, umem n = ~(umem)0) { return parse<T>(str.raw(), n); }
+
+	template <typename T>
+	safeval<str<char, sizeof(T) * 8 + 1>> compose(T val, int base = 10);
 }
 
 #endif

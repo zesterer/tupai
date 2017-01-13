@@ -24,10 +24,32 @@ namespace libk
 {
 	/* Copying */
 
-	void* memcpy(void* destination, const void* source, umem num);
+	void* memcpy(void* destination, const void* source, umem num)
+	{
+		for (umem i = 0; i < num; i ++)
+			((byte*)destination)[i] = ((byte*)source)[i];
+		return destination;
+	}
+
 	void* memmove(void* destination, const void* source, umem num);
-	char* strcpy(char* destination, const char* source);
-	char* strncpy(char* destination, const char* source, umem num);
+
+	char* strcpy(char* destination, const char* source)
+	{
+		umem i;
+		for (i = 0; source[i] != '\0'; i ++)
+			destination[i] = source[i];
+		destination[i] = '\0';
+		return destination;
+	}
+
+	char* strncpy(char* destination, const char* source, umem num)
+	{
+		umem i;
+		for (i = 0; source[i] != '\0' && i < num; i ++)
+			destination[i] = source[i];
+		destination[i] = '\0';
+		return destination;
+	}
 
 	/* Concatenation */
 

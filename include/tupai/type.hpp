@@ -53,7 +53,9 @@ typedef signed long long   squad;
 typedef uintptr_t umem;
 typedef intptr_t  smem;
 
-typedef int32_t counter_t;
+typedef uint32 counter_t;
+
+typedef uint32 wchar;
 
 template<typename T, typename U>
 struct __is_same { static const bool val = false; };
