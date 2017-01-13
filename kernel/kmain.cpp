@@ -71,7 +71,7 @@ namespace tupai
 		#if defined(CFG_SHOW_LICENSE_AT_BOOT)
 			tty_clear();
 		#else
-			tty_write('\n');
+			tty_write_str("\n\n");
 		#endif
 
 		tty_set_fg_color(tty_color::WHITE);
@@ -167,7 +167,7 @@ namespace tupai
 		libk::printf("String is '%s', size = %i!\n", strtest3.raw(), strtest3.len());
 		libk::printf("Value is %s.\n", compose<int32>(parse<int32>(strtest3).val()).val());
 
-		libk::printf((makestr("Number ") + compose<int32>(parse<int32>("650").val(), 16).val() + makestr(" haha\n")).raw());
+		libk::printf((makestr("Number ") + compose<int32>(parse<int32>("650").val(), 16).val() + makestr(" haha!\n")).raw());
 
 		// Enable the scheduler
 		//task_enable_scheduler();

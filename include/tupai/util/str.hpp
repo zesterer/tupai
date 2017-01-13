@@ -81,9 +81,20 @@ namespace tupai
 		str<T, N + Nother - 1> add(const str<T, Nother>& other)
 		{
 			str<T, N + Nother - 1> nstr = str<T, N + Nother - 1>();
-			libk::memcpy(nstr.raw_mut(), this->raw(), this->len() * sizeof(T));
-			libk::memcpy(nstr.raw_mut() + this->len() * sizeof(T), other.raw(), Nother * sizeof(T));
-			nstr.raw_mut()[this->len() + other.len()] = '\0';
+
+			umem i = 0;
+			for (umem j = 0; this->raw()[j] != '\0' && j < this->len(); j ++)
+			{
+				nstr.raw_mut()[i] = this->raw()[j];
+				i ++;
+			}
+			for (umem j = 0; other.raw()[j] != '\0' && j < other.len(); j ++)
+			{
+				nstr.raw_mut()[i] = other.raw()[j];
+				i ++;
+			}
+			nstr.raw_mut()[i] = '\0';
+
 			return nstr;
 		}
 
@@ -94,8 +105,8 @@ namespace tupai
 		}
 	};
 
-	#define makestr(_str) str<char, sizeof(_str) / sizeof(char)>(_str)
-	#define makewstr(_str) str<wchar, sizeof(_str) / sizeof(wchar)>(_str)
+	#define makestr(_str) (str<char, sizeof(_str) / sizeof(char)>(_str))
+	#define makewstr(_str) (str<wchar, sizeof(_str) / sizeof(wchar)>(_str))
 }
 
 #endif

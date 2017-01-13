@@ -285,7 +285,6 @@ namespace tupai
 			kpanic("Unsupported integer compose base");
 			break;
 		};
-
 		nstr.raw_mut()[str_count] = '\0';
 
 		return safeval<str<char, sizeof(T) * 8 + 1>>(nstr, true);
