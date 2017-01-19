@@ -26,6 +26,9 @@
 #include <tupai/task.hpp>
 #include <tupai/kdebug.hpp>
 
+#include <tupai/early/out.hpp>
+#include <tupai/early/ansi.hpp>
+
 #include <tupai/util/safetype.hpp>
 #include <tupai/util/conv.hpp>
 #include <tupai/util/str.hpp>
@@ -71,7 +74,7 @@ namespace tupai
 		#if defined(CFG_SHOW_LICENSE_AT_BOOT)
 			tty_clear();
 		#else
-			tty_write_str("\n\n");
+			tty_write_str("\n");
 		#endif
 
 		tty_set_fg_color(tty_color::WHITE);
@@ -103,7 +106,9 @@ namespace tupai
 	// Kernel early
 	void kearly()
 	{
-		tty_init();
+		early::ansi_init();
+
+		//tty_init();
 		kmain_write_check("Initiated VGA driver");
 		kmain_write_check("Initiated kernel TTY");
 
@@ -139,16 +144,16 @@ namespace tupai
 	// Kernel main
 	void kmain()
 	{
-		/*
+		///*
 		// Get EFLAGS and CR3 TODO : Change this
 		uint32 cr3 = 0;
 		uint32 eflags = 0x202;
 
 		libk::printf("\nAdding test tasks A, B and C...\n");
 		task_add("testa", kernel_task_test_a, eflags, (uint32*)cr3);
-		task_add("testb", kernel_task_test_b, eflags, (uint32*)cr3);
-		task_add("testc", kernel_task_test_c, eflags, (uint32*)cr3);
-		*/
+		//task_add("testb", kernel_task_test_b, eflags, (uint32*)cr3);
+		//task_add("testc", kernel_task_test_c, eflags, (uint32*)cr3);
+		//*/
 
 		//kassert(true == false);
 		safeptr<int> test(0x0);
@@ -181,10 +186,10 @@ namespace tupai
 	{
 		while (true)
 		{
-			//volatile uint32 a = 0;
-			//while (a < 5000) a ++;
+			volatile uint32 a = 0;
+			while (a < 5000) a ++;
 
-			libk::printf("I am A!\n");
+			//libk::printf("A");
 		}
 	}
 
@@ -192,10 +197,10 @@ namespace tupai
 	{
 		while (true)
 		{
-			//volatile uint32 a = 0;
-			//while (a < 5000) a ++;
+			volatile uint32 a = 0;
+			while (a < 5000) a ++;
 
-			libk::printf("B is me!\n");
+			//libk::printf("B");
 		}
 	}
 
@@ -203,10 +208,10 @@ namespace tupai
 	{
 		while (true)
 		{
-			//volatile uint32 a = 0;
-			//while (a < 5000) a ++;
+			volatile uint32 a = 0;
+			while (a < 5000) a ++;
 
-			libk::printf("I'm C!\n");
+			//libk::printf("C");
 		}
 	}
 }

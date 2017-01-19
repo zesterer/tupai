@@ -1,5 +1,5 @@
 /*
-* 	file : mutex.hpp
+* 	file : char.hpp
 *
 * 	This file is part of Tupai.
 *
@@ -17,23 +17,32 @@
 * 	along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TUPAI_UTIL_MUTEX_HPP
-#define TUPAI_UTIL_MUTEX_HPP
+#ifndef TUPAI_UTIL_CHAR_HPP
+#define TUPAI_UTIL_CHAR_HPP
 
 // Tupai
 #include <tupai/type.hpp>
 
 namespace tupai
 {
-	struct mutex
+	namespace util
 	{
-	private:
-		umem value = 0;
+		bool is_printable(char c);
+		bool is_newline(char c);
+		bool is_backspace(char c);
+		bool is_escape(char c);
+		bool is_digit(char c);
+		bool is_hex(char c);
 
-	public:
-		void lock();
-		void unlock();
-	};
+		bool is_lowercase(char c);
+		bool is_uppercase(char c);
+
+		char hex_to_num(char c);
+		char digit_to_num(char c);
+
+		char num_to_hex(char c);
+		char num_to_digit(char c);
+	}
 }
 
 #endif

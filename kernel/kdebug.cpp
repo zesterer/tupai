@@ -76,7 +76,6 @@ namespace tupai
 	{
 		klog(msg, klog_level::PANIC);
 		_kpanic(msg, error);
-
 	}
 
 	bool __kassert__(bool expr, const char* expr_str, int line, const char* func, const char* file)

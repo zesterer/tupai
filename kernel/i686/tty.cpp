@@ -20,65 +20,33 @@
 // Tupai
 #include <tupai/tty.hpp>
 #include <tupai/i686/vga.hpp>
+#include <tupai/util/mutex.hpp>
+#include <tupai/util/char.hpp>
+
+#include <tupai/early/out.hpp>
 
 // Libk
 #include <libk/ctype.hpp>
 
 namespace tupai
 {
-	uint16 tty_vga_col;
-	uint16 tty_vga_row;
-
-	vga_info tty_vga_info;
-
 	vga_color tty_vga_bg = (vga_color)tty_color::DEFAULT_BG;
 	vga_color tty_vga_fg = (vga_color)tty_color::DEFAULT_FG;
 
-	const uint16 TTY_TAB_SIZE = 4;
-
-	static void tty_shift_rows(sint16 n, vga_color fg, vga_color bg);
+	mutex tty_mutex;
 
 	void tty_init()
 	{
-		vga_init();
-		tty_vga_info = vga_get_info();
 		tty_clear();
 	}
 
 	void tty_write(char c)
 	{
-		if (libk::isprint(c) || (ubyte)c >= 128) // Normal printable character + Extended ASCII
-		{
-			vga_place_entry(c, vga_make_color(tty_vga_fg, tty_vga_bg), tty_vga_col, tty_vga_row);
-			tty_vga_col ++;
-		}
-		else if (c == '\n') // Newline character
-		{
-			tty_vga_col = 0;
-			tty_vga_row ++;
-		}
-		#ifdef CFG_TTY_INTERPRET_TAB
-			else if (c == '\t') // Tab character
-			{
-				tty_vga_col ++;
-				while (tty_vga_col % TTY_TAB_SIZE != 0)
-					tty_vga_col ++;
-			}
-		#endif
+		tty_mutex.lock();
 
-		if (tty_vga_col >= tty_vga_info.cols) // We've gone past the last column
-		{
-			tty_vga_col = 0;
-			tty_vga_row ++;
-		}
+		early::printchar(c);
 
-		if (tty_vga_row >= tty_vga_info.rows) // We've gone past the last row
-		{
-			tty_vga_row = tty_vga_info.rows - 1;
-			tty_shift_rows(1, tty_vga_fg, tty_vga_bg);
-		}
-
-		vga_place_cursor(tty_vga_col, tty_vga_row); // Update the cursor
+		tty_mutex.unlock();
 	}
 
 	void tty_write_str(const char* str)
@@ -89,58 +57,36 @@ namespace tupai
 
 	void tty_set_fg_color(ubyte color)
 	{
-		tty_vga_fg = (vga_color)color;
+		// ANSI
+		tty_write(0x1B); // Escape
+		tty_write(util::num_to_hex(color)); // Convert to color to hex TODO : change this
+		tty_write('m'); // 'm' SGR parameter
 	}
 
 	void tty_set_bg_color(ubyte color)
 	{
-		tty_vga_bg = (vga_color)color;
+		tty_mutex.lock();
+
+		// TODO : Background color
+
+		tty_mutex.unlock();
 	}
 
 	void tty_place_cursor(uint16 col, uint16 row)
 	{
-		tty_vga_col = col;
-		tty_vga_row = row;
+		tty_mutex.lock();
+
+		// TODO : Place
+
+		tty_mutex.unlock();
 	}
 
 	void tty_clear()
 	{
-		// Clear the screen first
-		for (uint16 row = 0; row < tty_vga_info.rows; row ++)
-		{
-			for (uint16 col = 0; col < tty_vga_info.cols; col ++)
-			{
-				vga_place_entry(' ', vga_make_color(tty_vga_fg, tty_vga_bg), col, row);
-			}
-		}
+		tty_mutex.lock();
 
-		tty_vga_col = 0;
-		tty_vga_row = 0;
-	}
+		// TODO : Clear
 
-	void tty_shift_rows(sint16 n, vga_color fg, vga_color bg)
-	{
-		for (umem row = 0; row < tty_vga_info.rows; row ++)
-		{
-			if (row + n < tty_vga_info.rows)
-			{
-				// Set row equal to the row n below
-				for (umem col = 0; col < tty_vga_info.cols; col ++)
-				{
-					uint32 src_index = (row + n) * tty_vga_info.cols + col;
-					uint32 tgt_index = row * tty_vga_info.cols + col;
-
-					tty_vga_info.buffer[tgt_index] = tty_vga_info.buffer[src_index];
-				}
-			}
-			else
-			{
-				// Wipe the row
-				for (umem col = 0; col < tty_vga_info.cols; col ++)
-				{
-					vga_place_entry(' ', vga_make_color(fg, bg), col, row);
-				}
-			}
-		}
+		tty_mutex.unlock();
 	}
 }

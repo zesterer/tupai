@@ -57,6 +57,7 @@ namespace tupai
 	ubyte    vga_make_color(vga_color fg, vga_color bg);
 	void     vga_place_entry(char c, ubyte color, uint16 col, uint16 row);
 	void     vga_place_cursor(uint16 col, uint16 row);
+	void     vga_shift_rows(sint16 n, vga_color fg, vga_color bg);
 }
 
 #endif

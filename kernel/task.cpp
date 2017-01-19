@@ -72,7 +72,7 @@ namespace tupai
 			tasks[current_task].state.ebp    = state_pushal.ebp;
 			tasks[current_task].state.eip    = state_int.eip;
 			tasks[current_task].state.eflags = state_int.eflags;
-			//tasks[current_task].state.cr3    = ?;
+			//tasks[current_task].state.cr3    = 0;
 		}
 
 		task_preempt();
@@ -83,11 +83,8 @@ namespace tupai
 		if (tasks.length() <= 0)
 			return; // Return if no tasks are running. We've probably not enabled multitasking yet!
 
-		if (libk::rand() % 2 == 0)
-			return;
-
 		current_task = (current_task + 1) % tasks.length();
-		libk::printf("Switched to task '%s' (%i)!\n", tasks[current_task].name, current_task);
+		//libk::printf("Switched to task '%s' (%i)!\n", tasks[current_task].name, current_task);
 
 		cpu_task_state nil;
 		cpu_task_state regs = tasks[current_task].state;

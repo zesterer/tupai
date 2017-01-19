@@ -22,11 +22,16 @@
 
 namespace tupai
 {
+	extern "C" void _mutex_lock(umem* val);
+	extern "C" void _mutex_unlock(umem* val);
+
 	void mutex::lock()
 	{
+		_mutex_lock(&this->value);
 	}
 
 	void mutex::unlock()
 	{
+		_mutex_unlock(&this->value);
 	}
 }

@@ -35,22 +35,22 @@ namespace tupai
 
 		// Method state stuff
 		uint32 eip, cs, eflags, useresp, ss;
-	};
+	} __attribute__((__packed__));
 
 	struct cpu_task_state
 	{
 		uint32 eax, ebx, ecx, edx, esi, edi, esp, ebp, eip, eflags, cr3;
-	};
+	} __attribute__((__packed__));
 
 	struct cpu_pushal
 	{
 		uint32 edi, esi, ebp, esp, ebx, edx, ecx, eax;
-	};
+	} __attribute__((__packed__));
 
 	struct cpu_int
 	{
 		uint32 eip, cs, eflags;
-	};
+	} __attribute__((__packed__));
 }
 
 #endif

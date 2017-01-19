@@ -56,6 +56,7 @@ namespace tupai
 
 		// Allocate space for the ring buffer
 		kbd_ringbuffer.init(256);
+		kbd_ringbuffer.set_push_locked(false); // Disable push-locking to prevent keyboard buffer lock-ups
 	}
 
 	extern "C" void kbd_irq_handler_main()

@@ -23,6 +23,7 @@
 // Tupai
 #include <tupai/type.hpp>
 #include <tupai/kdebug.hpp>
+#include <tupai/util/mutex.hpp>
 
 // Libk
 #include <libk/stdio.hpp>
@@ -45,10 +46,15 @@ namespace tupai
 
 			volatile bool allow_overflow = true;
 
+			mutex lock;
+			bool push_locked = true;
+
 		public:
 
 			void init(umem size)
 			{
+				this->lock.lock();
+
 				this->size = size;
 				this->data = new T[this->size];
 
@@ -57,6 +63,8 @@ namespace tupai
 				this->back = 0;
 
 				allow_overflow = true;
+
+				this->lock.unlock();
 			}
 
 			ringbuff()
@@ -70,16 +78,33 @@ namespace tupai
 
 			~ringbuff()
 			{
+				this->lock.lock();
+
 				delete this->data;
+
+				this->lock.unlock();
+			}
+
+			void set_push_locked(bool locked)
+			{
+				this->push_locked = locked;
 			}
 
 			T& operator[](const int index)
 			{
-				return this->data[(this->back + index) % this->len];
+				this->lock.lock();
+
+				T& val = this->data[(this->back + index) % this->len];
+
+				this->lock.unlock();
+				return val;
 			}
 
 			void push(T& item)
 			{
+				if (push_locked)
+					this->lock.lock();
+
 				if (this->len >= this->size && !this->allow_overflow)
 					kpanic("Attempted to push to full ring buffer");
 
@@ -93,10 +118,15 @@ namespace tupai
 					this->back = (this->back + 1) % this->size;
 					this->len  = this->size;
 				}
+
+				if (push_locked)
+					this->lock.unlock();
 			}
 
 			T& pop()
 			{
+				this->lock.lock();
+
 				//return this->data[0];
 				if (this->len <= 0)
 					kpanic("Attempted to pop from empty ring buffer");
@@ -106,12 +136,21 @@ namespace tupai
 				this->back = (this->back + 1) % this->size;
 				this->len --;
 
-				return this->data[tmp_back];
+				T& val = this->data[tmp_back];
+
+				this->lock.unlock();
+
+				return val;
 			}
 
 			umem length()
 			{
-				return this->len;
+				this->lock.lock();
+
+				umem len = this->len;
+
+				this->lock.unlock();
+				return len;
 			}
 		};
 	}

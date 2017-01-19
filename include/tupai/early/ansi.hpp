@@ -1,5 +1,5 @@
 /*
-* 	file : mutex.hpp
+* 	file : ansi.hpp
 *
 * 	This file is part of Tupai.
 *
@@ -17,23 +17,19 @@
 * 	along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TUPAI_UTIL_MUTEX_HPP
-#define TUPAI_UTIL_MUTEX_HPP
+#ifndef TUPAI_EARLY_ANSI_HPP
+#define TUPAI_EARLY_ANSI_HPP
 
 // Tupai
 #include <tupai/type.hpp>
 
 namespace tupai
 {
-	struct mutex
+	namespace early
 	{
-	private:
-		umem value = 0;
-
-	public:
-		void lock();
-		void unlock();
-	};
+		void ansi_init();
+		void ansi_handle(char c);
+	}
 }
 
 #endif

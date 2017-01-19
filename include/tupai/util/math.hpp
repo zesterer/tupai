@@ -1,5 +1,5 @@
 /*
-* 	file : mutex.hpp
+* 	file : math.hpp
 *
 * 	This file is part of Tupai.
 *
@@ -17,23 +17,21 @@
 * 	along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TUPAI_UTIL_MUTEX_HPP
-#define TUPAI_UTIL_MUTEX_HPP
+#ifndef TUPAI_UTIL_MATH_HPP
+#define TUPAI_UTIL_MATH_HPP
 
 // Tupai
 #include <tupai/type.hpp>
 
 namespace tupai
 {
-	struct mutex
+	namespace util
 	{
-	private:
-		umem value = 0;
-
-	public:
-		void lock();
-		void unlock();
-	};
+		template<typename T> max(T a, T b) { return a > b ? a : b; }
+		template<typename T> min(T a, T b) { return a > b ? a : b; }
+		template<typename T> sign(T x) { return x > 0 ? 1 : (x < 0 ? -1 : 0); }
+		template<typename T> abs(T x) { return x < 0 ? -x : x; }
+	}
 }
 
 #endif
