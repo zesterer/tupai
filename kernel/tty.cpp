@@ -19,9 +19,9 @@
 
 // Tupai
 #include <tupai/tty.hpp>
-#include <tupai/i686/vga.hpp>
 #include <tupai/util/mutex.hpp>
 #include <tupai/util/char.hpp>
+#include <tupai/util/conv.hpp>
 
 #include <tupai/early/out.hpp>
 
@@ -30,10 +30,7 @@
 
 namespace tupai
 {
-	vga_color tty_vga_bg = (vga_color)tty_color::DEFAULT_BG;
-	vga_color tty_vga_fg = (vga_color)tty_color::DEFAULT_FG;
-
-	mutex tty_mutex;
+	util::mutex tty_mutex;
 
 	void tty_init()
 	{
@@ -59,34 +56,44 @@ namespace tupai
 	{
 		// ANSI
 		tty_write(0x1B); // Escape
-		tty_write(util::num_to_hex(color)); // Convert to color to hex TODO : change this
+		if (color >= 8)
+			tty_write('9');
+		else
+			tty_write('3');
+		tty_write(util::num_to_hex(color % 8).val());
 		tty_write('m'); // 'm' SGR parameter
 	}
 
 	void tty_set_bg_color(ubyte color)
 	{
-		tty_mutex.lock();
-
-		// TODO : Background color
-
-		tty_mutex.unlock();
+		// ANSI
+		tty_write(0x1B); // Escape
+		if (color >= 8)
+		{
+			tty_write('1');
+			tty_write('0');
+		}
+		else
+			tty_write('4');
+		tty_write(util::num_to_hex(color % 8).val());
+		tty_write('m'); // 'm' SGR parameter
 	}
 
 	void tty_place_cursor(uint16 col, uint16 row)
 	{
-		tty_mutex.lock();
-
-		// TODO : Place
-
-		tty_mutex.unlock();
+		// ANSI
+		tty_write(0x1B); // Escape
+		tty_write_str(util::compose<uint16>(col).val().raw());
+		tty_write(';');
+		tty_write_str(util::compose<uint16>(row).val().raw());
+		tty_write('f'); // 'f' move cursor parameter
 	}
 
 	void tty_clear()
 	{
-		tty_mutex.lock();
-
-		// TODO : Clear
-
-		tty_mutex.unlock();
+		// ANSI
+		tty_write(0x1B); // Escape
+		tty_write(util::num_to_digit(2).val());
+		tty_write('J'); // 'J' clear screen parameter
 	}
 }

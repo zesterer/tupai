@@ -25,15 +25,18 @@
 
 namespace tupai
 {
-	struct mutex
+	namespace util
 	{
-	private:
-		umem value = 0;
+		struct mutex
+		{
+		private:
+			umem value = 0;
 
-	public:
-		void lock();
-		void unlock();
-	};
+		public:
+			void lock();
+			void unlock();
+		};
+	}
 }
 
 #endif

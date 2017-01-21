@@ -22,6 +22,7 @@
 
 // Tupai
 #include <tupai/type.hpp>
+#include <tupai/util/safetype.hpp>
 
 namespace tupai
 {
@@ -37,11 +38,11 @@ namespace tupai
 		bool is_lowercase(char c);
 		bool is_uppercase(char c);
 
-		char hex_to_num(char c);
-		char digit_to_num(char c);
+		safeval<char> hex_to_num(char c);
+		safeval<char> digit_to_num(char c);
 
-		char num_to_hex(char c);
-		char num_to_digit(char c);
+		safeval<char> num_to_hex(char c);
+		safeval<char> num_to_digit(char c);
 	}
 }
 

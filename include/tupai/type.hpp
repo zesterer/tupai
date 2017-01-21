@@ -53,7 +53,7 @@ typedef signed long long   squad;
 typedef uintptr_t umem;
 typedef intptr_t  smem;
 
-typedef uint32 counter_t;
+typedef uint64 counter_t;
 
 typedef uint32 wchar;
 

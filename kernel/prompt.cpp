@@ -86,7 +86,10 @@ namespace tupai
 					else if (input_char == '\b') // Backspace
 					{
 						if (buffer_pos > 0)
+						{
 							buffer_pos --;
+							libk::putchar('\b');
+						}
 					}
 					else
 					{

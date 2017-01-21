@@ -29,84 +29,87 @@
 
 namespace tupai
 {
-	template <typename T, umem N>
-	struct str
+	namespace util
 	{
-	private:
-		T internal[N];
-		umem length;
-
-	public:
-		str()
+		template <typename T, umem N>
+		struct str
 		{
-			this->length = N - 1;
-			this->internal[N - 1] = '\0';
-		}
+		private:
+			T internal[N];
+			umem length;
 
-		str(const T(&data) [N])
-		{
-			this->length = N - 1;
-			libk::memcpy(this->internal, data, (N - 1) * sizeof(T));
-			this->internal[N - 1] = '\0';
-		}
-
-		str(const str<T, N>& other)
-		{
-			this->length = N - 1;
-			libk::memcpy(this->internal, other.raw(), (N - 1) * sizeof(T));
-			this->internal[N - 1] = '\0';
-		}
-
-		T& operator[](umem index)
-		{
-			return this->internal[index % this->length];
-		}
-
-		umem len() const
-		{
-			return this->length;
-		}
-
-		const T* raw() const
-		{
-			return this->internal;
-		}
-
-		T* raw_mut()
-		{
-			return this->internal;
-		}
-
-		template<umem Nother>
-		str<T, N + Nother - 1> add(const str<T, Nother>& other)
-		{
-			str<T, N + Nother - 1> nstr = str<T, N + Nother - 1>();
-
-			umem i = 0;
-			for (umem j = 0; this->raw()[j] != '\0' && j < this->len(); j ++)
+		public:
+			str()
 			{
-				nstr.raw_mut()[i] = this->raw()[j];
-				i ++;
+				this->length = N - 1;
+				this->internal[N - 1] = '\0';
 			}
-			for (umem j = 0; other.raw()[j] != '\0' && j < other.len(); j ++)
+
+			str(const T(&data) [N])
 			{
-				nstr.raw_mut()[i] = other.raw()[j];
-				i ++;
+				this->length = N - 1;
+				libk::memcpy(this->internal, data, (N - 1) * sizeof(T));
+				this->internal[N - 1] = '\0';
 			}
-			nstr.raw_mut()[i] = '\0';
 
-			return nstr;
-		}
+			str(const str<T, N>& other)
+			{
+				this->length = N - 1;
+				libk::memcpy(this->internal, other.raw(), (N - 1) * sizeof(T));
+				this->internal[N - 1] = '\0';
+			}
 
-		template<umem Nother>
-		str<T, N + Nother - 1> operator+(const str<T, Nother>& other)
-		{
-			return this->add(other);
-		}
-	};
+			T& operator[](umem index)
+			{
+				return this->internal[index % this->length];
+			}
 
-	#define makestr(_str) (str<char, sizeof(_str) / sizeof(char)>(_str))
-	#define makewstr(_str) (str<wchar, sizeof(_str) / sizeof(wchar)>(_str))
+			umem len() const
+			{
+				return this->length;
+			}
+
+			const T* raw() const
+			{
+				return this->internal;
+			}
+
+			T* raw_mut()
+			{
+				return this->internal;
+			}
+
+			template<umem Nother>
+			str<T, N + Nother - 1> add(const str<T, Nother>& other)
+			{
+				str<T, N + Nother - 1> nstr = str<T, N + Nother - 1>();
+
+				umem i = 0;
+				for (umem j = 0; this->raw()[j] != '\0' && j < this->len(); j ++)
+				{
+					nstr.raw_mut()[i] = this->raw()[j];
+					i ++;
+				}
+				for (umem j = 0; other.raw()[j] != '\0' && j < other.len(); j ++)
+				{
+					nstr.raw_mut()[i] = other.raw()[j];
+					i ++;
+				}
+				nstr.raw_mut()[i] = '\0';
+
+				return nstr;
+			}
+
+			template<umem Nother>
+			str<T, N + Nother - 1> operator+(const str<T, Nother>& other)
+			{
+				return this->add(other);
+			}
+		};
+
+		#define makestr(_str) (tupai::util::str<char, sizeof(_str) / sizeof(char)>(_str))
+		#define makewstr(_str) (tupai::util::str<wchar, sizeof(_str) / sizeof(wchar)>(_str))
+	}
 }
 
 #endif

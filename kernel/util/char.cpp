@@ -18,7 +18,7 @@
 */
 
 // Tupai
-#include <tupai/type.hpp>
+#include <tupai/util/char.hpp>
 
 namespace tupai
 {
@@ -64,26 +64,26 @@ namespace tupai
 			return c >= 'A' && c <= 'Z';
 		}
 
-		char hex_to_num(char c)
+		safeval<char> hex_to_num(char c)
 		{
-			return (c >= '0' && c <= '9') ? (c - '0') :
-				((c >= 'a' && c <= 'f') ? (c - 'a' + 10) :
-				((c >= 'A' && c <= 'F') ? (c - 'A' + 10) : 0));
+			return ((c >= '0' && c <= '9') ? safeval<char>(c - '0') :
+				((c >= 'a' && c <= 'f') ? safeval<char>(c - 'a' + 10) :
+				((c >= 'A' && c <= 'F') ? safeval<char>(c - 'A' + 10) : safeval<char>(0, false))));
 		}
 
-		char digit_to_num(char c)
+		safeval<char> digit_to_num(char c)
 		{
-			return (c >= '0' && c <= '9') ? (c - '0') : 0;
+			return ((c >= '0' && c <= '9') ? safeval<char>(c - '0') : safeval<char>(0, false));
 		}
 
-		char num_to_hex(char n)
+		safeval<char> num_to_hex(char n)
 		{
-			return (n >= 0 && n <= 9) ? ('0' + n) : ((n >= 0xA && n <= 0xF) ? ('A' + n - 10) : '0');
+			return ((n >= 0 && n <= 9) ? safeval<char>('0' + n) : ((n >= 0xA && n <= 0xF) ? safeval<char>('A' + n - 10) : safeval<char>('0', false)));
 		}
 
-		char num_to_digit(char n)
+		safeval<char> num_to_digit(char n)
 		{
-			return (n >= 0 && n <= 9) ? '0' + n : '0';
+			return ((n >= 0 && n <= 9) ? safeval<char>('0' + n) : safeval<char>('0', false));
 		}
 	}
 }

@@ -46,7 +46,7 @@ namespace tupai
 
 			volatile bool allow_overflow = true;
 
-			mutex lock;
+			util::mutex lock;
 			bool push_locked = true;
 
 		public:

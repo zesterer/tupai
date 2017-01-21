@@ -20,6 +20,7 @@
 // Tupai
 #include <tupai/type.hpp>
 #include <tupai/util/char.hpp>
+#include <tupai/util/math.hpp>
 
 #if defined(SYSTEM_ARCH_i686)
 	#include <tupai/i686/vga.hpp>
@@ -30,13 +31,15 @@ namespace tupai
 	namespace early
 	{
 		int ansi_escape_state = 0;
-		char ansi_escape_color = 0;
+		int ansi_escape_number[2] = {1, 1};
 
 		// Implementation
 		static void ansi_impl_init();
 		static void ansi_impl_handle(char c);
 		static void ansi_impl_handle_escaped(char c);
 		static void ansi_impl_clear();
+		static void ansi_impl_set_sgr(int code);
+		static void ansi_impl_set_pos(int h, int v);
 
 		#if defined(SYSTEM_ARCH_i686)
 			vga_info ansi_vga_info;
@@ -57,6 +60,7 @@ namespace tupai
 			static void ansi_vga_clear();
 			static void ansi_vga_set_fg(ubyte color);
 			static void ansi_vga_set_bg(ubyte color);
+			static void ansi_vga_set_pos(int h, int v);
 		#endif
 
 		void ansi_init() // stub
@@ -95,33 +99,123 @@ namespace tupai
 
 		static void ansi_impl_handle_escaped(char c)
 		{
-			if (ansi_escape_state == 1)
+			//ansi_vga_handle(c);
+			bool rehandle = false; // Whether the character should be rehandled (on a state boundary, for example)
+			switch (ansi_escape_state)
 			{
-				if (util::is_hex(c))
+			case 1:
 				{
-					ansi_escape_color = c;
-					ansi_escape_state = 2;
+					if (util::is_digit(c)) // Starts an escape sequence
+					{
+						ansi_escape_number[0] = 1 * util::digit_to_num(c).val();
+						ansi_escape_state = 2;
+					}
+					else // Return to normal - TODO: add CSI s and CSI u implementation here
+					{
+						ansi_escape_state = 0;
+						rehandle = true;
+					}
 				}
-				else
-					ansi_escape_state = 0;
-			}
-			else if (ansi_escape_state == 2)
-			{
-				if (c == 'm')
+				break;
+
+			case 2:
 				{
-					ansi_vga_set_fg(util::hex_to_num(ansi_escape_color));
-					ansi_escape_state = 0;
+					if (util::is_digit(c))
+					{
+						ansi_escape_number[0] *= 10;
+						ansi_escape_number[0] += util::digit_to_num(c).val();
+						ansi_escape_state = 2;
+					}
+					else if (c == 'J') // Clear screen
+					{
+						if (ansi_escape_number[0] == 2) // TODO : Add 0 and 1 after this!
+							ansi_impl_clear();
+						ansi_escape_state = 0;
+					}
+					else if (c == 'm') // SGR code
+					{
+						ansi_impl_set_sgr(ansi_escape_number[0]);
+						ansi_escape_state = 0;
+					}
+					else if (c == ';') // Second parameter
+					{
+						ansi_escape_number[1] = 0;
+						ansi_escape_state = 3;
+					}
+					else // Reset
+					{
+						ansi_escape_state = 0;
+						rehandle = true;
+					}
 				}
-				else
-					ansi_escape_state = 0;
-			}
-			else
+				break;
+
+			case 3:
+				{
+					if (util::is_digit(c))
+					{
+						ansi_escape_number[1] = 1 * util::digit_to_num(c).val();
+						ansi_escape_state = 4;
+					}
+					else // Reset
+					{
+						ansi_escape_state = 0;
+						rehandle = true;
+					}
+				}
+				break;
+
+			case 4:
+				{
+					if (util::is_digit(c))
+					{
+						ansi_escape_number[1] *= 10;
+						ansi_escape_number[1] += util::digit_to_num(c).val();
+						ansi_escape_state = 4;
+					}
+					else if (c == 'f') // Move cursor H/V position
+					{
+						ansi_impl_set_pos(ansi_escape_number[0], ansi_escape_number[1]);
+						ansi_escape_state = 0;
+					}
+					else
+					{
+						ansi_escape_state = 0;
+						rehandle = true;
+					}
+				}
+				break;
+
+			case 0:
+			default: // Erroneous state
 				ansi_escape_state = 0;
+				break;
+			}
+
+			if (rehandle)
+				ansi_impl_handle(c);
 		}
 
 		static void ansi_impl_clear()
 		{
 			ansi_vga_clear();
+		}
+
+		static void ansi_impl_set_sgr(int code)
+		{
+			if (code >= 30 && code <= 37)
+				ansi_vga_set_fg(code - 30);
+			else if (code >= 90 && code <= 97)
+				ansi_vga_set_fg(8 + code - 90);
+			else if (code >= 40 && code <= 47)
+				ansi_vga_set_bg(code - 40);
+			else if (code >= 100 && code <= 107)
+				ansi_vga_set_bg(8 + code - 100);
+		}
+
+		static void ansi_impl_set_pos(int h, int v)
+		{
+			ansi_vga_set_pos(h, v);
 		}
 
 		#if defined(SYSTEM_ARCH_i686)
@@ -155,7 +249,7 @@ namespace tupai
 				ansi_vga_pos --;
 				// Place a blank character
 				ubyte color = vga_make_color(ansi_vga_fg_default, ansi_vga_bg_default);
-				vga_place_entry(c, color,  ansi_vga_get_col(ansi_vga_pos), ansi_vga_get_row(ansi_vga_pos));
+				vga_place_entry(' ', color,  ansi_vga_get_col(ansi_vga_pos), ansi_vga_get_row(ansi_vga_pos));
 			}
 
 			static void ansi_vga_afterhandle()
@@ -194,6 +288,11 @@ namespace tupai
 			static void ansi_vga_set_bg(ubyte color)
 			{
 				ansi_vga_bg = (vga_color)color;
+			}
+
+			static void ansi_vga_set_pos(int h, int v)
+			{
+				ansi_vga_pos = (v * ansi_vga_info.cols + h) % (ansi_vga_info.cols * ansi_vga_info.rows);
 			}
 		#endif
 	}
