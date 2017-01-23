@@ -191,12 +191,14 @@ namespace tupai
 		else if (scancode[0] == 0xF0 && scancode[1] == 0x12)
 			shift_down = false;
 
+		/*
 		for (umem i = 0; i < n; i ++)
 		{
 			early::print("part = 0x");
 			early::print(util::compose<uint8>(scancode[i], 16).val().raw());
 			early::print("\n");
 		}
+		//*/
 	}
 
 	static void kbd_send_command(byte* command, umem n)

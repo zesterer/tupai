@@ -39,6 +39,7 @@
 	#include <tupai/i686/interrupt.hpp>
 	#include <tupai/i686/kbd.hpp>
 	#include <tupai/i686/pit.hpp>
+	#include <tupai/i686/paging.hpp>
 #endif
 
 namespace tupai
@@ -112,12 +113,17 @@ namespace tupai
 		kmain_write_check("Initiated VGA driver");
 		kmain_write_check("Initiated kernel TTY");
 
-		mempool_init((ubyte*)mempool_begin, mempool_size, 64); // At 16 MB, 1 MB in size, composed of blocks of 64 B
+		mempool_init((ubyte*)mempool_begin, mempool_size, 64); // At 2 MB, 1 MB in size, composed of blocks of 64 B
 		kmain_write_check("Initiated dynamic memory pool");
 
 		#if defined(SYSTEM_ARCH_i686)
 			gdt_init();
 			kmain_write_check("Initiated GDT");
+
+			paging_init();
+			kmain_write_check("Initiated Paging");
+			paging_enable();
+			kmain_write_check("Enabled Paging");
 
 			idt_init();
 			kmain_write_check("Initiated IDT");

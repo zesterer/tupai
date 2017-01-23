@@ -1,0 +1,58 @@
+/*
+* 	file : paging.cpp
+*
+* 	This file is part of Tupai.
+*
+* 	Tupai is free software: you can redistribute it and/or modify
+* 	it under the terms of the GNU General Public License as published by
+* 	the Free Software Foundation, either version 3 of the License, or
+* 	(at your option) any later version.
+*
+* 	Tupai is distributed in the hope that it will be useful,
+* 	but WITHOUT ANY WARRANTY; without even the implied warranty of
+* 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* 	GNU General Public License for more details.
+*
+* 	You should have received a copy of the GNU General Public License
+* 	along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+// Tupai
+#include <tupai/i686/paging.hpp>
+
+namespace tupai
+{
+	// Temporary static page directory
+	uint32 page_directory[1024] __attribute__((aligned(4096)));
+	uint32 page_table_kernel[1024] __attribute__((aligned(4096)));
+
+	static void paging_set_table(umem index, uint32* page_table, uint16 flags);
+
+	extern "C" void _load_page_directory(uint32* page_directory);
+	extern "C" void _enable_paging();
+
+	void paging_init()
+	{
+		// Clear the page directory
+		for (umem i = 0; i < 1024; i ++)
+			paging_set_table(i, nullptr, 0x002);
+
+		// Create 4MB worth of pages for the kernel
+		for (umem i = 0; i < 1024; i ++)
+			page_table_kernel[i] = ((uint32)i * 0x1000) | 0x003;
+
+		// Assign the 4MB of pages to the page directory - set the 'present' bit to 1
+		paging_set_table(0, page_table_kernel, 0x003);
+	}
+
+	void paging_enable()
+	{
+		_load_page_directory(page_directory);
+		_enable_paging();
+	}
+
+	static void paging_set_table(umem index, uint32* page_table, uint16 flags)
+	{
+		page_directory[index] = ((uint32)page_table & 0xFFFFF000) | ((uint32)flags & 0x00000FFF);
+	}
+}
