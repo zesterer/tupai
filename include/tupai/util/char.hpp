@@ -43,6 +43,9 @@ namespace tupai
 
 		safeval<char> num_to_hex(char c);
 		safeval<char> num_to_digit(char c);
+
+		char to_lowercase(char c);
+		char to_uppercase(char c);
 	}
 }
 

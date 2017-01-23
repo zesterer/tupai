@@ -25,7 +25,12 @@
 
 namespace tupai
 {
-void port_out8(uint16 _port, uint8 _value)
+	void port_wait()
+	{
+		asm volatile ("outb %%al, $0x80" : : "a"(0));
+	}
+
+	void port_out8(uint16 _port, uint8 _value)
 	{
 		asm volatile ("outb %0, %1" : : "a"(_value), "Nd"(_port));
 	}

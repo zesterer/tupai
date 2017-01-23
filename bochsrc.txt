@@ -11,7 +11,7 @@ floppy_bootsig_check: disabled=0
 # no floppyb
 ata0: enabled=1, ioaddr1=0x1f0, ioaddr2=0x3f0, irq=14
 ata0-master: type=cdrom, path="build-default/tupai.iso", status=inserted, model="Generic 1234", biosdetect=auto
-ata0-slave: type=cdrom, path="build-default/grub/thoth.iso", status=inserted, model="Generic 1234", biosdetect=auto
+ata0-slave: type=cdrom, path="build-default/grub/thoth.iso", status=ejected, model="Generic 1234", biosdetect=auto
 ata1: enabled=1, ioaddr1=0x170, ioaddr2=0x370, irq=15
 ata1-master: type=none
 ata1-slave: type=none
@@ -34,7 +34,7 @@ clock: sync=none, time0=local, rtc_sync=0
 # no loader
 log: -
 logprefix: %t%e%d
-debug: action=ignore
+debug: action=ignore, keymap=report, keyboard=report
 info: action=report
 error: action=report
 panic: action=ask
@@ -47,3 +47,4 @@ com1: enabled=1, mode=null
 com2: enabled=0
 com3: enabled=0
 com4: enabled=0
+usb_uhci: enabled=1, port1=none, options1=none, port2=none, options2=none

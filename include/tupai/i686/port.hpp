@@ -25,6 +25,8 @@
 
 namespace tupai
 {
+	void port_wait();
+
 	void port_out8(uint16 _port, uint8 _value);
 	void port_out16(uint16 _port, uint16 _value);
 	void port_out32(uint16 _port, uint32 _value);

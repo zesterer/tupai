@@ -85,5 +85,15 @@ namespace tupai
 		{
 			return ((n >= 0 && n <= 9) ? safeval<char>('0' + n) : safeval<char>('0', false));
 		}
+
+		char to_lowercase(char c)
+		{
+			return is_uppercase(c) ? (c - 'A' + 'a') : c;
+		}
+
+		char to_uppercase(char c)
+		{
+			return is_lowercase(c) ? (c - 'a' + 'A') : c;
+		}
 	}
 }

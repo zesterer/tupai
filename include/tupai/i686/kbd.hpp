@@ -26,6 +26,20 @@
 
 namespace tupai
 {
+	struct KeyEvent
+	{
+		enum class Type
+		{
+			PRESSED,
+			RELEASED,
+		};
+
+		uint8 row;
+		uint8 col;
+		Type type;
+		uint8 flags; // 0 = Shift pressed, 1 = Alt pressed, 2 = Ctrl pressed
+	};
+
 	extern generic::ringbuff<char> kbd_ringbuffer;
 	void kbd_init();
 }

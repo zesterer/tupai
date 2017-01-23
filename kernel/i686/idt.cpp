@@ -21,7 +21,9 @@
 #include <tupai/i686/idt.hpp>
 #include <tupai/i686/gdt.hpp>
 #include <tupai/i686/port.hpp>
+
 #include <tupai/tty.hpp>
+#include <tupai/util/conv.hpp>
 
 namespace tupai
 {
@@ -147,6 +149,6 @@ namespace tupai
 		//port_out8(0x20, 0x20);
 		//kbreak();
 
-		tty_write_str("Interrupt!\n");
+		tty_write_str("Interrupt occured!\n");
 	}
 }

@@ -31,11 +31,16 @@
 ## Tasks
 ---
 
+	- [-] Partial ANSI terminal compatibility
+	- [-] Better kernel prompt (backspace)
+	- [ ] PAE Paging
+	- [-] Stream buffers / queues
+	- [ ] RAM filesystem
+	- [ ] VBE graphics driver
 	- [ ] Advanced kernel prompt
-	- [ ] Paging support
 	- [ ] Kernel multi-tasking
 	- [ ] Fully implement libk
-	- [ ] Atomic concurrency objects (mutex, semaphore, etc.) implementation
+	- [-] Atomic concurrency objects (mutex, semaphore, etc.) implementation
 	- [ ] Properly implement keyboard scancode translation
 
 ## Planned

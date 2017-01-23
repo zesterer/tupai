@@ -39,11 +39,7 @@ namespace tupai
 
 	void tty_write(char c)
 	{
-		tty_mutex.lock();
-
 		early::printchar(c);
-
-		tty_mutex.unlock();
 	}
 
 	void tty_write_str(const char* str)
