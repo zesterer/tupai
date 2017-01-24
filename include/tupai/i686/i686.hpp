@@ -1,5 +1,5 @@
 /*
-* 	file : mempool.hpp
+* 	file : i686.hpp
 *
 * 	This file is part of Tupai.
 *
@@ -17,22 +17,15 @@
 * 	along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TUPAI_MEMPOOL_HPP
-#define TUPAI_MEMPOOL_HPP
+#ifndef TUPAI_I686_I686_HPP
+#define TUPAI_I686_I686_HPP
 
 // Tupai
 #include <tupai/type.hpp>
-#include <tupai/i686/i686.hpp>
 
 namespace tupai
 {
-	const umem mempool_begin = 0x20000 + KERNEL_VIRTUAL_OFFSET; // 2M offset + Kernel virtual offset
-	const umem mempool_size   = 0x100000; // 1M size
-
-	void  mempool_init(void* ptr, umem size, umem blocksize);
-	void* mempool_alloc(umem n);
-	void* mempool_realloc(void* ptr, umem n);
-	void  mempool_dealloc(void* ptr);
+	const uint32 KERNEL_VIRTUAL_OFFSET = 0xC0000000;
 }
 
 #endif

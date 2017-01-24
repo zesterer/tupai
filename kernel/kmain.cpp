@@ -117,13 +117,13 @@ namespace tupai
 		kmain_write_check("Initiated dynamic memory pool");
 
 		#if defined(SYSTEM_ARCH_i686)
-			gdt_init();
-			kmain_write_check("Initiated GDT");
-
 			paging_init();
 			kmain_write_check("Initiated Paging");
 			paging_enable();
 			kmain_write_check("Enabled Paging");
+
+			gdt_init();
+			kmain_write_check("Initiated GDT");
 
 			idt_init();
 			kmain_write_check("Initiated IDT");

@@ -19,6 +19,9 @@
 
 // Tupai
 #include <tupai/i686/paging.hpp>
+#include <tupai/i686/i686.hpp>
+#include <tupai/early/out.hpp>
+#include <tupai/util/conv.hpp>
 
 namespace tupai
 {
@@ -26,33 +29,33 @@ namespace tupai
 	uint32 page_directory[1024] __attribute__((aligned(4096)));
 	uint32 page_table_kernel[1024] __attribute__((aligned(4096)));
 
-	static void paging_set_table(umem index, uint32* page_table, uint16 flags);
+	static void paging_set_table(umem index, uint32 page_table, uint16 flags);
 
-	extern "C" void _load_page_directory(uint32* page_directory);
+	extern "C" void _load_page_directory(uint32 page_directory);
 	extern "C" void _enable_paging();
 
 	void paging_init()
 	{
 		// Clear the page directory
 		for (umem i = 0; i < 1024; i ++)
-			paging_set_table(i, nullptr, 0x002);
+			paging_set_table(i, (uint32)nullptr, 0x002);
 
 		// Create 4MB worth of pages for the kernel
 		for (umem i = 0; i < 1024; i ++)
-			page_table_kernel[i] = ((uint32)i * 0x1000) | 0x003;
+			page_table_kernel[i] = (((uint32)i) * 0x1000) | 0x003;
 
 		// Assign the 4MB of pages to the page directory - set the 'present' bit to 1
-		paging_set_table(0, page_table_kernel, 0x003);
+		paging_set_table(768, (uint32)page_table_kernel, 0x003);
 	}
 
 	void paging_enable()
 	{
-		_load_page_directory(page_directory);
+		_load_page_directory((uint32)page_directory - KERNEL_VIRTUAL_OFFSET);
 		_enable_paging();
 	}
 
-	static void paging_set_table(umem index, uint32* page_table, uint16 flags)
+	static void paging_set_table(umem index, uint32 page_table, uint16 flags)
 	{
-		page_directory[index] = ((uint32)page_table & 0xFFFFF000) | ((uint32)flags & 0x00000FFF);
+		page_directory[index] = ((page_table - KERNEL_VIRTUAL_OFFSET) & 0xFFFFF000) | ((uint32)flags & 0x00000FFF);
 	}
 }

@@ -37,9 +37,18 @@
 		// Tell the stack pointer where the stack is
 		movl $_boot_stack_top, %esp
 
-		// Setup paging early on
-		//call _boot_setup_paging
+		// Setup paging early on - map 4MB of 0x00000000 and 0xC0000000 to 0x00000000. Later on when we're in the kernel main, we can unmap the first section
+		call _boot_setup_paging
 
+		// Jump to the higher half
+		jmp _entry
+
+	// Set the size of the _boot_entry label to the current location minus its beginning position
+	.size _boot_entry, . - _boot_entry
+
+// Higher-half kernel main - mapped at 0xC0000000
+.section .text
+	_entry:
 		// Tell the stack pointer where the kernel stack is
 		movl $_stack_top, %esp
 
@@ -47,7 +56,7 @@
 		// Time to jump into kernel early C++
 		call kearly
 
-		// C++ constructor code
+		// C/C++ constructor code
 		call _init
 
 		// Main kernel code
@@ -71,6 +80,3 @@
 		cli
 		hlt
 		jmp _khang
-
-	// Set the size of the _boot_entry label to the current location minus its beginning position
-	.size _boot_entry, . - _boot_entry

@@ -19,6 +19,7 @@
 
 // Tupai
 #include <tupai/i686/idt.hpp>
+#include <tupai/i686/i686.hpp>
 #include <tupai/i686/gdt.hpp>
 #include <tupai/i686/port.hpp>
 

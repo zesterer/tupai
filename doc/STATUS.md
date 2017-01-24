@@ -28,17 +28,21 @@
 	- [x] Improved system status program
 	- [x] Added basic text adventure program
 
+## 0.3.0
+
+	- [x] Partial ANSI terminal compatibility
+	- [x] Basic kernel paging support
+	- [x] Higher-half kernel
+	- [x] Better kernel prompt (backspace)
+
 ## Tasks
 ---
 
-	- [-] Partial ANSI terminal compatibility
-	- [-] Better kernel prompt (backspace)
 	- [-] PAE Paging
-	- [ ] Higher-half kernel
 	- [-] Stream buffers / queues
 	- [ ] RAM filesystem
 	- [ ] VBE graphics driver
-	- [ ] Advanced kernel prompt
+	- [-] Advanced kernel prompt
 	- [ ] Kernel multi-tasking
 	- [ ] Fully implement libk
 	- [-] Atomic concurrency objects (mutex, semaphore, etc.) implementation

@@ -20,10 +20,11 @@
 // Tupai
 #include <tupai/i686/vga.hpp>
 #include <tupai/i686/port.hpp>
+#include <tupai/i686/i686.hpp>
 
 namespace tupai
 {
-	uint16* VGA_BUFFER = (uint16*)0xB8000;
+	uint16* VGA_BUFFER = (uint16*)(KERNEL_VIRTUAL_OFFSET + 0xB8000); // We're mapped with paging
 	uint16  VGA_COLS = 80;
 	uint16  VGA_ROWS = 25;
 

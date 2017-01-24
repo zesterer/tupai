@@ -26,10 +26,10 @@ SECTIONS
 		*(.bss.boot)
 	}
 
-	/* . += 0xC0000000; */
+	. += 0xC0000000;
 
 	/* Main kernel code */
-	.text ALIGN(4K) : AT(ADDR(.text) - 0x00000000)
+	.text ALIGN(4K) : AT(ADDR(.text) - 0xC0000000)
 	{
 		*(.text)
 		*(.init)
@@ -37,19 +37,19 @@ SECTIONS
 	}
 
 	/* Read-only data */
-	.rodata ALIGN(4K) : AT(ADDR(.rodata) - 0x00000000)
+	.rodata ALIGN(4K) : AT(ADDR(.rodata) - 0xC0000000)
 	{
 		*(.rodata)
 	}
 
 	/* Read-write data (initialized) */
-	.data ALIGN(4K) : AT(ADDR(.data) - 0x00000000)
+	.data ALIGN(4K) : AT(ADDR(.data) - 0xC0000000)
 	{
 		*(.data)
 	}
 
 	/* Read-write data (uninitialized) */
-	.bss ALIGN(4K) : AT(ADDR(.bss) - 0x00000000)
+	.bss ALIGN(4K) : AT(ADDR(.bss) - 0xC0000000)
 	{
 		*(.boot_stack)
 		*(COMMON)

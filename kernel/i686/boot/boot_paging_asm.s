@@ -39,41 +39,53 @@
 
 	_boot_setup_paging: // Setup paging ready for main kernel
 
-		mov $4096, %ecx // Count through 1024 times
+		mov $0, %ecx
 		_reloop1:
-			sub $4, %ecx
-			mov %ecx, %eax
-
-			mov %eax, %edx
+			mov %ecx, %edx
 			add $_boot_page_directory, %edx
-			movl $0x00000002, (%edx) // Zero the page dir
+			movl $0x00000002, (%edx) // Zero the page dir and mark all page tables as not present
 
-			mov %eax, %edx
-			add $_boot_page_table_kernel_lower, %edx
-			movl $0x00000003, (%edx) // Zero the lower kernel page table
+			_set_lower_kernel: // Dummy
+				movl %ecx, %ebx // Find offset
+				imul $0x1000, %ebx
+				and $0xFFFFF000, %ebx
+				or $0x003, %ebx
 
-			mov %eax, %edx
-			add $_boot_page_table_kernel_upper, %edx
-			movl $0x00000003, (%edx) // Zero the upper kernel page table
+				mov %ecx, %edx
+				imul $4, %edx
+				add $_boot_page_table_kernel_lower, %edx
+				movl %ebx, (%edx) // Zero the lower kernel page table and mark them as present
 
-			cmp $0, %ecx
+			_set_upper_kernel: // Dummy
+				movl %ecx, %ebx // Find offset
+				imul $0x1000, %ebx
+				and $0xFFFFF000, %ebx
+				or $0x003, %ebx
+
+				mov %ecx, %edx
+				imul $4, %edx
+				add $_boot_page_table_kernel_upper, %edx
+				movl %ebx, (%edx) // Zero the lower kernel page table and mark them as present
+
+			add $1, %ecx
+			cmp $1024, %ecx // Count through 1024 times
 			jne _reloop1 // Loop back
-
-		xchg %bx, %bx
 
 		// Set the appropriate page directory entries
 		mov $_boot_page_table_kernel_lower, %eax
+		and $0xFFFFF000, %eax
+		or $0x003, %eax
 		mov $(_boot_page_directory + 0x0), %edx
 		mov %eax, (%edx)
 
 		mov $_boot_page_table_kernel_upper, %eax
-		mov $(_boot_page_directory + 0xC0000), %edx
+		and $0xFFFFF000, %eax
+		or $0x003, %eax
+		mov $(_boot_page_directory + 3072), %edx
 		mov %eax, (%edx)
 
 		call _boot_load_page_directory
 		call _boot_enable_paging
-
-		xchg %bx, %bx
 
 		ret
 
@@ -91,8 +103,6 @@
 	_boot_enable_paging: // Enable paging with the CR0 register
 		push %ebp // Save the state of EBP
 		mov %esp, %ebp // Save the state of ESP in EBP
-
-		xchg %bx, %bx
 
 		mov %cr0, %eax // Place the value of the CR0 register in EAX
 		or $0x80000000, %eax // Enable the paging bit

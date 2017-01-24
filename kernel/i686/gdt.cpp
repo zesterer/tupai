@@ -19,6 +19,7 @@
 
 // Tupai
 #include <tupai/i686/gdt.hpp>
+#include <tupai/i686/i686.hpp>
 #include <tupai/mempool.hpp>
 
 // Libk
@@ -92,12 +93,6 @@ namespace tupai
 
 		gdt_ptr_ptr = (umem)&gdt_ptr;
 		asm volatile ("lgdt (((gdt_ptr)))");
-
-		/*asm volatile (
-						"lgdt (((gdt_ptr))) \n" // Set the GDT
-						"ljmp $0x08, $_gdt_longjump \n" // We need to perform a long jump (just next door! to flush all the GDT-related internal registers)
-						"_gdt_longjump: \n"
-						);*/
 	}
 
 	void gdt_set_entry(umem n, uint32 base, uint32 limit, uint8 access, uint8 granularity)
@@ -114,9 +109,5 @@ namespace tupai
 		// Granularity and access flags
 		gdt[n].granularity |= (granularity & 0xF0);
 		gdt[n].access = access;
-
-		//gdt_install();//&gdt, sizeof(gdt));
-
-		//tty_write_str("Created GDT entry\n");
 	}
 }
