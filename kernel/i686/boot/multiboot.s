@@ -25,7 +25,7 @@
 .set MB_CHECKSUM, -(MB_MAGIC + MB_FLAGS)
 
 // The Multiboot-compliant header
-.section .multiboot
+.section .rodata.multiboot
 	.global _multiboot
 	_multiboot:
 		.align 4

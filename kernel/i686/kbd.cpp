@@ -111,21 +111,21 @@ namespace tupai
 
 		// Self test
 		byte cmd_selftest[1] = {0xFF};
-		kbd_send_command(cmd_selftest, sizeof(cmd_selftest) / sizeof(byte));
+		//kbd_send_command(cmd_selftest, sizeof(cmd_selftest) / sizeof(byte));
 
 		// Set the keyboard scancode set to 2
 		byte cmd_scancode2[2] = {0xF0, 0x02};
-		kbd_send_command(cmd_scancode2, sizeof(cmd_scancode2) / sizeof(byte));
+		//kbd_send_command(cmd_scancode2, sizeof(cmd_scancode2) / sizeof(byte));
 
 		// Disable first PS/2 port translation TODO : Clean tbis up, place into generic PS/2 driver
-		port_out8(0x64, 0x20);
+		/*port_out8(0x64, 0x20);
 		port_wait();
 		byte val = port_in8(0x60);
 		port_wait();
 		val = val & 0xBF;
 		port_out8(0x64, 0x60);
 		port_wait();
-		port_out8(0x60, val);
+		port_out8(0x60, val);*/
 
 		// Finally, enable IRQ1 (keyboard)
 		pic_set_mask(1, true);
@@ -145,7 +145,7 @@ namespace tupai
 			if ((status & 0x01) != 0x01) // If the buffer is empty, stop reading scancode bytes
 				break;
 
-			if (false)
+			if (true)
 			{
 				char keycode = port_in8(KBD_DATA_PORT);
 				if (keycode < 0)
@@ -170,7 +170,7 @@ namespace tupai
 		}
 
 		// Now handle the scancode
-		kbd_handle_scancode(scancode, index);
+		if (false) kbd_handle_scancode(scancode, index);
 	}
 
 	static void kbd_handle_scancode(byte* scancode, umem n)
@@ -198,7 +198,7 @@ namespace tupai
 			early::print(util::compose<uint8>(scancode[i], 16).val().raw());
 			early::print("\n");
 		}
-		//*/
+		*/
 	}
 
 	static void kbd_send_command(byte* command, umem n)

@@ -152,32 +152,32 @@ namespace tupai
 	{
 		///*
 		// Get EFLAGS and CR3 TODO : Change this
-		//uint32 cr3 = 0;
-		//uint32 eflags = 0x202;
+		uint32 cr3 = 0;
+		uint32 eflags = 0x202;
 
 		//libk::printf("\nAdding test tasks A, B and C...\n");
-		//task_add("testa", kernel_task_test_a, eflags, (uint32*)cr3);
-		//task_add("testb", kernel_task_test_b, eflags, (uint32*)cr3);
+		task_add("testa", kernel_task_test_a, eflags, (uint32*)cr3);
+		task_add("testb", kernel_task_test_b, eflags, (uint32*)cr3);
 		//task_add("testc", kernel_task_test_c, eflags, (uint32*)cr3);
 		//*/
 
 		//kassert(true == false);
 		//safeptr<int> test(0x0);
 
-		//libk::printf("Value is %i!\n", parse<int32>("1234").val());
-		//libk::printf("Value is %i!\n", parse<int32>(" 	-47 ").val());
-		//libk::printf("Value is %i!\n", parse<int32>("0x80").val());
-		//libk::printf("Value is %i!\n", parse<int32>("-0b1010").val());
-		//libk::printf("Value is %i!\n", parse<int64>("  0x47A4a ").val());
-		//libk::printf("Value is %i!\n", parse<int16>("4765", 2).val());
+		libk::printf("Value is %i!\n", util::parse<int32>("1234").val());
+		libk::printf("Value is %i!\n", util::parse<int32>(" 	-47 ").val());
+		libk::printf("Value is %i!\n", util::parse<int32>("0x80").val());
+		libk::printf("Value is %i!\n", util::parse<int32>("-0b1010").val());
+		libk::printf("Value is %i!\n", util::parse<int64>("  0x47A4a ").val());
+		libk::printf("Value is %i!\n", util::parse<int16>("4765", 2).val());
 
-		//auto strtest1 = makestr("13");
-		//auto strtest2 = makestr("47");
-		//auto strtest3 = strtest1 + strtest2;
-		//libk::printf("String is '%s', size = %i!\n", strtest3.raw(), strtest3.len());
-		//libk::printf("Value is %s.\n", util::compose<int32>(util::parse<int32>(strtest3).val()).val());
+		auto strtest1 = makestr("13");
+		auto strtest2 = makestr("47");
+		auto strtest3 = strtest1 + strtest2;
+		libk::printf("String is '%s', size = %i!\n", strtest3.raw(), strtest3.len());
+		libk::printf("Value is %s.\n", util::compose<int32>(util::parse<int32>(strtest3).val()).val());
 
-		//libk::printf((makestr("Number ") + util::compose<int32>(util::parse<int32>("650").val(), 16).val() + makestr(" haha!\n")).raw());
+		libk::printf((makestr("Number ") + util::compose<int32>(util::parse<int32>("650").val(), 16).val() + makestr(" haha!\n")).raw());
 
 		// Enable the scheduler
 		//task_enable_scheduler();

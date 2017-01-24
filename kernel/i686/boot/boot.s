@@ -18,21 +18,33 @@
 //
 
 // A temporary 16 KB bootstrap stack
-.section .boot_stack, "aw", @nobits
+.section .bss.boot, "aw", @nobits
 	_boot_stack_bottom:
 	.skip 0x4000 // 16 KB
 	_boot_stack_top:
 
+// A more permanent 64 KB kernel stack
+.section .bss, "aw", @nobits
+	_stack_bottom:
+	.skip 0x10000 // 64 KB
+	_stack_top:
+
 // Now for some actual code
-.section .boot_text
+.section .text.boot
 	.global _boot_entry
 	.type _boot_entry, @function
 	_boot_entry:
-		// Tell the stack pointer where the bootstrap stack is
+		// Tell the stack pointer where the stack is
 		movl $_boot_stack_top, %esp
 
+		// Setup paging early on
+		//call _boot_setup_paging
+
+		// Tell the stack pointer where the kernel stack is
+		movl $_stack_top, %esp
+
 		// We now have a C-worthy (get it?) environment
-		// Time to jump into kernel early C
+		// Time to jump into kernel early C++
 		call kearly
 
 		// C++ constructor code
@@ -62,36 +74,3 @@
 
 	// Set the size of the _boot_entry label to the current location minus its beginning position
 	.size _boot_entry, . - _boot_entry
-
-// Section sizes - for the GDT
-.section .text_begin
-	.global _text_begin
-	_text_begin:
-
-.section .text_end
-	.global _text_end
-	_text_end:
-
-.section .rodata_begin
-	.global _rodata_begin
-	_rodata_begin:
-
-.section .rodata_end
-	.global _rodata_end
-	_rodata_end:
-
-.section .data_begin
-	.global _data_begin
-	_data_begin:
-
-.section .data_end
-	.global _data_end
-	_data_end:
-
-.section .bss_begin
-	.global _bss_begin
-	_bss_begin:
-
-.section .bss_end
-	.global _bss_end
-	_bss_end:

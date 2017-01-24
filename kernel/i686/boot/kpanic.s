@@ -50,7 +50,7 @@
 	_kpanic_hexcodes:
 		.ascii "0123456789ABCDEF"
 
-.section .boot_text
+.section .text
 	.global _kpanic
 	_kpanic:
 		cli

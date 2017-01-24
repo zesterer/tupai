@@ -33,7 +33,8 @@
 
 	- [-] Partial ANSI terminal compatibility
 	- [-] Better kernel prompt (backspace)
-	- [ ] PAE Paging
+	- [-] PAE Paging
+	- [ ] Higher-half kernel
 	- [-] Stream buffers / queues
 	- [ ] RAM filesystem
 	- [ ] VBE graphics driver

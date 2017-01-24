@@ -1,5 +1,5 @@
 //
-//	file : paging.s
+//	file : paging_asm.s
 //
 // 	This file is part of Tupai.
 //

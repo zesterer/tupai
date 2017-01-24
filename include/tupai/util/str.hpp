@@ -42,31 +42,53 @@ namespace tupai
 			str()
 			{
 				this->length = N - 1;
-				this->internal[N - 1] = '\0';
+				for (umem i = 0; i < this->len(); i ++)
+					this->raw_mut()[i] = ' ';
+				this->raw_mut()[this->len()] = '\0';
+			}
+
+			str(T c)
+			{
+				this->length = 1;
+				this->raw_mut()[0] = c;
+				this->raw_mut()[this->len()] = '\0';
 			}
 
 			str(const T(&data) [N])
 			{
-				this->length = N - 1;
-				libk::memcpy(this->internal, data, (N - 1) * sizeof(T));
-				this->internal[N - 1] = '\0';
+				umem i;
+				for (i = 0; data[i] != '\0'; i ++)
+					this->raw_mut()[i] = data[i];
+				this->length = i;
+				this->raw_mut()[this->len()] = '\0';
 			}
 
 			str(const str<T, N>& other)
 			{
-				this->length = N - 1;
-				libk::memcpy(this->internal, other.raw(), (N - 1) * sizeof(T));
-				this->internal[N - 1] = '\0';
+				for (umem i = 0; i < other.len(); i ++)
+					this->raw_mut()[i] = other.at(i);
+				this->length = other.len();
+				this->raw_mut()[this->len()] = '\0';
 			}
 
 			T& operator[](umem index)
 			{
-				return this->internal[index % this->length];
+				return this->internal[index % this->len()];
+			}
+
+			T at(umem index) const
+			{
+				return this->internal[index % this->len()];
 			}
 
 			umem len() const
 			{
 				return this->length;
+			}
+
+			umem size() const
+			{
+				return N;
 			}
 
 			const T* raw() const
@@ -80,30 +102,72 @@ namespace tupai
 			}
 
 			template<umem Nother>
-			str<T, N + Nother - 1> add(const str<T, Nother>& other)
+			str<T, N + Nother - 1> add(const str<T, Nother>& other) const
 			{
-				str<T, N + Nother - 1> nstr = str<T, N + Nother - 1>();
-
+				T buffer[N + Nother - 1];
 				umem i = 0;
-				for (umem j = 0; this->raw()[j] != '\0' && j < this->len(); j ++)
+				for (umem j = 0; j < this->len(); j ++)
 				{
-					nstr.raw_mut()[i] = this->raw()[j];
+					buffer[i] = this->raw()[j];
 					i ++;
 				}
-				for (umem j = 0; other.raw()[j] != '\0' && j < other.len(); j ++)
+				for (umem j = 0; j < other.len(); j ++)
 				{
-					nstr.raw_mut()[i] = other.raw()[j];
+					buffer[i] = other.at(j);
 					i ++;
 				}
-				nstr.raw_mut()[i] = '\0';
+				buffer[i] = '\0';
 
-				return nstr;
+				return str<T, N + Nother - 1>(buffer);
 			}
 
 			template<umem Nother>
-			str<T, N + Nother - 1> operator+(const str<T, Nother>& other)
+			str<T, N + Nother - 1> operator+(const str<T, Nother>& other) const
 			{
 				return this->add(other);
+			}
+
+			str<T, N + 1> operator+(T c) const
+			{
+				return this->add(str<T, 2>(c));
+			}
+
+			template<umem Nother>
+			bool equals(const str<T, Nother>& other) const
+			{
+				if (other.len() != this->len())
+					return false;
+
+				for (umem i = 0; i < this->len(); i ++)
+				{
+					if (this.at(i) != other[i])
+						return false;
+				}
+
+				return true;
+			}
+
+			template<umem Nother>
+			bool operator==(const str<T, Nother>& other) const
+			{
+				return this->equals(other);
+			}
+
+			bool equals(const T* data) const
+			{
+				umem i;
+				for (i = 0; data[i] != '\0' && i < this->len(); i ++)
+				{
+					if (this.at(i) != data[i])
+						return false;
+				}
+
+				return (i == this->len());
+			}
+
+			bool operator==(const T* data) const
+			{
+				return this->equals(data);
 			}
 		};
 
