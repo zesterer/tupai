@@ -237,13 +237,13 @@ namespace tupai
 				ansi_vga_pos ++;
 			}
 
-			static void ansi_vga_handle_newline(char c)
+			static void ansi_vga_handle_newline(char c __attribute__ ((unused)))
 			{
 				// Skip to the next line
 				ansi_vga_pos = (ansi_vga_pos / ansi_vga_info.cols + 1) * ansi_vga_info.cols;
 			}
 
-			static void ansi_vga_handle_backspace(char c)
+			static void ansi_vga_handle_backspace(char c __attribute__ ((unused)))
 			{
 				// Decrement cursor position
 				ansi_vga_pos --;

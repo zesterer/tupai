@@ -39,6 +39,9 @@ namespace tupai
 		cpu_task_state state;
 	};
 
+	//TODO remove this
+	void task_save_state(cpu_pushal state_pushal, cpu_int state_int);
+
 	void task_init();
 	void task_enable_scheduler(bool enable = true);
 	void task_preempt();

@@ -34,6 +34,39 @@
 
 namespace tupai
 {
+	void readline(char* buffer, umem buffer_size)
+	{
+		umem buffer_pos = 0;
+		while (true)
+		{
+			char input_char = libk::getchar();
+
+			if (input_char != '\0')
+			{
+				if (input_char == '\n' || buffer_pos == buffer_size - 1) // Newline or end of buffer
+				{
+					buffer[buffer_pos] = '\0';
+					return;
+				}
+				else if (input_char == '\b') // Backspace
+				{
+					if (buffer_pos > 0)
+					{
+						buffer_pos --;
+						libk::putchar('\b');
+					}
+				}
+				else
+				{
+					tty_write(input_char);
+
+					buffer[buffer_pos] = input_char;
+					buffer_pos ++;
+				}
+			}
+		}
+	}
+
 	struct command_pair
 	{
 		int (*main_func)(int argc, char* argv[]);
@@ -69,37 +102,9 @@ namespace tupai
 			tty_set_fg_color(tty_color::DEFAULT_FG);
 			tty_write_str("> ");
 
-			const umem INPUT_BUFFER_LENGTH = 1024;
-			char buffer[INPUT_BUFFER_LENGTH];
-			umem buffer_pos = 0;
-			while (true)
-			{
-				char input_char = libk::getchar();
-
-				if (input_char != '\0')
-				{
-					if (input_char == '\n' || buffer_pos == INPUT_BUFFER_LENGTH - 1) // Newline or end of buffer
-					{
-						buffer[buffer_pos] = '\0';
-						break;
-					}
-					else if (input_char == '\b') // Backspace
-					{
-						if (buffer_pos > 0)
-						{
-							buffer_pos --;
-							libk::putchar('\b');
-						}
-					}
-					else
-					{
-						tty_write(input_char);
-
-						buffer[buffer_pos] = input_char;
-						buffer_pos ++;
-					}
-				}
-			}
+			const umem INPUT_BUFFER_SIZE = 1024;
+			char buffer[INPUT_BUFFER_SIZE];
+			readline(buffer, INPUT_BUFFER_SIZE);
 
 			tty_write('\n');
 

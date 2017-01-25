@@ -20,6 +20,9 @@
 // Tupai
 #include <tupai/syscall.hpp>
 
+// TODO: remove this
+#include <tupai/task.hpp>
+
 #if defined(SYSTEM_ARCH_i686)
 	#include <tupai/i686/interrupt.hpp>
 	#include <tupai/i686/idt.hpp>
@@ -57,6 +60,9 @@ namespace tupai
 	void syscall_irq_handler_main(cpu_pushal state_pushal, cpu_int state_int)
 	{
 		interrupt_ack(0x80);
+
+		// TODO remove this
+		task_save_state(state_pushal, state_int);
 
 		libk::printf("SYSCALL!\n");
 

@@ -153,6 +153,7 @@ namespace tupai
 		///*
 		// Get EFLAGS and CR3 TODO : Change this
 		uint32 cr3 = 0;
+		asm volatile("movl %%cr3, %%eax; movl %%eax, %0;":"=m"(cr3)::"%eax");
 		uint32 eflags = 0x202;
 
 		//libk::printf("\nAdding test tasks A, B and C...\n");
@@ -178,9 +179,6 @@ namespace tupai
 		libk::printf("Value is %s.\n", util::compose<int32>(util::parse<int32>(strtest3).val()).val());
 		libk::printf((makestr("Number ") + util::compose<int32>(util::parse<int32>("650").val(), 16).val() + makestr(" haha!\n")).raw());*/
 
-		// Enable the scheduler
-		//task_enable_scheduler();
-
 		kernel_welcome();
 
 		while (prompt() == 0);
@@ -188,31 +186,44 @@ namespace tupai
 
 	static void kernel_task_test_a()
 	{
-		while (true)
+		volatile uint32 a = 0;
+		for (umem i = 0; ; i ++)
 		{
-			volatile uint32 a = 0;
-			while (a < 5000) a ++;
+			a = 0;
+			while (a < 5) a ++;
 
-			libk::printf("A");
+			if (i % 100 == 0)
+				libk::printf("-");
+			else
+				libk::printf("A");
+			//asm volatile ("xchg %bx, %bx");
+			//asm volatile ("int $0x80");
 		}
 	}
 
 	static void kernel_task_test_b()
 	{
-		while (true)
+		volatile uint32 a = 0;
+		for (umem i = 0; ; i ++)
 		{
-			volatile uint32 a = 0;
-			while (a < 5000) a ++;
+			a = 0;
+			while (a < 5) a ++;
 
-			libk::printf("B");
+			if (i % 100 == 0)
+				libk::printf("-");
+			else
+				libk::printf("B");
+			//asm volatile ("xchg %bx, %bx");
+			//asm volatile ("int $0x80");
 		}
 	}
 
 	static void kernel_task_test_c()
 	{
+		volatile uint32 a = 0;
 		while (true)
 		{
-			volatile uint32 a = 0;
+			a = 0;
 			while (a < 5000) a ++;
 
 			//libk::printf("C");

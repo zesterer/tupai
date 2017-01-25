@@ -23,15 +23,13 @@
 .set KPANIC_TITLE_FORMAT, ((0x4 << 12) | (0xF << 8))
 .set KPANIC_ERROR_FORMAT, ((0x1 << 12) | (0xC << 8))
 .set KPANIC_EMAIL_FORMAT, ((0x1 << 12) | (0xA << 8))
-.set VGA_BUFFER,          0xB8000
+.set VGA_BUFFER,          (0xB8000 + 0xC0000000)
 .set VGA_W,               80
 .set VGA_H,               25
 
 .section .bss
-	.global _kpanic_errormsg
 	_kpanic_errormsg:
 		.skip 4
-	.global _kpanic_errorcode
 	_kpanic_errorcode:
 		.skip 4
 

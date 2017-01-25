@@ -26,7 +26,7 @@ namespace tupai
 	{
 		bool is_printable(char c)
 		{
-			return c >= 0x20 && c <= 0x7F;
+			return ((unsigned char)c >= 0x20) && ((unsigned char)c <= 0x7F);
 		}
 
 		bool is_newline(char c)

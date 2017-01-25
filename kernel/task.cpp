@@ -40,7 +40,7 @@ namespace tupai
 	bool task_scheduler_enabled = false;
 
 	static uint32 task_get_new_id();
-	static void task_save_state(cpu_pushal state_pushal, cpu_int state_int);
+	//static void task_save_state(cpu_pushal state_pushal, cpu_int state_int);
 
 	extern "C" void _task_switch(cpu_task_state* old, cpu_task_state* target);
 
@@ -55,7 +55,7 @@ namespace tupai
 		task_scheduler_enabled = enable;
 	}
 
-	static void task_save_state(cpu_pushal state_pushal, cpu_int state_int)
+	void task_save_state(cpu_pushal state_pushal, cpu_int state_int)
 	{
 		if (!task_scheduler_enabled) // If the task scheduler is not enabled yet
 			return;

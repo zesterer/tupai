@@ -142,7 +142,6 @@ namespace tupai
 		port_out8(0x20, 0x20);
 
 		const char* exception_msg = exceptions[isr_id % (sizeof(exceptions) / sizeof(char*))];
-		libk::printf("%s exception occured (code = %X)!\n", isr_id, exception_msg, error);
 		kpanic(exception_msg, error);
 	}
 }

@@ -246,6 +246,10 @@ namespace tupai
 
 		mempool_map = (map_entry*)mempool_map_head;
 
+		// Zero the head
+		for (umem i = 0; i < mempool_map_size; i ++)
+			((byte*)mempool_map_head)[i] = 0;
+
 		mempool_initiated = true;
 	}
 

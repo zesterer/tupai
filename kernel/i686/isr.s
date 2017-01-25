@@ -199,21 +199,22 @@
 		//push %gs
 
 		// Load the kernel data segment GDT descriptor
-		mov $0x10, %ax
-		mov %ax, %ds
-		mov %ax, %es
-		mov %ax, %fs
-		mov %ax, %gs
+		//mov $0x10, %ax
+		//mov %ax, %ds
+		//mov %ax, %es
+		//mov %ax, %fs
+		//mov %ax, %gs
 
 		//pushl 0x52(%esp) // Push ISR error as second parameter
 		//pushl 0x44(%esp) // Push ISR identifer as first parameter
 		call kfault
 
-		pop %gs
-		pop %fs
-		pop %es
-		pop %ds
+		//pop %gs
+		//pop %fs
+		//pop %es
+		//pop %ds
 
-		popal
-		add $8, %esp
+		//popal
+		//add $8, %esp
+		sti
 		iret // Standard interrupt return

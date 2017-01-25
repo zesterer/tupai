@@ -26,6 +26,7 @@
 // Tupai
 #include <tupai/tty.hpp>
 #include <tupai/mempool.hpp>
+#include <tupai/util/conv.hpp>
 
 #if defined(SYSTEM_ARCH_i686)
 	#include <tupai/i686/kbd.hpp>
@@ -95,7 +96,7 @@ namespace libk
 							putsn((char*)&(format[last]), i - last); // Write the string so far
 
 							// Write the string we found in the gap
-							char str[sizeof(int) * 8 + 1]; // This string is the maximum size an int could possibly be
+							//char str[sizeof(int) * 8 + 1]; // This string is the maximum size an int could possibly be
 
 							sint v = __builtin_va_arg(args, int);
 
@@ -103,7 +104,10 @@ namespace libk
 								v = abs(v);
 
 							sint base = (format[i + 1] == 'x' || format[i + 1] == 'X') ? 16 : ((format[i + 1] == 'o') ? 8 : 10); // Which base are we using?
-							itoa(v, str, base); // Convert it to a string
+
+							//itoa(v, str, base); // Convert it to a string
+							auto result = tupai::util::compose<int32>(v, base);
+							char* str = result.val().raw_mut();
 
 							if (format[i + 1] == 'x') // Convert it to uppercase if we have to
 							{

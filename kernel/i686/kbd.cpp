@@ -110,11 +110,11 @@ namespace tupai
 		}
 
 		// Self test
-		byte cmd_selftest[1] = {0xFF};
+		//byte cmd_selftest[1] = {0xFF};
 		//kbd_send_command(cmd_selftest, sizeof(cmd_selftest) / sizeof(byte));
 
 		// Set the keyboard scancode set to 2
-		byte cmd_scancode2[2] = {0xF0, 0x02};
+		//byte cmd_scancode2[2] = {0xF0, 0x02};
 		//kbd_send_command(cmd_scancode2, sizeof(cmd_scancode2) / sizeof(byte));
 
 		// Disable first PS/2 port translation TODO : Clean tbis up, place into generic PS/2 driver
@@ -175,7 +175,7 @@ namespace tupai
 
 	static void kbd_handle_scancode(byte* scancode, umem n)
 	{
-		if (n == 1 && scancode[0] >= 0x00 && scancode[0] <= 0x8F)
+		if (n == 1 && scancode[0] <= 0x8F)
 		{
 			char character = scancode_2_uk[scancode[0]];
 

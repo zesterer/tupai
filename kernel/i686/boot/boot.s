@@ -23,12 +23,6 @@
 	.skip 0x4000 // 16 KB
 	_boot_stack_top:
 
-// A more permanent 64 KB kernel stack
-.section .bss, "aw", @nobits
-	_stack_bottom:
-	.skip 0x10000 // 64 KB
-	_stack_top:
-
 // Now for some actual code
 .section .text.boot
 	.global _boot_entry
@@ -46,7 +40,13 @@
 	// Set the size of the _boot_entry label to the current location minus its beginning position
 	.size _boot_entry, . - _boot_entry
 
-// Higher-half kernel main - mapped at 0xC0000000
+// A more permanent 64 KB kernel stack
+.section .bss, "aw", @nobits
+	_stack_bottom:
+	.skip 0x10000 // 64 KB
+	_stack_top:
+
+// Higher-half kernel entry
 .section .text
 	_entry:
 		// Tell the stack pointer where the kernel stack is
