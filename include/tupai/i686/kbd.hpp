@@ -42,6 +42,7 @@ namespace tupai
 
 	extern generic::ringbuff<char> kbd_ringbuffer;
 	void kbd_init();
+	void kbd_enable();
 }
 
 #endif

@@ -85,6 +85,14 @@ namespace tupai
 		tty_write('f'); // 'f' move cursor parameter
 	}
 
+	void tty_reset()
+	{
+		// ANSI
+		tty_write(0x1B); // Escape
+		tty_write('0');
+		tty_write('m'); // 'm' SGR parameter
+	}
+
 	void tty_clear()
 	{
 		// ANSI

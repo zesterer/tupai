@@ -66,7 +66,7 @@ namespace tupai
 			break;
 		}
 
-		tty_set_fg_color(tty_color::DEFAULT_FG);
+		tty_reset();
 		tty_write_str(" : ");
 		tty_write_str(msg);
 		tty_write('\n');

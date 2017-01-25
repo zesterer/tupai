@@ -50,7 +50,7 @@ namespace tupai
 
 	void kmain_write_check(const char* str, int error = 0)
 	{
-		tty_set_fg_color(tty_color::DEFAULT_FG);
+		tty_reset();
 		tty_write('[');
 
 		if (error == 0)
@@ -64,7 +64,7 @@ namespace tupai
 			tty_write_str("FAIL");
 		}
 
-		tty_set_fg_color(tty_color::DEFAULT_FG);
+		tty_reset();
 		tty_write_str("] ");
 		tty_write_str(str);
 		tty_write('\n');
@@ -101,7 +101,7 @@ namespace tupai
 		#endif
 
 		tty_write('\n');
-		tty_set_fg_color(tty_color::DEFAULT_FG);
+		tty_reset();
 	}
 
 	// Kernel early
@@ -133,9 +133,6 @@ namespace tupai
 
 			kbd_init();
 			kmain_write_check("Initiated keyboard");
-
-			interrupt_enable();
-			kmain_write_check("Enabled interrupts");
 		#endif
 
 		syscall_init();
@@ -150,6 +147,10 @@ namespace tupai
 	// Kernel main
 	void kmain()
 	{
+		interrupt_enable();
+		pit_enable();
+		kbd_enable();
+
 		///*
 		// Get EFLAGS and CR3 TODO : Change this
 		uint32 cr3 = 0;

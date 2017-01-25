@@ -31,6 +31,7 @@ namespace tupai
 	extern volatile uint16    pit_rate;
 
 	void pit_init();
+	void pit_enable();
 	void pit_set_rate(uint16 rate);
 	void pit_set_tick_func(void (*func)(cpu_pushal, cpu_int));
 }

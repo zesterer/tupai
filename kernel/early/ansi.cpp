@@ -45,13 +45,14 @@ namespace tupai
 			vga_info ansi_vga_info;
 			uint ansi_vga_pos = 0;
 
-			const vga_color ansi_vga_fg_default = (vga_color)0xF;
+			const vga_color ansi_vga_fg_default = (vga_color)0x7;
 			const vga_color ansi_vga_bg_default = (vga_color)0x0;
 			vga_color ansi_vga_fg = ansi_vga_fg_default;
 			vga_color ansi_vga_bg = ansi_vga_bg_default;
 
 			static uint16 ansi_vga_get_row(uint pos);
 			static uint16 ansi_vga_get_col(uint pos);
+			static vga_color ansi_vga_conv_color(ubyte col);
 			static void ansi_vga_init();
 			static void ansi_vga_handle(char c);
 			static void ansi_vga_handle_newline(char c);
@@ -61,6 +62,7 @@ namespace tupai
 			static void ansi_vga_set_fg(ubyte color);
 			static void ansi_vga_set_bg(ubyte color);
 			static void ansi_vga_set_pos(int h, int v);
+			static void ansi_vga_reset();
 		#endif
 
 		void ansi_init() // stub
@@ -203,7 +205,9 @@ namespace tupai
 
 		static void ansi_impl_set_sgr(int code)
 		{
-			if (code >= 30 && code <= 37)
+			if (code == 0)
+				ansi_vga_reset();
+			else if (code >= 30 && code <= 37)
 				ansi_vga_set_fg(code - 30);
 			else if (code >= 90 && code <= 97)
 				ansi_vga_set_fg(8 + code - 90);
@@ -221,6 +225,12 @@ namespace tupai
 		#if defined(SYSTEM_ARCH_i686)
 			static uint16 ansi_vga_get_row(uint pos) { return pos / ansi_vga_info.cols; }
 			static uint16 ansi_vga_get_col(uint pos) { return pos % ansi_vga_info.cols; }
+
+			static vga_color ansi_vga_conv_color(ubyte col)
+			{
+				const byte coltable[] = {0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9, 0xA, 0xB, 0xC, 0xD, 0xE, 0xF};
+				return (vga_color)coltable[col];
+			}
 
 			static void ansi_vga_init()
 			{
@@ -282,17 +292,23 @@ namespace tupai
 
 			static void ansi_vga_set_fg(ubyte color)
 			{
-				ansi_vga_fg = (vga_color)color;
+				ansi_vga_fg = ansi_vga_conv_color(color);
 			}
 
 			static void ansi_vga_set_bg(ubyte color)
 			{
-				ansi_vga_bg = (vga_color)color;
+				ansi_vga_bg = ansi_vga_conv_color(color);
 			}
 
 			static void ansi_vga_set_pos(int h, int v)
 			{
 				ansi_vga_pos = (v * ansi_vga_info.cols + h) % (ansi_vga_info.cols * ansi_vga_info.rows);
+			}
+
+			static void ansi_vga_reset()
+			{
+				ansi_vga_fg = ansi_vga_fg_default;
+				ansi_vga_bg = ansi_vga_bg_default;
 			}
 		#endif
 	}

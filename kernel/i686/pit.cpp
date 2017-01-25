@@ -58,7 +58,10 @@ namespace tupai
 		idt_set_entry(IDT_REMAP_OFFSET + 0x0, (uint32)pit_irq_handler, sizeof(gdt_entry) * 1);
 
 		pit_set_rate(1000);
+	}
 
+	void pit_enable()
+	{
 		// Enable IRQ0 (PIT)
 		pic_set_mask(0, true);
 	}

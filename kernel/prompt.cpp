@@ -21,6 +21,7 @@
 #include <tupai/prompt.hpp>
 #include <tupai/tty.hpp>
 #include <tupai/task.hpp>
+#include <tupai/util/conv.hpp>
 
 #include <tupai/prog/snake.hpp>
 #include <tupai/prog/adventure.hpp>
@@ -95,11 +96,11 @@ namespace tupai
 		{
 			tty_set_fg_color(0x3);
 			tty_write_str("kernel");
-			tty_set_fg_color(tty_color::DEFAULT_FG);
+			tty_reset();
 			tty_write('@');
 			tty_set_fg_color(0x4);
 			tty_write_str("tupai");
-			tty_set_fg_color(tty_color::DEFAULT_FG);
+			tty_reset();
 			tty_write_str("> ");
 
 			const umem INPUT_BUFFER_SIZE = 1024;
@@ -118,6 +119,7 @@ namespace tupai
 				tty_write_str("timer     - Timer test program\n");
 				tty_write_str("etasks    - Enable multitasking\n");
 				tty_write_str("chars     - Display printable characters\n");
+				tty_write_str("color     - Display printable colors\n");
 				tty_write_str("exit      - Close the prompt session\n");
 				tty_write_str("clear     - Clear the screen\n");
 				tty_write_str("abort     - Abort the system\n");
@@ -148,6 +150,31 @@ namespace tupai
 					tty_write(' ');
 					if ((i + 1) % 32 == 0)
 						tty_write('\n');
+				}
+			}
+			else if (libk::strcmp(buffer, "color") == 0)
+			{
+				const char* names[] = {"  Black  ", "   Red   ", "  Green  ", " Yellow  ", "  Blue   ", " Magenta ", "  Cyan   ", "  White  "};
+
+				for (uint i = 0; i < (sizeof(names) / sizeof(char*)); i ++)
+				{
+					// Normal
+					tty_set_bg_color(i);
+					tty_set_fg_color(tty_color::WHITE);
+					tty_write(' ');
+					tty_write_str(util::compose((uint32)i, 16).val().raw());
+					tty_write_str(names[i]);
+					tty_reset();
+
+					// Bright
+					tty_set_bg_color(i + 8);
+					tty_set_fg_color(tty_color::BLACK);
+					tty_write(' ');
+					tty_write_str(util::compose((uint32)i + 8, 16).val().raw());
+					tty_write_str(names[i]);
+					tty_reset();
+
+					tty_write('\n');
 				}
 			}
 			else

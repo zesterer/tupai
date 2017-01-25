@@ -126,8 +126,11 @@ namespace tupai
 		port_out8(0x64, 0x60);
 		port_wait();
 		port_out8(0x60, val);*/
+	}
 
-		// Finally, enable IRQ1 (keyboard)
+	void kbd_enable()
+	{
+		// Unmask IRQ1 (keyboard)
 		pic_set_mask(1, true);
 	}
 

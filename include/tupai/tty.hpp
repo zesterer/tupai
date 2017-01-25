@@ -43,9 +43,6 @@ namespace tupai
 		static const byte LIGHT_MAGENTA = 0x0D;
 		static const byte LIGHT_BROWN   = 0X0E;
 		static const byte WHITE         = 0x0F;
-
-		static const byte DEFAULT_FG = LIGHT_GREY;
-		static const byte DEFAULT_BG = BLACK;
 	};
 
 	void tty_init();
@@ -53,6 +50,7 @@ namespace tupai
 	void tty_write_str(const char* str);
 	void tty_set_fg_color(ubyte color);
 	void tty_set_bg_color(ubyte color);
+	void tty_reset();
 	void tty_place_cursor(uint16 col, uint16 row);
 	void tty_clear();
 }
