@@ -40,6 +40,7 @@
 	#include <tupai/i686/kbd.hpp>
 	#include <tupai/i686/pit.hpp>
 	#include <tupai/i686/paging.hpp>
+	#include <tupai/i686/serial.hpp>
 #endif
 
 namespace tupai
@@ -105,8 +106,11 @@ namespace tupai
 	}
 
 	// Kernel early
-	void kearly()
+	void kearly(MultibootHeader* multiboot_header, uint32 multiboot_magic, uint32 stack)
 	{
+		//for (int i = 0; i < 64; i ++)
+		//	((byte*)(multiboot_header->framebuffer_address + 0xC0000000))[i] = 0xFF;
+
 		early::ansi_init();
 
 		//tty_init();
@@ -125,6 +129,9 @@ namespace tupai
 			gdt_init();
 			kmain_write_check("Initiated GDT");
 
+			serial_open(1);
+			kmain_write_check("Opened COM1 serial port");
+
 			idt_init();
 			kmain_write_check("Initiated IDT");
 
@@ -133,6 +140,9 @@ namespace tupai
 
 			kbd_init();
 			kmain_write_check("Initiated keyboard");
+
+			serial_init();
+			kmain_write_check("Initiated serial");
 		#endif
 
 		syscall_init();

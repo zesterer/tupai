@@ -42,7 +42,7 @@ namespace tupai
 			break;
 		case klog_level::WARNING:
 			{
-				tty_set_fg_color(tty_color::LIGHT_BROWN);
+				tty_set_fg_color(tty_color::LIGHT_YELLOW);
 				tty_write_str("WARNING");
 			}
 			break;
@@ -60,7 +60,7 @@ namespace tupai
 			break;
 		default:
 			{
-				tty_set_fg_color(tty_color::BROWN);
+				tty_set_fg_color(tty_color::YELLOW);
 				tty_write_str("LOG");
 			}
 			break;

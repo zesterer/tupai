@@ -1,5 +1,5 @@
 /*
-* 	file : kmain.hpp
+* 	file : serial.hpp
 *
 * 	This file is part of Tupai.
 *
@@ -17,17 +17,18 @@
 * 	along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TUPAI_KMAIN_HPP
-#define TUPAI_KMAIN_HPP
+#ifndef TUPAI_I686_SERIAL_HPP
+#define TUPAI_I686_SERIAL_HPP
 
-#if defined(SYSTEM_ARCH_i686)
-	#include <tupai/i686/multiboot.hpp>
-#endif
+// Tupai
+#include <tupai/type.hpp>
 
 namespace tupai
 {
-	extern "C" void kearly(MultibootHeader* multiboot_header, uint32 multiboot_magic, uint32 stack);
-	extern "C" void kmain();
+	void serial_init();
+	void serial_open(uint16 port, int32 baudrate = 57600, uint8 databits = 8, uint8 stopbits = 1, uint8 parity = 0x8);
+	void serial_write(uint16 port, char c);
+	void serial_write_str(uint16 port, const char* str);
 }
 
 #endif

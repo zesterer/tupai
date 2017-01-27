@@ -94,11 +94,11 @@ namespace tupai
 
 		while (true)
 		{
-			tty_set_fg_color(0x3);
+			tty_set_fg_color(tty_color::CYAN);
 			tty_write_str("kernel");
 			tty_reset();
 			tty_write('@');
-			tty_set_fg_color(0x4);
+			tty_set_fg_color(tty_color::RED);
 			tty_write_str("tupai");
 			tty_reset();
 			tty_write_str("> ");

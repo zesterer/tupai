@@ -20,7 +20,8 @@
 // Multiboot constants
 .set MB_ALIGN,    1 << 0
 .set MB_MEMINFO,  1 << 1
-.set MB_FLAGS,    MB_ALIGN | MB_MEMINFO
+.set MB_GRAPHICS, 1 << 2
+.set MB_FLAGS,    MB_ALIGN | MB_MEMINFO //| MB_GRAPHICS
 .set MB_MAGIC,    0x1BADB002
 .set MB_CHECKSUM, -(MB_MAGIC + MB_FLAGS)
 
@@ -33,7 +34,14 @@
 		.long MB_FLAGS
 		.long MB_CHECKSUM
 
-		.long _multiboot
+		.long _multiboot // Header address
+		.long 0          // Load address
+		.long 0          // Load end address
+		.long 0          // BSS address
+		.long 0          // Entry address
+
+		// Request a linear graphics mode
+		.long 0x00000000
 		.long 0
 		.long 0
-		.long 0
+		.long 32

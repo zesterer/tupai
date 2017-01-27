@@ -11,7 +11,7 @@ A simple monolithic operating system created for educational purposes.
 ## What is Tupai?
 ---
 
-Tupai is a monolithic operating system kernel. It is currently designed, implemented and maintained by myself, Joshua Barretto. Tupai does not aim for compliance with any particular standard, although borrows many ideas and paradigms from Linux, Unix and POSIX. Tupai is a personal venture into operating system development and is intended as a project to teach myself more about the field. However, I tend adhere to a rather strict coding convention and style, so the code may be useful to others wishing to learn from it.
+Tupai is a monolithic operating system kernel. It is currently designed, implemented and maintained by myself, Joshua Barretto. Tupai does not aim for compliance with any particular standard, although borrows many ideas and paradigms from Linux, Unix and POSIX. Tupai is a personal venture into operating system development and is intended as a project to teach myself more about the field. However, I tend to adhere to a rather strict coding convention and style, so the code may be useful to others wishing to learn from it.
 
 ## Projects Goals
 ---

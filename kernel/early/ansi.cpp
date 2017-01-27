@@ -24,6 +24,7 @@
 
 #if defined(SYSTEM_ARCH_i686)
 	#include <tupai/i686/vga.hpp>
+	#include <tupai/i686/serial.hpp>
 #endif
 
 namespace tupai
@@ -88,9 +89,15 @@ namespace tupai
 			if (ansi_escape_state != 0) // Escaped character
 				ansi_impl_handle_escaped(c);
 			else if (util::is_printable(c) || (ubyte)c >= 128) // Printable + Extended ASCII
+			{
 				ansi_vga_handle(c);
+				serial_write(1, c); // Default write to COM1
+			}
 			else if (util::is_newline(c)) // Newlines - \n and \r
+			{
 				ansi_vga_handle_newline(c);
+				serial_write(1, c); // Default write to COM1
+			}
 			else if (util::is_backspace(c)) // Backspace - \r
 				ansi_vga_handle_backspace(c);
 			else if (util::is_escape(c)) // Escape - 0x1B
@@ -222,13 +229,14 @@ namespace tupai
 			ansi_vga_set_pos(h, v);
 		}
 
+		// VGA
 		#if defined(SYSTEM_ARCH_i686)
 			static uint16 ansi_vga_get_row(uint pos) { return pos / ansi_vga_info.cols; }
 			static uint16 ansi_vga_get_col(uint pos) { return pos % ansi_vga_info.cols; }
 
 			static vga_color ansi_vga_conv_color(ubyte col)
 			{
-				const byte coltable[] = {0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9, 0xA, 0xB, 0xC, 0xD, 0xE, 0xF};
+				const byte coltable[] = {0x0, 0x4, 0x2, 0x6, 0x1, 0x5, 0x3, 0x7, 0x8, 0xC, 0xA, 0xE, 0x9, 0xD, 0xB, 0xF};
 				return (vga_color)coltable[col];
 			}
 
