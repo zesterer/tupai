@@ -129,8 +129,10 @@ namespace tupai
 			gdt_init();
 			kmain_write_check("Initiated GDT");
 
-			serial_open(1);
-			kmain_write_check("Opened COM1 serial port");
+			#if defined(CFG_ENABLE_SERIAL_DEBUG)
+				serial_open(1);
+				kmain_write_check("Opened COM1 serial port for debug");
+			#endif
 
 			idt_init();
 			kmain_write_check("Initiated IDT");

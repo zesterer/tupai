@@ -12,5 +12,5 @@ ifeq (@(TARGET_ARCH),x86_64)
 endif
 endif
 
-: foreach *.s *.c *.cpp                  |> !COMPILER_CPP $(CPP_FLAGS)       |>
+: foreach *.s *.S *.c *.cpp                  |> !COMPILER_CPP $(CPP_FLAGS)       |>
 : *.o $(OBJECTS) | $(KERNEL_LINK_SCRIPT) |> !LINKER -T $(KERNEL_LINK_SCRIPT) |> $(P_EXEC).bin

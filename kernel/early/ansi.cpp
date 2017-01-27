@@ -91,7 +91,10 @@ namespace tupai
 			else if (util::is_printable(c) || (ubyte)c >= 128) // Printable + Extended ASCII
 			{
 				ansi_vga_handle(c);
-				serial_write(1, c); // Default write to COM1
+
+				#if defined(CFG_ENABLE_SERIAL_DEBUG)
+					serial_write(1, c); // Default write to COM1
+				#endif
 			}
 			else if (util::is_newline(c)) // Newlines - \n and \r
 				ansi_vga_handle_newline(c);

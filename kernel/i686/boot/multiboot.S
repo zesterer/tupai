@@ -20,7 +20,13 @@
 // Multiboot constants
 .set MB_ALIGN,    1 << 0
 .set MB_MEMINFO,  1 << 1
-.set MB_GRAPHICS, 1 << 2
+
+#ifdef CFG_ENABLE_VGA_FRAMEBUFFER
+	.set MB_GRAPHICS, 1 << 2
+#else
+	.set MB_GRAPHICS, 0 << 2
+#endif
+
 .set MB_FLAGS,    MB_ALIGN | MB_MEMINFO | MB_GRAPHICS
 .set MB_MAGIC,    0x1BADB002
 .set MB_CHECKSUM, -(MB_MAGIC + MB_FLAGS)

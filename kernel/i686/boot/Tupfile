@@ -3,5 +3,5 @@ include_rules
 INCLUDES=-I../../../include
 
 ifeq (@(TARGET_ARCH),i686)
-	: foreach *.s *.c *.cpp |> !COMPILER_CPP $(CPP_FLAGS) |>
+	: foreach *.s *.S *.c *.cpp |> !COMPILER_CPP $(CPP_FLAGS) |>
 endif
