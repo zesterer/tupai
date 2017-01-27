@@ -22,7 +22,7 @@
 .global _boot_enable_paging
 
 .set PAGE_TABLE_SIZE, 1024
-.set KERNEL_PAGE_TABLE_NUM, 4
+.set KERNEL_PAGE_TABLE_NUM, 4 // 16 MB of memory
 
 .section .bss.boot
 

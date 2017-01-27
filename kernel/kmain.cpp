@@ -160,8 +160,16 @@ namespace tupai
 		early::print("\nFRAMEBUFFER_WIDTH : "); early::print(util::compose((uint32)multiboot_header->framebuffer_width, 10).val().raw());
 		early::print("\nFRAMEBUFFER_HEIGHT : "); early::print(util::compose((uint32)multiboot_header->framebuffer_height, 10).val().raw());
 
-		for (umem i = 0; i < 10000; i ++)
-			((byte*)(multiboot_header->framebuffer_address))[i] = 0xFF;
+		uint32 pitch = multiboot_header->framebuffer_pitch;
+		int w = multiboot_header->framebuffer_width;
+		int h = multiboot_header->framebuffer_height;
+		for (umem i = 0; i < w; i ++)
+		{
+			for (umem j = 0; j < h; j ++)
+			{
+				((uint32*)(multiboot_header->framebuffer_address))[(pitch / 4) * j + i] = (((i * 256) / w) & 0xFF) + ((((j * 256) / h) & 0xFF) << 16);
+			}
+		}
 	}
 
 	// Kernel main

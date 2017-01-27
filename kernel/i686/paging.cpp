@@ -86,6 +86,13 @@ namespace tupai
 				page_tables[pt].set_entry(entry, (pt * 1024 + entry) * 0x1000, 0x003);
 		}
 
+		// Identity map everything above 0xF0000000 - for PCI stuff
+		for (umem pt = 192; pt < 256; pt ++)
+		{
+			for (umem entry = 0; entry < 1024; entry ++)
+				page_tables[pt].set_entry(entry, 0xF0000000 | ((pt * 1024 + entry) * 0x1000), 0x003);
+		}
+
 		// Assign the 1GB of page tables to the page directory - set the 'present' bit to 1
 		for (umem pt = 0; pt < 256; pt ++)
 			page_directory.set_table(768 + pt, page_tables[pt].getPtr(), 0x003);
