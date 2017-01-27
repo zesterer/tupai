@@ -27,9 +27,9 @@
 .section .bss.boot
 	.align 4
 	_multiboot_header_magic:
-		.long
+		.skip 4
 	_multiboot_header_pointer:
-		.long
+		.skip 4
 
 // Now for some actual code
 .section .text.boot
@@ -40,8 +40,8 @@
 		movl $_boot_stack_top, %esp
 
 		// Move multiboot stuff into temporary storage
-		mov %eax, _multiboot_header_magic
-		mov %ebx, _multiboot_header_pointer
+		mov %eax, (_multiboot_header_magic)
+		mov %ebx, (_multiboot_header_pointer)
 
 		// Setup paging early on - map 4MB of 0x00000000 and 0xC0000000 to 0x00000000. Later on when we're in the kernel main, we can unmap the first section
 		call _boot_setup_paging
@@ -67,9 +67,9 @@
 		// Push multiboot stuff onto the stack ready for kearly
 		pushl %esp
 		mov _multiboot_header_magic, %eax
-		pushl (%eax)
+		pushl %eax
 		mov _multiboot_header_pointer, %eax
-		pushl (%eax)
+		pushl %eax
 
 		// We now have a C-worthy (get it?) environment
 		// Time to jump into kernel early C++

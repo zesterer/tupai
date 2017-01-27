@@ -108,8 +108,8 @@ namespace tupai
 	// Kernel early
 	void kearly(MultibootHeader* multiboot_header, uint32 multiboot_magic, uint32 stack)
 	{
-		//for (int i = 0; i < 64; i ++)
-		//	((byte*)(multiboot_header->framebuffer_address + 0xC0000000))[i] = 0xFF;
+		// Modify multiboot_header to work with virtual addresses
+		multiboot_header = (MultibootHeader*)((uint32)multiboot_header + KERNEL_VIRTUAL_OFFSET);
 
 		early::ansi_init();
 
@@ -152,6 +152,16 @@ namespace tupai
 		kmain_write_check("Initiated task scheduler");
 
 		kmain_write_check("Kernel boot procedure complete");
+
+		early::print("--- Multiboot ---\n");
+		early::print("MULTIBOOT_HEADER : 0x"); early::print(util::compose((uint32)multiboot_header, 16).val().raw());
+		early::print("\nFRAMEBUFFER_ADDRESS : 0x"); early::print(util::compose((uint32)multiboot_header->framebuffer_address, 16).val().raw());
+		early::print("\nFRAMEBUFFER_PITCH : 0x"); early::print(util::compose((uint32)multiboot_header->framebuffer_pitch, 16).val().raw());
+		early::print("\nFRAMEBUFFER_WIDTH : "); early::print(util::compose((uint32)multiboot_header->framebuffer_width, 10).val().raw());
+		early::print("\nFRAMEBUFFER_HEIGHT : "); early::print(util::compose((uint32)multiboot_header->framebuffer_height, 10).val().raw());
+
+		for (umem i = 0; i < 10000; i ++)
+			((byte*)(multiboot_header->framebuffer_address))[i] = 0xFF;
 	}
 
 	// Kernel main

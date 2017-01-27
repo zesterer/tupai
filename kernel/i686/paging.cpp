@@ -25,11 +25,51 @@
 
 namespace tupai
 {
-	// Temporary static page directory
-	uint32 page_directory[1024] __attribute__((aligned(4096)));
-	uint32 page_table_kernel[1024] __attribute__((aligned(4096)));
+	struct PageDirectory
+	{
+		uint32 entries[1024];
 
-	static void paging_set_table(umem index, uint32 page_table, uint16 flags);
+		uint32 getPtr()
+		{
+			return (uint32)(&entries[0]);
+		}
+
+		void set_table(umem index, uint32 page_table, uint16 flags)
+		{
+			this->entries[index] = ((page_table - KERNEL_VIRTUAL_OFFSET) & 0xFFFFF000) | ((uint32)flags & 0x00000FFF);
+		}
+
+		void clear()
+		{
+			for (umem i = 0; i < 1024; i ++)
+				this->set_table(i, (uint32)nullptr, 0x002);
+		}
+	} __attribute__((__packed__));
+
+	struct PageTable
+	{
+		uint32 entries[1024];
+
+		uint32 getPtr()
+		{
+			return (uint32)(&entries[0]);
+		}
+
+		void set_entry(umem index, uint32 address, uint16 flags)
+		{
+			this->entries[index] = (address & 0xFFFFF000) | ((uint32)flags & 0x00000FFF);
+		}
+
+		void clear()
+		{
+			for (umem i = 0; i < 1024; i ++)
+				this->set_entry(i, (uint32)nullptr, 0x002);
+		}
+	} __attribute__((__packed__));
+
+	// Temporary static page directory
+	PageDirectory page_directory __attribute__((aligned(4096)));
+	PageTable page_tables[256] __attribute__((aligned(4096)));
 
 	extern "C" void _load_page_directory(uint32 page_directory);
 	extern "C" void _enable_paging();
@@ -37,25 +77,23 @@ namespace tupai
 	void paging_init()
 	{
 		// Clear the page directory
-		for (umem i = 0; i < 1024; i ++)
-			paging_set_table(i, (uint32)nullptr, 0x002);
+		page_directory.clear();
 
-		// Create 4MB worth of pages for the kernel
-		for (umem i = 0; i < 1024; i ++)
-			page_table_kernel[i] = (((uint32)i) * 0x1000) | 0x003;
+		// Create 1GB worth of pages for the kernel
+		for (umem pt = 0; pt < 256; pt ++)
+		{
+			for (umem entry = 0; entry < 1024; entry ++)
+				page_tables[pt].set_entry(entry, (pt * 1024 + entry) * 0x1000, 0x003);
+		}
 
-		// Assign the 4MB of pages to the page directory - set the 'present' bit to 1
-		paging_set_table(768, (uint32)page_table_kernel, 0x003);
+		// Assign the 1GB of page tables to the page directory - set the 'present' bit to 1
+		for (umem pt = 0; pt < 256; pt ++)
+			page_directory.set_table(768 + pt, page_tables[pt].getPtr(), 0x003);
 	}
 
 	void paging_enable()
 	{
-		_load_page_directory((uint32)page_directory - KERNEL_VIRTUAL_OFFSET);
+		_load_page_directory(page_directory.getPtr() - KERNEL_VIRTUAL_OFFSET);
 		_enable_paging();
-	}
-
-	static void paging_set_table(umem index, uint32 page_table, uint16 flags)
-	{
-		page_directory[index] = ((page_table - KERNEL_VIRTUAL_OFFSET) & 0xFFFFF000) | ((uint32)flags & 0x00000FFF);
 	}
 }

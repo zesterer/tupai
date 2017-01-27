@@ -94,10 +94,7 @@ namespace tupai
 				serial_write(1, c); // Default write to COM1
 			}
 			else if (util::is_newline(c)) // Newlines - \n and \r
-			{
 				ansi_vga_handle_newline(c);
-				serial_write(1, c); // Default write to COM1
-			}
 			else if (util::is_backspace(c)) // Backspace - \r
 				ansi_vga_handle_backspace(c);
 			else if (util::is_escape(c)) // Escape - 0x1B
