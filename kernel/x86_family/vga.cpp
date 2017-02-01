@@ -85,6 +85,26 @@ namespace tupai
 		virtualtty vga_virtualtty;
 		uint32 vga_virtualtty_change_counter = 0;
 		static void vga_virtualtty_changed();
+		static const uint32 vga_virtualtty_palette[] =
+		{
+			0xFF000000, // Black
+			0xFF800000, // Red
+			0xFF008000, // Green
+			0xFF808000, // Yellow
+			0xFF800080, // Blue
+			0xFF000080, // Magenta
+			0xFF008080, // Cyan
+			0xFFC0C0C0, // Light Grey
+
+			0xFF808080, // Dark Grey
+			0xFFFF0000, // Light Red
+			0xFF00FF00, // Light Green
+			0xFFFFFF00, // Light Yellow
+			0xFF0000FF, // Light Blue
+			0xFFFF00FF, // Light Magenta
+			0xFF00FFFF, // Light Cyan
+			0xFFFFFFFF, // White
+		};
 
 		bool vga_init()
 		{
@@ -106,19 +126,6 @@ namespace tupai
 			vga_textmode_clear();
 
 			return vga_initiated;
-		}
-
-		safeval<console_config> vga_get_console_config()
-		{
-			console_config cfg;
-
-			cfg.columns = config.fb_width / 8;
-			cfg.rows = config.fb_height / 16;
-
-			if (vga_initiated)
-				return safeval<console_config>(cfg, true);
-			else
-				return safeval<console_config>(cfg, false);
 		}
 
 		safeptr<virtualtty> vga_get_virtualtty()
@@ -144,7 +151,15 @@ namespace tupai
 					if (entry.change_stamp < vga_virtualtty_change_counter)
 						continue;
 
-					blit_character(entry.c, i, j, 0xFFFFFFFF, 0x00000000);
+					uint32 fg_color = vga_virtualtty.default_fg_color;
+					uint32 bg_color = vga_virtualtty.default_bg_color;
+
+					if (entry.fg_color >= 0x0 && entry.fg_color <= 0xF)
+						fg_color = entry.fg_color;
+					if (entry.bg_color >= 0x0 && entry.bg_color <= 0xF)
+						bg_color = entry.bg_color;
+
+					blit_character(entry.c, i, j, vga_virtualtty_palette[fg_color], vga_virtualtty_palette[bg_color]);
 				}
 			}
 
@@ -179,7 +194,7 @@ namespace tupai
 
 			uint8* glyph = (uint8*)((umem)&_binary_screenfont_psfu_start + header->header_size + ((c > 0 && c < header->glyph_num) ? c : 0) * header->glyph_size);
 
-			bg_color = (bg_color & 0x00FFFFFF) | 0x40000000;
+			bg_color = (bg_color & 0x00FFFFFF) | 0xA0000000;
 
 			int offx = x * header->width;
 			int offy = y * header->height;

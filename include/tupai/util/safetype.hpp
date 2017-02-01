@@ -38,8 +38,9 @@ namespace tupai
 			this->ptr = ptr;
 			this->valid = valid;
 
-			if (!this->is_valid())
-				klog("safeptr initialised with an invalid pointer", klog_level::WARNING);
+			// TODO : fix this. It creates infinite loop if VGA is not enabled
+			//if (!this->is_valid())
+			//	klog("safeptr initialised with an invalid pointer", klog_level::WARNING);
 		}
 
 	public:

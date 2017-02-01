@@ -22,70 +22,31 @@
 
 // Tupai
 #include <tupai/type.hpp>
+#include <tupai/util/safetype.hpp>
+#include <tupai/virtualtty.hpp>
 
 namespace tupai
 {
-	struct console_config
-	{
-		uint columns;
-		uint rows;
-	};
-
-	struct ConsoleCmd
-	{
-		enum class Type
-		{
-			WRITECHAR,
-			CLEAR,
-			MOVE,
-			SETFORECOLOR,
-			SETBACKCOLOR,
-			RESET,
-
-			NONE,
-		};
-
-		struct WriteChar { char c; WriteChar(char c) { this->c = c; } };
-		struct Clear { int mode; Clear(int mode){ this->mode = mode; } };
-		struct Move { uint col; uint row; Move(uint col, uint row){ this->col = col; this->row = row; } };
-		struct SetForeColor { uint8 color; SetForeColor(uint8 color){ this->color = color; } };
-		struct SetBackColor { uint8 color; SetBackColor(uint8 color){ this->color = color; } };
-		struct Reset {  };
-
-		Type type;
-
-		union
-		{
-			WriteChar write_char;
-			Clear clear;
-			Move move;
-			SetForeColor set_fore_color;
-			SetBackColor set_back_color;
-			Reset reset;
-		};
-
-		ConsoleCmd();
-		ConsoleCmd(WriteChar data);
-		ConsoleCmd(Clear data);
-		ConsoleCmd(Move data);
-		ConsoleCmd(SetForeColor data);
-		ConsoleCmd(SetBackColor data);
-		ConsoleCmd(Reset data);
-	};
-
-	struct Console
+	struct console
 	{
 	private:
-		int escape_state;
-		int escape_num[2];
+		int ansi_esc_state = 0;
+		int ansi_esc_num[2] = { 1, 1 };
 
-		ConsoleCmd handle_escaped(char c);
-		ConsoleCmd handle_sgr(int code);
+		virtualtty* vtty = nullptr;
+
+		void handle_escaped(char c);
+		void clear();
+		void set_sgr(int code);
+		void move(int col, int row);
 
 	public:
-		Console();
-		ConsoleCmd write(char c);
+		void set_virtualtty(virtualtty* vtty);
+		void write_char(char c);
 	};
+
+	void console_init_global();
+	safeptr<console> console_get_global();
 }
 
 #endif

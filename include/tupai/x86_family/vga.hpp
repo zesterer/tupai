@@ -23,7 +23,6 @@
 // Tupai
 #include <tupai/type.hpp>
 #include <tupai/util/safetype.hpp>
-#include <tupai/console.hpp>
 #include <tupai/virtualtty.hpp>
 
 namespace tupai
@@ -31,7 +30,6 @@ namespace tupai
 	namespace x86_family
 	{
 		bool vga_init();
-		safeval<console_config> vga_get_console_config();
 
 		safeptr<virtualtty> vga_get_virtualtty();
 		void vga_textmode_put_char(char c, uint16 col, uint16 row);

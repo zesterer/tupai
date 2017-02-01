@@ -42,13 +42,18 @@ namespace tupai
 		uint32 cursor;
 		byte default_fg_color;
 		byte default_bg_color;
+		byte fg_color;
+		byte bg_color;
 
 		uint32 change_counter = 0;
 
 		void (*change_signal_func)() = nullptr;
 
-		void place_entry(uint32 c, uint16 col, uint16 row, byte fg_color, byte bg_color);
-		void write_entry(uint32 c, byte fg_color, byte bg_color);
+		void place_entry(uint32 c, uint16 col, uint16 row);
+		void write_entry(uint32 c);
+		void set_fg_color(byte fg_color);
+		void set_bg_color(byte bg_color);
+		void reset_color();
 		void clear();
 		void move(uint16 col, uint16 row);
 	};

@@ -20,68 +20,107 @@
 // Tupai
 #include <tupai/console.hpp>
 #include <tupai/util/char.hpp>
-#include <tupai/util/math.hpp>
+
+#if defined(SYSTEM_ARCH_i686)
+	#include <tupai/x86_family/vga.hpp>
+#endif
 
 namespace tupai
 {
-	ConsoleCmd::ConsoleCmd() { this->type = ConsoleCmd::Type::NONE; }
-	ConsoleCmd::ConsoleCmd(ConsoleCmd::WriteChar data) { this->type = ConsoleCmd::Type::WRITECHAR; this->write_char = data; }
-	ConsoleCmd::ConsoleCmd(ConsoleCmd::Clear data) { this->type = ConsoleCmd::Type::CLEAR; this->clear = data; }
-	ConsoleCmd::ConsoleCmd(ConsoleCmd::Move data) { this->type = ConsoleCmd::Type::MOVE; this->move = data; }
-	ConsoleCmd::ConsoleCmd(ConsoleCmd::SetForeColor data) { this->type = ConsoleCmd::Type::SETFORECOLOR; this->set_fore_color = data; }
-	ConsoleCmd::ConsoleCmd(ConsoleCmd::SetBackColor data) { this->type = ConsoleCmd::Type::SETBACKCOLOR; this->set_back_color = data; }
-	ConsoleCmd::ConsoleCmd(ConsoleCmd::Reset data) { this->type = ConsoleCmd::Type::RESET; this->reset = data; }
-
-	Console::Console()
+	void console::set_virtualtty(virtualtty* vtty)
 	{
-		this->escape_state = 0;
-		this->escape_num[0] = 1;
-		this->escape_num[1] = 1;
+		this->vtty = vtty;
 	}
 
-	ConsoleCmd Console::write(char c)
+	void console::write_char(char c)
 	{
-		if (this->escape_state != 0) // Escaped character
-			return this->handle_escaped(c);
-		else if (util::is_printable(c) || (ubyte)c >= 128) // Printable + Extended ASCII
-			return ConsoleCmd(ConsoleCmd::WriteChar(c));
-		else if (util::is_newline(c)) // Newlines - \n and \r
-			return ConsoleCmd(ConsoleCmd::WriteChar(c));
-		else if (util::is_backspace(c)) // Backspace - \r
-			return ConsoleCmd(ConsoleCmd::WriteChar(c));
-		else if (util::is_escape(c)) // Escape - 0x1B
-			this->escape_state = 1;
-
-		return ConsoleCmd();
+		if (this->ansi_esc_state != 0)
+			this->handle_escaped(c);
+		else if (util::is_escape(c))
+			this->ansi_esc_state = 1;
+		else
+		{
+			if (this->vtty != nullptr)
+				this->vtty->write_entry(c);
+		}
 	}
 
-	ConsoleCmd Console::handle_escaped(char c)
+	void console::clear()
+	{
+		if (this->vtty != nullptr)
+			this->vtty->clear();
+	}
+
+	void console::set_sgr(int code)
+	{
+		if (this->vtty != nullptr)
+		{
+			if (code == 0)
+				this->vtty->reset_color();
+			else if (code >= 30 && code <= 37)
+				this->vtty->set_fg_color(code - 30);
+			else if (code >= 90 && code <= 97)
+				this->vtty->set_fg_color(8 + code - 90);
+			else if (code >= 40 && code <= 47)
+				this->vtty->set_bg_color(code - 40);
+			else if (code >= 100 && code <= 107)
+				this->vtty->set_bg_color(8 + code - 100);
+		}
+	}
+
+	void console::move(int col, int row)
+	{
+		if (this->vtty != nullptr)
+			this->vtty->move(col, row);
+	}
+
+	void console::handle_escaped(char c)
 	{
 		bool rehandle = false; // Whether the character should be rehandled (on a state boundary, for example)
-		switch (this->escape_state)
+		switch (this->ansi_esc_state)
 		{
 		case 1:
 			{
-				if (c == '[') // Check for CSI code
-					this->escape_state = 2;
-				else
-					{
-						this->escape_state = 0;
-						rehandle = true;
-					}
+				if (util::is_digit(c)) // Starts an escape sequence
+				{
+					this->ansi_esc_num[0] = 1 * util::digit_to_num(c).val();
+					this->ansi_esc_state = 2;
+				}
+				else // Return to normal - TODO: add CSI s and CSI u implementation here
+				{
+					this->ansi_esc_state = 0;
+					rehandle = true;
+				}
 			}
 			break;
 
 		case 2:
 			{
-				if (util::is_digit(c)) // Starts an escape sequence
+				if (util::is_digit(c))
 				{
-					this->escape_num[0] = 1 * util::digit_to_num(c).val();
-					this->escape_state = 3;
+					this->ansi_esc_num[0] *= 10;
+					this->ansi_esc_num[0] += util::digit_to_num(c).val();
+					this->ansi_esc_state = 2;
 				}
-				else // Return to normal - TODO: add CSI s and CSI u implementation here
+				else if (c == 'J') // Clear screen
 				{
-					this->escape_state = 0;
+					if (this->ansi_esc_num[0] == 2) // TODO : Add 0 and 1 after this!
+						this->clear();
+					this->ansi_esc_state = 0;
+				}
+				else if (c == 'm') // SGR code
+				{
+					this->set_sgr(this->ansi_esc_num[0]);
+					this->ansi_esc_state = 0;
+				}
+				else if (c == ';') // Second parameter
+				{
+					this->ansi_esc_num[1] = 0;
+					this->ansi_esc_state = 3;
+				}
+				else // Reset
+				{
+					this->ansi_esc_state = 0;
 					rehandle = true;
 				}
 			}
@@ -91,29 +130,12 @@ namespace tupai
 			{
 				if (util::is_digit(c))
 				{
-					this->escape_num[0] *= 10;
-					this->escape_num[0] += util::digit_to_num(c).val();
-					this->escape_state = 3;
-				}
-				else if (c == 'J') // Clear screen
-				{
-					this->escape_state = 0;
-					if (this->escape_num[0] == 2) // TODO : Add 0 and 1 after this!
-						return ConsoleCmd(ConsoleCmd::Clear(2));
-				}
-				else if (c == 'm') // SGR code
-				{
-					this->escape_state = 0;
-					return this->handle_sgr(this->escape_num[0]);
-				}
-				else if (c == ';') // Second parameter
-				{
-					this->escape_num[1] = 0;
-					this->escape_state = 4;
+					this->ansi_esc_num[1] = 1 * util::digit_to_num(c).val();
+					this->ansi_esc_state = 4;
 				}
 				else // Reset
 				{
-					this->escape_state = 0;
+					this->ansi_esc_state = 0;
 					rehandle = true;
 				}
 			}
@@ -123,33 +145,18 @@ namespace tupai
 			{
 				if (util::is_digit(c))
 				{
-					this->escape_num[1] = 1 * util::digit_to_num(c).val();
-					this->escape_state = 5;
-				}
-				else // Reset
-				{
-					this->escape_state = 0;
-					rehandle = true;
-				}
-			}
-			break;
-
-		case 5:
-			{
-				if (util::is_digit(c))
-				{
-					this->escape_num[1] *= 10;
-					this->escape_num[1] += util::digit_to_num(c).val();
-					this->escape_state = 5;
+					this->ansi_esc_num[1] *= 10;
+					this->ansi_esc_num[1] += util::digit_to_num(c).val();
+					this->ansi_esc_state = 4;
 				}
 				else if (c == 'f') // Move cursor H/V position
 				{
-					this->escape_state = 0;
-					return ConsoleCmd(ConsoleCmd::Move(this->escape_num[0], this->escape_num[1]));
+					this->move(ansi_esc_num[0], ansi_esc_num[1]);
+					this->ansi_esc_state = 0;
 				}
 				else
 				{
-					this->escape_state = 0;
+					this->ansi_esc_state = 0;
 					rehandle = true;
 				}
 			}
@@ -157,29 +164,33 @@ namespace tupai
 
 		case 0:
 		default: // Erroneous state
-			this->escape_state = 0;
+			this->ansi_esc_state = 0;
 			break;
 		}
 
 		if (rehandle)
-			return this->write(c);
-		else
-			return ConsoleCmd();
+			this->write_char(c);
 	}
 
-	ConsoleCmd Console::handle_sgr(int code)
-	{
-		if (code == 0)
-			return ConsoleCmd(ConsoleCmd::Reset());
-		else if (code >= 30 && code <= 37)
-			return ConsoleCmd(ConsoleCmd::SetForeColor(code - 30));
-		else if (code >= 90 && code <= 97)
-			return ConsoleCmd(ConsoleCmd::SetForeColor(8 + code - 90));
-		else if (code >= 40 && code <= 47)
-			return ConsoleCmd(ConsoleCmd::SetBackColor(code - 40));
-		else if (code >= 100 && code <= 107)
-			return ConsoleCmd(ConsoleCmd::SetBackColor(8 + code - 100));
+	// Global console
+	console global_console;
+	bool global_console_initiated = false;
 
-		return ConsoleCmd();
+	void console_init_global()
+	{
+		#if defined(SYSTEM_ARCH_i686)
+			virtualtty* vga_vtty = x86_family::vga_get_virtualtty().val();
+			global_console.set_virtualtty(vga_vtty);
+		#endif
+
+		global_console_initiated = true;
+	}
+
+	safeptr<console> console_get_global()
+	{
+		if (!global_console_initiated)
+			return safeptr<console>(nullptr, false);
+
+		return safeptr<console>(&global_console, true);
 	}
 }

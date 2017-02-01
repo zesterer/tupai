@@ -20,6 +20,7 @@
 // Tupai
 #include <tupai/early/out.hpp>
 #include <tupai/early/ansi.hpp>
+#include <tupai/console.hpp>
 
 namespace tupai
 {
@@ -27,6 +28,10 @@ namespace tupai
 	{
 		void printchar(char c)
 		{
+			safeptr<console> g_console = console_get_global();
+			if (g_console.is_valid())
+				g_console.val()->write_char(c);
+
 			if (ansi_get_initiated())
 				ansi_handle(c);
 		}

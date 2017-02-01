@@ -24,6 +24,7 @@
 #include <tupai/mempool.hpp>
 #include <tupai/syscall.hpp>
 #include <tupai/task.hpp>
+#include <tupai/console.hpp>
 #include <tupai/kdebug.hpp>
 
 #include <tupai/early/out.hpp>
@@ -111,31 +112,30 @@ namespace tupai
 	// Kernel early
 	void kearly(ptr_t mb_header, uint32 mb_magic, uint32 stack)
 	{
-		early::ansi_init();
-
-		//tty_init();
-		kmain_write_check("Initiated VGA driver");
-		kmain_write_check("Initiated kernel TTY");
+		//early::ansi_init();
 
 		mempool_init((ubyte*)mempool_begin, mempool_size, 64); // At 2 MB, 1 MB in size, composed of blocks of 64 B
 		kmain_write_check("Initiated dynamic memory pool");
 
 		#if defined(SYSTEM_ARCH_i686)
-
+			// Multiboot
 			x86_family::multiboot_init(mb_header, mb_magic);
 
+			// Paging
 			paging_init();
 			kmain_write_check("Initiated Paging");
 			paging_enable();
 			kmain_write_check("Enabled Paging");
 
+			// VGA
 			x86_family::vga_init();
-			virtualtty* tty = x86_family::vga_get_virtualtty().val();
+			kmain_write_check("Initiated VGA driver");
 
-			char tstr[] = "Hello world! \ngnadgnguiajiagljipgpjasgpajigpajipsjgapijgaijpiagasgmaagmapmsgmamigmsgmsgiagaapmnagjnnkznglnzolzgnzgonzgongopzghnzgsnihagiagigpjgiaiajgpiaghnapgnagnag";
-			for (uint i = 0; i < sizeof(tstr) / sizeof(char); i ++)
-				tty->write_entry(tstr[i], 0xFFFFFFFF, 0x00000000);
+			// Console
+			console_init_global();
+			kmain_write_check("Initiated kernel console");
 
+			// GDT
 			gdt_init();
 			kmain_write_check("Initiated GDT");
 
@@ -144,15 +144,19 @@ namespace tupai
 				kmain_write_check("Opened COM1 serial port for debug");
 			#endif
 
+			// IDT
 			idt_init();
 			kmain_write_check("Initiated IDT");
 
+			// PIT
 			pit_init();
 			kmain_write_check("Initiated PIT");
 
+			// Keyboard
 			kbd_init();
 			kmain_write_check("Initiated keyboard");
 
+			// Serial
 			serial_init();
 			kmain_write_check("Initiated serial");
 		#endif

@@ -24,7 +24,7 @@
 
 namespace tupai
 {
-	void virtualtty::place_entry(uint32 c, uint16 col, uint16 row, byte fg_color, byte bg_color)
+	void virtualtty::place_entry(uint32 c, uint16 col, uint16 row)
 	{
 		this->change_counter ++;
 
@@ -33,8 +33,8 @@ namespace tupai
 
 		ttyentry nttyentry;
 		nttyentry.c = c;
-		nttyentry.fg_color = fg_color;
-		nttyentry.bg_color = bg_color;
+		nttyentry.fg_color = this->fg_color;
+		nttyentry.bg_color = this->bg_color;
 		nttyentry.change_stamp = this->change_counter;
 
 		this->buffer[this->cursor] = nttyentry;
@@ -43,14 +43,14 @@ namespace tupai
 			this->change_signal_func();
 	}
 
-	void virtualtty::write_entry(uint32 c, byte fg_color, byte bg_color)
+	void virtualtty::write_entry(uint32 c)
 	{
 		uint32 col = this->cursor % this->cols;
 		uint32 row = this->cursor / this->cols;
 
 		if (util::is_printable(c) || (ubyte)c >= 128)
 		{
-			this->place_entry(c, col, row, fg_color, bg_color);
+			this->place_entry(c, col, row);
 			this->cursor += 1;
 		}
 		else if (util::is_newline(c))
@@ -60,8 +60,27 @@ namespace tupai
 		else if (util::is_backspace(c))
 		{
 			if (this->cursor > 0)
+			{
 				this->cursor --;
+				this->place_entry(' ', col, row);
+			}
 		}
+	}
+
+	void virtualtty::set_fg_color(byte fg_color)
+	{
+		this->fg_color = fg_color;
+	}
+
+	void virtualtty::set_bg_color(byte bg_color)
+	{
+		this->bg_color = bg_color;
+	}
+
+	void virtualtty::reset_color()
+	{
+		this->fg_color = this->default_fg_color;
+		this->bg_color = this->default_bg_color;
 	}
 
 	void virtualtty::clear()
@@ -102,6 +121,8 @@ namespace tupai
 		ntty.cursor = 0;
 		ntty.default_fg_color = 0xF;
 		ntty.default_bg_color = 0x0;
+		ntty.fg_color = ntty.default_fg_color;
+		ntty.bg_color = ntty.default_bg_color;
 
 		uint32 size = ntty.cols * ntty.rows;
 		ntty.buffer = util::alloc<ttyentry>(size).val();
