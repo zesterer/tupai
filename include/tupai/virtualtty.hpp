@@ -53,6 +53,7 @@ namespace tupai
 		void write_entry(uint32 c);
 		void set_fg_color(byte fg_color);
 		void set_bg_color(byte bg_color);
+		void scroll(uint16 rows);
 		void reset_color();
 		void clear();
 		void move(uint16 col, uint16 row);

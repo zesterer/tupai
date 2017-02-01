@@ -21,6 +21,7 @@
 #include <tupai/virtualtty.hpp>
 #include <tupai/util/mem.hpp>
 #include <tupai/util/char.hpp>
+#include <tupai/util/math.hpp>
 
 namespace tupai
 {
@@ -48,10 +49,13 @@ namespace tupai
 		uint32 col = this->cursor % this->cols;
 		uint32 row = this->cursor / this->cols;
 
+		// Force a redraw of the old cursor position
+		this->buffer[this->cursor].change_stamp = this->change_counter;
+
 		if (util::is_printable(c) || (ubyte)c >= 128)
 		{
 			this->place_entry(c, col, row);
-			this->cursor += 1;
+			this->cursor ++;
 		}
 		else if (util::is_newline(c))
 		{
@@ -64,6 +68,11 @@ namespace tupai
 				this->cursor --;
 				this->place_entry(' ', col, row);
 			}
+		}
+
+		while (this->cursor >= this->cols * this->rows)
+		{
+			this->scroll(1);
 		}
 	}
 
@@ -102,9 +111,45 @@ namespace tupai
 			this->change_signal_func();
 	}
 
+	void virtualtty::scroll(uint16 rows)
+	{
+		this->change_counter ++;
+
+		for (uint16 row = 0; row < this->rows; row ++)
+		{
+			for (uint16 col = 0; col < this->cols; col ++)
+			{
+				ttyentry tmp;
+
+				if ((row + rows) * cols > 0 && (row + rows) * cols < this->cols * this->rows)
+				{
+					tmp = this->buffer[(row + rows) * this->cols + col];
+				}
+				else
+				{
+					tmp.c = ' ';
+					tmp.fg_color = this->default_fg_color;
+					tmp.bg_color = this->default_bg_color;
+				}
+
+				tmp.change_stamp = this->change_counter;
+
+				this->buffer[row * this->cols + col] = tmp;
+			}
+		}
+
+		this->cursor -= this->cols * rows;//util::min(this->cursor, (uint32)this->cols * rows);
+
+		if (this->change_signal_func != nullptr)
+			this->change_signal_func();
+	}
+
 	void virtualtty::move(uint16 col, uint16 row)
 	{
 		this->change_counter ++;
+
+		// Force a redraw of the old cursor position
+		this->buffer[this->cursor].change_stamp = this->change_counter;
 
 		this->cursor = row * this->cols + col;
 

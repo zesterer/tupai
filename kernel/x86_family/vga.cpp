@@ -163,6 +163,10 @@ namespace tupai
 				}
 			}
 
+			uint16 cursor_col = (vga_virtualtty.cursor + 1) % vga_virtualtty.cols; // TODO : Work out why this must be +1
+			uint16 cursor_row = (vga_virtualtty.cursor + 1) / vga_virtualtty.cols;
+			blit_character(' ', cursor_col, cursor_row, 0xFFFFFFFF, 0xFFFFFFFF);
+
 			vga_virtualtty_change_counter = vga_virtualtty.change_counter;
 		}
 
