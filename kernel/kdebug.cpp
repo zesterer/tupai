@@ -72,6 +72,11 @@ namespace tupai
 		tty_write('\n');
 	}
 
+	void klog_init(const char* msg, bool success)
+	{
+		klog(msg, success ? klog_level::INFO : klog_level::ERROR);
+	}
+
 	void kpanic(const char* msg, uint32 error)
 	{
 		klog(msg, klog_level::PANIC);

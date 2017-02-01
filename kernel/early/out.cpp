@@ -27,13 +27,17 @@ namespace tupai
 	{
 		void printchar(char c)
 		{
-			ansi_handle(c);
+			if (ansi_get_initiated())
+				ansi_handle(c);
 		}
 
 		void print(const char* string)
 		{
-			for (umem i = 0; string[i] != '\0'; i ++)
-				ansi_handle(string[i]);
+			if (ansi_get_initiated())
+			{
+				for (umem i = 0; string[i] != '\0'; i ++)
+					ansi_handle(string[i]);
+			}
 		}
 	}
 }

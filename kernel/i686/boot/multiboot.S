@@ -21,7 +21,7 @@
 .set MB_ALIGN,    1 << 0
 .set MB_MEMINFO,  1 << 1
 
-#ifdef CFG_ENABLE_VGA_FRAMEBUFFER
+#if defined(CFG_ENABLE_VGA_FRAMEBUFFER)
 	.set MB_GRAPHICS, 1 << 2
 #else
 	.set MB_GRAPHICS, 0 << 2
@@ -47,7 +47,7 @@
 		.long 0          // Entry address
 
 		// Request a linear graphics mode
-		.long 0x00000000
-		.long 0
-		.long 0
-		.long 32
+		.long 0x00000001
+		.long 1366
+		.long 768
+		.long 8

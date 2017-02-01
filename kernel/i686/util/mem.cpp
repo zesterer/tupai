@@ -1,5 +1,5 @@
 /*
-* 	file : ansi.hpp
+* 	file : mem.cpp
 *
 * 	This file is part of Tupai.
 *
@@ -17,20 +17,13 @@
 * 	along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TUPAI_EARLY_ANSI_HPP
-#define TUPAI_EARLY_ANSI_HPP
-
 // Tupai
-#include <tupai/type.hpp>
+#include <tupai/util/mem.hpp>
 
 namespace tupai
 {
-	namespace early
+	namespace util
 	{
-		bool ansi_init();
-		bool ansi_get_initiated();
-		void ansi_handle(char c);
+		
 	}
 }
-
-#endif

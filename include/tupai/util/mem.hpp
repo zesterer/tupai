@@ -1,5 +1,5 @@
 /*
-* 	file : ansi.hpp
+* 	file : mem.hpp
 *
 * 	This file is part of Tupai.
 *
@@ -17,19 +17,30 @@
 * 	along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TUPAI_EARLY_ANSI_HPP
-#define TUPAI_EARLY_ANSI_HPP
+#ifndef TUPAI_UTIL_CONV_HPP
+#define TUPAI_UTIL_CONV_HPP
 
 // Tupai
 #include <tupai/type.hpp>
+#include <tupai/util/safetype.hpp>
+#include <tupai/mempool.hpp>
 
 namespace tupai
 {
-	namespace early
+	namespace util
 	{
-		bool ansi_init();
-		bool ansi_get_initiated();
-		void ansi_handle(char c);
+		template<typename T>
+		safeptr<T> alloc(umem n = 1)
+		{
+			T* ptr = (T*)mempool_alloc(sizeof(T) * n);
+			return safeptr<T>(ptr, ptr != nullptr);
+		}
+
+		template<typename T>
+		void dealloc(T* ptr)
+		{
+			mempool_dealloc(ptr);
+		}
 	}
 }
 

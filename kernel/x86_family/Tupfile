@@ -1,0 +1,7 @@
+include_rules
+
+INCLUDES=-I../../include
+
+ifeq (@(TARGET_ARCH),i686)
+	: foreach *.s *.S *.c *.cpp |> !COMPILER_CPP $(CPP_FLAGS) |>
+endif

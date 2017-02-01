@@ -1,5 +1,5 @@
 /*
-* 	file : ansi.hpp
+* 	file : virtualtty.hpp
 *
 * 	This file is part of Tupai.
 *
@@ -17,20 +17,43 @@
 * 	along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TUPAI_EARLY_ANSI_HPP
-#define TUPAI_EARLY_ANSI_HPP
+#ifndef TUPAI_VIRTUALTTY_HPP
+#define TUPAI_VIRTUALTTY_HPP
 
 // Tupai
 #include <tupai/type.hpp>
 
 namespace tupai
 {
-	namespace early
+	struct ttyentry
 	{
-		bool ansi_init();
-		bool ansi_get_initiated();
-		void ansi_handle(char c);
-	}
+		uint32 c;
+		byte fg_color;
+		byte bg_color;
+		uint32 change_stamp = 0;
+	};
+
+	struct virtualtty
+	{
+		ttyentry* buffer;
+
+		uint16 cols;
+		uint16 rows;
+		uint32 cursor;
+		byte default_fg_color;
+		byte default_bg_color;
+
+		uint32 change_counter = 0;
+
+		void (*change_signal_func)() = nullptr;
+
+		void place_entry(uint32 c, uint16 col, uint16 row, byte fg_color, byte bg_color);
+		void write_entry(uint32 c, byte fg_color, byte bg_color);
+		void clear();
+		void move(uint16 col, uint16 row);
+	};
+
+	virtualtty virtualtty_create(uint16 cols, uint16 rows);
 }
 
 #endif

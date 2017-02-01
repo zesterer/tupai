@@ -1,5 +1,5 @@
 /*
-* 	file : ansi.hpp
+* 	file : vga.hpp
 *
 * 	This file is part of Tupai.
 *
@@ -17,19 +17,17 @@
 * 	along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TUPAI_EARLY_ANSI_HPP
-#define TUPAI_EARLY_ANSI_HPP
+#ifndef TUPAI_x86_FAMILY_VGA_HPP
+#define TUPAI_x86_FAMILY_VGA_HPP
 
 // Tupai
 #include <tupai/type.hpp>
 
 namespace tupai
 {
-	namespace early
+	namespace x86_family
 	{
-		bool ansi_init();
-		bool ansi_get_initiated();
-		void ansi_handle(char c);
+		bool vga_init();
 	}
 }
 

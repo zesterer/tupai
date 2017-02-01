@@ -41,6 +41,9 @@
 	#include <tupai/i686/pit.hpp>
 	#include <tupai/i686/paging.hpp>
 	#include <tupai/i686/serial.hpp>
+
+	#include <tupai/x86_family/multiboot.hpp>
+	#include <tupai/x86_family/vga.hpp>
 #endif
 
 namespace tupai
@@ -106,11 +109,8 @@ namespace tupai
 	}
 
 	// Kernel early
-	void kearly(MultibootHeader* multiboot_header, uint32 multiboot_magic, uint32 stack)
+	void kearly(ptr_t mb_header, uint32 mb_magic, uint32 stack)
 	{
-		// Modify multiboot_header to work with virtual addresses
-		multiboot_header = (MultibootHeader*)((uint32)multiboot_header + KERNEL_VIRTUAL_OFFSET);
-
 		early::ansi_init();
 
 		//tty_init();
@@ -121,10 +121,20 @@ namespace tupai
 		kmain_write_check("Initiated dynamic memory pool");
 
 		#if defined(SYSTEM_ARCH_i686)
+
+			x86_family::multiboot_init(mb_header, mb_magic);
+
 			paging_init();
 			kmain_write_check("Initiated Paging");
 			paging_enable();
 			kmain_write_check("Enabled Paging");
+
+			x86_family::vga_init();
+			virtualtty* tty = x86_family::vga_get_virtualtty().val();
+
+			char tstr[] = "Hello world! \ngnadgnguiajiagljipgpjasgpajigpajipsjgapijgaijpiagasgmaagmapmsgmamigmsgmsgiagaapmnagjnnkznglnzolzgnzgonzgongopzghnzgsnihagiagigpjgiaiajgpiaghnapgnagnag";
+			for (uint i = 0; i < sizeof(tstr) / sizeof(char); i ++)
+				tty->write_entry(tstr[i], 0xFFFFFFFF, 0x00000000);
 
 			gdt_init();
 			kmain_write_check("Initiated GDT");
@@ -156,22 +166,14 @@ namespace tupai
 		kmain_write_check("Kernel boot procedure complete");
 
 		early::print("--- Multiboot ---\n");
-		early::print("MULTIBOOT_HEADER : 0x"); early::print(util::compose((uint32)multiboot_header, 16).val().raw());
-		early::print("\nFRAMEBUFFER_ADDRESS : 0x"); early::print(util::compose((uint32)multiboot_header->framebuffer_address, 16).val().raw());
-		early::print("\nFRAMEBUFFER_PITCH : 0x"); early::print(util::compose((uint32)multiboot_header->framebuffer_pitch, 16).val().raw());
-		early::print("\nFRAMEBUFFER_WIDTH : "); early::print(util::compose((uint32)multiboot_header->framebuffer_width, 10).val().raw());
-		early::print("\nFRAMEBUFFER_HEIGHT : "); early::print(util::compose((uint32)multiboot_header->framebuffer_height, 10).val().raw());
+		early::print("MULTIBOOT_HEADER : 0x"); early::print(util::compose((uint32)mb_header, 16).val().raw());
 
-		uint32 pitch = multiboot_header->framebuffer_pitch;
-		int w = multiboot_header->framebuffer_width;
-		int h = multiboot_header->framebuffer_height;
-		for (umem i = 0; i < w; i ++)
-		{
-			for (umem j = 0; j < h; j ++)
-			{
-				((uint32*)(multiboot_header->framebuffer_address))[(pitch / 4) * j + i] = (((i * 256) / w) & 0xFF) + ((((j * 256) / h) & 0xFF) << 16);
-			}
-		}
+		x86_family::multiboot_header::framebuffer fb = x86_family::multiboot_get_framebuffer();
+		early::print("\nFRAMEBUFFER_ADDRESS : 0x"); early::print(util::compose((uint32)fb.address, 16).val().raw());
+		early::print("\nFRAMEBUFFER_PITCH : 0x"); early::print(util::compose((uint32)fb.pitch, 16).val().raw());
+		early::print("\nFRAMEBUFFER_WIDTH : "); early::print(util::compose((uint32)fb.width, 10).val().raw());
+		early::print("\nFRAMEBUFFER_HEIGHT : "); early::print(util::compose((uint32)fb.height, 10).val().raw());
+		early::print("\nFRAMEBUFFER_TYPE : "); early::print(util::compose((uint32)fb.type, 10).val().raw());
 	}
 
 	// Kernel main

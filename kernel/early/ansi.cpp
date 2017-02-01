@@ -18,13 +18,16 @@
 */
 
 // Tupai
-#include <tupai/type.hpp>
+#include <tupai/early/ansi.hpp>
 #include <tupai/util/char.hpp>
 #include <tupai/util/math.hpp>
+#include <tupai/kdebug.hpp>
 
 #if defined(SYSTEM_ARCH_i686)
 	#include <tupai/i686/vga.hpp>
 	#include <tupai/i686/serial.hpp>
+
+	#include <tupai/x86_family/vga.hpp>
 #endif
 
 namespace tupai
@@ -33,6 +36,7 @@ namespace tupai
 	{
 		int ansi_escape_state = 0;
 		int ansi_escape_number[2] = {1, 1};
+		bool ansi_initiated = false;
 
 		// Implementation
 		static void ansi_impl_init();
@@ -66,10 +70,19 @@ namespace tupai
 			static void ansi_vga_reset();
 		#endif
 
-		void ansi_init() // stub
+		bool ansi_init() // stub
 		{
 			ansi_impl_init();
 			ansi_impl_clear();
+
+			ansi_initiated = true;
+			klog_init("Initiated ANSI", ansi_initiated);
+			return ansi_initiated;
+		}
+
+		bool ansi_get_initiated()
+		{
+			return ansi_initiated;
 		}
 
 		void ansi_handle(char c) // stub
@@ -248,6 +261,8 @@ namespace tupai
 
 			static void ansi_vga_handle(char c)
 			{
+				x86_family::vga_textmode_put_char(c, ansi_vga_get_col(ansi_vga_pos), ansi_vga_get_row(ansi_vga_pos));
+
 				// Place the character
 				ubyte color = vga_make_color(ansi_vga_fg, ansi_vga_bg);
 				vga_place_entry(c, color,  ansi_vga_get_col(ansi_vga_pos), ansi_vga_get_row(ansi_vga_pos));
@@ -284,6 +299,8 @@ namespace tupai
 
 			static void ansi_vga_clear()
 			{
+				x86_family::vga_textmode_clear();
+
 				// Clear the screen
 				for (uint16 row = 0; row < ansi_vga_info.rows; row ++)
 				{

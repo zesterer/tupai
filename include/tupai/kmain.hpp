@@ -20,13 +20,12 @@
 #ifndef TUPAI_KMAIN_HPP
 #define TUPAI_KMAIN_HPP
 
-#if defined(SYSTEM_ARCH_i686)
-	#include <tupai/i686/multiboot.hpp>
-#endif
+// Tupai
+#include <tupai/type.hpp>
 
 namespace tupai
 {
-	extern "C" void kearly(MultibootHeader* multiboot_header, uint32 multiboot_magic, uint32 stack);
+	extern "C" void kearly(ptr_t mb_header, uint32 mb_magic, uint32 stack);
 	extern "C" void kmain();
 }
 

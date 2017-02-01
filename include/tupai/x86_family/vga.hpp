@@ -1,5 +1,5 @@
 /*
-* 	file : ansi.hpp
+* 	file : vga.hpp
 *
 * 	This file is part of Tupai.
 *
@@ -17,19 +17,25 @@
 * 	along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TUPAI_EARLY_ANSI_HPP
-#define TUPAI_EARLY_ANSI_HPP
+#ifndef TUPAI_X86_FAMILY_VGA_HPP
+#define TUPAI_X86_FAMILY_VGA_HPP
 
 // Tupai
 #include <tupai/type.hpp>
+#include <tupai/util/safetype.hpp>
+#include <tupai/console.hpp>
+#include <tupai/virtualtty.hpp>
 
 namespace tupai
 {
-	namespace early
+	namespace x86_family
 	{
-		bool ansi_init();
-		bool ansi_get_initiated();
-		void ansi_handle(char c);
+		bool vga_init();
+		safeval<console_config> vga_get_console_config();
+
+		safeptr<virtualtty> vga_get_virtualtty();
+		void vga_textmode_put_char(char c, uint16 col, uint16 row);
+		void vga_textmode_clear();
 	}
 }
 

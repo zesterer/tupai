@@ -59,6 +59,14 @@ namespace tupai
 			else
 				kpanic("safeptr attempted to dereference an invalid pointer");
 		}
+
+		T* val()
+		{
+			if (this->is_valid())
+				return this->ptr;
+			else
+				kpanic("safeptr attempted to evaluate an invalid pointer");
+		}
 	};
 
 	template <typename T>
