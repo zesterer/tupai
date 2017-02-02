@@ -31,12 +31,18 @@ namespace tupai
 	namespace x86_family
 	{
 		extern "C" byte _binary_screenfont_psfu_start;
+		extern "C" byte _binary_wallpaper_bmp_start;
 
 		static void vga_textmode_place_cursor(uint16 col, uint16 row);
 		static void vga_textmode_place_entry(uint32 c, uint16 col, uint16 row, byte fg_color, byte bg_color);
 
 		static inline uint32 color_blend(uint32 lower, uint32 higher);
 		static void blit_character(uint32 c, uint16 x, uint16 y, uint32 fg_color, uint32 bg_color);
+
+		struct bmp_header // TODO : this
+		{
+
+		};
 
 		struct psf2_header
 		{
@@ -273,9 +279,9 @@ namespace tupai
 				return;
 
 			psf2_header* header = (psf2_header*)&_binary_screenfont_psfu_start;
-
 			uint8* glyph = (uint8*)((umem)&_binary_screenfont_psfu_start + header->header_size + ((c > 0 && c < header->glyph_num) ? c : 0) * header->glyph_size);
 
+			// Translucent background
 			bg_color = (bg_color & 0x00FFFFFF) | 0xA0000000;
 
 			int offx = x * header->width;
@@ -292,16 +298,20 @@ namespace tupai
 			{
 				for (uint16 i = 0; i < header->width; i ++)
 				{
+					// Temporary hack
+					uint32 back = ((uint32*)&_binary_wallpaper_bmp_start)[0 + offx + i + (768 - (offy + j)) * 1024];
+					back = ((back & 0xFF000000) >> 24) | ((back & 0x0000FF00) << 8) | ((back & 0x000000FF) << 8);
+
 					if (c == ' ') // TODO : Remove this optimisation hack
 					{
-						buff[(skip) * (offy + j) + (offx + i)] = bg_color;
+						buff[(skip) * (offy + j) + (offx + i)] = color_blend(back, bg_color);;
 						continue;
 					}
 
 					if (((*glyph >> (header->width - i)) & 0x01) > 0)
 						buff[(skip) * (offy + j) + (offx + i)] = fg_color;
 					else
-						buff[(skip) * (offy + j) + (offx + i)] = bg_color;//color_blend(((((offx + i) * 256) / w) & 0xFF) + (((((offy + j) * 256) / h) & 0xFF) << 16), bg_color);
+						buff[(skip) * (offy + j) + (offx + i)] = color_blend(back, bg_color);//color_blend(((((offx + i) * 256) / w) & 0xFF) + (((((offy + j) * 256) / h) & 0xFF) << 16), bg_color);
 				}
 
 				glyph += (header->width + 7) / 8;

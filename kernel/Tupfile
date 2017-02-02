@@ -19,5 +19,9 @@ endif
 : data/fonts/@(CFG_VGA_SCREEN_FONT) |> cp %f %o |> screenfont.psfu
 : screenfont.psfu                   |> !OBJCOPY |>
 
+# Wallpaper
+: data/graphics/wallpaper.bmp |> cp %f %o |> wallpaper.bmp
+: wallpaper.bmp               |> !OBJCOPY |>
+
 # Linking
 : *.o $(OBJECTS) | $(KERNEL_LINK_SCRIPT) |> !LINKER -T $(KERNEL_LINK_SCRIPT) |> $(P_EXEC).bin
