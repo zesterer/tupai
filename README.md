@@ -6,7 +6,7 @@ Copyright 2016-2017
 
 A simple monolithic operating system created for educational purposes.
 
-![Tupai 0.2.0](doc/images/tupai-0-2-0.png)
+![Tupai 0.2.0](doc/images/tupai-0-4-0.png)
 
 ## What is Tupai?
 ---
@@ -17,9 +17,9 @@ Tupai is a monolithic operating system kernel. It is currently designed, impleme
 ---
 
 * Monolithic, multi-threaded kernel
-* Generic, cross-platform design
+* Generic, cross-platform design that lends itself to future ports to x86_64 and ARM
 * Implementation on at least i386-compatible machines, with a view to later implement on x86_64 and ARM platforms
-* Correct use of memory-protection systems such as paging and segmentation
+* Correct use of memory-protection systems such as paging and x86 segmentation
 * Interrupt-driven architecture
 * Preemptive, multi-tasked userland
 * VFS-based filesystem
@@ -30,10 +30,14 @@ Tupai is a monolithic operating system kernel. It is currently designed, impleme
 
 _See `docs/STATUS.md`_
 
+## Pre-built ISOs
+
+I regularly release pre-built ISO images of Tupai on ever feature change release cycle. You can find them here: [Zesterer's Projects](http://zesterer.homenet.org/projects.shtml)
+
 ## Building
 ---
 
-It is recommended that Tupai is built on a UNIX-like system. All other operating systems are untested.
+It is recommended that Tupai is built on a UNIX-like system. All other operating systems are untested. The build system is dependant on basic UNIX utilities like 'cp' and also a cross-compiling version of the GNU Compiler Collection.
 
 _See `docs/BUILDING.md`_
 

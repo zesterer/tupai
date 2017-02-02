@@ -170,15 +170,14 @@ namespace tupai
 
 		kmain_write_check("Kernel boot procedure complete");
 
-		early::print("--- Multiboot ---\n");
-		early::print("MULTIBOOT_HEADER : 0x"); early::print(util::compose((uint32)mb_header, 16).val().raw());
-
-		x86_family::multiboot_header::framebuffer fb = x86_family::multiboot_get_framebuffer();
-		early::print("\nFRAMEBUFFER_ADDRESS : 0x"); early::print(util::compose((uint32)fb.address, 16).val().raw());
-		early::print("\nFRAMEBUFFER_PITCH : 0x"); early::print(util::compose((uint32)fb.pitch, 16).val().raw());
-		early::print("\nFRAMEBUFFER_WIDTH : "); early::print(util::compose((uint32)fb.width, 10).val().raw());
-		early::print("\nFRAMEBUFFER_HEIGHT : "); early::print(util::compose((uint32)fb.height, 10).val().raw());
-		early::print("\nFRAMEBUFFER_TYPE : "); early::print(util::compose((uint32)fb.type, 10).val().raw());
+		//early::print("--- Multiboot ---\n");
+		//early::print("MULTIBOOT_HEADER : 0x"); early::print(util::compose((uint32)mb_header, 16).val().raw());
+		//x86_family::multiboot_header::framebuffer fb = x86_family::multiboot_get_framebuffer();
+		//early::print("\nFRAMEBUFFER_ADDRESS : 0x"); early::print(util::compose((uint32)fb.address, 16).val().raw());
+		//early::print("\nFRAMEBUFFER_PITCH : 0x"); early::print(util::compose((uint32)fb.pitch, 16).val().raw());
+		//early::print("\nFRAMEBUFFER_WIDTH : "); early::print(util::compose((uint32)fb.width, 10).val().raw());
+		//early::print("\nFRAMEBUFFER_HEIGHT : "); early::print(util::compose((uint32)fb.height, 10).val().raw());
+		//early::print("\nFRAMEBUFFER_TYPE : "); early::print(util::compose((uint32)fb.type, 10).val().raw());
 	}
 
 	// Kernel main

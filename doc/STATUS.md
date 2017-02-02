@@ -35,13 +35,19 @@
 	- [x] Higher-half kernel
 	- [x] Better kernel prompt (backspace)
 
+## 0.4.0
+
+	- [x] VBE graphics driver
+	- [x] Backwards-compatible text-mode fallback
+	- [x] New virtual tty implementation
+	- [x] Better Multiboot support
+
 ## Tasks
 ---
 
 	- [-] PAE Paging
 	- [-] Stream buffers / queues
 	- [ ] RAM filesystem
-	- [ ] VBE graphics driver
 	- [-] Advanced kernel prompt
 	- [ ] Kernel multi-tasking
 	- [ ] Fully implement libk
