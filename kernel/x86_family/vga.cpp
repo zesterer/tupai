@@ -115,8 +115,8 @@ namespace tupai
 			0xFF800000, // Red
 			0xFF008000, // Green
 			0xFF808000, // Yellow
-			0xFF800080, // Blue
-			0xFF000080, // Magenta
+			0xFF000080, // Blue
+			0xFF800080, // Magenta
 			0xFF008080, // Cyan
 			0xFFC0C0C0, // Light Grey
 
@@ -259,7 +259,6 @@ namespace tupai
 
 		static void vga_textmode_place_entry(uint32 c, uint16 col, uint16 row, byte fg_color, byte bg_color)
 		{
-			asm volatile ("xchg %bx, %bx");
 			uint16 color = ((bg_color & 0x0F) << 4) | (fg_color & 0x0F);
 			uint32 index = row * config.fb_width + col;
 
