@@ -6,7 +6,9 @@ Copyright 2016-2017
 
 A simple monolithic operating system created for educational purposes.
 
+
 ![Tupai 0.2.0](doc/images/tupai-0-4-0.png)
+
 
 ## What is Tupai?
 ---
@@ -31,13 +33,14 @@ Tupai is a monolithic operating system kernel. It is currently designed, impleme
 _See `docs/STATUS.md`_
 
 ## Pre-built ISOs
+---
 
 I regularly release pre-built ISO images of Tupai on ever feature change release cycle. You can find them here: [Zesterer's Projects](http://zesterer.homenet.org/projects.shtml)
 
 ## Building
 ---
 
-It is recommended that Tupai is built on a UNIX-like system. All other operating systems are untested. The build system is dependant on basic UNIX utilities like 'cp' and also a cross-compiling version of the GNU Compiler Collection.
+It is recommended that Tupai is built on a UNIX-like system. All other operating systems are untested. The build system is dependant on basic UNIX utilities like 'cp' and also a cross-compiling version of the GNU Compiler Collection, so this may somewhat limit the range of operating system hosts capable of building Tupai. My own build system is an x86_64 Arch Linux machine.
 
 _See `docs/BUILDING.md`_
 
@@ -65,4 +68,4 @@ _See `docs/LICENSE` or [GNU General Public License version 3](https://www.gnu.or
 
 * Resources
 	* The OSDev Wiki (wiki.osdev.org)
-	* Operating System Concepts, Sixth Edition (Silberschatz, Galvin, Gagne))
+	* Operating System Concepts, Sixth Edition (Silberschatz, Galvin, Gagne)
