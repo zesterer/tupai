@@ -48,6 +48,6 @@
 
 		// Request a linear graphics mode
 		.long 0x00000001
-		.long 1366
-		.long 768
-		.long 8
+		.long 0
+		.long 0
+		.long 32

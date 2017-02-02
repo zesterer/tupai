@@ -114,7 +114,7 @@ namespace tupai
 	{
 		//early::ansi_init();
 
-		mempool_init((ubyte*)mempool_begin, mempool_size, 64); // At 2 MB, 1 MB in size, composed of blocks of 64 B
+		mempool_init((ubyte*)mempool_begin, mempool_size, 64); // At 2 MB, 4 MB in size, composed of blocks of 64 B
 		kmain_write_check("Initiated dynamic memory pool");
 
 		#if defined(SYSTEM_ARCH_i686)
@@ -126,6 +126,16 @@ namespace tupai
 			kmain_write_check("Initiated Paging");
 			paging_enable();
 			kmain_write_check("Enabled Paging");
+
+			// Serial
+			serial_init();
+			kmain_write_check("Initiated serial");
+
+			// Serial debug
+			#if defined(CFG_ENABLE_SERIAL_DEBUG)
+				serial_open(1);
+				kmain_write_check("Opened COM1 serial port for debug");
+			#endif
 
 			// VGA
 			x86_family::vga_init();
@@ -139,11 +149,6 @@ namespace tupai
 			gdt_init();
 			kmain_write_check("Initiated GDT");
 
-			#if defined(CFG_ENABLE_SERIAL_DEBUG)
-				serial_open(1);
-				kmain_write_check("Opened COM1 serial port for debug");
-			#endif
-
 			// IDT
 			idt_init();
 			kmain_write_check("Initiated IDT");
@@ -155,10 +160,6 @@ namespace tupai
 			// Keyboard
 			kbd_init();
 			kmain_write_check("Initiated keyboard");
-
-			// Serial
-			serial_init();
-			kmain_write_check("Initiated serial");
 		#endif
 
 		syscall_init();

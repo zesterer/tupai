@@ -38,7 +38,7 @@ namespace tupai
 		nttyentry.bg_color = this->bg_color;
 		nttyentry.change_stamp = this->change_counter;
 
-		this->buffer[this->cursor] = nttyentry;
+		this->buffer[row * this->cols + col] = nttyentry;
 
 		if (this->change_signal_func != nullptr)
 			this->change_signal_func();
@@ -46,27 +46,26 @@ namespace tupai
 
 	void virtualtty::write_entry(uint32 c)
 	{
-		uint32 col = this->cursor % this->cols;
-		uint32 row = this->cursor / this->cols;
+		this->change_counter ++;
 
 		// Force a redraw of the old cursor position
 		this->buffer[this->cursor].change_stamp = this->change_counter;
 
 		if (util::is_printable(c) || (ubyte)c >= 128)
 		{
-			this->place_entry(c, col, row);
+			this->place_entry(c, this->cursor % this->cols, this->cursor / this->cols);
 			this->cursor ++;
 		}
 		else if (util::is_newline(c))
 		{
-			this->cursor = (row + 1) * this->cols;
+			this->cursor = (this->cursor / this->cols + 1) * this->cols;
 		}
 		else if (util::is_backspace(c))
 		{
 			if (this->cursor > 0)
 			{
 				this->cursor --;
-				this->place_entry(' ', col, row);
+				this->place_entry(' ', this->cursor % this->cols, this->cursor / this->cols);
 			}
 		}
 
@@ -74,6 +73,12 @@ namespace tupai
 		{
 			this->scroll(1);
 		}
+
+		// Force a redraw of the new cursor position
+		this->buffer[this->cursor].change_stamp = this->change_counter;
+
+		if (this->change_signal_func != nullptr)
+			this->change_signal_func();
 	}
 
 	void virtualtty::set_fg_color(byte fg_color)

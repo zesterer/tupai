@@ -21,6 +21,7 @@
 #include <tupai/early/out.hpp>
 #include <tupai/early/ansi.hpp>
 #include <tupai/console.hpp>
+#include <tupai/i686/serial.hpp>
 
 namespace tupai
 {
@@ -32,17 +33,15 @@ namespace tupai
 			if (g_console.is_valid())
 				g_console.val()->write_char(c);
 
-			if (ansi_get_initiated())
-				ansi_handle(c);
+			#if defined(CFG_ENABLE_SERIAL_DEBUG)
+				serial_write(1, c); // Default write to COM1
+			#endif
 		}
 
 		void print(const char* string)
 		{
-			if (ansi_get_initiated())
-			{
-				for (umem i = 0; string[i] != '\0'; i ++)
-					ansi_handle(string[i]);
-			}
+			for (umem i = 0; string[i] != '\0'; i ++)
+				printchar(string[i]);
 		}
 	}
 }
