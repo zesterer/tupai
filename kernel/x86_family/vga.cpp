@@ -26,6 +26,8 @@
 #include <tupai/util/mem.hpp>
 #include <tupai/kdebug.hpp>
 
+//#define DOUBLE_BUFFERED 0
+
 namespace tupai
 {
 	namespace x86_family
@@ -70,7 +72,14 @@ namespace tupai
 			uint32 glyph_size;
 			uint32 height;
 			uint32 width;
+
+			uint8* get_glyph(uint32 c)
+			{
+				return (uint8*)((umem)this + this->header_size + ((c > 0 && c < this->glyph_num) ? c : 0) * this->glyph_size);
+			}
 		};
+
+		psf2_header* screen_font;
 
 		struct vga_config
 		{
@@ -133,6 +142,9 @@ namespace tupai
 			config.fb_bpp = fb.bpp;
 			config.fb_type = (vga_config::framebuffer_type)fb.type;
 
+			// Load screen font
+			screen_font = (psf2_header*)&_binary_screenfont_psfu_start;
+
 			// If the video mode is textmode, we need to adjust the framebuffer address since we're in the higher half
 			if (config.fb_type == vga_config::framebuffer_type::RGB)
 			{
@@ -140,7 +152,7 @@ namespace tupai
 				rgb_buffered_framebuffer = util::alloc<uint32>(config.fb_width * config.fb_height).val();
 
 				// Set up a virtual TTY for the screen
-				vga_virtualtty = virtualtty_create(config.fb_width / 8, config.fb_height / 16);
+				vga_virtualtty = virtualtty_create(config.fb_width / screen_font->width, config.fb_height / screen_font->height);
 				vga_virtualtty.change_signal_func = vga_virtualtty_changed;
 			}
 			else if (config.fb_type == vga_config::framebuffer_type::EGA_TEXT)
@@ -228,8 +240,7 @@ namespace tupai
 			}
 
 			// Update the screen
-			//if (config.fb_type == vga_config::framebuffer_type::RGB) // RGB linear framebuffer mode
-				//vga_switch_buffers();
+			vga_switch_buffers();
 
 			vga_virtualtty_change_counter = vga_virtualtty.change_counter;
 		}
@@ -251,7 +262,12 @@ namespace tupai
 			asm volatile ("xchg %bx, %bx");
 			uint16 color = ((bg_color & 0x0F) << 4) | (fg_color & 0x0F);
 			uint32 index = row * config.fb_width + col;
-			((uint16*)config.fb_addr)[index] = (color << 8) | (uint8)c;
+
+			#ifdef DOUBLE_BUFFERED
+				textmode_buffered_framebuffer[index] = (color << 8) | (uint8)c;
+			#else
+				((uint16*)config.fb_addr)[index] = (color << 8) | (uint8)c;
+			#endif
 		}
 
 		static inline uint32 color_blend(uint32 lower, uint32 upper)
@@ -278,25 +294,25 @@ namespace tupai
 			if (config.fb_type != vga_config::framebuffer_type::RGB)
 				return;
 
-			psf2_header* header = (psf2_header*)&_binary_screenfont_psfu_start;
-			uint8* glyph = (uint8*)((umem)&_binary_screenfont_psfu_start + header->header_size + ((c > 0 && c < header->glyph_num) ? c : 0) * header->glyph_size);
+			uint8* glyph = screen_font->get_glyph(c);
 
 			// Translucent background
 			bg_color = (bg_color & 0x00FFFFFF) | 0xA0000000;
 
-			int offx = x * header->width;
-			int offy = y * header->height;
-			int w = config.fb_width;
-			int h = config.fb_height;
+			int offx = x * screen_font->width;
+			int offy = y * screen_font->height;
 
-			uint32* buff = config.fb_addr;
-			//uint32* buff = rgb_buffered_framebuffer;
-			uint32 skip = config.fb_pitch >> 2;
-			//uint32 skip = config.fb_width;
+			#ifdef DOUBLE_BUFFERED
+				uint32* buff = rgb_buffered_framebuffer;
+				uint32 skip = config.fb_width;
+			#else
+				uint32* buff = config.fb_addr;
+				uint32 skip = config.fb_pitch >> 2;
+			#endif
 
-			for (uint16 j = 0; j < header->height; j ++)
+			for (uint16 j = 0; j < screen_font->height; j ++)
 			{
-				for (uint16 i = 0; i < header->width; i ++)
+				for (uint16 i = 0; i < screen_font->width; i ++)
 				{
 					// Temporary hack
 					uint32 back = ((uint32*)&_binary_wallpaper_bmp_start)[0 + offx + i + (768 - (offy + j)) * 1024];
@@ -308,13 +324,13 @@ namespace tupai
 						continue;
 					}
 
-					if (((*glyph >> (header->width - i)) & 0x01) > 0)
+					if (((*glyph >> (screen_font->width - i)) & 0x01) > 0)
 						buff[(skip) * (offy + j) + (offx + i)] = fg_color;
 					else
 						buff[(skip) * (offy + j) + (offx + i)] = color_blend(back, bg_color);//color_blend(((((offx + i) * 256) / w) & 0xFF) + (((((offy + j) * 256) / h) & 0xFF) << 16), bg_color);
 				}
 
-				glyph += (header->width + 7) / 8;
+				glyph += (screen_font->width + 7) / 8;
 			}
 		}
 
@@ -339,14 +355,31 @@ namespace tupai
 
 		static void vga_switch_buffers()
 		{
+			#ifndef DOUBLE_BUFFERED
+				return;
+			#endif
+
 			if (!vga_initiated)
 				return;
 
-			for (uint32 i = 0; i < config.fb_width; i ++)
+			if (config.fb_type == vga_config::framebuffer_type::RGB) // RGB linear framebuffer mode
 			{
-				for (uint32 j = 0; j < config.fb_height; j ++)
+				for (uint32 i = 0; i < config.fb_width; i ++)
 				{
-					config.fb_addr[j * (config.fb_pitch / 4) + i] = rgb_buffered_framebuffer[j * config.fb_width + i];
+					for (uint32 j = 0; j < config.fb_height; j ++)
+					{
+						config.fb_addr[j * (config.fb_pitch / 4) + i] = rgb_buffered_framebuffer[j * config.fb_width + i];
+					}
+				}
+			}
+			else if (config.fb_type == vga_config::framebuffer_type::EGA_TEXT) // EGA text framebuffer mode
+			{
+				for (uint32 i = 0; i < config.fb_width; i ++)
+				{
+					for (uint32 j = 0; j < config.fb_height; j ++)
+					{
+						((uint16*)config.fb_addr)[j * config.fb_width + i] = textmode_buffered_framebuffer[j * config.fb_width + i];
+					}
 				}
 			}
 		}
