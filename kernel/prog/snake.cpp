@@ -153,7 +153,7 @@ namespace tupai
 				for (int i = 0; i < 80; i ++) tty_write(' ');
 				tty_place_cursor(0, 0);
 				libk::printf("Snake   Score : %i   Level : %i   WASD to move, Backspace to exit", score, level);
-				tty_set_bg_color(0x0);
+				tty_reset();
 			}
 
 			tty_place_cursor(0, 24);

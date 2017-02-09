@@ -47,7 +47,7 @@
 		.long 0          // Entry address
 
 		// Request a linear graphics mode
-		.long 0x00000001
+		.long 0x00000000
 		.long 0
 		.long 0
 		.long 32

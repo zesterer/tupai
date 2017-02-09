@@ -142,6 +142,8 @@ namespace tupai
 			config.fb_bpp = fb.bpp;
 			config.fb_type = (vga_config::framebuffer_type)fb.type;
 
+			uint16 virtualtty_width, virtualtty_height;
+
 			// Load screen font
 			screen_font = (psf2_header*)&_binary_screenfont_psfu_start;
 
@@ -151,9 +153,8 @@ namespace tupai
 				// Set up a framebuffer for double-buffering
 				rgb_buffered_framebuffer = util::alloc<uint32>(config.fb_width * config.fb_height).val();
 
-				// Set up a virtual TTY for the screen
-				vga_virtualtty = virtualtty_create(config.fb_width / screen_font->width, config.fb_height / screen_font->height);
-				vga_virtualtty.change_signal_func = vga_virtualtty_changed;
+				virtualtty_width = config.fb_width / screen_font->width;
+				virtualtty_height = config.fb_height / screen_font->height;
 			}
 			else if (config.fb_type == vga_config::framebuffer_type::EGA_TEXT)
 			{
@@ -163,10 +164,13 @@ namespace tupai
 				// Set up a framebuffer for double-buffering
 				textmode_buffered_framebuffer = util::alloc<uint16>(config.fb_width * config.fb_height).val();
 
-				// Set up a virtual TTY for the screen
-				vga_virtualtty = virtualtty_create(config.fb_width, config.fb_height);
-				vga_virtualtty.change_signal_func = vga_virtualtty_changed;
+				virtualtty_width = config.fb_width;
+				virtualtty_height = config.fb_height;
 			}
+
+			// Set up a virtual TTY for the screen
+			vga_virtualtty = virtualtty_create(virtualtty_width, virtualtty_height);
+			vga_virtualtty.change_signal_func = vga_virtualtty_changed;
 
 			// Everything is finished initiating
 			vga_initiated = true;
@@ -284,9 +288,11 @@ namespace tupai
 			byte g_upper = (upper >> 8)  & 0xFF;
 			byte b_upper = (upper >> 0)  & 0xFF;
 
-			byte r_final = (r_upper * a_upper + r_lower * (255 - a_upper)) >> 8;
-			byte g_final = (g_upper * a_upper + g_lower * (255 - a_upper)) >> 8;
-			byte b_final = (b_upper * a_upper + b_lower * (255 - a_upper)) >> 8;
+			byte inv_a_upper = 255 - a_upper;
+
+			byte r_final = (r_upper * a_upper + r_lower * inv_a_upper) >> 8;
+			byte g_final = (g_upper * a_upper + g_lower * inv_a_upper) >> 8;
+			byte b_final = (b_upper * a_upper + b_lower * inv_a_upper) >> 8;
 
 			return (0xFF << 24) | (r_final << 16) | (g_final << 8) | b_final << 0;
 		}
@@ -371,7 +377,7 @@ namespace tupai
 				{
 					for (uint32 j = 0; j < config.fb_height; j ++)
 					{
-						config.fb_addr[j * (config.fb_pitch / 4) + i] = rgb_buffered_framebuffer[j * config.fb_width + i];
+						config.fb_addr[j * (config.fb_pitch << 2) + i] = rgb_buffered_framebuffer[j * config.fb_width + i];
 					}
 				}
 			}

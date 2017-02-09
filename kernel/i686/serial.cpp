@@ -30,8 +30,13 @@ namespace tupai
 	static uint16 serial_get_port_value(uint16 port);
 	static bool serial_can_write(uint16 port);
 
+	bool serial_initiated = false;
+
 	void serial_init()
 	{
+		if (serial_initiated)
+			return;
+		
 		// Do nothing for now
 	}
 
