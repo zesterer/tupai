@@ -96,7 +96,7 @@ namespace tupai
 	void kbd_init()
 	{
 		// Set the keyboard IRQ handler
-		idt_set_entry(IDT_REMAP_OFFSET + 0x1, (uint32)kbd_irq_handler, sizeof(gdt_entry) * 1);
+		idt_set_entry(IDT_REMAP_OFFSET + 0x1, (uint32)kbd_irq_handler, 1);
 
 		// Allocate space for the ring buffer
 		kbd_ringbuffer.init(256);

@@ -31,6 +31,8 @@ namespace tupai
 		byte fg_color;
 		byte bg_color;
 		uint32 change_stamp = 0;
+
+		bool equals(const ttyentry& other);
 	};
 
 	struct virtualtty

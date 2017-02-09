@@ -54,7 +54,7 @@ namespace tupai
 
 	void syscall_init()
 	{
-		idt_set_entry(0x80, (uint32)syscall_irq_handler, sizeof(gdt_entry) * 1);
+		idt_set_entry(0x80, (uint32)syscall_irq_handler, 1);
 	}
 
 	void syscall_irq_handler_main(cpu_pushal state_pushal, cpu_int state_int)

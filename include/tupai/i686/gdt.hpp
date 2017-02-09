@@ -25,24 +25,6 @@
 
 namespace tupai
 {
-	struct gdt_entry
-	{
-		uint16 limit_low;
-		uint16 base_addr_low;
-		uint8  base_addr_mid;
-		uint8  access;
-		uint8  granularity;
-		uint8  base_addr_high;
-
-	} __attribute((packed));
-
-	struct gdt_desc
-	{
-		uint16 size;
-		uint32 offset;
-
-	} __attribute((packed));
-
 	const umem GDT_SIZE = 3;
 
 	void gdt_init();

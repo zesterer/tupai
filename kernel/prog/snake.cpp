@@ -48,6 +48,8 @@ namespace tupai
 
 			int level = 1;
 
+			tty_clear();
+			
 			while (true)
 			{
 				if (slen < 4)
@@ -101,8 +103,6 @@ namespace tupai
 				}
 				if (gameover)
 					break;
-
-				tty_clear();
 
 				int offx = (80 - 16) / 2;
 				int offy = (25 - 16) / 2;

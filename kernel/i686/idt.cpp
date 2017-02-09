@@ -137,7 +137,7 @@ namespace tupai
 		idt[irq].base_addr_low = address & 0xFFFF;
 		idt[irq].base_addr_high = (address & 0xFFFF0000) >> 16;
 
-		idt[irq].selector = selector;
+		idt[irq].selector = selector * 8; // Size, in bytes, of IDT entry
 		idt[irq].zero = 0;
 		idt[irq].type_attr = 0x8E;
 

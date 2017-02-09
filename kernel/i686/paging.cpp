@@ -23,6 +23,8 @@
 #include <tupai/early/out.hpp>
 #include <tupai/util/conv.hpp>
 
+#include <tupai/x86_family/multiboot.hpp>
+
 namespace tupai
 {
 	struct PageDirectory
@@ -86,11 +88,12 @@ namespace tupai
 				page_tables[pt].set_entry(entry, (pt * 1024 + entry) * 0x1000, 0x003);
 		}
 
-		// Identity map everything above 0xF0000000 - for PCI stuff
-		for (umem pt = 192; pt < 256; pt ++)
+		// Identity map everything above 0xE0000000 - for Framebuffer / PCI stuff
+		uint32 pos = x86_family::multiboot_get_framebuffer().address; // TOTAL HACK!!!
+		for (umem pt = (pos - 0xC0000000) / 0x400000; pt < 256; pt ++)
 		{
 			for (umem entry = 0; entry < 1024; entry ++)
-				page_tables[pt].set_entry(entry, 0xF0000000 | ((pt * 1024 + entry) * 0x1000), 0x003);
+				page_tables[pt].set_entry(entry, pos | ((pt * 1024 + entry) * 0x1000), 0x003);
 		}
 
 		// Assign the 1GB of page tables to the page directory - set the 'present' bit to 1

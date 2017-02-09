@@ -314,22 +314,23 @@ namespace tupai
 				for (uint16 i = 0; i < screen_font->width; i ++)
 				{
 					// Temporary hack
-					uint32 back = ((uint32*)&_binary_wallpaper_bmp_start)[0 + offx + i + (768 - (offy + j)) * 1024];
+					uint32 back = ((uint32*)&_binary_wallpaper_bmp_start)[0 + offx + i + ((768 - (offy + j)) << 10)];
 					back = ((back & 0xFF000000) >> 24) | ((back & 0x0000FF00) << 8) | ((back & 0x000000FF) << 8);
 
+					uint32 index = skip * (offy + j) + (offx + i);
 					if (c == ' ') // TODO : Remove this optimisation hack
 					{
-						buff[(skip) * (offy + j) + (offx + i)] = color_blend(back, bg_color);;
+						buff[index] = color_blend(back, bg_color);;
 						continue;
 					}
 
-					if (((*glyph >> (screen_font->width - i)) & 0x01) > 0)
-						buff[(skip) * (offy + j) + (offx + i)] = fg_color;
+					if ((*glyph >> (screen_font->width - i)) & 0x01)
+						buff[index] = fg_color;
 					else
-						buff[(skip) * (offy + j) + (offx + i)] = color_blend(back, bg_color);//color_blend(((((offx + i) * 256) / w) & 0xFF) + (((((offy + j) * 256) / h) & 0xFF) << 16), bg_color);
+						buff[index] = color_blend(back, bg_color);//color_blend(((((offx + i) * 256) / w) & 0xFF) + (((((offy + j) * 256) / h) & 0xFF) << 16), bg_color);
 				}
 
-				glyph += (screen_font->width + 7) / 8;
+				glyph += (screen_font->width + 7) >> 3;
 			}
 		}
 

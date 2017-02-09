@@ -25,6 +25,11 @@
 
 namespace tupai
 {
+	bool ttyentry::equals(const ttyentry& other)
+	{
+		return other.c == this->c && other.fg_color == this->fg_color && other.bg_color == this->bg_color;
+	}
+
 	void virtualtty::place_entry(uint32 c, uint16 col, uint16 row)
 	{
 		this->change_counter ++;
@@ -108,7 +113,10 @@ namespace tupai
 		nttyentry.change_stamp = this->change_counter;
 
 		for (uint32 i = 0; i < this->cols * this->rows; i ++)
-			this->buffer[i] = nttyentry;
+		{
+			if (!nttyentry.equals(this->buffer[i]))
+				this->buffer[i] = nttyentry;
+		}
 
 		this->cursor = 0;
 
@@ -137,7 +145,12 @@ namespace tupai
 					tmp.bg_color = this->default_bg_color;
 				}
 
-				tmp.change_stamp = this->change_counter;
+				uint32 old_change_stamp = this->buffer[row * this->cols + col].change_stamp;
+
+				if (tmp.equals(this->buffer[row * this->cols + col])) // We shouldn't force an update if the scroll didn't change the value
+					tmp.change_stamp = old_change_stamp;
+				else
+					tmp.change_stamp = this->change_counter;
 
 				this->buffer[row * this->cols + col] = tmp;
 			}

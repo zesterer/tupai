@@ -55,7 +55,7 @@ namespace tupai
 	void pit_init()
 	{
 		// Set the PIT IRQ handler
-		idt_set_entry(IDT_REMAP_OFFSET + 0x0, (uint32)pit_irq_handler, sizeof(gdt_entry) * 1);
+		idt_set_entry(IDT_REMAP_OFFSET + 0x0, (uint32)pit_irq_handler, 1);
 
 		pit_set_rate(1000);
 	}
