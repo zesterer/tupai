@@ -44,14 +44,13 @@
 	#include <tupai/x86_family/vga.hpp>
 #endif
 
+// --- TESTING ---
+
 namespace tupai
 {
 	// Kernel early
 	void kearly(ptr_t mb_header, uint32 mb_magic, uint32 stack)
 	{
-		mempool_init((ubyte*)mempool_begin, mempool_size, 64); // At 2 MB, 4 MB in size, composed of blocks of 64 B
-		startup_print_unit_init("Dynamic memory pool");
-
 		#if defined(SYSTEM_ARCH_i686)
 			// Multiboot
 			x86_family::multiboot_init(mb_header, mb_magic);
@@ -70,9 +69,9 @@ namespace tupai
 			paging_enable();
 			startup_print_unit_init("Paging");
 
-			// Serial
-			serial_init();
-			startup_print_unit_init("Serial");
+			// Dynamic memory pool
+			mempool_init((ubyte*)mempool_begin, mempool_size, 64); // Blocks of 64B
+			startup_print_unit_init("Dynamic memory pool");
 
 			// VGA
 			x86_family::vga_init();
@@ -97,6 +96,10 @@ namespace tupai
 			// Keyboard
 			kbd_init();
 			startup_print_unit_init("Keyboard");
+
+			// Serial
+			serial_init();
+			startup_print_unit_init("Serial");
 		#endif
 
 		syscall_init();

@@ -1,5 +1,5 @@
 /*
-* 	file : mempool.hpp
+* 	file : bmp.hpp
 *
 * 	This file is part of Tupai.
 *
@@ -17,22 +17,52 @@
 * 	along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TUPAI_MEMPOOL_HPP
-#define TUPAI_MEMPOOL_HPP
+#ifndef TUPAI_GFX_BMPHEADER_HPP
+#define TUPAI_GFX_BMPHEADER_HPP
 
 // Tupai
 #include <tupai/type.hpp>
-#include <tupai/i686/i686.hpp>
+#include <tupai/gfx/buffer.hpp>
 
 namespace tupai
 {
-	const umem mempool_begin = 0x40000 + KERNEL_VIRTUAL_OFFSET; // 16M offset + Kernel virtual offset
-	const umem mempool_size   = 0x1000000; // 16M size
+	namespace gfx
+	{
+		struct bmp_file_header
+		{
+			uint16 type;
+			uint32 size;
+			uint16 res1;
+			uint16 res2;
+			uint32 offbits;
+		} __attribute__((packed));
 
-	void  mempool_init(void* ptr, umem size, umem blocksize);
-	void* mempool_alloc(umem n);
-	void* mempool_realloc(void* ptr, umem n);
-	void  mempool_dealloc(void* ptr);
+		struct bmp_info_header
+		{
+			uint32 size;
+			int32  width;
+			int32  height;
+			uint16 planes;
+			uint16 bitcount;
+			uint32 compression;
+			uint32 sizeimage;
+			int32  xpixelspermeter;
+			int32  ypixelspermeter;
+			uint32 clrused;
+			uint32 clrimportant;
+		} __attribute__((packed));
+
+		struct bmp
+		{
+			ptr_t self;
+			bmp_file_header file_header;
+			bmp_info_header info_header;
+
+			buffer to_buffer();
+		};
+
+		bmp bmp_from(ptr_t header);
+	}
 }
 
 #endif

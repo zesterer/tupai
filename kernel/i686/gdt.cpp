@@ -44,7 +44,7 @@ namespace tupai
 		uint32 offset;
 
 	} __attribute((packed));
-	
+
 	static gdt_entry gdt[GDT_SIZE] __attribute__((aligned(8)));
 
 	extern "C" gdt_desc gdt_ptr;

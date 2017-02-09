@@ -1,5 +1,5 @@
 /*
-* 	file : mempool.hpp
+* 	file : buffer.cpp
 *
 * 	This file is part of Tupai.
 *
@@ -17,22 +17,37 @@
 * 	along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TUPAI_MEMPOOL_HPP
-#define TUPAI_MEMPOOL_HPP
-
 // Tupai
-#include <tupai/type.hpp>
-#include <tupai/i686/i686.hpp>
+#include <tupai/gfx/buffer.hpp>
+#include <tupai/util/mem.hpp>
+
+#include <libk/stdio.hpp>
 
 namespace tupai
 {
-	const umem mempool_begin = 0x40000 + KERNEL_VIRTUAL_OFFSET; // 16M offset + Kernel virtual offset
-	const umem mempool_size   = 0x1000000; // 16M size
+	namespace gfx
+	{
+		uint32 tmpbuf[1024][768];
 
-	void  mempool_init(void* ptr, umem size, umem blocksize);
-	void* mempool_alloc(umem n);
-	void* mempool_realloc(void* ptr, umem n);
-	void  mempool_dealloc(void* ptr);
+		void buffer::blit(buffer& other, uint16 tgt_x, uint16 tgt_y, uint16 w, uint16 h, uint16 src_x, uint16 src_y)
+		{
+			// Do nothing for now
+		}
+
+		buffer buffer_create(uint16 width, uint16 height)
+		{
+			buffer nbuffer;
+
+			nbuffer.width = width;
+			nbuffer.height = height;
+
+			// TODO : This REALLY needs fixing!
+			//nbuffer.pixels = util::alloc<color>(nbuffer.width * nbuffer.height).val();
+			nbuffer.pixels = (color*)&tmpbuf;
+
+			libk::printf("PIXELS = 0x%X\n", (umem)nbuffer.pixels - 0xC0000000);
+
+			return nbuffer;
+		}
+	}
 }
-
-#endif

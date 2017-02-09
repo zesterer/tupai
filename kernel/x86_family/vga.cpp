@@ -23,6 +23,9 @@
 #include <tupai/i686/i686.hpp>
 #include <tupai/i686/port.hpp>
 
+#include <tupai/gfx/bmp.hpp>
+#include <tupai/gfx/buffer.hpp>
+
 #include <tupai/util/mem.hpp>
 #include <tupai/kdebug.hpp>
 
@@ -80,6 +83,7 @@ namespace tupai
 		};
 
 		psf2_header* screen_font;
+		gfx::buffer wallpaper_buffer;
 
 		struct vga_config
 		{
@@ -146,6 +150,9 @@ namespace tupai
 
 			// Load screen font
 			screen_font = (psf2_header*)&_binary_screenfont_psfu_start;
+
+			// Load wallpaper
+			wallpaper_buffer = gfx::bmp_from(&_binary_wallpaper_bmp_start).to_buffer();
 
 			// If the video mode is textmode, we need to adjust the framebuffer address since we're in the higher half
 			if (config.fb_type == vga_config::framebuffer_type::RGB)
@@ -318,13 +325,17 @@ namespace tupai
 				uint32 skip = config.fb_pitch >> 2;
 			#endif
 
+			const uint32* wallpaper_data = wallpaper_buffer.data();
+			uint16 wallpaper_width = wallpaper_buffer.width;
+			uint16 wallpaper_height = wallpaper_buffer.height;
 			for (uint16 j = 0; j < screen_font->height; j ++)
 			{
 				for (uint16 i = 0; i < screen_font->width; i ++)
 				{
 					// Temporary hack
-					uint32 back = ((uint32*)&_binary_wallpaper_bmp_start)[0 + offx + i + ((768 - (offy + j)) << 10)];
-					back = ((back & 0xFF000000) >> 24) | ((back & 0x0000FF00) << 8) | ((back & 0x000000FF) << 8);
+					uint32 back = wallpaper_data[(wallpaper_height - (offy + j) % wallpaper_height) * wallpaper_width + (offx + i) % wallpaper_width];
+					back = back >> 8;//((back & 0xFF000000) >> 24) | ((back & 0x00FF00) << 0) | ((back & 0x0000FF00) << 0);
+					//back = ((back & 0xFF000000) >> 24) | ((back & 0x0000FF00) << 8) | ((back & 0x000000FF) << 8);
 
 					uint32 index = skip * (offy + j) + (offx + i);
 					if (c == ' ') // TODO : Remove this optimisation hack

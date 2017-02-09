@@ -146,6 +146,9 @@ namespace tupai
 		/* write EOI */
 		port_out8(0x20, 0x20);
 
+		// Breakpoint
+		asm volatile ("xchg %bx, %bx");
+
 		const char* exception_msg = exceptions[isr_id % (sizeof(exceptions) / sizeof(char*))];
 		kpanic(exception_msg, error);
 	}

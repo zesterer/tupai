@@ -1,5 +1,5 @@
 /*
-* 	file : mempool.hpp
+* 	file : buffer.hpp
 *
 * 	This file is part of Tupai.
 *
@@ -17,22 +17,32 @@
 * 	along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TUPAI_MEMPOOL_HPP
-#define TUPAI_MEMPOOL_HPP
+#ifndef TUPAI_GFX_BUFFER_HPP
+#define TUPAI_GFX_BUFFER_HPP
 
 // Tupai
 #include <tupai/type.hpp>
-#include <tupai/i686/i686.hpp>
+#include <tupai/util/safetype.hpp>
+#include <tupai/gfx/color.hpp>
 
 namespace tupai
 {
-	const umem mempool_begin = 0x40000 + KERNEL_VIRTUAL_OFFSET; // 16M offset + Kernel virtual offset
-	const umem mempool_size   = 0x1000000; // 16M size
+	namespace gfx
+	{
+		struct buffer
+		{
+			color* pixels = nullptr;
 
-	void  mempool_init(void* ptr, umem size, umem blocksize);
-	void* mempool_alloc(umem n);
-	void* mempool_realloc(void* ptr, umem n);
-	void  mempool_dealloc(void* ptr);
+			uint16 width, height;
+
+			const uint32* data() { return (const uint32*)this->pixels; }
+			safeptr<uint32> data_mut() { return safeptr<uint32>((uint32*)this->pixels); }
+			color sample_at(uint16 x, uint16 y) { return this->pixels[this->width * y + x]; }
+			void blit(buffer& other, uint16 tgt_x = 0, uint16 tgt_y = 0, uint16 w = 0, uint16 h = 0, uint16 src_x = 0, uint16 src_y = 0);
+		};
+
+		buffer buffer_create(uint16 width, uint16 height);
+	}
 }
 
 #endif
