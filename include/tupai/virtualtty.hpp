@@ -42,6 +42,7 @@ namespace tupai
 		uint16 cols;
 		uint16 rows;
 		uint32 cursor;
+		bool cursor_enabled;
 		byte default_fg_color;
 		byte default_bg_color;
 		byte fg_color;
@@ -59,6 +60,7 @@ namespace tupai
 		void reset_color();
 		void clear();
 		void move(uint16 col, uint16 row);
+		void enable_cursor(bool enable);
 	};
 
 	virtualtty virtualtty_create(uint16 cols, uint16 rows);

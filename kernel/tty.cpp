@@ -85,6 +85,26 @@ namespace tupai
 		tty_write('f'); // 'f' move cursor parameter
 	}
 
+	void tty_show_cursor()
+	{
+		// ANSI
+		tty_write(0x1B); // Escape
+		tty_write('?');
+		tty_write('2');
+		tty_write('5');
+		tty_write('h'); // 'h' show cursor parameter
+	}
+
+	void tty_hide_cursor()
+	{
+		// ANSI
+		tty_write(0x1B); // Escape
+		tty_write('?');
+		tty_write('2');
+		tty_write('5');
+		tty_write('l'); // 'h' hide cursor parameter
+	}
+
 	void tty_reset()
 	{
 		// ANSI

@@ -39,6 +39,7 @@ namespace tupai
 		void clear();
 		void set_sgr(int code);
 		void move(int col, int row);
+		void enable_cursor(bool enable);
 
 	public:
 		void set_virtualtty(virtualtty* vtty);

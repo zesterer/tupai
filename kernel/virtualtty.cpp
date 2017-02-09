@@ -175,6 +175,19 @@ namespace tupai
 			this->change_signal_func();
 	}
 
+	void virtualtty::enable_cursor(bool enable)
+	{
+		this->change_counter ++;
+
+		// Force a redraw of the old cursor position
+		this->buffer[this->cursor].change_stamp = this->change_counter;
+
+		this->cursor_enabled = enable;
+
+		if (this->change_signal_func != nullptr)
+			this->change_signal_func();
+	}
+
 	virtualtty virtualtty_create(uint16 cols, uint16 rows)
 	{
 		virtualtty ntty;
@@ -182,6 +195,7 @@ namespace tupai
 		ntty.cols = cols;
 		ntty.rows = rows;
 		ntty.cursor = 0;
+		ntty.cursor_enabled = true;
 		ntty.default_fg_color = 0xF;
 		ntty.default_bg_color = 0x0;
 		ntty.fg_color = ntty.default_fg_color;

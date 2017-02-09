@@ -49,7 +49,8 @@ namespace tupai
 			int level = 1;
 
 			tty_clear();
-			
+			tty_hide_cursor();
+
 			while (true)
 			{
 				if (slen < 4)
@@ -156,6 +157,7 @@ namespace tupai
 			}
 
 			tty_place_cursor(0, 24);
+			tty_show_cursor();
 			tty_write_str("Game Over!\n");
 			libk::printf("Score: %i", score);
 			libk::putchar('\n');

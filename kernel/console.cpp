@@ -74,6 +74,12 @@ namespace tupai
 			this->vtty->move(col, row);
 	}
 
+	void console::enable_cursor(bool enable)
+	{
+		if (this->vtty != nullptr)
+			this->vtty->enable_cursor(enable);
+	}
+
 	void console::handle_escaped(char c)
 	{
 		bool rehandle = false; // Whether the character should be rehandled (on a state boundary, for example)
@@ -81,10 +87,14 @@ namespace tupai
 		{
 		case 1:
 			{
-				if (util::is_digit(c)) // Starts an escape sequence
+				if (util::is_digit(c)) // Starts most CSI escape sequences
 				{
 					this->ansi_esc_num[0] = 1 * util::digit_to_num(c).val();
 					this->ansi_esc_state = 2;
+				}
+				else if (c == '?') // Cursor status escape
+				{
+					this->ansi_esc_state = 5;
 				}
 				else // Return to normal - TODO: add CSI s and CSI u implementation here
 				{
@@ -152,6 +162,47 @@ namespace tupai
 				else if (c == 'f') // Move cursor H/V position
 				{
 					this->move(ansi_esc_num[0], ansi_esc_num[1]);
+					this->ansi_esc_state = 0;
+				}
+				else
+				{
+					this->ansi_esc_state = 0;
+					rehandle = true;
+				}
+			}
+			break;
+
+		case 5: // Cursor status escape
+			{
+				if (util::is_digit(c))
+				{
+					this->ansi_esc_num[0] = 1 * util::digit_to_num(c).val();
+					this->ansi_esc_state = 6;
+				}
+				else // Reset
+				{
+					this->ansi_esc_state = 0;
+					rehandle = true;
+				}
+			}
+			break;
+
+		case 6: // Cursor status escape
+			{
+				if (util::is_digit(c))
+				{
+					this->ansi_esc_num[0] *= 10;
+					this->ansi_esc_num[0] += util::digit_to_num(c).val();
+					this->ansi_esc_state = 6;
+				}
+				else if (c == 'h' && this->ansi_esc_num[0] == 25) // Cursor show
+				{
+					this->enable_cursor(true);
+					this->ansi_esc_state = 0;
+				}
+				else if (c == 'l' && this->ansi_esc_num[0] == 25) // Cursor hide
+				{
+					this->enable_cursor(false);
 					this->ansi_esc_state = 0;
 				}
 				else

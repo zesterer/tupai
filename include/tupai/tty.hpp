@@ -52,6 +52,8 @@ namespace tupai
 	void tty_set_bg_color(ubyte color);
 	void tty_reset();
 	void tty_place_cursor(uint16 col, uint16 row);
+	void tty_show_cursor();
+	void tty_hide_cursor();
 	void tty_clear();
 }
 

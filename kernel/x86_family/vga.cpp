@@ -227,16 +227,19 @@ namespace tupai
 			}
 
 			// Display cursor
-			uint16 cursor_col = vga_virtualtty.cursor % vga_virtualtty.cols;
-			uint16 cursor_row = vga_virtualtty.cursor / vga_virtualtty.cols;
+			if (vga_virtualtty.cursor_enabled)
+			{
+				uint16 cursor_col = vga_virtualtty.cursor % vga_virtualtty.cols;
+				uint16 cursor_row = vga_virtualtty.cursor / vga_virtualtty.cols;
 
-			if (config.fb_type == vga_config::framebuffer_type::RGB) // RGB linear framebuffer mode
-			{
-				blit_character(' ', cursor_col, cursor_row, 0xFFFFFFFF, 0xFFFFFFFF);
-			}
-			else if (config.fb_type == vga_config::framebuffer_type::EGA_TEXT) // EGA text framebuffer mode
-			{
-				vga_textmode_place_cursor(cursor_col, cursor_row);
+				if (config.fb_type == vga_config::framebuffer_type::RGB) // RGB linear framebuffer mode
+				{
+					blit_character(' ', cursor_col, cursor_row, 0xFFFFFFFF, 0xFFFFFFFF);
+				}
+				else if (config.fb_type == vga_config::framebuffer_type::EGA_TEXT) // EGA text framebuffer mode
+				{
+					vga_textmode_place_cursor(cursor_col, cursor_row);
+				}
 			}
 
 			// Update the screen
