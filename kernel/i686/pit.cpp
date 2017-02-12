@@ -57,7 +57,8 @@ namespace tupai
 		// Set the PIT IRQ handler
 		idt_set_entry(IDT_REMAP_OFFSET + 0x0, (uint32)pit_irq_handler, 1);
 
-		pit_set_rate(4096);
+		// Every 0.1 milliseconds
+		pit_set_rate(10000);
 	}
 
 	void pit_enable()
@@ -87,7 +88,7 @@ namespace tupai
 	{
 		interrupt_ack(IDT_REMAP_OFFSET + 0x0);
 
-		pit_counter ++;
+		pit_counter += 1000000 / pit_rate;
 
 		if (pit_tick_func != nullptr)
 			pit_tick_func(state_pushal, state_int);

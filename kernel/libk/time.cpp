@@ -28,7 +28,7 @@ namespace libk
 	void sleep(useconds_t sec)
 	{
 		counter_t ctime = tupai::pit_counter;
-		counter_t elapsed = sec * tupai::pit_rate;
+		counter_t elapsed = sec * 1000 * 1000;
 
 		while (tupai::pit_counter - ctime < elapsed);
 	}
@@ -36,7 +36,7 @@ namespace libk
 	void usleep(useconds_t usec)
 	{
 		counter_t ctime = tupai::pit_counter;
-		counter_t elapsed = (usec * tupai::pit_rate) / 1000;
+		counter_t elapsed = usec * 1000;
 
 		while (tupai::pit_counter - ctime < elapsed);
 	}

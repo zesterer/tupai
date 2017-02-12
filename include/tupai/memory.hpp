@@ -1,5 +1,5 @@
 /*
-* 	file : ansi.hpp
+* 	file : memory.hpp
 *
 * 	This file is part of Tupai.
 *
@@ -17,20 +17,16 @@
 * 	along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TUPAI_EARLY_ANSI_HPP
-#define TUPAI_EARLY_ANSI_HPP
+#ifndef TUPAI_MEMORY_HPP
+#define TUPAI_MEMORY_HPP
 
 // Tupai
 #include <tupai/type.hpp>
 
 namespace tupai
 {
-	namespace early
-	{
-		bool ansi_init();
-		bool ansi_get_initiated();
-		void ansi_handle(char c);
-	}
+	void memory_init();
+	void memory_enable_paging();
 }
 
 #endif

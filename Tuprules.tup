@@ -6,6 +6,8 @@ P_VERSION_RELEASE=0
 
 P_EXEC=$(P_NAME)
 
+TAR=tar
+
 COMPILER_CPP_i686_elf=i686-elf-g++
 ARCHIVER_i686_elf=i686-elf-ar
 LINKER_i686_elf=i686-elf-ld
@@ -15,6 +17,8 @@ COMPILER_CPP_x86_64_elf=x86_64-elf-g++
 ARCHIVER_x86_64_elf=x86_64-elf-ar
 LINKER_x86_64_elf=x86_64-elf-ld
 OBJCOPY_x86_64_elf=x86_64-elf-objcopy
+
+!TAR = |> $(TAR) -cvf %o %f |> %o
 
 ifndef TARGET_ARCH
 	error "Error: No target architecture specified"

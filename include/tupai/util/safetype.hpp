@@ -44,6 +44,7 @@ namespace tupai
 		}
 
 	public:
+		safeptr() { this->init(nullptr, false); }
 		safeptr(T* ptr, bool valid = true) { this->init(ptr, valid); }
 
 		bool is_null() { return this->ptr == nullptr; }

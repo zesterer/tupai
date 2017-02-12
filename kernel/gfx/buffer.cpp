@@ -31,7 +31,47 @@ namespace tupai
 
 		void buffer::blit(buffer& other, uint16 tgt_x, uint16 tgt_y, uint16 w, uint16 h, uint16 src_x, uint16 src_y)
 		{
-			// Do nothing for now
+			uint32 skip = this->width;
+
+			uint32 width = (w == 0 ? other.width : w);
+			uint32 height = (h == 0 ? other.height : h);
+
+			uint32 tgt_line = this->width * tgt_y + tgt_x;
+			uint32 src_line = other.width * src_y + src_x;
+			for (uint16 line_count = 0; line_count < height; line_count ++)
+			{
+				for (uint16 col_count = 0; col_count < width; col_count ++)
+					this->pixels[tgt_line + col_count] = other.pixels[src_line + col_count];
+
+				tgt_line += skip;
+				src_line += other.width;
+			}
+		}
+
+		void buffer::mirror_horizontal()
+		{
+			for (uint32 i = 0; i < this->width / 2; i ++)
+			{
+				for (uint32 j = 0; j < this->height; j ++)
+				{
+					color tmp = this->pixels[this->width * j + i];
+					this->pixels[this->width * j + i] = this->pixels[this->width * j + (this->width - i)];
+					this->pixels[this->width * j + (this->width - i)] = tmp;
+				}
+			}
+		}
+
+		void buffer::mirror_vertical()
+		{
+			for (uint16 i = 0; i < this->width; i ++)
+			{
+				for (uint16 j = 0; j < this->height / 2; j ++)
+				{
+					color tmp = this->pixels[this->width * j + i];
+					this->pixels[this->width * j + i] = this->pixels[this->width * (this->height - j - 1) + i];
+					this->pixels[this->width * (this->height - j - 1) + i] = tmp;
+				}
+			}
 		}
 
 		buffer buffer_create(uint16 width, uint16 height)
@@ -42,10 +82,10 @@ namespace tupai
 			nbuffer.height = height;
 
 			// TODO : This REALLY needs fixing!
-			//nbuffer.pixels = util::alloc<color>(nbuffer.width * nbuffer.height).val();
-			nbuffer.pixels = (color*)&tmpbuf;
-
-			libk::printf("PIXELS = 0x%X\n", (umem)nbuffer.pixels - 0xC0000000);
+			if (width != 1024 || height != 768)
+				nbuffer.pixels = util::alloc<color>(nbuffer.width * nbuffer.height).val();
+			else
+				nbuffer.pixels = (color*)&tmpbuf;
 
 			return nbuffer;
 		}

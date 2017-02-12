@@ -1,5 +1,5 @@
 /*
-* 	file : out.hpp
+* 	file : memory.cpp
 *
 * 	This file is part of Tupai.
 *
@@ -17,19 +17,14 @@
 * 	along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TUPAI_EARLY_OUT_HPP
-#define TUPAI_EARLY_OUT_HPP
-
 // Tupai
-#include <tupai/type.hpp>
+#include <tupai/memory.hpp>
+#include <tupai/tty.hpp>
 
 namespace tupai
 {
-	namespace early
+	void memory_init()
 	{
-		void printchar(char c);
-		void print(const char* string);
+		tty_write_str("Paging (not) enabled!\n");
 	}
 }
-
-#endif

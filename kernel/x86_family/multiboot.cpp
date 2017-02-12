@@ -23,6 +23,9 @@
 
 #include <tupai/kdebug.hpp>
 
+// Libk
+#include <libk/stdio.hpp>
+
 namespace tupai
 {
 	namespace x86_family
@@ -42,6 +45,11 @@ namespace tupai
 		bool multiboot_get_initiated()
 		{
 			return mb_initiated;
+		}
+
+		multiboot_header multiboot_get_header()
+		{
+			return header;
 		}
 
 		multiboot_header::framebuffer multiboot_get_framebuffer()

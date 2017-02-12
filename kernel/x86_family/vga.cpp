@@ -37,6 +37,7 @@ namespace tupai
 	{
 		extern "C" byte _binary_screenfont_psfu_start;
 		extern "C" byte _binary_wallpaper_bmp_start;
+		extern "C" byte _binary_test_bmp_start;
 
 		static void vga_textmode_place_cursor(uint16 col, uint16 row);
 		static void vga_textmode_place_entry(uint32 c, uint16 col, uint16 row, byte fg_color, byte bg_color);
@@ -153,6 +154,9 @@ namespace tupai
 
 			// Load wallpaper
 			wallpaper_buffer = gfx::bmp_from(&_binary_wallpaper_bmp_start).to_buffer();
+			//gfx::buffer test_buffer = gfx::bmp_from(&_binary_test_bmp_start).to_buffer();
+			//wallpaper_buffer.blit(test_buffer, 100, 300);
+			//wallpaper_buffer.blit(test_buffer, 200, 400, 150, 180);
 
 			// If the video mode is textmode, we need to adjust the framebuffer address since we're in the higher half
 			if (config.fb_type == vga_config::framebuffer_type::RGB)
@@ -173,6 +177,11 @@ namespace tupai
 
 				virtualtty_width = config.fb_width;
 				virtualtty_height = config.fb_height;
+			}
+			else // If all else fails, set default values
+			{
+				virtualtty_width = 80;
+				virtualtty_height = 25;
 			}
 
 			// Set up a virtual TTY for the screen
@@ -312,7 +321,7 @@ namespace tupai
 			uint8* glyph = screen_font->get_glyph(c);
 
 			// Translucent background
-			bg_color = (bg_color & 0x00FFFFFF) | 0xA0000000;
+			bg_color = (bg_color & 0x00FFFFFF) | 0xD0000000;
 
 			int offx = x * screen_font->width;
 			int offy = y * screen_font->height;
@@ -327,17 +336,16 @@ namespace tupai
 
 			const uint32* wallpaper_data = wallpaper_buffer.data();
 			uint16 wallpaper_width = wallpaper_buffer.width;
-			uint16 wallpaper_height = wallpaper_buffer.height;
+			// (unused) uint16 wallpaper_height = wallpaper_buffer.height;
 			for (uint16 j = 0; j < screen_font->height; j ++)
 			{
 				for (uint16 i = 0; i < screen_font->width; i ++)
 				{
-					// Temporary hack
-					uint32 back = wallpaper_data[(wallpaper_height - (offy + j) % wallpaper_height) * wallpaper_width + (offx + i) % wallpaper_width];
-					back = back >> 8;//((back & 0xFF000000) >> 24) | ((back & 0x00FF00) << 0) | ((back & 0x0000FF00) << 0);
-					//back = ((back & 0xFF000000) >> 24) | ((back & 0x0000FF00) << 8) | ((back & 0x000000FF) << 8);
+					uint32 back = wallpaper_data[(offy + j) * wallpaper_width + (offx + i)];
+					back = back >> 8; // Convert to VGA bit pattern
 
 					uint32 index = skip * (offy + j) + (offx + i);
+
 					if (c == ' ') // TODO : Remove this optimisation hack
 					{
 						buff[index] = color_blend(back, bg_color);;

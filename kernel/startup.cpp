@@ -19,7 +19,7 @@
 
 // Tupai
 #include <tupai/startup.hpp>
-#include <tupai/early/out.hpp>
+#include <tupai/tty.hpp>
 
 // --- TMP ---
 #include <tupai/tty.hpp>

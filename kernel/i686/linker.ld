@@ -56,5 +56,7 @@ SECTIONS
 		*(.bss)
 	}
 
+	kernel_end = .;
+
 	/* Any other sections produced by the compiler *should* be placed after this point */
 }

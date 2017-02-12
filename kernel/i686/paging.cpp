@@ -20,8 +20,6 @@
 // Tupai
 #include <tupai/i686/paging.hpp>
 #include <tupai/i686/i686.hpp>
-#include <tupai/early/out.hpp>
-#include <tupai/util/conv.hpp>
 
 #include <tupai/x86_family/multiboot.hpp>
 

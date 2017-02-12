@@ -25,8 +25,6 @@
 #include <tupai/i686/interrupt.hpp>
 #include <tupai/i686/pic.hpp>
 
-#include <tupai/early/out.hpp>
-#include <tupai/util/conv.hpp>
 #include <tupai/util/char.hpp>
 
 namespace tupai

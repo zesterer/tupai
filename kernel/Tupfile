@@ -20,8 +20,8 @@ endif
 : screenfont.psfu                   |> !OBJCOPY |>
 
 # Wallpaper
-: data/graphics/wallpaper.bmp |> cp %f %o |> wallpaper.bmp
-: wallpaper.bmp               |> !OBJCOPY |>
+: foreach data/graphics/*.bmp |> cp %f %o |> %B.bmp
+: foreach *.bmp               |> !OBJCOPY |>
 
 # Linking
 : *.o $(OBJECTS) | $(KERNEL_LINK_SCRIPT) |> !LINKER -T $(KERNEL_LINK_SCRIPT) |> $(P_EXEC).bin

@@ -19,27 +19,42 @@
 
 // Tupai
 #include <tupai/tty.hpp>
+#include <tupai/console.hpp>
 #include <tupai/util/mutex.hpp>
 #include <tupai/util/char.hpp>
 #include <tupai/util/conv.hpp>
 
-#include <tupai/early/out.hpp>
+#if defined(SYSTEM_ARCH_i686)
+	#include <tupai/i686/serial.hpp>
+#endif
 
 // Libk
 #include <libk/ctype.hpp>
 
 namespace tupai
 {
+	safeptr<console> g_console;
 	util::mutex tty_mutex;
 
 	void tty_init()
 	{
+		// Find the global console
+		g_console = console_get_global();
+
 		tty_clear();
 	}
 
 	void tty_write(char c)
 	{
-		early::printchar(c);
+		// If it's an invalid pointer, don't do anything
+		if (g_console.is_valid())
+			g_console.val()->write_char(c);
+
+		#if defined(SYSTEM_ARCH_i686)
+			#if defined(CFG_ENABLE_SERIAL_DEBUG)
+				serial_write(1, c); // Write to COM1 debug
+			#endif
+		#endif
 	}
 
 	void tty_write_str(const char* str)

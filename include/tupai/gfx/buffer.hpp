@@ -37,8 +37,12 @@ namespace tupai
 
 			const uint32* data() { return (const uint32*)this->pixels; }
 			safeptr<uint32> data_mut() { return safeptr<uint32>((uint32*)this->pixels); }
+
 			color sample_at(uint16 x, uint16 y) { return this->pixels[this->width * y + x]; }
+
 			void blit(buffer& other, uint16 tgt_x = 0, uint16 tgt_y = 0, uint16 w = 0, uint16 h = 0, uint16 src_x = 0, uint16 src_y = 0);
+			void mirror_horizontal();
+			void mirror_vertical();
 		};
 
 		buffer buffer_create(uint16 width, uint16 height);

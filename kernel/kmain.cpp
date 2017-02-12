@@ -19,29 +19,43 @@
 
 // Tupai
 #include <tupai/kmain.hpp>
-#include <tupai/tty.hpp>
-#include <tupai/prompt.hpp>
+
+// --- MEMORY ---
 #include <tupai/mempool.hpp>
+#include <tupai/memory.hpp>
+
+// --- MULTITASKING ---
 #include <tupai/syscall.hpp>
 #include <tupai/task.hpp>
+
+// --- CONSOLE & I/O ---
+#include <tupai/tty.hpp>
 #include <tupai/console.hpp>
+#include <tupai/prompt.hpp>
+
+// --- DEBUGGING ---
 #include <tupai/kdebug.hpp>
 
 // --- EARLY ---
 #include <tupai/startup.hpp>
-#include <tupai/early/out.hpp>
 
 #if defined(SYSTEM_ARCH_i686)
+	// --- ESSENTIAL X86 THINGS ---
 	#include <tupai/i686/gdt.hpp>
 	#include <tupai/i686/idt.hpp>
 	#include <tupai/i686/interrupt.hpp>
-	#include <tupai/i686/kbd.hpp>
 	#include <tupai/i686/pit.hpp>
-	#include <tupai/i686/paging.hpp>
-	#include <tupai/i686/serial.hpp>
 
-	#include <tupai/x86_family/multiboot.hpp>
+	// --- X86 MEMORY ---
+	#include <tupai/i686/paging.hpp>
+
+	// --- X86 I/O AND DEVICES ---
+	#include <tupai/i686/kbd.hpp>
+	#include <tupai/i686/serial.hpp>
 	#include <tupai/x86_family/vga.hpp>
+
+	// --- X86 MULTIBOOT ---
+	#include <tupai/x86_family/multiboot.hpp>
 #endif
 
 // --- TESTING ---
@@ -63,6 +77,9 @@ namespace tupai
 				startup_print_unit_init("COM1 debugging");
 			#endif
 
+			// Memory management unit
+			memory_init();
+
 			// Paging
 			paging_init();
 			startup_print_unit_init("Paging structure");
@@ -70,7 +87,7 @@ namespace tupai
 			startup_print_unit_init("Paging");
 
 			// Dynamic memory pool
-			mempool_init((ubyte*)mempool_begin, mempool_size, 64); // Blocks of 64B
+			mempool_init((ubyte*)mempool_begin, mempool_size, 1024); // Blocks of 1K
 			startup_print_unit_init("Dynamic memory pool");
 
 			// VGA
@@ -80,6 +97,10 @@ namespace tupai
 			// Console
 			console_init_global();
 			startup_print_unit_init("Kernel console");
+
+			// TTY
+			tty_init();
+			startup_print_unit_init("Kernel TTY");
 
 			// GDT
 			gdt_init();
@@ -108,7 +129,7 @@ namespace tupai
 		task_init();
 		startup_print_unit_init("Task scheduler");
 
-		early::print("Boot procedure complete.\n");
+		tty_write_str("Boot procedure complete.\n");
 	}
 
 	// Kernel main

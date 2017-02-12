@@ -20,6 +20,10 @@
 // Tupai
 #include <tupai/prog/sys.hpp>
 
+#include <tupai/util/conv.hpp>
+
+#include <tupai/x86_family/multiboot.hpp>
+
 // Libk
 #include <libk/stdio.hpp>
 #include <libk/stdlib.hpp>
@@ -70,6 +74,13 @@ namespace tupai
 
 			printf("--- Syscall ---\n");
 			asm volatile ("int $0x80");
+
+			sys_wait();
+
+			printf("--- Multiboot Information ---\n");
+			printf("Available Lower : 0x%s\n", util::compose(x86_family::multiboot_get_header().mem_lower, 16));
+			printf("Available Upper : 0x%s\n", util::compose(x86_family::multiboot_get_header().mem_upper, 16));
+			printf("Available Total : 0x%s\n", util::compose(x86_family::multiboot_get_header().mem_upper - x86_family::multiboot_get_header().mem_lower, 16));
 
 			sys_wait();
 

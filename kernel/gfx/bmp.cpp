@@ -40,6 +40,9 @@ namespace tupai
 			for (uint32 i = 0; i < nbuffer.width * nbuffer.height; i ++)
 				pixels[i] = (data[i * 4 + 2] << 16) | (data[i * 4 + 1] << 8) | (data[i * 4 + 3] << 24) | 0xFF;
 
+			// The BMP is vertically mirrored. Make it the right way up
+			nbuffer.mirror_vertical();
+
 			return nbuffer;
 		}
 
