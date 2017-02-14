@@ -79,6 +79,9 @@ namespace tupai
 
 			// Memory management unit
 			memory_init();
+			startup_print_unit_init("Memory");
+			memory_enforce();
+			startup_print_unit_init("Memory enforcement");
 
 			// Paging
 			paging_init();
@@ -90,18 +93,6 @@ namespace tupai
 			mempool_init((ubyte*)mempool_begin, mempool_size, 1024); // Blocks of 1K
 			startup_print_unit_init("Dynamic memory pool");
 
-			// VGA
-			x86_family::vga_init();
-			startup_print_unit_init("VGA driver");
-
-			// Console
-			console_init_global();
-			startup_print_unit_init("Kernel console");
-
-			// TTY
-			tty_init();
-			startup_print_unit_init("Kernel TTY");
-
 			// GDT
 			gdt_init();
 			startup_print_unit_init("GDT");
@@ -110,6 +101,20 @@ namespace tupai
 			idt_init();
 			startup_print_unit_init("IDT");
 
+			// VGA
+			x86_family::vga_init();
+			startup_print_unit_init("VGA driver");
+		#endif
+
+		// Console
+		console_init_global();
+		startup_print_unit_init("Kernel console");
+
+		// TTY
+		tty_init();
+		startup_print_unit_init("Kernel TTY");
+
+		#if defined(SYSTEM_ARCH_i686)
 			// PIT
 			pit_init();
 			startup_print_unit_init("PIT");

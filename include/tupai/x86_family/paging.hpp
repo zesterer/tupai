@@ -1,5 +1,5 @@
 /*
-* 	file : memory.hpp
+* 	file : paging.hpp
 *
 * 	This file is part of Tupai.
 *
@@ -17,16 +17,19 @@
 * 	along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TUPAI_MEMORY_HPP
-#define TUPAI_MEMORY_HPP
+#ifndef TUPAI_X86_FAMILY_PAGING_HPP
+#define TUPAI_X86_FAMILY_PAGING_HPP
 
 // Tupai
 #include <tupai/type.hpp>
 
 namespace tupai
 {
-	void memory_init();
-	void memory_enforce(); // On most systems, this means 'enable paging'
+	namespace x86_family
+	{
+		void paging_init();
+		void paging_enable();
+	}
 }
 
 #endif
