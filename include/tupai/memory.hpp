@@ -25,8 +25,22 @@
 
 namespace tupai
 {
+	struct memory_info
+	{
+		umem used;
+		umem size;
+
+		memory_info(umem used, umem size)
+		{
+			this->used = used;
+			this->size = size;
+		}
+	};
+
 	void memory_init();
 	void memory_enforce(); // On most systems, this means 'enable paging'
+
+	memory_info memory_get_info();
 }
 
 #endif

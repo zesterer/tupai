@@ -6,6 +6,9 @@ SECTIONS
 	/* Offset the kernel at 1MB (to avoid interfering with the bootloader or any low-level initial code */
 	. = 1M;
 
+	/* Kernel virtual offset */
+	KERNEL_VIRTUAL_OFFSET = 0xC0000000;
+
 	/* Place executable boot code within a 4KB-aligned block */
 	.rodata.multiboot BLOCK(4K) : ALIGN(4K)
 	{
@@ -26,7 +29,9 @@ SECTIONS
 		*(.bss.boot)
 	}
 
-	. += 0xC0000000;
+	. += KERNEL_VIRTUAL_OFFSET;
+
+	kernel_start = .;
 
 	/* Main kernel code */
 	.text ALIGN(4K) : AT(ADDR(.text) - 0xC0000000)

@@ -23,6 +23,7 @@
 #include <tupai/util/conv.hpp>
 
 #include <tupai/x86_family/multiboot.hpp>
+#include <tupai/memory.hpp>
 
 // Libk
 #include <libk/stdio.hpp>
@@ -78,10 +79,15 @@ namespace tupai
 			sys_wait();
 
 			printf("--- Multiboot Information ---\n");
-			printf("Available Lower : 0x%s\n", util::compose(x86_family::multiboot_get_header().mem_lower, 16));
-			printf("Available Upper : 0x%s\n", util::compose(x86_family::multiboot_get_header().mem_upper, 16));
-			printf("Available Total : 0x%s\n", util::compose(x86_family::multiboot_get_header().mem_upper - x86_family::multiboot_get_header().mem_lower, 16));
+			printf("Available Lower : 0x%s\n", util::compose(x86_family::multiboot_get_header().mem_lower * 1024, 16));
+			printf("Available Upper : 0x%s\n", util::compose(x86_family::multiboot_get_header().mem_upper * 1024, 16));
+			printf("Available Total : 0x%s\n", util::compose((x86_family::multiboot_get_header().mem_upper - x86_family::multiboot_get_header().mem_lower) * 1024, 16));
 
+			sys_wait();
+
+			printf("--- Memory Information ---\n");
+			printf("Used  : 0x%s\n", util::compose(memory_get_info().used, 16));
+			printf("Total : 0x%s\n", util::compose(memory_get_info().size, 16));
 			sys_wait();
 
 			return 0;
