@@ -76,13 +76,15 @@ namespace tupai
 				serial_open(1);
 				startup_print_unit_init("COM1 debugging");
 			#endif
+		#endif
 
-			// Memory management unit
-			memory_init();
-			startup_print_unit_init("Memory");
-			memory_enforce();
-			startup_print_unit_init("Memory enforcement");
+		// Memory management unit
+		memory_init();
+		startup_print_unit_init("Memory");
+		memory_enforce();
+		startup_print_unit_init("Memory enforcement");
 
+		#if defined(SYSTEM_ARCH_i686)
 			// Paging
 			paging_init();
 			startup_print_unit_init("Paging structure");
@@ -100,7 +102,14 @@ namespace tupai
 			// IDT
 			idt_init();
 			startup_print_unit_init("IDT");
+		#endif
+	}
 
+	// Kernel main
+	void kmain()
+	{
+		// Enable graphical drivers
+		#if defined(SYSTEM_ARCH_i686)
 			// VGA
 			x86_family::vga_init();
 			startup_print_unit_init("VGA driver");
@@ -113,6 +122,8 @@ namespace tupai
 		// TTY
 		tty_init();
 		startup_print_unit_init("Kernel TTY");
+
+		// Now we have a TTY up and ready!
 
 		#if defined(SYSTEM_ARCH_i686)
 			// PIT
@@ -128,18 +139,18 @@ namespace tupai
 			startup_print_unit_init("Serial");
 		#endif
 
+		// Syscall procedure
 		syscall_init();
 		startup_print_unit_init("Syscall routine");
 
+		// Kernel multi-tasking
 		task_init();
 		startup_print_unit_init("Task scheduler");
 
-		tty_write_str("Boot procedure complete.\n");
-	}
+		// End of boot procedure
+		klog_init("Boot procedure complete");
 
-	// Kernel main
-	void kmain()
-	{
+		// Enable various systems
 		interrupt_enable();
 		pit_enable();
 		kbd_enable();

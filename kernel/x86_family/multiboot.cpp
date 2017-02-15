@@ -30,21 +30,13 @@ namespace tupai
 {
 	namespace x86_family
 	{
-		bool mb_initiated = false;
 		multiboot_header header;
 
-		bool multiboot_init(ptr_t mb_header, uint32 mb_magic)
+		void multiboot_init(ptr_t mb_header, uint32 mb_magic)
 		{
 			header = *((multiboot_header*)((umem)mb_header + KERNEL_VIRTUAL_OFFSET));
 
-			mb_initiated = true;
-			klog_init("Initiated Multiboot", mb_initiated);
-			return mb_initiated;
-		}
-
-		bool multiboot_get_initiated()
-		{
-			return mb_initiated;
+			klog_init("Initiated Multiboot");
 		}
 
 		multiboot_header multiboot_get_header()
@@ -54,9 +46,6 @@ namespace tupai
 
 		multiboot_header::framebuffer multiboot_get_framebuffer()
 		{
-			if (!mb_initiated)
-				kpanic("Multiboot used before initiation");
-
 			return header.fb;
 		}
 	}

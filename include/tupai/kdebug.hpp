@@ -37,7 +37,7 @@ namespace tupai
 	};
 
 	void klog(const char* msg, klog_level level = klog_level::INFO);
-	void klog_init(const char* msg, bool success);
+	void klog_init(const char* msg, bool success = true);
 	void kpanic(const char* msg, uint32 error = 0x0) __attribute__((noreturn));
 	bool __kassert__(bool expr, const char* expr_str, int line, const char* func, const char* file);
 }

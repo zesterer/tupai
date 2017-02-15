@@ -96,9 +96,7 @@ namespace tupai
 			framebuffer fb;
 		} __attribute__((packed));
 
-		bool multiboot_init(ptr_t mb_header, uint32 mb_magic);
-		bool multiboot_get_initiated();
-
+		void multiboot_init(ptr_t mb_header, uint32 mb_magic);
 
 		multiboot_header multiboot_get_header();
 		multiboot_header::framebuffer multiboot_get_framebuffer();
