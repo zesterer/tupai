@@ -20,9 +20,11 @@
 .global _boot_setup_paging
 .global _boot_load_page_directory
 .global _boot_enable_paging
+.global _boot_page_directory
 
+.set PAGE_DIR_SIZE, 1024
 .set PAGE_TABLE_SIZE, 1024
-.set KERNEL_PAGE_TABLE_NUM, 4 // 16 MB of memory
+.set KERNEL_PAGE_TABLE_NUM, 256 // 16 MB of memory
 
 .section .bss.boot
 
@@ -30,76 +32,72 @@
 	_boot_page_directory:
 		.skip 1024 * 4 // 1024 x 32-bit integers
 	.align 4096
-	_boot_page_table_kernel_lower:
-		.skip KERNEL_PAGE_TABLE_NUM * PAGE_TABLE_SIZE * 4 // KERNEL_PAGE_NUM * PAGE_TABLE_SIZE x 32-bit integers
-	.align 4096
-	_boot_page_table_kernel_upper:
+	_boot_page_table_kernel:
 		.skip KERNEL_PAGE_TABLE_NUM * PAGE_TABLE_SIZE * 4 // KERNEL_PAGE_NUM * PAGE_TABLE_SIZE x 32-bit integers
 
 .section .text.boot
 
 	_boot_setup_paging: // Setup paging ready for main kernel
 
+		// Fill page directory with "not present"
 		mov $0, %ecx
-		_reloop1:
+		_reloop0:
 			mov %ecx, %edx
+			imul $4, %edx
 			add $_boot_page_directory, %edx
+
 			movl $0x00000002, (%edx) // Zero the page dir and mark all page tables as not present
 
-			_set_lower_kernel: // Dummy
-				movl %ecx, %ebx // Find offset
-				imul $0x1000, %ebx
-				and $0xFFFFF000, %ebx
-				or $0x003, %ebx
+			add $1, %ecx
+			cmp $PAGE_DIR_SIZE, %ecx // Count through PAGE_DIR_SIZE times
+			jne _reloop0 // Loop back
 
-				mov %ecx, %edx
-				imul $4, %edx
-				add $_boot_page_table_kernel_lower, %edx
-				movl %ebx, (%edx) // Zero the lower kernel page table and mark them as present
+		// Fill page tables with entries pointing to lower memory
+		mov $0, %ecx
+		_reloop1:
+			mov %ecx, %eax
+			imul $0x1000, %eax
+			or $0x00000003, %eax // Present, R/W
 
-			_set_upper_kernel: // Dummy
-				movl %ecx, %ebx // Find offset
-				imul $0x1000, %ebx
-				and $0xFFFFF000, %ebx
-				or $0x003, %ebx
+			mov %ecx, %edx
+			imul $4, %edx
+			add $_boot_page_table_kernel, %edx
 
-				mov %ecx, %edx
-				imul $4, %edx
-				add $_boot_page_table_kernel_upper, %edx
-				movl %ebx, (%edx) // Zero the lower kernel page table and mark them as present
+			movl %eax, (%edx)
 
 			add $1, %ecx
-			cmp $(PAGE_TABLE_SIZE * KERNEL_PAGE_TABLE_NUM), %ecx // Count through PAGE_TABLE_SIZE * KERNEL_PAGE_TABLE_NUM times
+			cmp $(PAGE_TABLE_SIZE * KERNEL_PAGE_TABLE_NUM), %ecx // Count through PAGE_DIR_SIZE * KERNEL_PAGE_TABLE_NUM times
 			jne _reloop1 // Loop back
 
+		// Fill higher and lower portions of page directory with page tables
 		mov $0, %ecx
 		_reloop2:
-			// Set the appropriate page directory entries
 			mov %ecx, %eax
-			imul $(4 * PAGE_TABLE_SIZE), %eax
-			add $_boot_page_table_kernel_lower, %eax
-			and $0xFFFFF000, %eax
-			or $0x003, %eax
-			mov %ecx, %edx
-			imul $4, %edx
-			add $(_boot_page_directory + 0x0), %edx
-			mov %eax, (%edx)
+			imul $(4 * 1024), %eax
+			add $_boot_page_table_kernel, %eax
+			or $0x00000003, %eax // Present, R/W
 
-			mov %ecx, %eax
-			imul $(4 * PAGE_TABLE_SIZE), %eax
-			add $_boot_page_table_kernel_upper, %eax
-			and $0xFFFFF000, %eax
-			or $0x003, %eax
+			// Lower memory
 			mov %ecx, %edx
 			imul $4, %edx
-			add $(_boot_page_directory + 3072), %edx
-			mov %eax, (%edx)
+			add $_boot_page_directory, %edx
+
+			movl %eax, (%edx)
+
+			// Upper memory
+			mov %ecx, %edx
+			add $768, %edx
+			imul $4, %edx
+			add $_boot_page_directory, %edx
+
+			movl %eax, (%edx)
 
 			add $1, %ecx
-			cmp $(KERNEL_PAGE_TABLE_NUM), %ecx // Count through KERNEL_PAGE_TABLE_NUM times
+			cmp $(KERNEL_PAGE_TABLE_NUM), %ecx // Count through PAGE_DIR_SIZE * KERNEL_PAGE_TABLE_NUM times
 			jne _reloop2 // Loop back
 
 		call _boot_load_page_directory
+		xchg %bx, %bx
 		call _boot_enable_paging
 
 		ret

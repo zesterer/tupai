@@ -45,6 +45,11 @@
 
 		// Setup paging early on - map 4MB of 0x00000000 and 0xC0000000 to 0x00000000. Later on when we're in the kernel main, we can unmap the first section
 		call _boot_setup_paging
+		//xchg %bx, %bx
+		//xchg %bx, %bx
+		//xchg %ax, %ax
+		//call init_boot_paging
+		//xchg %bx, %bx
 
 		// Jump to the higher half
 		jmp _entry

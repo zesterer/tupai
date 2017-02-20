@@ -1,5 +1,5 @@
 /*
-* 	file : mem.cpp
+* 	file : boot_paging.hpp
 *
 * 	This file is part of Tupai.
 *
@@ -17,21 +17,21 @@
 * 	along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef TUPAI_I686_BOOT_BOOT_PAGING_HPP
+#define TUPAI_I686_BOOT_BOOT_PAGING_HPP
+
 // Tupai
-#include <tupai/util/mem.hpp>
+#include <tupai/type.hpp>
 
 namespace tupai
 {
-	namespace util
+	namespace i686
 	{
-		umem align_floor(umem n, umem align)
-		{
-			return n - n % align;
-		}
+		extern "C" volatile uint32 boot_page_directory[1024] __attribute__((section(".data.boot"))) __attribute__((aligned(4096)));
+		extern volatile uint32 boot_page_tables[1024][256] __attribute__((section(".data.boot"))) __attribute__((aligned(4096)));
 
-		umem align_ceiling(umem n, umem align)
-		{
-			return (n + align) - n % align;
-		}
+		extern "C" void init_boot_paging() __attribute__((section(".text.boot")));
 	}
 }
+
+#endif

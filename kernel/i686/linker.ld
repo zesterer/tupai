@@ -34,7 +34,7 @@ SECTIONS
 	kernel_start = .;
 
 	/* Main kernel code */
-	.text ALIGN(4K) : AT(ADDR(.text) - 0xC0000000)
+	.text ALIGN(4K) : AT(ADDR(.text) - KERNEL_VIRTUAL_OFFSET)
 	{
 		*(.text)
 		*(.init)
@@ -42,19 +42,19 @@ SECTIONS
 	}
 
 	/* Read-only data */
-	.rodata ALIGN(4K) : AT(ADDR(.rodata) - 0xC0000000)
+	.rodata ALIGN(4K) : AT(ADDR(.rodata) - KERNEL_VIRTUAL_OFFSET)
 	{
 		*(.rodata)
 	}
 
 	/* Read-write data (initialized) */
-	.data ALIGN(4K) : AT(ADDR(.data) - 0xC0000000)
+	.data ALIGN(4K) : AT(ADDR(.data) - KERNEL_VIRTUAL_OFFSET)
 	{
 		*(.data)
 	}
 
 	/* Read-write data (uninitialized) */
-	.bss ALIGN(4K) : AT(ADDR(.bss) - 0xC0000000)
+	.bss ALIGN(4K) : AT(ADDR(.bss) - KERNEL_VIRTUAL_OFFSET)
 	{
 		*(.boot_stack)
 		*(COMMON)

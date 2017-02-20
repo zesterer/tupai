@@ -20,6 +20,7 @@
 // Tupai
 #include <tupai/memory.hpp>
 #include <tupai/tty.hpp>
+#include <tupai/util/mem.hpp>
 
 #if defined(SYSTEM_ARCH_i686)
 	#include <tupai/i686/i686.hpp>
@@ -75,32 +76,52 @@ namespace tupai
 	{
 		memory_global_map global_map;
 		memory_process_map process_map[16]; // Allow space for 16 processes for now
+
+		memory_map()
+		{
+
+		}
 	};
 
-	static umem phys_heap_start;
-	static umem phys_heap_size;
-	static umem phys_heap_end;
+	static umem kernel_dyn_end;
+	static umem phys_map_start;
+	static umem phys_map_size;
+	static umem phys_map_end;
+
+	static memory_map* g_memory_map;
+	static bool memory_enforced = false;
 
 	// Kernel end pointer
 	extern "C" byte kernel_start;
 	extern "C" byte kernel_end;
 
+	static ptr_t memory_early_alloc(umem size);
+
 	void memory_init()
 	{
 		#if defined(SYSTEM_ARCH_i686)
-			// Get the memory size
-			x86_family::multiboot_header mbh = x86_family::multiboot_get_header();
-
-			phys_heap_start = mbh.mem_lower * 1024 + ((umem)&kernel_end - KERNEL_VIRTUAL_OFFSET);
-			phys_heap_end = mbh.mem_upper * 1024;
-			phys_heap_size = phys_heap_end - phys_heap_start;
+			kernel_dyn_end = util::align_ceiling((umem)&kernel_end - KERNEL_VIRTUAL_OFFSET);
 
 			x86_family::paging_init();
 		#endif
+
+		// Get space for the memory map and call the constructor
+		g_memory_map = (memory_map*)memory_early_alloc(sizeof(memory_map));
+		new (g_memory_map) memory_map(); // TODO : Use an early 1G paging map with ASM to allow this
 	}
 
 	void memory_enforce()
 	{
+		memory_enforced = true;
+
+		// Get the Multiboot memory information
+		x86_family::multiboot_header mbh = x86_family::multiboot_get_header();
+
+		// Find the limits of the available memory map
+		phys_map_start = util::align_ceiling(kernel_dyn_end);
+		phys_map_end = util::align_floor(mbh.mem_upper * 1024);
+		phys_map_size = util::align_floor(phys_map_end - phys_map_start);
+
 		#if defined(SYSTEM_ARCH_i686)
 			x86_family::paging_enable();
 		#endif
@@ -108,6 +129,14 @@ namespace tupai
 
 	memory_info memory_get_info()
 	{
-		return memory_info(0, phys_heap_size);
+		return memory_info(0, phys_map_size);
+	}
+
+	static ptr_t memory_early_alloc(umem size)
+	{
+		size = util::align_ceiling(size);
+		ptr_t ptr = (ptr_t)(kernel_dyn_end + KERNEL_VIRTUAL_OFFSET);
+		kernel_dyn_end += size;
+		return ptr;
 	}
 }

@@ -17,8 +17,8 @@
 * 	along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TUPAI_UTIL_CONV_HPP
-#define TUPAI_UTIL_CONV_HPP
+#ifndef TUPAI_UTIL_MEM_HPP
+#define TUPAI_UTIL_MEM_HPP
 
 // Tupai
 #include <tupai/type.hpp>
@@ -41,7 +41,15 @@ namespace tupai
 		{
 			mempool_dealloc(ptr);
 		}
+
+		umem align_floor(umem n, umem align = 1024);
+		umem align_ceiling(umem n, umem align = 1024);
 	}
 }
+
+inline void* operator new(size_t, void *p)     throw() { return p; }
+inline void* operator new[](size_t, void *p)   throw() { return p; }
+inline void  operator delete  (void *, void *) throw() {}
+inline void  operator delete[](void *, void *) throw() {}
 
 #endif

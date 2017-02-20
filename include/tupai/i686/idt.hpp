@@ -33,14 +33,14 @@ namespace tupai
 		uint8  type_attr;
 		uint16 base_addr_high;
 
-	} __attribute((packed));
+	} __attribute__((packed));
 
 	struct idt_desc
 	{
 		uint32 size;
 		uint32 offset;
 
-	} __attribute((packed));
+	} __attribute__((packed));
 
 	const umem IDT_REMAP_OFFSET = 0x20;
 	const umem IDT_SIZE = 256 + IDT_REMAP_OFFSET;
