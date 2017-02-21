@@ -1,5 +1,5 @@
 /*
-* 	file : mutex.hpp
+* 	file : pipemgr.hpp
 *
 * 	This file is part of Tupai.
 *
@@ -17,27 +17,22 @@
 * 	along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TUPAI_UTIL_MUTEX_HPP
-#define TUPAI_UTIL_MUTEX_HPP
+#ifndef TUPAI_PIPEMGR_HPP
+#define TUPAI_PIPEMGR_HPP
 
 // Tupai
 #include <tupai/type.hpp>
 
 namespace tupai
 {
-	namespace util
-	{
-		struct mutex
-		{
-		private:
-			umem value = 0;
+	typedef uint32 pipe_flags;
 
-		public:
-			void lock();
-			void unlock();
-			bool is_locked();
-		};
-	}
+	void pipemgr_init();
+
+	id_t    pipemgr_create(const char* path, pipe_flags flags = 0x0);
+	id_t    pipemgr_open(const char* path);
+	status_t pipemgr_write(id_t id, const byte* data, umem n = 1);
+	status_t pipemgr_read(id_t id, byte* buffer, umem* n, umem max = 0);
 }
 
 #endif

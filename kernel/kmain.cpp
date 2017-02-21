@@ -32,6 +32,7 @@
 #include <tupai/tty.hpp>
 #include <tupai/console.hpp>
 #include <tupai/prompt.hpp>
+#include <tupai/pipemgr.hpp>
 
 // --- DEBUGGING ---
 #include <tupai/kdebug.hpp>
@@ -62,7 +63,7 @@
 
 namespace tupai
 {
-	static void kernel_prompt();
+	static void kernel_prompt_task();
 
 	// Kernel early
 	void kearly(ptr_t mb_header, uint32 mb_magic, uint32 stack)
@@ -149,6 +150,10 @@ namespace tupai
 		task_init();
 		startup_print_unit_init("Task scheduler");
 
+		// Data and I/O
+		pipemgr_init();
+		startup_print_unit_init("Pipe manager");
+
 		// End of boot procedure
 		klog_init("Boot procedure complete");
 
@@ -163,14 +168,14 @@ namespace tupai
 
 		// Kernel tasks
 		task_add("vga", x86_family::vga_task, 0x202, (uint32*)cr3);
-		task_add("prompt", kernel_prompt, 0x202, (uint32*)cr3);
+		task_add("prompt", kernel_prompt_task, 0x202, (uint32*)cr3);
 
 		// Begin multi-tasking
 		task_enable_scheduler();
 		task_preempt();
 	}
 
-	static void kernel_prompt()
+	static void kernel_prompt_task()
 	{
 		startup_welcome();
 

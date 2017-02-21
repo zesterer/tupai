@@ -116,6 +116,8 @@ namespace tupai
 		uint32 vga_virtualtty_change_counter = 0;
 		static void vga_virtualtty_changed();
 
+		static int vga_cursor_freq = 30;
+
 		static const uint32 vga_virtualtty_palette[] =
 		{
 			0xFF000000, // Black
@@ -252,7 +254,7 @@ namespace tupai
 			}
 
 			// Display cursor
-			if (vga_virtualtty.cursor_enabled)
+			if (vga_virtualtty.cursor_enabled && vga_virtualtty.vga_cursor_phase < vga_cursor_freq / 2)
 			{
 				uint16 cursor_col = vga_virtualtty.cursor % vga_virtualtty.cols;
 				uint16 cursor_row = vga_virtualtty.cursor / vga_virtualtty.cols;
@@ -423,7 +425,11 @@ namespace tupai
 			{
 				vga_virtualtty_changed();
 
+				vga_virtualtty.vga_cursor_phase = (vga_virtualtty.vga_cursor_phase + 1) % vga_cursor_freq;
+				vga_virtualtty.buffer[vga_virtualtty.cursor].change_stamp ++;
+				vga_virtualtty.change_counter ++;
 				libk::usleep(50);
+
 				asm volatile ("int $0x80");
 			}
 		}

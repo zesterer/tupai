@@ -1,5 +1,5 @@
 /*
-* 	file : mutex.hpp
+* 	file : cstr.hpp
 *
 * 	This file is part of Tupai.
 *
@@ -17,26 +17,32 @@
 * 	along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TUPAI_UTIL_MUTEX_HPP
-#define TUPAI_UTIL_MUTEX_HPP
+#ifndef TUPAI_UTIL_CSTR_HPP
+#define TUPAI_UTIL_CSTR_HPP
 
 // Tupai
 #include <tupai/type.hpp>
+
+#include <libk/string.hpp>
 
 namespace tupai
 {
 	namespace util
 	{
-		struct mutex
+		bool cstr_equal(const char* a, const char* b)
 		{
-		private:
-			umem value = 0;
+			return libk::strcmp(a, b) == 0;
+		}
 
-		public:
-			void lock();
-			void unlock();
-			bool is_locked();
-		};
+		void cstr_copy(const char* src, char* dest)
+		{
+			libk::strcmp(dest, src);
+		}
+
+		umem cstr_length(const char* a)
+		{
+			return libk::strlen(a);
+		}
 	}
 }
 

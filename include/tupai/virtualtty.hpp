@@ -42,6 +42,7 @@ namespace tupai
 		uint16 cols;
 		uint16 rows;
 		uint32 cursor;
+		int vga_cursor_phase = 0;
 		bool cursor_enabled;
 		byte default_fg_color;
 		byte default_bg_color;

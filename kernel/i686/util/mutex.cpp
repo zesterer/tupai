@@ -36,5 +36,10 @@ namespace tupai
 		{
 			_mutex_unlock(&this->value);
 		}
+
+		bool mutex::is_locked()
+		{
+			return this->value > 0;
+		}
 	}
 }

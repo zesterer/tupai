@@ -27,6 +27,8 @@
 #include <tupai/prog/sys.hpp>
 #include <tupai/prog/timer.hpp>
 
+#include <tupai/i686/pit.hpp>
+
 // Libk
 #include <libk/stdlib.hpp>
 #include <libk/stdio.hpp>
@@ -116,11 +118,33 @@ namespace tupai
 				tty_write_str("snake     - Play a demo snake game\n");
 				tty_write_str("adventure - Play an adventure game\n");
 				tty_write_str("timer     - Timer test program\n");
+				tty_write_str("uptime    - Find the system uptime\n");
 				tty_write_str("chars     - Display printable characters\n");
 				tty_write_str("color     - Display printable colors\n");
 				tty_write_str("exit      - Close the prompt session\n");
 				tty_write_str("clear     - Clear the screen\n");
 				tty_write_str("abort     - Abort the system\n");
+			}
+			else if (libk::strcmp(buffer, "uptime") == 0)
+			{
+				uint32 ctime = tupai::pit_counter;
+				int seconds = ctime / (1000000);
+				int minutes = seconds / 60;
+				int hours = minutes / 60;
+				int days = hours / 24;
+
+				libk::printf("Uptime: ");
+
+				if (days > 0)
+					libk::printf("%i days, ", days);
+				if (hours > 0)
+					libk::printf("%i hours, ", hours % 24);
+				if (minutes > 0)
+					libk::printf("%i minutes, ", minutes % 60);
+				if (seconds > 0)
+					libk::printf("%i seconds", seconds % 60);
+
+				libk::putchar('\n');
 			}
 			else if (libk::strcmp(buffer, "exit") == 0)
 			{

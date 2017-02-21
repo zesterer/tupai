@@ -46,14 +46,14 @@ namespace tupai
 
 			volatile bool allow_overflow = true;
 
-			util::mutex lock;
+			util::mutex mutex;
 			bool push_locked = true;
 
 		public:
 
 			void init(umem size)
 			{
-				this->lock.lock();
+				this->mutex.lock();
 
 				this->size = size;
 				this->data = new T[this->size];
@@ -64,7 +64,7 @@ namespace tupai
 
 				allow_overflow = true;
 
-				this->lock.unlock();
+				this->mutex.unlock();
 			}
 
 			ringbuff()
@@ -78,11 +78,11 @@ namespace tupai
 
 			~ringbuff()
 			{
-				this->lock.lock();
+				this->mutex.lock();
 
 				delete this->data;
 
-				this->lock.unlock();
+				this->mutex.unlock();
 			}
 
 			void set_push_locked(bool locked)
@@ -92,18 +92,18 @@ namespace tupai
 
 			T& operator[](const int index)
 			{
-				this->lock.lock();
+				this->mutex.lock();
 
 				T& val = this->data[(this->back + index) % this->len];
 
-				this->lock.unlock();
+				this->mutex.unlock();
 				return val;
 			}
 
 			void push(T& item)
 			{
 				if (push_locked)
-					this->lock.lock();
+					this->mutex.lock();
 
 				if (this->len >= this->size && !this->allow_overflow)
 					kpanic("Attempted to push to full ring buffer");
@@ -120,14 +120,13 @@ namespace tupai
 				}
 
 				if (push_locked)
-					this->lock.unlock();
+					this->mutex.unlock();
 			}
 
 			T& pop()
 			{
-				this->lock.lock();
+				this->mutex.lock();
 
-				//return this->data[0];
 				if (this->len <= 0)
 					kpanic("Attempted to pop from empty ring buffer");
 
@@ -138,18 +137,33 @@ namespace tupai
 
 				T& val = this->data[tmp_back];
 
-				this->lock.unlock();
+				this->mutex.unlock();
 
 				return val;
 			}
 
+			bool is_locked()
+			{
+				return this->mutex.is_locked();
+			}
+
+			void lock()
+			{
+				this->mutex.lock();
+			}
+
+			void unlock()
+			{
+				this->mutex.unlock();
+			}
+
 			umem length()
 			{
-				this->lock.lock();
+				this->mutex.lock();
 
 				umem len = this->len;
 
-				this->lock.unlock();
+				this->mutex.unlock();
 				return len;
 			}
 		};

@@ -55,6 +55,8 @@ typedef intptr_t  smem;
 typedef void*     ptr_t;
 
 typedef uint64 counter_t;
+typedef uint32 id_t;
+typedef uint16 status_t;
 
 typedef uint32 wchar;
 

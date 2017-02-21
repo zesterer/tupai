@@ -81,6 +81,7 @@ namespace tupai
 
 		// Force a redraw of the new cursor position
 		this->buffer[this->cursor].change_stamp = this->change_counter;
+		this->vga_cursor_phase = 0;
 
 		//if (this->change_signal_func != nullptr)
 		//	this->change_signal_func();

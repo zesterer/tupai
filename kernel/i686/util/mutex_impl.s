@@ -29,9 +29,12 @@
 		xchg (%ebx), %eax
 
 		test %eax, %eax
-		jnz _mutex_lock // If the mutex was not 0 (i.e: already locked) jump back to the lock procedure
+		jnz _preempt // If the mutex was not 0 (i.e: already locked) jump back to the lock procedure [PREEMPT INSTEAD]
 
 		ret
+
+	_preempt:
+		int $0x80
 
 	_mutex_unlock:
 		mov 4(%esp), %ebx // Get byte location from stack
