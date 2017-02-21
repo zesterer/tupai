@@ -26,7 +26,7 @@
 
 namespace tupai
 {
-	const umem mempool_begin = 0x40000 + KERNEL_VIRTUAL_OFFSET; // 16M offset + Kernel virtual offset
+	const umem mempool_begin = 0x1000000 + KERNEL_VIRTUAL_OFFSET; // 16M offset + Kernel virtual offset
 	const umem mempool_size   = 0x1000000; // 16M size
 
 	void  mempool_init(void* ptr, umem size, umem blocksize);

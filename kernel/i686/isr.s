@@ -56,8 +56,6 @@
 .global _isr_30
 .global _isr_31
 
-//.global _isr_common
-
 .set ISR_DUMMY_ERROR, 0
 
 .section .text

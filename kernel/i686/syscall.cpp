@@ -19,8 +19,6 @@
 
 // Tupai
 #include <tupai/syscall.hpp>
-
-// TODO: remove this
 #include <tupai/task.hpp>
 
 #if defined(SYSTEM_ARCH_i686)
@@ -29,6 +27,8 @@
 	#include <tupai/i686/gdt.hpp>
 	#include <tupai/i686/cpu.hpp>
 #endif
+
+#include <tupai/util/conv.hpp>
 
 // Libk
 #include <libk/stdio.hpp>
@@ -61,22 +61,22 @@ namespace tupai
 	{
 		interrupt_ack(0x80);
 
-		// TODO remove this
 		task_save_state(state_pushal, state_int);
+		task_preempt();
 
 		libk::printf("SYSCALL!\n");
 
-		libk::printf("--- State ---\nEAX : 0x%X\nEBX : 0x%X\nECX : 0x%X\nEDX : 0x%X\nESP : 0x%X\nEBP : 0x%X\nESI : 0x%X\nEDI : 0x%X\nEIP : 0x%X\nCS : 0x%X\nEFLAGS : 0x%X\n",
-		state_pushal.eax,
-		state_pushal.ebx,
-		state_pushal.ecx,
-		state_pushal.edx,
-		state_pushal.esp,
-		state_pushal.ebp,
-		state_pushal.esi,
-		state_pushal.edi,
-		state_int.eip,
-		state_int.cs,
-		state_int.eflags);
+		libk::printf("--- State ---\nEAX : 0x%s\nEBX : 0x%s\nECX : 0x%s\nEDX : 0x%s\nESP : 0x%s\nEBP : 0x%s\nESI : 0x%s\nEDI : 0x%s\nEIP : 0x%s\nCS : 0x%s\nEFLAGS : 0x%s\n",
+		util::compose(state_pushal.eax, 16).val(),
+		util::compose(state_pushal.ebx, 16).val(),
+		util::compose(state_pushal.ecx, 16).val(),
+		util::compose(state_pushal.edx, 16).val(),
+		util::compose(state_pushal.esp, 16).val(),
+		util::compose(state_pushal.ebp, 16).val(),
+		util::compose(state_pushal.esi, 16).val(),
+		util::compose(state_pushal.edi, 16).val(),
+		util::compose(state_int.eip, 16).val(),
+		util::compose(state_int.cs, 16).val(),
+		util::compose(state_int.eflags, 16).val());
 	}
 }

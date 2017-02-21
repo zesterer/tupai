@@ -29,6 +29,8 @@
 #include <tupai/util/mem.hpp>
 #include <tupai/kdebug.hpp>
 
+#include <libk/time.hpp>
+
 //#define DOUBLE_BUFFERED 0
 
 namespace tupai
@@ -106,8 +108,8 @@ namespace tupai
 		bool vga_initiated = false;
 		vga_config config;
 
-		uint32* rgb_buffered_framebuffer;
-		uint16* textmode_buffered_framebuffer;
+		volatile uint32* rgb_buffered_framebuffer;
+		volatile uint16* textmode_buffered_framebuffer;
 		static void vga_switch_buffers();
 
 		virtualtty vga_virtualtty;
@@ -154,7 +156,7 @@ namespace tupai
 
 			// Load wallpaper
 			wallpaper_buffer = gfx::bmp_from(&_binary_wallpaper_bmp_start).to_buffer();
-			//gfx::buffer test_buffer = gfx::bmp_from(&_binary_test_bmp_start).to_buffer();
+			gfx::buffer test_buffer = gfx::bmp_from(&_binary_test_bmp_start).to_buffer();
 			//wallpaper_buffer.blit(test_buffer, 100, 300);
 			//wallpaper_buffer.blit(test_buffer, 200, 400, 150, 180);
 
@@ -209,6 +211,9 @@ namespace tupai
 		static void vga_virtualtty_changed()
 		{
 			if (!vga_initiated)
+				return;
+
+			if (vga_virtualtty.change_counter <= vga_virtualtty_change_counter)
 				return;
 
 			for (uint16 i = 0; i < vga_virtualtty.cols; i ++)
@@ -321,7 +326,7 @@ namespace tupai
 			uint8* glyph = screen_font->get_glyph(c);
 
 			// Translucent background
-			bg_color = (bg_color & 0x00FFFFFF) | 0xD0000000;
+			bg_color = (bg_color & 0x00FFFFFF) | 0x80000000;
 
 			int offx = x * screen_font->width;
 			int offy = y * screen_font->height;
@@ -409,6 +414,17 @@ namespace tupai
 						((uint16*)config.fb_addr)[j * config.fb_width + i] = textmode_buffered_framebuffer[j * config.fb_width + i];
 					}
 				}
+			}
+		}
+
+		void vga_task()
+		{
+			while (true)
+			{
+				vga_virtualtty_changed();
+
+				libk::usleep(50);
+				asm volatile ("int $0x80");
 			}
 		}
 	}

@@ -20,7 +20,7 @@
 // A temporary 16 KB bootstrap stack
 .section .bss.boot, "aw", @nobits
 	_boot_stack_bottom:
-	.skip 0x4000 // 16 KB
+	.skip 0x400 // 1 KB
 	_boot_stack_top:
 
 // Multiboot stuff
@@ -43,13 +43,8 @@
 		mov %eax, (_multiboot_header_magic)
 		mov %ebx, (_multiboot_header_pointer)
 
-		// Setup paging early on - map 4MB of 0x00000000 and 0xC0000000 to 0x00000000. Later on when we're in the kernel main, we can unmap the first section
+		// Setup paging early on - map 1G of 0x00000000 and 0xC0000000 to 0x00000000. Later on when we're in the kernel main, we'll sort things out properly
 		call _boot_setup_paging
-		//xchg %bx, %bx
-		//xchg %bx, %bx
-		//xchg %ax, %ax
-		//call init_boot_paging
-		//xchg %bx, %bx
 
 		// Jump to the higher half
 		jmp _entry
@@ -60,7 +55,7 @@
 // A more permanent 64 KB kernel stack
 .section .bss, "aw", @nobits
 	_stack_bottom:
-	.skip 0x10000 // 64 KB
+	.skip 0x4000 // 16 KB
 	_stack_top:
 
 // Higher-half kernel entry

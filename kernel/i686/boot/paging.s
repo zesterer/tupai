@@ -97,7 +97,6 @@
 			jne _reloop2 // Loop back
 
 		call _boot_load_page_directory
-		xchg %bx, %bx
 		call _boot_enable_paging
 
 		ret

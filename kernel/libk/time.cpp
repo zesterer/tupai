@@ -30,7 +30,8 @@ namespace libk
 		counter_t ctime = tupai::pit_counter;
 		counter_t elapsed = sec * 1000 * 1000;
 
-		while (tupai::pit_counter - ctime < elapsed);
+		while (tupai::pit_counter - ctime < elapsed)
+			asm volatile ("int $0x80");
 	}
 
 	void usleep(useconds_t usec)
@@ -38,6 +39,7 @@ namespace libk
 		counter_t ctime = tupai::pit_counter;
 		counter_t elapsed = usec * 1000;
 
-		while (tupai::pit_counter - ctime < elapsed);
+		while (tupai::pit_counter - ctime < elapsed)
+			asm volatile ("int $0x80");
 	}
 }

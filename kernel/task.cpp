@@ -25,6 +25,8 @@
 	#include <tupai/i686/pit.hpp>
 #endif
 
+#include <tupai/util/conv.hpp>
+
 // Libk
 #include <libk/stdio.hpp>
 #include <libk/stdlib.hpp>
@@ -47,7 +49,7 @@ namespace tupai
 	void task_init()
 	{
 		tasks.init(64);
-		pit_set_tick_func(task_save_state);
+		//pit_set_tick_func(task_save_state);
 	}
 
 	void task_enable_scheduler(bool enable)
@@ -68,11 +70,11 @@ namespace tupai
 			tasks[current_task].state.edx    = state_pushal.edx;
 			tasks[current_task].state.esi    = state_pushal.esi;
 			tasks[current_task].state.edi    = state_pushal.edi;
-			tasks[current_task].state.esp    = state_pushal.esp;
+			tasks[current_task].state.esp    = state_pushal.esp + 0xC;
 			tasks[current_task].state.ebp    = state_pushal.ebp;
 			tasks[current_task].state.eip    = state_int.eip;
 			tasks[current_task].state.eflags = state_int.eflags;
-			//tasks[current_task].state.cr3    = 0;
+			//tasks[current_task].state.cr3    = state_int.cr3;
 		}
 
 		task_preempt();
@@ -84,12 +86,13 @@ namespace tupai
 			return; // Return if no tasks are running. We've probably not enabled multitasking yet!
 
 		current_task = (current_task + 1) % tasks.length();
-		//libk::printf("Switched to task '%s' (%i)!\n", tasks[current_task].name, current_task);
+		//libk::printf("Switched to task '%s' (%i)! ESP = 0x%s\n", tasks[current_task].name, current_task, util::compose(tasks[current_task].state.esp, 16).val());
+
+		//libk::getchar();
 
 		cpu_task_state nil;
 		cpu_task_state regs = tasks[current_task].state;
 		in_task = true;
-		//KBREAK();
 		_task_switch(&nil, &regs);
 	}
 

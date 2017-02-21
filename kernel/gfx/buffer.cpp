@@ -27,8 +27,6 @@ namespace tupai
 {
 	namespace gfx
 	{
-		uint32 tmpbuf[1024][768];
-
 		void buffer::blit(buffer& other, uint16 tgt_x, uint16 tgt_y, uint16 w, uint16 h, uint16 src_x, uint16 src_y)
 		{
 			uint32 skip = this->width;
@@ -81,11 +79,7 @@ namespace tupai
 			nbuffer.width = width;
 			nbuffer.height = height;
 
-			// TODO : This REALLY needs fixing!
-			if (width != 1024 || height != 768)
-				nbuffer.pixels = util::alloc<color>(nbuffer.width * nbuffer.height).val();
-			else
-				nbuffer.pixels = (color*)&tmpbuf;
+			nbuffer.pixels = util::alloc<color>(nbuffer.width * nbuffer.height).val();
 
 			return nbuffer;
 		}

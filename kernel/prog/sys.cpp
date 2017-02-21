@@ -74,7 +74,7 @@ namespace tupai
 			sys_wait();
 
 			printf("--- Syscall ---\n");
-			asm volatile ("int $0x80");
+			asm volatile ("xchg %bx, %bx; int $0x80");
 
 			sys_wait();
 

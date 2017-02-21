@@ -25,6 +25,8 @@
 #include <tupai/i686/interrupt.hpp>
 #include <tupai/i686/pic.hpp>
 
+#include <tupai/task.hpp>
+
 namespace tupai
 {
 	const uint32 PIT_MIN_RATE = 1193180;

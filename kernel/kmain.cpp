@@ -62,6 +62,8 @@
 
 namespace tupai
 {
+	static void kernel_prompt();
+
 	// Kernel early
 	void kearly(ptr_t mb_header, uint32 mb_magic, uint32 stack)
 	{
@@ -155,8 +157,26 @@ namespace tupai
 		pit_enable();
 		kbd_enable();
 
+		// Get CR3
+		uint32 cr3;
+		asm volatile("movl %%cr3, %%eax; movl %%eax, %0":"=m"(cr3)::"%eax"); // Get cr3
+
+		// Kernel tasks
+		task_add("vga", x86_family::vga_task, 0x202, (uint32*)cr3);
+		task_add("prompt", kernel_prompt, 0x202, (uint32*)cr3);
+
+		// Begin multi-tasking
+		task_enable_scheduler();
+		task_preempt();
+	}
+
+	static void kernel_prompt()
+	{
 		startup_welcome();
 
-		while (prompt() == 0);
+		while (true)
+		{
+			prompt();
+		}
 	}
 }

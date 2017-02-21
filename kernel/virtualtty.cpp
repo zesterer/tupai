@@ -45,8 +45,8 @@ namespace tupai
 
 		this->buffer[row * this->cols + col] = nttyentry;
 
-		if (this->change_signal_func != nullptr)
-			this->change_signal_func();
+		//if (this->change_signal_func != nullptr)
+		//	this->change_signal_func();
 	}
 
 	void virtualtty::write_entry(uint32 c)
@@ -82,8 +82,8 @@ namespace tupai
 		// Force a redraw of the new cursor position
 		this->buffer[this->cursor].change_stamp = this->change_counter;
 
-		if (this->change_signal_func != nullptr)
-			this->change_signal_func();
+		//if (this->change_signal_func != nullptr)
+		//	this->change_signal_func();
 	}
 
 	void virtualtty::set_fg_color(byte fg_color)
@@ -120,8 +120,8 @@ namespace tupai
 
 		this->cursor = 0;
 
-		if (this->change_signal_func != nullptr)
-			this->change_signal_func();
+		//if (this->change_signal_func != nullptr)
+		//	this->change_signal_func();
 	}
 
 	void virtualtty::scroll(uint16 rows)
@@ -158,8 +158,8 @@ namespace tupai
 
 		this->cursor -= this->cols * rows;//util::min(this->cursor, (uint32)this->cols * rows);
 
-		if (this->change_signal_func != nullptr)
-			this->change_signal_func();
+		//if (this->change_signal_func != nullptr)
+		//	this->change_signal_func();
 	}
 
 	void virtualtty::move(uint16 col, uint16 row)
@@ -171,8 +171,8 @@ namespace tupai
 
 		this->cursor = row * this->cols + col;
 
-		if (this->change_signal_func != nullptr)
-			this->change_signal_func();
+		//if (this->change_signal_func != nullptr)
+		//	this->change_signal_func();
 	}
 
 	void virtualtty::enable_cursor(bool enable)
@@ -184,8 +184,8 @@ namespace tupai
 
 		this->cursor_enabled = enable;
 
-		if (this->change_signal_func != nullptr)
-			this->change_signal_func();
+		//if (this->change_signal_func != nullptr)
+		//	this->change_signal_func();
 	}
 
 	virtualtty virtualtty_create(uint16 cols, uint16 rows)

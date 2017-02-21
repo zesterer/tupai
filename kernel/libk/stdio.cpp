@@ -185,6 +185,8 @@ namespace libk
 			{
 				if (tupai::kbd_ringbuffer.length() > 0)
 					return tupai::kbd_ringbuffer.pop();
+				else
+					asm volatile ("int $0x80");
 			}
 		#else
 			return '\0';

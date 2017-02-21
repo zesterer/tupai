@@ -34,6 +34,8 @@ namespace tupai
 		safeptr<virtualtty> vga_get_virtualtty();
 		void vga_textmode_put_char(char c, uint16 col, uint16 row);
 		void vga_textmode_clear();
+
+		void vga_task();
 	}
 }
 
