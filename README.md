@@ -7,7 +7,7 @@ Copyright 2016-2017
 A simple monolithic operating system created for educational purposes.
 
 
-![Tupai 0.2.0](doc/images/tupai-0-4-0.png)
+![Tupai 0.2.0](doc/images/tupai-0-5-0.png)
 
 
 ## What is Tupai?

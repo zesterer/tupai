@@ -42,6 +42,14 @@
 	- [x] New virtual tty implementation
 	- [x] Better Multiboot support
 
+## 0.5.0
+
+	- [x] Co-operative multi-tasking
+	- [x] Graphics blitting
+	- [x] Virtual console implementation
+	- [x] BMP image loading
+	- [x] Independent VGA task
+
 ## Tasks
 ---
 
@@ -49,8 +57,7 @@
 	- [-] Stream buffers / queues
 	- [ ] RAM filesystem
 	- [-] Advanced kernel prompt
-	- [ ] Kernel multi-tasking
-	- [ ] Fully implement libk
+	- [ ] Pre-emptive multi-tasking
 	- [-] Atomic concurrency objects (mutex, semaphore, etc.) implementation
 	- [ ] Properly implement keyboard scancode translation
 
