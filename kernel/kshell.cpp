@@ -438,7 +438,7 @@ namespace tupai
 			}
 		}
 
-		while (true && !do_exit)
+		while (!do_exit)
 		{
 			// Prompt
 			tty_write_str("[");
@@ -456,13 +456,13 @@ namespace tupai
 			tty_write_str("] ");
 
 			// Get the line
-			char linebuff[512];
+			char* linebuff = util::alloc<char>(512).val();
 			readline(linebuff);
 			tty_write('\n');
 
 			// Get arguments
-			char strbuff[512];
-			char* argbuff[32];
+			char* strbuff = util::alloc<char>(512).val();
+			char** argbuff = util::alloc<char*>(64).val();
 			int arg_count = 0;
 			parse_args(linebuff, argbuff, strbuff, &arg_count);
 
@@ -473,7 +473,13 @@ namespace tupai
 				if (result == 2)
 					do_exit = true;
 			}
+
+			delete linebuff;
+			delete strbuff;
+			delete argbuff;
 		}
+
+		delete cdir;
 
 		return 0;
 	}
