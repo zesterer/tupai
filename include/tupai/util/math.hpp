@@ -28,7 +28,7 @@ namespace tupai
 	namespace util
 	{
 		template<typename T> T max(T a, T b) { return (a > b) ? a : b; }
-		template<typename T> T min(T a, T b) { return (a > b) ? a : b; }
+		template<typename T> T min(T a, T b) { return (a < b) ? a : b; }
 		template<typename T> T sign(T x) { return (x > 0) ? 1 : ((x < 0) ? -1 : 0); }
 		template<typename T> T abs(T x) { return (x < 0) ? -x : x; }
 	}

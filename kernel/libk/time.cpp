@@ -19,7 +19,7 @@
 
 // Libk
 #include <libk/time.hpp>
-#include <tupai/i686/pit.hpp>
+#include <tupai/timer.hpp>
 
 namespace libk
 {
@@ -27,19 +27,19 @@ namespace libk
 
 	void sleep(useconds_t sec)
 	{
-		counter_t ctime = tupai::pit_counter;
+		counter_t ctime = tupai::timer_get_nanoseconds();
 		counter_t elapsed = sec * 1000 * 1000;
 
-		while (tupai::pit_counter - ctime < elapsed)
+		while (tupai::timer_get_nanoseconds() - ctime < elapsed)
 			asm volatile ("int $0x80");
 	}
 
 	void usleep(useconds_t usec)
 	{
-		counter_t ctime = tupai::pit_counter;
+		counter_t ctime = tupai::timer_get_nanoseconds();
 		counter_t elapsed = usec * 1000;
 
-		while (tupai::pit_counter - ctime < elapsed)
+		while (tupai::timer_get_nanoseconds() - ctime < elapsed)
 			asm volatile ("int $0x80");
 	}
 }

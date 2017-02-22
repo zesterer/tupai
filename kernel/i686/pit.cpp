@@ -36,7 +36,7 @@ namespace tupai
 	const uint16 PIT_DATA_CH1_PORT = 0x41;
 	const uint16 PIT_DATA_CH2_PORT = 0x42;
 
-	volatile counter_t pit_counter = 0;
+	volatile counter_t pit_count = 0;
 	volatile uint16    pit_rate = 0;
 
 	void (*pit_tick_func)(cpu_pushal, cpu_int) = nullptr;
@@ -90,7 +90,7 @@ namespace tupai
 	{
 		interrupt_ack(IDT_REMAP_OFFSET + 0x0);
 
-		pit_counter += 1000000 / pit_rate;
+		pit_count += 1000000 / pit_rate;
 
 		if (pit_tick_func != nullptr)
 			pit_tick_func(state_pushal, state_int);

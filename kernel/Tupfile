@@ -2,7 +2,7 @@ include_rules
 
 INCLUDES=-I../include
 
-OBJECTS=$(OBJECTS) libk/*.o prog/*.o util/*.o early/*.o gfx/*.o
+OBJECTS=$(OBJECTS) libk/*.o prog/*.o util/*.o fs/*.o gfx/*.o
 
 ifeq (@(TARGET_ARCH),i686)
 	OBJECTS=$(OBJECTS) x86_family/*.o i686/*.o i686/boot/*.o i686/util/*.o

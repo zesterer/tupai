@@ -27,7 +27,7 @@
 
 namespace tupai
 {
-	extern volatile counter_t pit_counter;
+	extern volatile counter_t pit_count;
 	extern volatile uint16    pit_rate;
 
 	void pit_init();

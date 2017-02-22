@@ -83,8 +83,8 @@ namespace tupai
 			this->value = value;
 			this->valid = valid;
 
-			if (!this->is_valid())
-				klog("safeval initialised with an invalid value", klog_level::WARNING);
+			//if (!this->is_valid())
+			//	klog("safeval initialised with an invalid value", klog_level::WARNING);
 		}
 
 	public:

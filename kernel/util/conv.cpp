@@ -304,7 +304,7 @@ namespace tupai
 		template<> safeval<str<char, sizeof(uint16) * 8 + 1>> compose<uint16>(uint16 val, int base) { return compose_integer_generic<uint16>(val, base); }
 		template<> safeval<str<char, sizeof(int32) * 8 + 1>> compose<int32>(int32 val, int base) { return compose_integer_generic<int32>(val, base); }
 		template<> safeval<str<char, sizeof(uint32) * 8 + 1>> compose<uint32>(uint32 val, int base) { return compose_integer_generic<uint32>(val, base); }
-		//template<> safeval<str<char, sizeof(int64) * 8 + 1>> compose<int64>(int64 val, int base) { return compose_integer_generic<int64>(val, base); }
-		//template<> safeval<str<char, sizeof(uint64) * 8 + 1>> compose<uint64>(uint64 val, int base) { return compose_integer_generic<uint64>(val, base); }
+		template<> safeval<str<char, sizeof(int64) * 8 + 1>> compose<int64>(int64 val, int base) { return compose_integer_generic<int64>(val, base); }
+		template<> safeval<str<char, sizeof(uint64) * 8 + 1>> compose<uint64>(uint64 val, int base) { return compose_integer_generic<uint64>(val, base); }
 	}
 }

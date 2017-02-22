@@ -1,5 +1,5 @@
 /*
-* 	file : syscall.hpp
+* 	file : timer.hpp
 *
 * 	This file is part of Tupai.
 *
@@ -17,15 +17,15 @@
 * 	along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TUPAI_SYSCALL_HPP
-#define TUPAI_SYSCALL_HPP
+#ifndef TUPAI_TIMER_HPP
+#define TUPAI_TIMER_HPP
 
 // Tupai
 #include <tupai/type.hpp>
 
 namespace tupai
 {
-	void syscall_init();
+	counter_t timer_get_nanoseconds();
 }
 
 #endif

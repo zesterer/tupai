@@ -29,17 +29,29 @@ namespace tupai
 {
 	namespace util
 	{
-		bool cstr_equal(const char* a, const char* b)
+		static bool cstr_equal(const char* a, const char* b)
 		{
 			return libk::strcmp(a, b) == 0;
 		}
 
-		void cstr_copy(const char* src, char* dest)
+		static void cstr_copy(const char* src, char* dest, umem max = 0)
 		{
-			libk::strcmp(dest, src);
+			umem i;
+			for (i = 0; (max == 0 || i < max) && src[i] != '\0'; i ++)
+				dest[i] = src[i];
+			dest[i] = '\0';
 		}
 
-		umem cstr_length(const char* a)
+		static void cstr_append(const char* src, char* dest, umem max = 0)
+		{
+			for (; dest[0] != '\0'; dest += sizeof(char));
+			umem i;
+			for (i = 0; (max == 0 || i < max) && src[i] != '\0'; i ++)
+				dest[i] = src[i];
+			dest[i] = '\0';
+		}
+
+		static umem cstr_length(const char* a)
 		{
 			return libk::strlen(a);
 		}

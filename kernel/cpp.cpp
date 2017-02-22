@@ -57,7 +57,7 @@ void* __dso_handle;
 void* __cxa_atexit;
 
 
-inline uint64_t uint64_div64(uint64_t dividend, uint64_t divisor)
+/*inline uint64_t uint64_div64(uint64_t dividend, uint64_t divisor)
 {
 	uint64_t shift = divisor;
 	uint64_t aux   = divisor;
@@ -104,3 +104,4 @@ uint64_t uint64_mod64(uint64_t dividend, uint64_t divisor)
 
 	return dividend;
 }
+*/

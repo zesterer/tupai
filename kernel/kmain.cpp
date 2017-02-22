@@ -32,7 +32,11 @@
 #include <tupai/tty.hpp>
 #include <tupai/console.hpp>
 #include <tupai/prompt.hpp>
+#include <tupai/kshell.hpp>
 #include <tupai/pipemgr.hpp>
+
+// --- FILESYSTEM ---
+#include <tupai/fs/fs.hpp>
 
 // --- DEBUGGING ---
 #include <tupai/kdebug.hpp>
@@ -63,7 +67,7 @@
 
 namespace tupai
 {
-	static void kernel_prompt_task();
+	static void kernel_shell_task();
 
 	// Kernel early
 	void kearly(ptr_t mb_header, uint32 mb_magic, uint32 stack)
@@ -150,7 +154,9 @@ namespace tupai
 		task_init();
 		startup_print_unit_init("Task scheduler");
 
-		// Data and I/O
+		// Filesystems and I/O
+		fs::fs_init();
+		startup_print_unit_init("Filesystem");
 		pipemgr_init();
 		startup_print_unit_init("Pipe manager");
 
@@ -168,20 +174,22 @@ namespace tupai
 
 		// Kernel tasks
 		task_add("vga", x86_family::vga_task, 0x202, (uint32*)cr3);
-		task_add("prompt", kernel_prompt_task, 0x202, (uint32*)cr3);
+		task_add("prompt", kernel_shell_task, 0x202, (uint32*)cr3);
 
 		// Begin multi-tasking
 		task_enable_scheduler();
 		task_preempt();
 	}
 
-	static void kernel_prompt_task()
+	static void kernel_shell_task()
 	{
 		startup_welcome();
 
 		while (true)
 		{
+			kshell(0, nullptr);
 			prompt();
+			tty_write_str("Lowest-level shell exited. Restarting session.\n");
 		}
 	}
 }

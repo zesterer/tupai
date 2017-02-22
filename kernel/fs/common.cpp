@@ -1,5 +1,5 @@
 /*
-* 	file : syscall.hpp
+* 	file : fs.cpp
 *
 * 	This file is part of Tupai.
 *
@@ -17,15 +17,38 @@
 * 	along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TUPAI_SYSCALL_HPP
-#define TUPAI_SYSCALL_HPP
-
 // Tupai
-#include <tupai/type.hpp>
+#include <tupai/fs/common.hpp>
+#include <tupai/util/cstr.hpp>
+
+// Libk
+#include <libk/stdio.hpp>
 
 namespace tupai
 {
-	void syscall_init();
-}
+	namespace fs
+	{
+		bool path_is_relative(const char* path)
+		{
+			return path[0] == '/';
+		}
 
-#endif
+		status_t path_concat(const char* path0, const char* path1, char* buffer)
+		{
+			if (path_is_relative(path1))
+			{
+				util::cstr_copy(path1, buffer);
+				return 1;
+			}
+
+			umem path0_len = util::cstr_length(path0);
+
+			util::cstr_copy(path0, buffer);
+			if (path0[path0_len - 1] != '/')
+				util::cstr_append("/", buffer);
+			util::cstr_append(path1, buffer);
+
+			return 0;
+		}
+	}
+}

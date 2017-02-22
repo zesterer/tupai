@@ -20,7 +20,13 @@
 // Tupai
 #include <tupai/prompt.hpp>
 #include <tupai/tty.hpp>
+#include <tupai/timer.hpp>
+
 #include <tupai/util/conv.hpp>
+#include <tupai/util/mem.hpp>
+#include <tupai/util/cstr.hpp>
+
+#include <tupai/fs/fs.hpp>
 
 #include <tupai/prog/snake.hpp>
 #include <tupai/prog/adventure.hpp>
@@ -93,6 +99,10 @@ namespace tupai
 
 		tty_write_str("Type 'help' for more information\n");
 
+		char initial_dir[] = "/";
+		char* current_dir = util::alloc<char>(sizeof(initial_dir) / sizeof(char)).val();
+		util::cstr_copy(initial_dir, current_dir);
+
 		while (true)
 		{
 			tty_set_fg_color(tty_color::CYAN);
@@ -101,6 +111,10 @@ namespace tupai
 			tty_write('@');
 			tty_set_fg_color(tty_color::RED);
 			tty_write_str("tupai");
+			tty_reset();
+			tty_write_str(":");
+			tty_set_fg_color(tty_color::YELLOW);
+			tty_write_str(current_dir);
 			tty_reset();
 			tty_write_str("> ");
 
@@ -113,25 +127,30 @@ namespace tupai
 			if (libk::strcmp(buffer, "help") == 0)
 			{
 				tty_write_str("--- Help ---\n");
-				tty_write_str("help      - Show this help screen\n");
-				tty_write_str("sys       - Show system information\n");
-				tty_write_str("snake     - Play a demo snake game\n");
-				tty_write_str("adventure - Play an adventure game\n");
-				tty_write_str("timer     - Timer test program\n");
-				tty_write_str("uptime    - Find the system uptime\n");
-				tty_write_str("chars     - Display printable characters\n");
-				tty_write_str("color     - Display printable colors\n");
-				tty_write_str("exit      - Close the prompt session\n");
-				tty_write_str("clear     - Clear the screen\n");
-				tty_write_str("abort     - Abort the system\n");
+				tty_write_str("help        - Show this help screen\n");
+				tty_write_str("sys         - Show system information\n");
+				tty_write_str("snake       - Play a demo snake game\n");
+				tty_write_str("adventure   - Play an adventure game\n");
+				tty_write_str("timer       - Timer test program\n");
+				tty_write_str("uptime      - Find the system uptime\n");
+				tty_write_str("chars       - Display printable characters\n");
+				tty_write_str("color       - Display printable colors\n");
+				tty_write_str("cd <dir>    - Change directory\n");
+				tty_write_str("pwd         - View current directory\n");
+				tty_write_str("ls          - List files in directory\n");
+				tty_write_str("mkdir <dir> - Create a new directory\n");
+				tty_write_str("exit        - Close the prompt session\n");
+				tty_write_str("clear       - Clear the screen\n");
+				tty_write_str("abort       - Abort the system\n");
 			}
 			else if (libk::strcmp(buffer, "uptime") == 0)
 			{
-				uint64 ctime = tupai::pit_counter * 100;
-				int seconds = ctime / (1000000);
-				int minutes = seconds / 60;
-				int hours = minutes / 60;
-				int days = hours / 24;
+				uint64 ctime = timer_get_nanoseconds();
+				uint64 milliseconds = ctime / (1000);
+				uint64 seconds = milliseconds / (1000);
+				uint64 minutes = seconds / 60;
+				uint64 hours = minutes / 60;
+				uint64 days = hours / 24;
 
 				libk::printf("Uptime: ");
 
@@ -140,9 +159,11 @@ namespace tupai
 				if (hours > 0)
 					libk::printf("%i hours, ", hours % 24);
 				if (minutes > 0)
-					libk::printf("%i minutes, ", minutes % 60);
+					libk::printf("%i mins, ", minutes % 60);
 				if (seconds > 0)
-					libk::printf("%i seconds", seconds % 60);
+					libk::printf("%i sec, ", seconds % 60);
+				if (milliseconds > 0)
+					libk::printf("%i ms", milliseconds % 1000);
 
 				libk::putchar('\n');
 			}
@@ -193,6 +214,79 @@ namespace tupai
 
 					tty_write('\n');
 				}
+			}
+			else if (buffer[0] == 'c' && buffer[1] == 'd')
+			{
+				if (buffer[2] == ' ')
+				{
+					//umem npath_len = util::cstr_length(buffer + 3);
+					char* ndir = util::alloc<char>(fs::PATH_MAX_LENGTH + 1).val();
+
+					fs::path_concat(current_dir, buffer + 3, ndir);
+
+					// Check new dir exists
+					fs::node* nnode = fs::fs_find(ndir);
+					if (nnode != nullptr && nnode->is_directory())
+					{
+						nnode->get_path(ndir);
+						delete current_dir;
+						current_dir = ndir;
+					}
+					else
+					{
+						delete ndir;
+						libk::printf("No such directory '%s'\n", buffer + 3);
+					}
+				}
+				else
+				{
+					delete current_dir;
+					current_dir = util::alloc<char>(sizeof(initial_dir) / sizeof(char)).val();
+					util::cstr_copy(initial_dir, current_dir);
+				}
+			}
+			else if (libk::strcmp(buffer, "pwd") == 0)
+			{
+				libk::printf("%s\n", current_dir);
+			}
+			else if (libk::strcmp(buffer, "ls") == 0)
+			{
+				fs::node* current_node = fs::fs_find(current_dir);
+				if (current_node != nullptr)
+				{
+					fs::node* nodebuff[32];
+					umem count;
+					status_t status = fs::fs_list_children(current_node, nodebuff, &count, 0);
+
+					if (status == 0)
+					{
+						for (umem i = 0; i < count; i ++)
+						{
+							const char* nodename = nodebuff[i]->name.str();
+							tty_set_fg_color((byte)nodebuff[i]->type + 9);
+							libk::printf("%s  ", nodename);
+							tty_reset();
+						}
+						libk::putchar('\n');
+					}
+					else
+						libk::printf("Unknown error\n");
+				}
+				else
+					libk::printf("Invalid path '%s'\n", current_dir);
+			}
+			else if (buffer[0] == 'm' && buffer[1] == 'k' && buffer[2] == 'd' && buffer[3] == 'i' && buffer[4] == 'r')
+			{
+				if (buffer[5] == ' ')
+				{
+					fs::node* nnode = fs::fs_find(current_dir);
+					if (nnode != nullptr && nnode->is_directory())
+					{
+						nnode->add_child(new fs::node(buffer + 6, fs::node_type::DIR));
+					}
+				}
+				else
+					libk::printf("Error: directory name not specified\n");
 			}
 			else
 			{

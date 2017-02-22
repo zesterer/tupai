@@ -1,5 +1,5 @@
 /*
-* 	file : syscall.hpp
+* 	file : fs.hpp
 *
 * 	This file is part of Tupai.
 *
@@ -17,15 +17,26 @@
 * 	along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TUPAI_SYSCALL_HPP
-#define TUPAI_SYSCALL_HPP
+#ifndef TUPAI_FS_FS_HPP
+#define TUPAI_FS_FS_HPP
 
 // Tupai
 #include <tupai/type.hpp>
+#include <tupai/util/safetype.hpp>
+#include <tupai/fs/common.hpp>
+#include <tupai/fs/node.hpp>
 
 namespace tupai
 {
-	void syscall_init();
+	namespace fs
+	{
+		void fs_init();
+
+		void fs_print();
+
+		node*    fs_find(const char* path, const char* rel = nullptr);
+		status_t fs_list_children(node* parent, node** nodes, umem* n, umem max = 0);
+	}
 }
 
 #endif
