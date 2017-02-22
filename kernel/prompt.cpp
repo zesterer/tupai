@@ -127,7 +127,7 @@ namespace tupai
 			}
 			else if (libk::strcmp(buffer, "uptime") == 0)
 			{
-				uint32 ctime = tupai::pit_counter;
+				uint64 ctime = tupai::pit_counter * 100;
 				int seconds = ctime / (1000000);
 				int minutes = seconds / 60;
 				int hours = minutes / 60;

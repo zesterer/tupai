@@ -20,6 +20,9 @@
 #ifndef TUPAI_PROMPT_HPP
 #define TUPAI_PROMPT_HPP
 
+// Tupai
+#include <tupai/type.hpp>
+
 namespace tupai
 {
 	int prompt();

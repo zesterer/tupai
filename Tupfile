@@ -1,5 +1,8 @@
 include_rules
 
+# Compile the cross-compiler toolchain
+#: |> sh build-cross.sh |> tools/cross/bin/i686-elf-g++ tools/cross/bin/i686-elf-ar tools/cross/bin/i686-elf-ld tools/cross/bin/i686-elf-objcopy
+
 # Generate Initial Ramdisk
 : |> cd sysroot && $(TAR) -cvf ../%o * --format=ustar |> initrd.tar
 

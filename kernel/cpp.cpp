@@ -55,3 +55,52 @@ void operator delete[](void* ptr, unsigned long n __attribute__ ((unused)))
 
 void* __dso_handle;
 void* __cxa_atexit;
+
+
+inline uint64_t uint64_div64(uint64_t dividend, uint64_t divisor)
+{
+	uint64_t shift = divisor;
+	uint64_t aux   = divisor;
+
+	while (shift < dividend && (aux <<= 1) > shift)
+		shift = aux;
+
+	for (aux = 0; shift >= divisor; shift >>= 1)
+	{
+		aux <<= 1;
+		if (shift <= dividend)
+		{
+			aux ++;
+			dividend -= shift;
+		}
+	}
+
+	return aux;
+}
+
+inline uint64_t __udivdi3(uint64_t a, uint64_t b)
+{
+	return uint64_div64(a, b);
+}
+
+uint64_t uint64_mod64(uint64_t dividend, uint64_t divisor)
+{
+
+	uint64_t shift = divisor;
+	uint64_t aux   = divisor;
+
+	while (shift < dividend && (aux <<= 1) > shift)
+		shift = aux;
+
+	for (aux = 0; shift >= divisor; shift >>= 1)
+	{
+		aux <<= 1;
+		if (shift <= dividend)
+		{
+			aux ++;
+			dividend -= shift;
+		}
+	}
+
+	return dividend;
+}

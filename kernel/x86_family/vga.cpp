@@ -27,6 +27,7 @@
 #include <tupai/gfx/buffer.hpp>
 
 #include <tupai/util/mem.hpp>
+#include <tupai/util/math.hpp>
 #include <tupai/kdebug.hpp>
 
 #include <libk/time.hpp>
@@ -45,7 +46,7 @@ namespace tupai
 		static void vga_textmode_place_entry(uint32 c, uint16 col, uint16 row, byte fg_color, byte bg_color);
 
 		static inline uint32 color_blend(uint32 lower, uint32 higher);
-		static void blit_character(uint32 c, uint16 x, uint16 y, uint32 fg_color, uint32 bg_color);
+		static void blit_character(uint32 c, uint16 x, uint16 y, uint32 fg_color, uint32 bg_color, uint8 alpha = 0xC0);
 
 		struct bmp_header // TODO : this
 		{
@@ -261,7 +262,8 @@ namespace tupai
 
 				if (config.fb_type == vga_config::framebuffer_type::RGB) // RGB linear framebuffer mode
 				{
-					blit_character(' ', cursor_col, cursor_row, 0xFFFFFFFF, 0xFFFFFFFF);
+					uint8 alpha = 255;
+					blit_character(' ', cursor_col, cursor_row, 0xFFFFFFFF, 0xFFFFFFFF, alpha);
 				}
 				else if (config.fb_type == vga_config::framebuffer_type::EGA_TEXT) // EGA text framebuffer mode
 				{
@@ -320,7 +322,7 @@ namespace tupai
 			return (0xFF << 24) | (r_final << 16) | (g_final << 8) | b_final << 0;
 		}
 
-		static void blit_character(uint32 c, uint16 x, uint16 y, uint32 fg_color, uint32 bg_color)
+		static void blit_character(uint32 c, uint16 x, uint16 y, uint32 fg_color, uint32 bg_color, uint8 alpha)
 		{
 			if (config.fb_type != vga_config::framebuffer_type::RGB)
 				return;
@@ -328,7 +330,7 @@ namespace tupai
 			uint8* glyph = screen_font->get_glyph(c);
 
 			// Translucent background
-			bg_color = (bg_color & 0x00FFFFFF) | 0x80000000;
+			bg_color = (bg_color & 0x00FFFFFF) | (alpha << 24);
 
 			int offx = x * screen_font->width;
 			int offy = y * screen_font->height;
