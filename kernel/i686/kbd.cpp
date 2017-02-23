@@ -71,7 +71,7 @@ namespace tupai
 	};
 
 	static void kbd_handle_scancode(byte* scancode, umem n);
-	static void kbd_send_command(byte* command, umem n);
+	//static void kbd_send_command(byte* command, umem n);
 
 	const char* scancode_table = "!!1234567890-=\b\tqwertyuiop[]\n!asdfghjkl;'#!\\zxcvbnm,./!!! !FFFFFFFFFF!";
 
@@ -202,6 +202,7 @@ namespace tupai
 		*/
 	}
 
+	/*
 	static void kbd_send_command(byte* command, umem n)
 	{
 		while ((port_in8(KBD_STATUS_PORT) & 0x02) > 0);
@@ -216,4 +217,5 @@ namespace tupai
 
 		port_wait();
 	}
+	*/
 }

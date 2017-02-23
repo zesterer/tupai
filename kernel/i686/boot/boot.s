@@ -17,6 +17,9 @@
 // 	along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+.global _stack_bottom
+.global _stack_top
+
 // A temporary 16 KB bootstrap stack
 .section .bss.boot, "aw", @nobits
 	_boot_stack_bottom:

@@ -1,5 +1,5 @@
 /*
-* 	file : pipemgr.hpp
+* 	file : cstr.cpp
 *
 * 	This file is part of Tupai.
 *
@@ -17,22 +17,40 @@
 * 	along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TUPAI_PIPEMGR_HPP
-#define TUPAI_PIPEMGR_HPP
-
 // Tupai
-#include <tupai/type.hpp>
+#include <tupai/util/cstr.hpp>
+
+#include <libk/string.hpp>
 
 namespace tupai
 {
-	typedef uint32 pipe_flags;
+	namespace util
+	{
+		bool cstr_equal(const char* a, const char* b)
+		{
+			return libk::strcmp(a, b) == 0;
+		}
 
-	void pipemgr_init();
+		void cstr_copy(const char* src, char* dest, umem max)
+		{
+			umem i;
+			for (i = 0; (max == 0 || i < max) && src[i] != '\0'; i ++)
+				dest[i] = src[i];
+			dest[i] = '\0';
+		}
 
-	id_t    pipemgr_create(const char* path, pipe_flags flags = 0x0);
-	id_t    pipemgr_open(const char* path);
-	status_t pipemgr_write(id_t id, const byte* data, umem n = 1);
-	status_t pipemgr_read(id_t id, byte* buffer, umem* n, umem max = 0);
+		void cstr_append(const char* src, char* dest, umem max)
+		{
+			for (; dest[0] != '\0'; dest += sizeof(char));
+			umem i;
+			for (i = 0; (max == 0 || i < max) && src[i] != '\0'; i ++)
+				dest[i] = src[i];
+			dest[i] = '\0';
+		}
+
+		umem cstr_length(const char* a)
+		{
+			return libk::strlen(a);
+		}
+	}
 }
-
-#endif

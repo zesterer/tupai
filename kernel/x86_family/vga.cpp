@@ -159,7 +159,7 @@ namespace tupai
 
 			// Load wallpaper
 			wallpaper_buffer = gfx::bmp_from(&_binary_wallpaper_bmp_start).to_buffer();
-			gfx::buffer test_buffer = gfx::bmp_from(&_binary_test_bmp_start).to_buffer();
+			//gfx::buffer test_buffer = gfx::bmp_from(&_binary_test_bmp_start).to_buffer();
 			//wallpaper_buffer.blit(test_buffer, 100, 300);
 			//wallpaper_buffer.blit(test_buffer, 200, 400, 150, 180);
 

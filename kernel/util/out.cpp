@@ -20,11 +20,10 @@
 // Tupai
 #include <tupai/util/out.hpp>
 
+#include <tupai/tty.hpp>
+
 namespace tupai
 {
-	extern void tty_write(char c);
-	extern void tty_write_str(const char* str);
-
 	namespace util
 	{
 		void printc(char c)

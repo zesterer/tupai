@@ -239,7 +239,7 @@ namespace tupai
 				kpanic("Unsupported integer compose base");
 
 			// Find size
-			umem digits = 0;
+			int digits = 0;
 			for (T test = val; test > 0 || digits == 0; test /= base) { digits ++; }
 
 			umem str_count = 0;
@@ -252,8 +252,8 @@ namespace tupai
 			}
 
 			// Add padding (inc val = 0 case)
-			pad = util::min(sizeof(T) * 8, util::max(1, (uint)pad));
-			for (int i = 0; i < pad - (int)digits; i ++)
+			pad = util::min((int)(sizeof(T) * 8), util::max(1, pad));
+			for (int i = 0; i < (pad - (int)digits); i ++)
 			{
 				nstr[str_count] = '0';
 				str_count ++;
@@ -272,7 +272,7 @@ namespace tupai
 			case 10:
 				{
 					str_count += digits;
-					for (umem i = 0; i < digits; i ++)
+					for (int i = 0; i < digits; i ++)
 					{
 						nstr[str_count - i - 1] = '0' + (val % base);
 						val /= base;
@@ -288,7 +288,7 @@ namespace tupai
 			case 16:
 				{
 					str_count += digits;
-					for (umem i = 0; i < digits; i ++)
+					for (int i = 0; i < digits; i ++)
 					{
 						nstr[str_count - i - 1] = ((val % base) >= 10) ? ('A' + val % base - 10) : ('0' + val % base);
 						val /= base;

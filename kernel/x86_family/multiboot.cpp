@@ -45,6 +45,9 @@ namespace tupai
 
 		void multiboot_init(ptr_t mb_header, uint32 mb_magic)
 		{
+			if (mb_magic != 0x2BADB002)
+				kpanic("Multiboot magic value does not match!");
+
 			// Extract header
 			header = *((multiboot_header*)((umem)mb_header + KERNEL_VIRTUAL_OFFSET));
 

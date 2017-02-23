@@ -39,7 +39,6 @@
 #include <tupai/console.hpp>
 #include <tupai/prompt.hpp>
 #include <tupai/kshell.hpp>
-#include <tupai/pipemgr.hpp>
 
 // --- FILESYSTEM ---
 #include <tupai/fs/fs.hpp>
@@ -76,7 +75,7 @@ namespace tupai
 	static void kernel_shell_task();
 
 	// Kernel early
-	void kearly(ptr_t mb_header, uint32 mb_magic, uint32 stack)
+	void kearly(ptr_t mb_header, uint32 mb_magic, uint32 stack __attribute__ ((unused)))
 	{
 		#if defined(SYSTEM_ARCH_i686)
 			// Multiboot
@@ -163,8 +162,6 @@ namespace tupai
 		// Filesystems and I/O
 		fs::fs_init();
 		startup_print_unit_init("Filesystem");
-		pipemgr_init();
-		startup_print_unit_init("Pipe manager");
 
 		// System interfaces
 		sys::random_init();
