@@ -27,6 +27,16 @@ namespace tupai
 {
 	namespace x86_family
 	{
+		struct multiboot_module_info
+		{
+			uint32 start;
+			uint32 end;
+
+			uint32 string;
+
+			uint32 padding;
+		} __attribute__((packed));
+
 		struct multiboot_header
 		{
 			struct framebuffer
@@ -100,6 +110,7 @@ namespace tupai
 
 		multiboot_header multiboot_get_header();
 		multiboot_header::framebuffer multiboot_get_framebuffer();
+		multiboot_module_info multiboot_get_module_info(umem n);
 	}
 }
 

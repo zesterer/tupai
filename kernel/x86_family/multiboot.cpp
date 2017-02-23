@@ -21,6 +21,11 @@
 #include <tupai/x86_family/multiboot.hpp>
 #include <tupai/i686/i686.hpp>
 
+#include <tupai/tty.hpp>
+#include <tupai/util/conv.hpp>
+#include <tupai/util/math.hpp>
+#include <tupai/util/cstr.hpp>
+
 #include <tupai/kdebug.hpp>
 
 // Libk
@@ -32,9 +37,26 @@ namespace tupai
 	{
 		multiboot_header header;
 
+		const umem MODULE_MAX = 16;
+		const umem MODULE_MAX_STRING = 64;
+		multiboot_module_info modules[MODULE_MAX];
+		char module_string[MODULE_MAX_STRING + 1][MODULE_MAX];
+		umem module_count = 0;
+
 		void multiboot_init(ptr_t mb_header, uint32 mb_magic)
 		{
+			// Extract header
 			header = *((multiboot_header*)((umem)mb_header + KERNEL_VIRTUAL_OFFSET));
+
+			// Extract modules
+			module_count = util::min(MODULE_MAX, header.module_count);
+			for (umem i = 0; i < module_count; i ++)
+			{
+				const multiboot_module_info* info = &((const multiboot_module_info*)header.module_address)[i];
+				modules[i] = *info;
+				util::cstr_copy((const char*)modules[i].string, module_string[i], MODULE_MAX_STRING);
+				modules[i].string = (uint32)module_string[i];
+			}
 
 			klog_init("Initiated Multiboot");
 		}
@@ -47,6 +69,11 @@ namespace tupai
 		multiboot_header::framebuffer multiboot_get_framebuffer()
 		{
 			return header.fb;
+		}
+
+		multiboot_module_info multiboot_get_module_info(umem n)
+		{
+			return modules[n];
 		}
 	}
 }

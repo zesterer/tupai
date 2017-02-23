@@ -42,8 +42,16 @@ namespace tupai
 			mempool_dealloc(ptr);
 		}
 
-		umem align_floor(umem n, umem align = 1024);
-		umem align_ceiling(umem n, umem align = 1024);
+		const umem MEM_ALIGN_BYTE = 1;
+		const umem MEM_ALIGN_WORD = 2;
+		const umem MEM_ALIGN_LONG = 4;
+		const umem MEM_ALIGN_QUAD = 8;
+		const umem MEM_ALIGN_KB = 1024;
+		const umem MEM_ALIGN_MB = 1024 * 1024;
+		const umem MEM_ALIGN_GB = 1024 * 1024 * 1024;
+		extern const umem MEM_ALIGN_PAGE;
+		umem align_floor(umem n, umem align);
+		umem align_ceiling(umem n, umem align);
 	}
 }
 

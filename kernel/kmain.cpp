@@ -20,6 +20,8 @@
 // Tupai
 #include <tupai/kmain.hpp>
 
+#include <tupai/util/conv.hpp>
+
 // --- MEMORY ---
 #include <tupai/mempool.hpp>
 #include <tupai/memory.hpp>

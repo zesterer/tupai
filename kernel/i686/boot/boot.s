@@ -55,7 +55,7 @@
 // A more permanent 64 KB kernel stack
 .section .bss, "aw", @nobits
 	_stack_bottom:
-	.skip 0x4000 // 16 KB
+	.skip 0x10000 // 64 KB
 	_stack_top:
 
 // Higher-half kernel entry

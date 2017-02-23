@@ -33,6 +33,7 @@
 #include <tupai/prog/sys.hpp>
 #include <tupai/prog/adventure.hpp>
 #include <tupai/prog/timer.hpp>
+#include <tupai/prog/mmap.hpp>
 
 // Libk
 #include <libk/stdio.hpp>
@@ -138,6 +139,7 @@ namespace tupai
 		tty_write_str("Utility commands:\n");
 		tty_reset();
 		tty_write_str("  repeat <n> <cmd> [args] Repeat a command n times\n");
+		tty_write_str("  echo <string>           Output a string\n");
 		tty_write_str("  color                   Display color information\n");
 		tty_write_str("  chars                   Display character set\n");
 		tty_write_str("  uptime                  Display system uptime\n");
@@ -145,6 +147,7 @@ namespace tupai
 		tty_write_str("Filesystem commands:\n");
 		tty_reset();
 		tty_write_str("  ls [dir]     List files in the current directory\n");
+		tty_write_str("  tree [dir]   List files in all sub-directories\n");
 		tty_write_str("  pwd          Display the current directory\n");
 		tty_write_str("  cd [dir]     Change directory\n");
 		tty_write_str("  mkdir <name> Create a new directory\n");
@@ -162,6 +165,7 @@ namespace tupai
 		tty_write_str("  sys       Display system details\n");
 		tty_write_str("  adventure Play an adventure game\n");
 		tty_write_str("  timer     Run a test timer\n");
+		tty_write_str("  mmap      View the memory map\n");
 	}
 
 	void kshell_display_color()
@@ -241,6 +245,35 @@ namespace tupai
 		tty_write('\n');
 	}
 
+	void kshell_display_node_tree(fs::node* node, int depth = 0)
+	{
+		if (node->is_root())
+		{
+			tty_write_str("/\n");
+			if (node->child != nullptr)
+				kshell_display_node_tree(node->child, depth + 1);
+		}
+		else
+		{
+			for (int i = 0; i < depth; i ++)
+				tty_write_str("  ");
+			tty_set_fg_color((byte)node->type + 9);
+			tty_write_str(node->name.str());
+			tty_reset();
+
+			if (node->is_directory())
+				tty_write_str("/\n");
+			else
+				tty_write('\n');
+
+			if (node->child != nullptr)
+				kshell_display_node_tree(node->child, depth + 1);
+
+			if (node->next != nullptr)
+				kshell_display_node_tree(node->next, depth);
+		}
+	}
+
 	int kshell_execute(int argc, char* argv[], char*& cdir)
 	{
 		if (argc > 0)
@@ -281,6 +314,10 @@ namespace tupai
 			{
 				return prog::timer_main(argc - 1, &argv[1]);
 			}
+			else if (util::cstr_equal(argv[0], "mmap") && argc == 1)
+			{
+				return prog::mmap_main(argc - 1, &argv[1]);
+			}
 			else if (util::cstr_equal(argv[0], "repeat") && argc >= 2)
 			{
 				safeval<uint32> n = util::parse<uint32>(argv[1]);
@@ -301,6 +338,11 @@ namespace tupai
 						asm volatile ("int $0x80");
 					}
 				}
+			}
+			else if (util::cstr_equal(argv[0], "echo") && argc == 2)
+			{
+				tty_write_str(argv[1]);
+				tty_write('\n');
 			}
 			else if (util::cstr_equal(argv[0], "color") && argc == 1)
 			{
@@ -343,6 +385,28 @@ namespace tupai
 					}
 					else
 						tty_write_str("Unknown error\n");
+				}
+				else
+				{
+					tty_write_str("Invalid path '");
+					tty_write_str(cdir);
+					tty_write_str("'\n");
+				}
+
+				delete ndir;
+			}
+			else if (util::cstr_equal(argv[0], "tree") && argc <= 2)
+			{
+				char* ndir = util::alloc<char>(fs::PATH_MAX_LENGTH + 1).val();
+				if (argc == 1)
+					util::cstr_copy(cdir, ndir);
+				else
+					fs::path_concat(cdir, argv[1], ndir);
+
+				fs::node* current_node = fs::fs_find(ndir);
+				if (current_node != nullptr)
+				{
+					kshell_display_node_tree(current_node, 0);
 				}
 				else
 				{
@@ -401,7 +465,7 @@ namespace tupai
 				else
 					tty_write_str("Error: directory name not specified\n");
 			}
-			else
+			else if (util::cstr_length(argv[0]) > 0)
 			{
 				tty_write_str(argv[0]);
 				if (argc > 1)
@@ -438,10 +502,13 @@ namespace tupai
 			}
 		}
 
+		if (!do_exit)
+			tty_write_str("Type 'help' for more information\n");
+
 		while (!do_exit)
 		{
 			// Prompt
-			tty_write_str("[");
+			//tty_write_str("[");
 			tty_set_fg_color(tty_color::LIGHT_RED);
 			tty_write_str("kernel");
 			tty_reset();
@@ -453,7 +520,7 @@ namespace tupai
 			tty_set_fg_color(tty_color::LIGHT_YELLOW);
 			tty_write_str(cdir);
 			tty_reset();
-			tty_write_str("] ");
+			tty_write_str(" $ ");
 
 			// Get the line
 			char* linebuff = util::alloc<char>(512).val();
@@ -474,6 +541,7 @@ namespace tupai
 					do_exit = true;
 			}
 
+			// Free unneeded memory
 			delete linebuff;
 			delete strbuff;
 			delete argbuff;

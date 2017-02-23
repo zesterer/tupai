@@ -55,7 +55,7 @@
 
 	- [-] PAE Paging
 	- [-] Stream buffers / queues
-	- [ ] RAM filesystem
+	- [-] RAM filesystem
 	- [-] Advanced kernel prompt
 	- [ ] Pre-emptive multi-tasking
 	- [-] Atomic concurrency objects (mutex, semaphore, etc.) implementation

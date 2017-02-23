@@ -30,66 +30,10 @@
 
 namespace tupai
 {
-	const umem MEMORY_PAGE_SIZE = 4096; // 4K - Size of one page
-	const umem MEMORY_REGION_PAGES = 4; // In Pages (4K)
-	const umem MEMORY_REGION_SIZE = MEMORY_PAGE_SIZE * MEMORY_REGION_PAGES;
-
-	struct memory_virt_region
-	{
-		static const byte FLAG_SHARED = (1 << 0); // Is this region shared by another process (not including threads)?
-		static const byte FLAG_OWNER  = (1 << 1); // If this region is shared, are we the owner of it?
-
-		byte flags;
-		umem phys_index; // Index into the global physical memory table
-	};
-
-	struct memory_phys_region
-	{
-		static const byte FLAG_USED   = (1 << 0); // Is this region allocated?
-		static const byte FLAG_GPMEM  = (1 << 1); // General-purpose RAM?
-		static const byte FLAG_STATIC = (1 << 2); // Is this memory statically used by something (i.e: kernel VBE video memory)?
-
-		byte flags = 0b00000000; // No flags
-		uint32 pid; // 0 = Kernel
-		umem virt_index; // Index into the process's virtual memory table
-	};
-
-	struct memory_process_map
-	{
-		uint32 pid; // 0 = none, 1 = kernel, 2 = processes
-		umem virt_offset = 0; // For the kernel, this is 0xC0000000
-
-		memory_virt_region virt_regions[65536]; // 1G for now. TODO : Expand this dynamically for larger processes
-
-		umem get_virt_addr(umem index) { return this->virt_offset + index * MEMORY_REGION_SIZE; }
-	};
-
-	struct memory_global_map
-	{
-		umem phys_offset = 0; // Offset of the global physical memory table in memory (usually above kernel_end)
-		memory_phys_region phys_regions[262144]; // 4G - entire physical address space. TODO : Expand this dynamically
-
-		umem get_phys_addr(umem index) { return this->phys_offset + index * MEMORY_REGION_SIZE; }
-	};
-
-	struct memory_map
-	{
-		memory_global_map global_map;
-		memory_process_map process_map[16]; // Allow space for 16 processes for now
-
-		memory_map()
-		{
-
-		}
-	};
-
 	static umem kernel_dyn_end;
 	static umem phys_map_start;
 	static umem phys_map_size;
 	static umem phys_map_end;
-
-	static memory_map* g_memory_map;
-	static bool memory_enforced = false;
 
 	// Kernel end pointer
 	extern "C" byte kernel_start;
@@ -97,10 +41,29 @@ namespace tupai
 
 	static ptr_t memory_early_alloc(umem size);
 
+	struct memory_global_map
+	{
+		umem phys_offset = 0; // Offset of the global physical memory table in memory (usually above kernel_end)
+		memory_phys_frame phys_frames[262144]; // 4G - entire physical address space. TODO : Expand this dynamically
+
+		umem get_phys_addr(umem index) { return this->phys_offset + index * MEMORY_FRAME_SIZE; }
+	};
+
+	struct memory_map
+	{
+		memory_global_map global_map;
+		memory_process_map process_map[16]; // Allow space for 16 processes for now
+
+		memory_map() {}
+	};
+
+	static memory_map* g_memory_map;
+	static bool memory_enforced = false;
+
 	void memory_init()
 	{
 		#if defined(SYSTEM_ARCH_i686)
-			kernel_dyn_end = util::align_ceiling((umem)&kernel_end - KERNEL_VIRTUAL_OFFSET);
+			kernel_dyn_end = util::align_ceiling((umem)&kernel_end - KERNEL_VIRTUAL_OFFSET, util::MEM_ALIGN_KB);
 
 			x86_family::paging_init();
 		#endif
@@ -118,9 +81,13 @@ namespace tupai
 		x86_family::multiboot_header mbh = x86_family::multiboot_get_header();
 
 		// Find the limits of the available memory map
-		phys_map_start = util::align_ceiling(kernel_dyn_end);
-		phys_map_end = util::align_floor(mbh.mem_upper * 1024);
-		phys_map_size = util::align_floor(phys_map_end - phys_map_start);
+		phys_map_start = util::align_ceiling(kernel_dyn_end, util::MEM_ALIGN_KB);
+		phys_map_end = util::align_floor(mbh.mem_upper * 1024, util::MEM_ALIGN_KB);
+		phys_map_size = util::align_floor(phys_map_end - phys_map_start, util::MEM_ALIGN_KB);
+
+		// Map default kernel memory
+		for (umem addr = 0x0; addr < kernel_dyn_end; addr += MEMORY_FRAME_SIZE)
+			memory_map_frame(addr, 0, 0x0);
 
 		#if defined(SYSTEM_ARCH_i686)
 			x86_family::paging_enable();
@@ -134,9 +101,35 @@ namespace tupai
 
 	static ptr_t memory_early_alloc(umem size)
 	{
-		size = util::align_ceiling(size);
+		size = util::align_ceiling(size, util::MEM_ALIGN_KB);
 		ptr_t ptr = (ptr_t)(kernel_dyn_end + KERNEL_VIRTUAL_OFFSET);
 		kernel_dyn_end += size;
 		return ptr;
+	}
+
+	bool memory_map_frame(umem address, uint32 pid, byte flags)
+	{
+		umem index = util::align_floor(address, MEMORY_FRAME_SIZE) / MEMORY_FRAME_SIZE;
+		memory_phys_frame* frame = &g_memory_map->global_map.phys_frames[index];
+
+		if (frame->is_used())
+			return false;
+		else
+		{
+			frame->flags = flags | MEMORY_FLAG_USED;
+			frame->pid = pid;
+			return true;
+		}
+	}
+
+	const memory_phys_frame* memory_get_frame(umem address)
+	{
+		umem index = util::align_floor(address, MEMORY_FRAME_SIZE) / MEMORY_FRAME_SIZE;
+		return &g_memory_map->global_map.phys_frames[index];
+	}
+
+	umem memory_get_size_kb()
+	{
+		return 0x400000; // 4GB
 	}
 }

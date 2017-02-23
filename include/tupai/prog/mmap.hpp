@@ -1,5 +1,5 @@
 /*
-* 	file : mem.cpp
+* 	file : mmap.hpp
 *
 * 	This file is part of Tupai.
 *
@@ -17,23 +17,15 @@
 * 	along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// Tupai
-#include <tupai/util/mem.hpp>
+#ifndef TUPAI_PROG_MMAP_HPP
+#define TUPAI_PROG_MMAP_HPP
 
 namespace tupai
 {
-	namespace util
+	namespace prog
 	{
-		const umem MEM_ALIGN_PAGE = 1024 * 4;
-
-		umem align_floor(umem n, umem align)
-		{
-			return n - n % align;
-		}
-
-		umem align_ceiling(umem n, umem align)
-		{
-			return (n + align) - n % align;
-		}
+		int mmap_main(int argc, char* argv[]);
 	}
 }
+
+#endif
