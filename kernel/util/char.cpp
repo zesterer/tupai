@@ -24,6 +24,12 @@ namespace tupai
 {
 	namespace util
 	{
+
+		bool is_whitespace(char c)
+		{
+			return c == ' ' || c == '\n' || is_newline(c);
+		}
+
 		bool is_printable(char c)
 		{
 			return ((unsigned char)c >= 0x20) && ((unsigned char)c <= 0x7F);

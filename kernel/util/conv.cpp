@@ -21,9 +21,11 @@
 #include <tupai/util/conv.hpp>
 #include <tupai/kdebug.hpp>
 
+#include <tupai/util/char.hpp>
+#include <tupai/util/math.hpp>
+
 // Libk
-#include <libk/ctype.hpp>
-#include <libk/stdio.hpp>
+//#include <libk/stdio.hpp>
 
 // GCC
 #include <stdint.h>
@@ -72,7 +74,7 @@ namespace tupai
 							end = true;
 							state = stage::INVALID;
 						}
-						else if (!libk::isblank(c))
+						else if (!is_whitespace(c))
 						{
 							cancel_incr = true;
 							state = stage::SIGN;
@@ -136,7 +138,7 @@ namespace tupai
 							end = true;
 							state = stage::FINISH;
 						}
-						else if (started_digits && libk::isblank(c))
+						else if (started_digits && is_whitespace(c))
 							state = stage::FINISH;
 						else
 						{
@@ -144,7 +146,7 @@ namespace tupai
 							{
 							case 10:
 								{
-									if (libk::isdigit(c))
+									if (is_digit(c))
 									{
 										val *= 10;
 										val += c - '0';
@@ -157,7 +159,7 @@ namespace tupai
 
 							case 16:
 								{
-									if (libk::isxdigit(c))
+									if (is_digit(c))
 									{
 										val *= 16;
 										val += (c >= '0' && c <= '9') ? (c - '0') : ((c >= 'A' && c <= 'F') ? (c + 0xA - 'A') : (c + 0xA - 'a'));
@@ -193,7 +195,7 @@ namespace tupai
 					{
 						if (c == '\0')
 							end = true;
-						else if (!libk::isblank(c))
+						else if (!is_whitespace(c))
 							state = stage::INVALID;
 					}
 					break;
@@ -229,13 +231,16 @@ namespace tupai
 		template<> safeval<uint64> parse<uint64>(const char* str, umem n) { return parse_integer_generic<uint64>(str, n); }
 
 		template <typename T>
-		safeval<str<char, sizeof(T) * 8 + 1>> compose_integer_generic(T val, int base)
+		safeval<str<char, sizeof(T) * 8 + 1>> compose_integer_generic(T val, int base, int pad)
 		{
 			auto nstr = str<char, sizeof(T) * 8 + 1>();
 
+			if (base <= 0)
+				kpanic("Unsupported integer compose base");
+
 			// Find size
 			umem digits = 0;
-			for (T test = val; test > 0; test /= base) { digits ++; }
+			for (T test = val; test > 0 || digits == 0; test /= base) { digits ++; }
 
 			umem str_count = 0;
 
@@ -246,7 +251,9 @@ namespace tupai
 				str_count ++;
 			}
 
-			if (val == 0) // Zero case
+			// Add padding (inc val = 0 case)
+			pad = util::min(sizeof(T) * 8, util::max(1, (uint)pad));
+			for (int i = 0; i < pad - (int)digits; i ++)
 			{
 				nstr[str_count] = '0';
 				str_count ++;
@@ -298,13 +305,13 @@ namespace tupai
 			return safeval<str<char, sizeof(T) * 8 + 1>>(nstr, true);
 		}
 
-		template<> safeval<str<char, sizeof(int8) * 8 + 1>> compose<int8>(int8 val, int base) { return compose_integer_generic<int8>(val, base); }
-		template<> safeval<str<char, sizeof(uint8) * 8 + 1>> compose<uint8>(uint8 val, int base) { return compose_integer_generic<uint8>(val, base); }
-		template<> safeval<str<char, sizeof(int16) * 8 + 1>> compose<int16>(int16 val, int base) { return compose_integer_generic<int16>(val, base); }
-		template<> safeval<str<char, sizeof(uint16) * 8 + 1>> compose<uint16>(uint16 val, int base) { return compose_integer_generic<uint16>(val, base); }
-		template<> safeval<str<char, sizeof(int32) * 8 + 1>> compose<int32>(int32 val, int base) { return compose_integer_generic<int32>(val, base); }
-		template<> safeval<str<char, sizeof(uint32) * 8 + 1>> compose<uint32>(uint32 val, int base) { return compose_integer_generic<uint32>(val, base); }
-		template<> safeval<str<char, sizeof(int64) * 8 + 1>> compose<int64>(int64 val, int base) { return compose_integer_generic<int64>(val, base); }
-		template<> safeval<str<char, sizeof(uint64) * 8 + 1>> compose<uint64>(uint64 val, int base) { return compose_integer_generic<uint64>(val, base); }
+		template<> safeval<str<char, sizeof(int8) * 8 + 1>> compose<int8>(int8 val, int base, int pad) { return compose_integer_generic<int8>(val, base, pad); }
+		template<> safeval<str<char, sizeof(uint8) * 8 + 1>> compose<uint8>(uint8 val, int base, int pad) { return compose_integer_generic<uint8>(val, base, pad); }
+		template<> safeval<str<char, sizeof(int16) * 8 + 1>> compose<int16>(int16 val, int base, int pad) { return compose_integer_generic<int16>(val, base, pad); }
+		template<> safeval<str<char, sizeof(uint16) * 8 + 1>> compose<uint16>(uint16 val, int base, int pad) { return compose_integer_generic<uint16>(val, base, pad); }
+		template<> safeval<str<char, sizeof(int32) * 8 + 1>> compose<int32>(int32 val, int base, int pad) { return compose_integer_generic<int32>(val, base, pad); }
+		template<> safeval<str<char, sizeof(uint32) * 8 + 1>> compose<uint32>(uint32 val, int base, int pad) { return compose_integer_generic<uint32>(val, base, pad); }
+		template<> safeval<str<char, sizeof(int64) * 8 + 1>> compose<int64>(int64 val, int base, int pad) { return compose_integer_generic<int64>(val, base, pad); }
+		template<> safeval<str<char, sizeof(uint64) * 8 + 1>> compose<uint64>(uint64 val, int base, int pad) { return compose_integer_generic<uint64>(val, base, pad); }
 	}
 }

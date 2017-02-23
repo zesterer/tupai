@@ -50,13 +50,23 @@ namespace tupai
 					if (i != 0)
 					{
 						tty_write_str("0x");
-						tty_write_str(util::compose(first, 16).val().raw());
+						tty_write_str(util::compose(first, 16, 8).val().raw());
 						tty_write_str("-0x");
-						tty_write_str(util::compose(address - 1, 16).val().raw());
-						tty_write_str(" : pid = ");
-						tty_write_str(util::compose(pid, 10).val().raw());
-						tty_write_str(", flags = 0b");
-						tty_write_str(util::compose(flags, 2).val().raw());
+						tty_write_str(util::compose(address - 1, 16, 8).val().raw());
+						tty_write_str(" : ");
+
+						if (flags & MEMORY_FLAG_USED)
+						{
+							tty_write_str("pid = ");
+							tty_write_str(util::compose(pid, 10).val().raw());
+							tty_write_str(", flags = 0b");
+							tty_write_str(util::compose(flags, 2, 8).val().raw());
+						}
+						else
+						{
+							tty_write_str("UNUSED");
+						}
+
 						tty_write_str("\n");
 					}
 

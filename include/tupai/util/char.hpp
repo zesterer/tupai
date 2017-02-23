@@ -28,6 +28,7 @@ namespace tupai
 {
 	namespace util
 	{
+		bool is_whitespace(char c);
 		bool is_printable(char c);
 		bool is_newline(char c);
 		bool is_backspace(char c);

@@ -35,7 +35,7 @@ namespace tupai
 		safeval<T> parse(str<char, N> str, umem n = ~(umem)0) { return parse<T>(str.raw(), n); }
 
 		template <typename T>
-		safeval<str<char, sizeof(T) * 8 + 1>> compose(T val, int base = 10);
+		safeval<str<char, sizeof(T) * 8 + 1>> compose(T val, int base = 10, int pad = 0);
 	}
 }
 
