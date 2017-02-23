@@ -20,9 +20,9 @@
 // Tupai
 #include <tupai/prog/timer.hpp>
 
+#include <tupai/util/out.hpp>
 #include <tupai/util/conv.hpp>
 
-#include <tupai/tty.hpp>
 #include <tupai/memory.hpp>
 
 namespace tupai
@@ -31,7 +31,7 @@ namespace tupai
 	{
 		int mmap_main(int argc __attribute__ ((unused)), char* argv[] __attribute__ ((unused)))
 		{
-			tty_write_str("--- Memory Map ---\n");
+			util::print("--- Memory Map ---\n");
 
 			umem mem_size_kb = memory_get_size_kb();
 			umem mem_frame_count = (mem_size_kb / MEMORY_FRAME_SIZE) * 1024;
@@ -49,25 +49,25 @@ namespace tupai
 				{
 					if (i != 0)
 					{
-						tty_write_str("0x");
-						tty_write_str(util::compose(first, 16, 8).val().raw());
-						tty_write_str("-0x");
-						tty_write_str(util::compose(address - 1, 16, 8).val().raw());
-						tty_write_str(" : ");
+						util::print("0x");
+						util::print(util::compose(first, 16, 8).val().raw());
+						util::print("-0x");
+						util::print(util::compose(address - 1, 16, 8).val().raw());
+						util::print(" : ");
 
 						if (flags & MEMORY_FLAG_USED)
 						{
-							tty_write_str("pid = ");
-							tty_write_str(util::compose(pid, 10).val().raw());
-							tty_write_str(", flags = 0b");
-							tty_write_str(util::compose(flags, 2, 8).val().raw());
+							util::print("pid = ");
+							util::print(util::compose(pid, 10).val().raw());
+							util::print(", flags = 0b");
+							util::print(util::compose(flags, 2, 8).val().raw());
 						}
 						else
 						{
-							tty_write_str("UNUSED");
+							util::print("UNUSED");
 						}
 
-						tty_write_str("\n");
+						util::printc('\n');
 					}
 
 					pid = frame->pid;

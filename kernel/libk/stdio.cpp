@@ -24,7 +24,7 @@
 #include <libk/ctype.hpp>
 
 // Tupai
-#include <tupai/tty.hpp>
+#include <tupai/util/out.hpp>
 #include <tupai/mempool.hpp>
 #include <tupai/util/conv.hpp>
 
@@ -217,20 +217,20 @@ namespace libk
 
 	sint putchar(sint c)
 	{
-		tupai::tty_write(c);
+		tupai::util::printc(c);
 		return 0;
 	}
 
 	sint puts(const char* str)
 	{
-		tupai::tty_write_str(str);
+		tupai::util::print(str);
 		return 0;
 	}
 
 	sint putsn(const char* str, umem n)
 	{
 		for (umem i = 0; i < n; i ++)
-			tupai::tty_write(str[i]);
+			tupai::util::printc(str[i]);
 
 		return 0;
 	}

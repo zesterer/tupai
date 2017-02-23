@@ -19,11 +19,13 @@
 
 // Tupai
 #include <tupai/kshell.hpp>
-#include <tupai/tty.hpp>
-#include <tupai/timer.hpp>
+
+#include <tupai/sys/timer.hpp>
 
 #include <tupai/fs/fs.hpp>
 
+#include <tupai/util/out.hpp>
+#include <tupai/util/ansi.hpp>
 #include <tupai/util/cstr.hpp>
 #include <tupai/util/conv.hpp>
 #include <tupai/util/mem.hpp>
@@ -57,14 +59,14 @@ namespace tupai
 				if (index > 0)
 				{
 					index --;
-					tty_write(c);
+					util::printc(c);
 				}
 			}
 			else
 			{
 				buffer[index] = c;
 				index ++;
-				tty_write(c);
+				util::printc(c);
 			}
 		}
 
@@ -119,53 +121,53 @@ namespace tupai
 
 	void kshell_display_help()
 	{
-		tty_set_fg_color(14);
-		tty_write_str("Usage: kshell [options]\n");
-		tty_reset();
-		tty_write_str("Tupai kernel shell\n\n");
-		tty_set_fg_color(11);
-		tty_write_str("Options:\n");
-		tty_reset();
-		tty_write_str("  -h      Display this help screen\n");
-		tty_write_str("  -v      Display version\n");
-		tty_set_fg_color(11);
-		tty_write_str("Special commands:\n");
-		tty_reset();
-		tty_write_str("  help    Display this help screen\n");
-		tty_write_str("  list    List additional commands\n");
-		tty_write_str("  clear   Clear the screen\n");
-		tty_write_str("  exit    Exit the session\n");
-		tty_set_fg_color(11);
-		tty_write_str("Utility commands:\n");
-		tty_reset();
-		tty_write_str("  repeat <n> <cmd> [args] Repeat a command n times\n");
-		tty_write_str("  echo <string>           Output a string\n");
-		tty_write_str("  color                   Display color information\n");
-		tty_write_str("  chars                   Display character set\n");
-		tty_write_str("  uptime                  Display system uptime\n");
-		tty_set_fg_color(11);
-		tty_write_str("Filesystem commands:\n");
-		tty_reset();
-		tty_write_str("  ls [dir]     List files in the current directory\n");
-		tty_write_str("  tree [dir]   List files in all sub-directories\n");
-		tty_write_str("  pwd          Display the current directory\n");
-		tty_write_str("  cd [dir]     Change directory\n");
-		tty_write_str("  mkdir <name> Create a new directory\n");
+		util::ansi_set_fg_color(14);
+		util::print("Usage: kshell [options]\n");
+		util::ansi_reset();
+		util::print("Tupai kernel shell\n\n");
+		util::ansi_set_fg_color(11);
+		util::print("Options:\n");
+		util::ansi_reset();
+		util::print("  -h      Display this help screen\n");
+		util::print("  -v      Display version\n");
+		util::ansi_set_fg_color(11);
+		util::print("Special commands:\n");
+		util::ansi_reset();
+		util::print("  help    Display this help screen\n");
+		util::print("  list    List additional commands\n");
+		util::print("  clear   Clear the screen\n");
+		util::print("  exit    Exit the session\n");
+		util::ansi_set_fg_color(11);
+		util::print("Utility commands:\n");
+		util::ansi_reset();
+		util::print("  repeat <n> <cmd> [args] Repeat a command n times\n");
+		util::print("  echo <string>           Output a string\n");
+		util::print("  color                   Display color information\n");
+		util::print("  chars                   Display character set\n");
+		util::print("  uptime                  Display system uptime\n");
+		util::ansi_set_fg_color(11);
+		util::print("Filesystem commands:\n");
+		util::ansi_reset();
+		util::print("  ls [dir]     List files in the current directory\n");
+		util::print("  tree [dir]   List files in all sub-directories\n");
+		util::print("  pwd          Display the current directory\n");
+		util::print("  cd [dir]     Change directory\n");
+		util::print("  mkdir <name> Create a new directory\n");
 	}
 
 	void kshell_display_version()
 	{
-		tty_write_str("kshell 0.1\n");
+		util::print("kshell 0.1\n");
 	}
 
 	void kshell_display_list()
 	{
-		tty_write_str("Additional commands:\n");
-		tty_write_str("  snake     Run command-line snake\n");
-		tty_write_str("  sys       Display system details\n");
-		tty_write_str("  adventure Play an adventure game\n");
-		tty_write_str("  timer     Run a test timer\n");
-		tty_write_str("  mmap      View the memory map\n");
+		util::print("Additional commands:\n");
+		util::print("  snake     Run command-line snake\n");
+		util::print("  sys       Display system details\n");
+		util::print("  adventure Play an adventure game\n");
+		util::print("  timer     Run a test timer\n");
+		util::print("  mmap      View the memory map\n");
 	}
 
 	void kshell_display_color()
@@ -175,22 +177,22 @@ namespace tupai
 		for (uint i = 0; i < (sizeof(names) / sizeof(char*)); i ++)
 		{
 			// Normal
-			tty_set_bg_color(i);
-			tty_set_fg_color(tty_color::WHITE);
-			tty_write(' ');
-			tty_write_str(util::compose((uint32)i, 16).val().raw());
-			tty_write_str(names[i]);
-			tty_reset();
+			util::ansi_set_bg_color(i);
+			util::ansi_set_fg_color(util::ansi::WHITE);
+			util::printc(' ');
+			util::print(util::compose((uint32)i, 16).val().raw());
+			util::print(names[i]);
+			util::ansi_reset();
 
 			// Bright
-			tty_set_bg_color(i + 8);
-			tty_set_fg_color(tty_color::BLACK);
-			tty_write(' ');
-			tty_write_str(util::compose((uint32)i + 8, 16).val().raw());
-			tty_write_str(names[i]);
-			tty_reset();
+			util::ansi_set_bg_color(i + 8);
+			util::ansi_set_fg_color(util::ansi::BLACK);
+			util::printc(' ');
+			util::print(util::compose((uint32)i + 8, 16).val().raw());
+			util::print(names[i]);
+			util::ansi_reset();
 
-			tty_write('\n');
+			util::printc('\n');
 		}
 	}
 
@@ -198,73 +200,77 @@ namespace tupai
 	{
 		for (int i = 32; i < 256; i ++)
 		{
-			tty_write(i);
-			tty_write(' ');
+			util::printc(i);
+			util::printc(' ');
 			if ((i + 1) % 32 == 0)
-				tty_write('\n');
+				util::printc('\n');
 		}
 	}
 
 	void kshell_display_uptime()
 	{
-		uint64 ctime = timer_get_nanoseconds();
+		uint64 ctime = sys::timer_get_nanoseconds();
 		uint64 milliseconds = ctime / 1000;
 		uint64 seconds = ctime / 1000000;
 		uint64 minutes = (ctime / 1000000) / 60;
 		uint64 hours = (ctime / 1000000) / 3600;
 		uint64 days = (ctime / 1000000) / (3600 * 24);
 
-		tty_write_str("Up for ");
+		util::print("Up for ");
 
 		if (days > 0)
 		{
-			tty_write_str(util::compose(days).val().raw());
-			tty_write_str(" days, ");
+			util::print(util::compose(days).val().raw());
+			util::print(" days, ");
 		}
 		if (hours > 0)
 		{
-			tty_write_str(util::compose(hours % 24).val().raw());
-			tty_write_str(" hours, ");
+			util::print(util::compose(hours % 24).val().raw());
+			util::print(" hours, ");
 		}
 		if (minutes > 0)
 		{
-			tty_write_str(util::compose(minutes % 60).val().raw());
-			tty_write_str(" mins, ");
+			util::print(util::compose(minutes % 60).val().raw());
+			util::print(" mins, ");
 		}
 		if (seconds > 0)
 		{
-			tty_write_str(util::compose(seconds % 60).val().raw());
-			tty_write_str(" sec, ");
+			util::print(util::compose(seconds % 60).val().raw());
+			util::print(" sec, ");
 		}
 		if (milliseconds > 0)
 		{
-			tty_write_str(util::compose(milliseconds % 1000).val().raw());
-			tty_write_str(" ms");
+			util::print(util::compose(milliseconds % 1000).val().raw());
+			util::print(" ms");
 		}
 
-		tty_write('\n');
+		util::printc('\n');
 	}
 
 	void kshell_display_node_tree(fs::node* node, int depth = 0)
 	{
 		if (node->is_root())
 		{
-			tty_write_str("/\n");
+			util::print("/\n");
 			if (node->child != nullptr)
 				kshell_display_node_tree(node->child, depth + 1);
 		}
 		else
 		{
-			for (int i = 0; i < depth; i ++)
-				tty_write_str("  ");
-			tty_set_fg_color((byte)node->type + 9);
-			tty_write_str(node->name.str());
-			tty_reset();
+			util::ansi_set_fg_color(8);
+			for (int i = 0; i < depth - 1; i ++)
+				util::print("  ");
+			if (depth > 0)
+				util::print("|-");
+			util::ansi_reset();
+			util::ansi_set_fg_color((byte)node->type + 9);
+			util::print(node->name.str());
+			util::ansi_reset();
 
 			if (node->is_directory())
-				tty_write_str("/\n");
+				util::print("/\n");
 			else
-				tty_write('\n');
+				util::printc('\n');
 
 			if (node->child != nullptr)
 				kshell_display_node_tree(node->child, depth + 1);
@@ -284,7 +290,7 @@ namespace tupai
 			}
 			else if (util::cstr_equal(argv[0], "clear") && argc == 1)
 			{
-				tty_clear();
+				util::ansi_clear();
 			}
 			else if (util::cstr_equal(argv[0], "list") && argc == 1)
 			{
@@ -324,9 +330,9 @@ namespace tupai
 
 				if (!n.is_valid())
 				{
-					tty_write('"');
-					tty_write_str(argv[1]);
-					tty_write_str("\" is not a valid integer\n");
+					util::printc('"');
+					util::print(argv[1]);
+					util::print("\" is not a valid integer\n");
 				}
 				else
 				{
@@ -341,8 +347,7 @@ namespace tupai
 			}
 			else if (util::cstr_equal(argv[0], "echo") && argc == 2)
 			{
-				tty_write_str(argv[1]);
-				tty_write('\n');
+				util::println(argv[1]);
 			}
 			else if (util::cstr_equal(argv[0], "color") && argc == 1)
 			{
@@ -376,21 +381,21 @@ namespace tupai
 						for (umem i = 0; i < count; i ++)
 						{
 							const char* nodename = nodebuff[i]->name.str();
-							tty_set_fg_color((byte)nodebuff[i]->type + 9);
-							tty_write_str(nodename);
-							tty_write_str("  ");
-							tty_reset();
+							util::ansi_set_fg_color((byte)nodebuff[i]->type + 9);
+							util::print(nodename);
+							util::print("  ");
+							util::ansi_reset();
 						}
 						libk::putchar('\n');
 					}
 					else
-						tty_write_str("Unknown error\n");
+						util::print("Unknown error\n");
 				}
 				else
 				{
-					tty_write_str("Invalid path '");
-					tty_write_str(cdir);
-					tty_write_str("'\n");
+					util::print("Invalid path '");
+					util::print(cdir);
+					util::print("'\n");
 				}
 
 				delete ndir;
@@ -410,9 +415,9 @@ namespace tupai
 				}
 				else
 				{
-					tty_write_str("Invalid path '");
-					tty_write_str(cdir);
-					tty_write_str("'\n");
+					util::print("Invalid path '");
+					util::print(cdir);
+					util::print("'\n");
 				}
 
 				delete ndir;
@@ -435,9 +440,9 @@ namespace tupai
 					else
 					{
 						delete ndir;
-						tty_write_str("No such directory '");
-						tty_write_str(argv[1]);
-						tty_write_str("'\n");
+						util::print("No such directory '");
+						util::print(argv[1]);
+						util::print("'\n");
 					}
 				}
 				else
@@ -449,8 +454,7 @@ namespace tupai
 			}
 			else if (util::cstr_equal(argv[0], "pwd") && argc == 1)
 			{
-				tty_write_str(cdir);
-				tty_write('\n');
+				util::println(cdir);
 			}
 			else if (util::cstr_equal(argv[0], "mkdir") && argc <= 2)
 			{
@@ -463,18 +467,18 @@ namespace tupai
 					}
 				}
 				else
-					tty_write_str("Error: directory name not specified\n");
+					util::print("Error: directory name not specified\n");
 			}
 			else if (util::cstr_length(argv[0]) > 0)
 			{
-				tty_write_str(argv[0]);
+				util::print(argv[0]);
 				if (argc > 1)
 				{
-					tty_write_str(" (+ ");
-					tty_write_str(util::compose((uint32)argc - 1).val().raw());
-					tty_write_str(" args) ");
+					util::print(" (+ ");
+					util::print(util::compose((uint32)argc - 1).val().raw());
+					util::print(" args) ");
 				}
-				tty_write_str(": command not found\n");
+				util::print(": command not found\n");
 			}
 		}
 
@@ -503,29 +507,29 @@ namespace tupai
 		}
 
 		if (!do_exit)
-			tty_write_str("Type 'help' for more information\n");
+			util::print("Type 'help' for more information\n");
 
 		while (!do_exit)
 		{
 			// Prompt
-			//tty_write_str("[");
-			tty_set_fg_color(tty_color::LIGHT_RED);
-			tty_write_str("kernel");
-			tty_reset();
-			tty_write('@');
-			tty_set_fg_color(tty_color::CYAN);
-			tty_write_str("tupai");
-			tty_reset();
-			tty_write(':');
-			tty_set_fg_color(tty_color::LIGHT_YELLOW);
-			tty_write_str(cdir);
-			tty_reset();
-			tty_write_str(" $ ");
+			//util::print("[");
+			util::ansi_set_fg_color(util::ansi::LIGHT_RED);
+			util::print("kernel");
+			util::ansi_reset();
+			//util::printc('@');
+			//util::ansi_set_fg_color(util::ansi::CYAN);
+			//util::print("tupai");
+			//util::ansi_reset();
+			util::printc(':');
+			util::ansi_set_fg_color(util::ansi::LIGHT_YELLOW);
+			util::print(cdir);
+			util::ansi_reset();
+			util::print(" $ ");
 
 			// Get the line
 			char* linebuff = util::alloc<char>(512).val();
 			readline(linebuff);
-			tty_write('\n');
+			util::printc('\n');
 
 			// Get arguments
 			char* strbuff = util::alloc<char>(512).val();

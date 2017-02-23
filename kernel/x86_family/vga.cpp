@@ -46,7 +46,7 @@ namespace tupai
 		static void vga_textmode_place_entry(uint32 c, uint16 col, uint16 row, byte fg_color, byte bg_color);
 
 		static inline uint32 color_blend(uint32 lower, uint32 higher);
-		static void blit_character(uint32 c, uint16 x, uint16 y, uint32 fg_color, uint32 bg_color, uint8 alpha = 165);
+		static void blit_character(uint32 c, uint16 x, uint16 y, uint32 fg_color, uint32 bg_color, uint8 alpha = 255);
 
 		struct bmp_header // TODO : this
 		{

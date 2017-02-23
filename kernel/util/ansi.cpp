@@ -1,5 +1,5 @@
 /*
-* 	file : time.cpp
+* 	file : ansi.cpp
 *
 * 	This file is part of Tupai.
 *
@@ -17,30 +17,21 @@
 * 	along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// Libk
-#include <libk/time.hpp>
+// Tupai
+#include <tupai/util/ansi.hpp>
 
-#include <tupai/sys/timer.hpp>
+#include <tupai/tty.hpp>
 
-namespace libk
+namespace tupai
 {
-	/* Time functions */
-
-	void sleep(useconds_t sec)
+	namespace util
 	{
-		counter_t ctime = tupai::sys::timer_get_nanoseconds();
-		counter_t elapsed = sec * 1000 * 1000;
-
-		while (tupai::sys::timer_get_nanoseconds() - ctime < elapsed)
-			asm volatile ("int $0x80");
-	}
-
-	void usleep(useconds_t usec)
-	{
-		counter_t ctime = tupai::sys::timer_get_nanoseconds();
-		counter_t elapsed = usec * 1000;
-
-		while (tupai::sys::timer_get_nanoseconds() - ctime < elapsed)
-			asm volatile ("int $0x80");
+		void ansi_set_fg_color(ubyte color) { tty_set_fg_color(color); }
+		void ansi_set_bg_color(ubyte color) { tty_set_bg_color(color); }
+		void ansi_place_cursor(uint16 col, uint16 row) { tty_place_cursor(col, row); }
+		void ansi_show_cursor() { tty_show_cursor(); }
+		void ansi_hide_cursor() { tty_hide_cursor(); }
+		void ansi_reset() { tty_reset(); }
+		void ansi_clear() { tty_clear(); }
 	}
 }

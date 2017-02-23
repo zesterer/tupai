@@ -1,5 +1,5 @@
 /*
-* 	file : timer.cpp
+* 	file : out.cpp
 *
 * 	This file is part of Tupai.
 *
@@ -18,16 +18,31 @@
 */
 
 // Tupai
-#include <tupai/timer.hpp>
-
-#if defined(SYSTEM_ARCH_i686)
-	#include <tupai/i686/pit.hpp>
-#endif
+#include <tupai/util/out.hpp>
 
 namespace tupai
 {
-	counter_t timer_get_nanoseconds()
+	extern void tty_write(char c);
+	extern void tty_write_str(const char* str);
+
+	namespace util
 	{
-		return pit_count;
+		void printc(char c)
+		{
+			tty_write(c);
+		}
+
+		void print(const char* str)
+		{
+			tty_write_str(str);
+		}
+
+		void println(const char* str)
+		{
+			tty_write_str(str);
+			tty_write('\n');
+		}
+
+		//void printf(const char* str, ...);
 	}
 }

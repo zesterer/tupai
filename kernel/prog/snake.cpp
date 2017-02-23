@@ -20,7 +20,8 @@
 // Tupai
 #include <tupai/prog/snake.hpp>
 
-#include <tupai/tty.hpp>
+#include <tupai/util/out.hpp>
+#include <tupai/util/ansi.hpp>
 
 // Libk
 #include <libk/stdio.hpp>
@@ -48,8 +49,8 @@ namespace tupai
 
 			int level = 1;
 
-			tty_clear();
-			tty_hide_cursor();
+			util::ansi_clear();
+			util::ansi_hide_cursor();
 
 			while (true)
 			{
@@ -113,52 +114,52 @@ namespace tupai
 				{
 					for (int xx = -1; xx < 17; xx ++)
 					{
-						tty_place_cursor(xx + offx, yy + offy);
+						util::ansi_place_cursor(xx + offx, yy + offy);
 						if (xx == -1 || yy == -1 || xx == 16 || yy == 16)
 						{
-							tty_set_bg_color(0x6);
-							tty_write(' ');
+							util::ansi_set_bg_color(0x6);
+							util::printc(' ');
 						}
 						else
 						{
-							tty_set_bg_color(0x7);
-							tty_write(' ');
+							util::ansi_set_bg_color(0x7);
+							util::printc(' ');
 						}
 					}
 				}
-				tty_set_bg_color(0x7);
+				util::ansi_set_bg_color(0x7);
 
 				for (int i = 0; i < slen; i ++)
 				{
 					if (i % 2 < 1)
-						tty_set_fg_color(0xA);
+						util::ansi_set_fg_color(0xA);
 					else
-						tty_set_fg_color(0x2);
+						util::ansi_set_fg_color(0x2);
 
-					tty_place_cursor(body_x[i] + offx, body_y[i] + offy);
-					tty_write('O');
+					util::ansi_place_cursor(body_x[i] + offx, body_y[i] + offy);
+					util::printc('O');
 				}
-				tty_set_fg_color(0xF);
+				util::ansi_set_fg_color(0xF);
 
-				tty_set_fg_color(0xC);
-				tty_place_cursor(foodx + offx, foody + offy);
+				util::ansi_set_fg_color(0xC);
+				util::ansi_place_cursor(foodx + offx, foody + offy);
 				libk::putchar('@');
-				tty_set_fg_color(0xF);
+				util::ansi_set_fg_color(0xF);
 
-				tty_set_bg_color(0x0);
+				util::ansi_set_bg_color(0x0);
 
 				// Banner
-				tty_place_cursor(0, 0);
-				tty_set_bg_color(0x2);
-				for (int i = 0; i < 80; i ++) tty_write(' ');
-				tty_place_cursor(0, 0);
+				util::ansi_place_cursor(0, 0);
+				util::ansi_set_bg_color(0x2);
+				for (int i = 0; i < 80; i ++) util::printc(' ');
+				util::ansi_place_cursor(0, 0);
 				libk::printf("Snake   Score : %i   Level : %i   WASD to move, Backspace to exit", score, level);
-				tty_reset();
+				util::ansi_reset();
 			}
 
-			tty_place_cursor(0, 24);
-			tty_show_cursor();
-			tty_write_str("Game Over!\n");
+			util::ansi_place_cursor(0, 24);
+			util::ansi_show_cursor();
+			util::print("Game Over!\n");
 			libk::printf("Score: %i", score);
 			libk::putchar('\n');
 			return 0;

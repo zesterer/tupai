@@ -1,5 +1,5 @@
 /*
-* 	file : time.cpp
+* 	file : random.hpp
 *
 * 	This file is part of Tupai.
 *
@@ -17,30 +17,20 @@
 * 	along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// Libk
-#include <libk/time.hpp>
+#ifndef TUPAI_SYS_RANDOM_HPP
+#define TUPAI_SYS_RANDOM_HPP
 
-#include <tupai/sys/timer.hpp>
+// Tupai
+#include <tupai/type.hpp>
 
-namespace libk
+namespace tupai
 {
-	/* Time functions */
-
-	void sleep(useconds_t sec)
+	namespace sys
 	{
-		counter_t ctime = tupai::sys::timer_get_nanoseconds();
-		counter_t elapsed = sec * 1000 * 1000;
-
-		while (tupai::sys::timer_get_nanoseconds() - ctime < elapsed)
-			asm volatile ("int $0x80");
-	}
-
-	void usleep(useconds_t usec)
-	{
-		counter_t ctime = tupai::sys::timer_get_nanoseconds();
-		counter_t elapsed = usec * 1000;
-
-		while (tupai::sys::timer_get_nanoseconds() - ctime < elapsed)
-			asm volatile ("int $0x80");
+		void random_init();
+		void random_seed(uint32 data);
+		uint32 random_get();
 	}
 }
+
+#endif

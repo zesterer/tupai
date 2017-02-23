@@ -21,10 +21,14 @@
 #include <tupai/kmain.hpp>
 
 #include <tupai/util/conv.hpp>
+#include <tupai/util/out.hpp>
 
 // --- MEMORY ---
 #include <tupai/mempool.hpp>
 #include <tupai/memory.hpp>
+
+// --- SYSTEM INTERFACES ---
+#include <tupai/sys/random.hpp>
 
 // --- MULTITASKING ---
 #include <tupai/syscall.hpp>
@@ -162,6 +166,9 @@ namespace tupai
 		pipemgr_init();
 		startup_print_unit_init("Pipe manager");
 
+		// System interfaces
+		sys::random_init();
+
 		// End of boot procedure
 		klog_init("Boot procedure complete");
 
@@ -191,7 +198,7 @@ namespace tupai
 		{
 			kshell(0, nullptr);
 			prompt();
-			tty_write_str("Lowest-level shell exited. Restarting session.\n");
+			util::print("Lowest-level shell exited. Restarting session.\n");
 		}
 	}
 }

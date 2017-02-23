@@ -19,7 +19,9 @@
 
 // Tupai
 #include <tupai/kdebug.hpp>
-#include <tupai/tty.hpp>
+
+#include <tupai/util/out.hpp>
+#include <tupai/util/ansi.hpp>
 
 #include <tupai/i686/port.hpp>
 
@@ -36,40 +38,39 @@ namespace tupai
 		{
 		case klog_level::INFO:
 			{
-				tty_set_fg_color(tty_color::LIGHT_CYAN);
-				tty_write_str("INFO");
+				util::ansi_set_fg_color(util::ansi::LIGHT_CYAN);
+				util::print("INFO");
 			}
 			break;
 		case klog_level::WARNING:
 			{
-				tty_set_fg_color(tty_color::LIGHT_YELLOW);
-				tty_write_str("WARNING");
+				util::ansi_set_fg_color(util::ansi::LIGHT_YELLOW);
+				util::print("WARNING");
 			}
 			break;
 		case klog_level::ERROR:
 			{
-				tty_set_fg_color(tty_color::LIGHT_RED);
-				tty_write_str("ERROR");
+				util::ansi_set_fg_color(util::ansi::LIGHT_RED);
+				util::print("ERROR");
 			}
 			break;
 		case klog_level::PANIC:
 			{
-				tty_set_fg_color(tty_color::RED);
-				tty_write_str("PANIC");
+				util::ansi_set_fg_color(util::ansi::RED);
+				util::print("PANIC");
 			}
 			break;
 		default:
 			{
-				tty_set_fg_color(tty_color::YELLOW);
-				tty_write_str("LOG");
+				util::ansi_set_fg_color(util::ansi::YELLOW);
+				util::print("LOG");
 			}
 			break;
 		}
 
-		tty_reset();
-		tty_write_str(" : ");
-		tty_write_str(msg);
-		tty_write('\n');
+		util::ansi_reset();
+		util::print(" : ");
+		util::println(msg);
 	}
 
 	void klog_init(const char* msg, bool success)

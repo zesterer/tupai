@@ -21,7 +21,7 @@
 #include <tupai/x86_family/multiboot.hpp>
 #include <tupai/i686/i686.hpp>
 
-#include <tupai/tty.hpp>
+#include <tupai/util/out.hpp>
 #include <tupai/util/conv.hpp>
 #include <tupai/util/math.hpp>
 #include <tupai/util/cstr.hpp>

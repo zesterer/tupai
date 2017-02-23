@@ -19,54 +19,52 @@
 
 // Tupai
 #include <tupai/startup.hpp>
-#include <tupai/tty.hpp>
 
-// --- TMP ---
-#include <tupai/tty.hpp>
+#include <tupai/util/out.hpp>
+#include <tupai/util/ansi.hpp>
 
 namespace tupai
 {
 	void startup_print_unit_init(const char* name, int status)
 	{
-		tty_reset();
-		tty_write('[');
+		util::ansi_reset();
+		util::printc('[');
 
 		if (status == 0)
 		{
-			tty_set_fg_color(0x0A);
-			tty_write_str(" OK ");
+			util::ansi_set_fg_color(0x0A);
+			util::print(" OK ");
 		}
 		else
 		{
-			tty_set_fg_color(0x0C);
-			tty_write_str("FAIL");
+			util::ansi_set_fg_color(0x0C);
+			util::print("FAIL");
 		}
 
-		tty_reset();
-		tty_write_str("] ");
-		tty_write_str("Initiated '");
-		tty_write_str(name);
-		tty_write_str("'\n");
+		util::ansi_reset();
+		util::print("] ");
+		util::print("Initiated '");
+		util::println(name);
 	}
 
 	void startup_welcome()
 	{
 		#if defined(CFG_SHOW_LICENSE_AT_BOOT)
-			tty_clear();
+			util::ansi_clear();
 		#else
-			tty_write_str("\n");
+			util::print("\n");
 		#endif
 
-		tty_set_fg_color(tty_color::WHITE);
-		tty_write_str("Welcome to ");
-		tty_write_str(SYSTEM_NAME_DECORATIVE);
-		tty_write_str(" ");
-		tty_write_str(SYSTEM_VERSION_MAJOR);
-		tty_write_str(".");
-		tty_write_str(SYSTEM_VERSION_MINOR);
-		tty_write_str(".");
-		tty_write_str(SYSTEM_VERSION_RELEASE);
-		tty_write_str("\n");
+		util::ansi_set_fg_color(util::ansi::WHITE);
+		util::print("Welcome to ");
+		util::print(SYSTEM_NAME_DECORATIVE);
+		util::print(" ");
+		util::print(SYSTEM_VERSION_MAJOR);
+		util::print(".");
+		util::print(SYSTEM_VERSION_MINOR);
+		util::print(".");
+		util::print(SYSTEM_VERSION_RELEASE);
+		util::print("\n");
 
 		#if defined(CFG_SHOW_LICENSE_AT_BOOT)
 			const char GPL3_LICENCE_SHORT[] = "Copyright (C) 2016 Joshua Barretto\n\n" \
@@ -75,11 +73,11 @@ namespace tupai
 			" of the GNU\nGeneral Public License along with this program.\nIf not, see <http://www.gn" \
 			"u.org/licenses/>.\n";
 
-			tty_write('\n');
-			tty_write_str(GPL3_LICENCE_SHORT);
+			util::printc('\n');
+			util::print(GPL3_LICENCE_SHORT);
 		#endif
 
-		tty_write('\n');
-		tty_reset();
+		util::printc('\n');
+		util::ansi_reset();
 	}
 }

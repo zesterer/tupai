@@ -19,9 +19,11 @@
 
 // Tupai
 #include <tupai/prompt.hpp>
-#include <tupai/tty.hpp>
-#include <tupai/timer.hpp>
 
+#include <tupai/sys/timer.hpp>
+
+#include <tupai/util/out.hpp>
+#include <tupai/util/ansi.hpp>
 #include <tupai/util/conv.hpp>
 #include <tupai/util/mem.hpp>
 #include <tupai/util/cstr.hpp>
@@ -66,7 +68,7 @@ namespace tupai
 				}
 				else
 				{
-					tty_write(input_char);
+					util::printc(input_char);
 
 					buffer[buffer_pos] = input_char;
 					buffer_pos ++;
@@ -97,7 +99,7 @@ namespace tupai
 			command_pair(prog::timer_main, "timer"),
 		};
 
-		tty_write_str("Type 'help' for more information\n");
+		util::print("Type 'help' for more information\n");
 
 		char initial_dir[] = "/";
 		char* current_dir = util::alloc<char>(sizeof(initial_dir) / sizeof(char)).val();
@@ -105,47 +107,47 @@ namespace tupai
 
 		while (true)
 		{
-			tty_set_fg_color(tty_color::CYAN);
-			tty_write_str("kernel");
-			tty_reset();
-			tty_write('@');
-			tty_set_fg_color(tty_color::RED);
-			tty_write_str("tupai");
-			tty_reset();
-			tty_write_str(":");
-			tty_set_fg_color(tty_color::YELLOW);
-			tty_write_str(current_dir);
-			tty_reset();
-			tty_write_str("> ");
+			util::ansi_set_fg_color(util::ansi::CYAN);
+			util::print("kernel");
+			util::ansi_reset();
+			util::printc('@');
+			util::ansi_set_fg_color(util::ansi::RED);
+			util::print("tupai");
+			util::ansi_reset();
+			util::print(":");
+			util::ansi_set_fg_color(util::ansi::YELLOW);
+			util::print(current_dir);
+			util::ansi_reset();
+			util::print("> ");
 
 			const umem INPUT_BUFFER_SIZE = 1024;
 			char buffer[INPUT_BUFFER_SIZE];
 			readline(buffer, INPUT_BUFFER_SIZE);
 
-			tty_write('\n');
+			util::printc('\n');
 
 			if (libk::strcmp(buffer, "help") == 0)
 			{
-				tty_write_str("--- Help ---\n");
-				tty_write_str("help        - Show this help screen\n");
-				tty_write_str("sys         - Show system information\n");
-				tty_write_str("snake       - Play a demo snake game\n");
-				tty_write_str("adventure   - Play an adventure game\n");
-				tty_write_str("timer       - Timer test program\n");
-				tty_write_str("uptime      - Find the system uptime\n");
-				tty_write_str("chars       - Display printable characters\n");
-				tty_write_str("color       - Display printable colors\n");
-				tty_write_str("cd <dir>    - Change directory\n");
-				tty_write_str("pwd         - View current directory\n");
-				tty_write_str("ls          - List files in directory\n");
-				tty_write_str("mkdir <dir> - Create a new directory\n");
-				tty_write_str("exit        - Close the prompt session\n");
-				tty_write_str("clear       - Clear the screen\n");
-				tty_write_str("abort       - Abort the system\n");
+				util::print("--- Help ---\n");
+				util::print("help        - Show this help screen\n");
+				util::print("sys         - Show system information\n");
+				util::print("snake       - Play a demo snake game\n");
+				util::print("adventure   - Play an adventure game\n");
+				util::print("timer       - Timer test program\n");
+				util::print("uptime      - Find the system uptime\n");
+				util::print("chars       - Display printable characters\n");
+				util::print("color       - Display printable colors\n");
+				util::print("cd <dir>    - Change directory\n");
+				util::print("pwd         - View current directory\n");
+				util::print("ls          - List files in directory\n");
+				util::print("mkdir <dir> - Create a new directory\n");
+				util::print("exit        - Close the prompt session\n");
+				util::print("clear       - Clear the screen\n");
+				util::print("abort       - Abort the system\n");
 			}
 			else if (libk::strcmp(buffer, "uptime") == 0)
 			{
-				uint64 ctime = timer_get_nanoseconds();
+				uint64 ctime = sys::timer_get_nanoseconds();
 				uint64 milliseconds = ctime / (1000);
 				uint64 seconds = milliseconds / (1000);
 				uint64 minutes = seconds / 60;
@@ -173,21 +175,21 @@ namespace tupai
 			}
 			else if (libk::strcmp(buffer, "abort") == 0)
 			{
-				tty_write_str("Aborting...\n");
+				util::print("Aborting...\n");
 				libk::abort();
 			}
 			else if (libk::strcmp(buffer, "clear") == 0)
 			{
-				tty_clear();
+				util::ansi_clear();
 			}
 			else if (libk::strcmp(buffer, "chars") == 0)
 			{
 				for (int i = 32; i < 256; i ++)
 				{
-					tty_write(i);
-					tty_write(' ');
+					util::printc(i);
+					util::printc(' ');
 					if ((i + 1) % 32 == 0)
-						tty_write('\n');
+						util::printc('\n');
 				}
 			}
 			else if (libk::strcmp(buffer, "color") == 0)
@@ -197,22 +199,22 @@ namespace tupai
 				for (uint i = 0; i < (sizeof(names) / sizeof(char*)); i ++)
 				{
 					// Normal
-					tty_set_bg_color(i);
-					tty_set_fg_color(tty_color::WHITE);
-					tty_write(' ');
-					tty_write_str(util::compose((uint32)i, 16).val().raw());
-					tty_write_str(names[i]);
-					tty_reset();
+					util::ansi_set_bg_color(i);
+					util::ansi_set_fg_color(util::ansi::WHITE);
+					util::printc(' ');
+					util::print(util::compose((uint32)i, 16).val().raw());
+					util::print(names[i]);
+					util::ansi_reset();
 
 					// Bright
-					tty_set_bg_color(i + 8);
-					tty_set_fg_color(tty_color::BLACK);
-					tty_write(' ');
-					tty_write_str(util::compose((uint32)i + 8, 16).val().raw());
-					tty_write_str(names[i]);
-					tty_reset();
+					util::ansi_set_bg_color(i + 8);
+					util::ansi_set_fg_color(util::ansi::BLACK);
+					util::printc(' ');
+					util::print(util::compose((uint32)i + 8, 16).val().raw());
+					util::print(names[i]);
+					util::ansi_reset();
 
-					tty_write('\n');
+					util::printc('\n');
 				}
 			}
 			else if (buffer[0] == 'c' && buffer[1] == 'd')
@@ -263,9 +265,9 @@ namespace tupai
 						for (umem i = 0; i < count; i ++)
 						{
 							const char* nodename = nodebuff[i]->name.str();
-							tty_set_fg_color((byte)nodebuff[i]->type + 9);
+							util::ansi_set_fg_color((byte)nodebuff[i]->type + 9);
 							libk::printf("%s  ", nodename);
-							tty_reset();
+							util::ansi_reset();
 						}
 						libk::putchar('\n');
 					}
@@ -304,8 +306,8 @@ namespace tupai
 				// It's not been found
 				if (!found && libk::strlen(buffer) > 0)
 				{
-					tty_write_str(buffer);
-					tty_write_str(": command not found\n");
+					util::print(buffer);
+					util::print(": command not found\n");
 				}
 			}
 		}

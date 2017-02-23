@@ -20,7 +20,6 @@
 // Tupai
 #include <tupai/fs/fs.hpp>
 #include <tupai/fs/node.hpp>
-#include <tupai/tty.hpp>
 
 // Libk
 #include <libk/stdio.hpp>
@@ -50,28 +49,6 @@ namespace tupai
 			root_node.get_child("sys")->get_child("http")->add_child(new node("com", node_type::DIR));
 
 			fs_find("/dev")->add_child(new node("console", node_type::FILE));
-
-			//fs_print();
-		}
-
-		void fs_print_node(node* node, int depth = 0)
-		{
-			for (int i = 0; i < depth; i ++)
-				tty_write_str("  ");
-			tty_set_fg_color((byte)node->type + 9);
-			libk::printf("%s\n", node->name.str());
-			tty_reset();
-
-			if (node->child != nullptr)
-				fs_print_node(node->child, depth + 1);
-			if (node->next != nullptr)
-				fs_print_node(node->next, depth);
-		}
-
-		void fs_print()
-		{
-			libk::printf("--- Filesystem ---\n");
-			fs_print_node(&root_node);
 		}
 
 		node* fs_find(const char* path, const char* rel)
