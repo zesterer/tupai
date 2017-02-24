@@ -20,6 +20,8 @@
 // Tupai
 #include <tupai/util/out.hpp>
 
+#include <tupai/util/conv.hpp>
+
 #include <tupai/tty.hpp>
 
 namespace tupai
@@ -42,6 +44,75 @@ namespace tupai
 			tty_write('\n');
 		}
 
-		//void printf(const char* str, ...);
+		void printf(const char* fmt, ...)
+		{
+			__builtin_va_list args;
+			__builtin_va_start(args, fmt);
+
+			bool escaped = false;
+			for (umem i = 0; fmt[i] != '\0';)
+			{
+				char c = fmt[i];
+				bool repeat = false;
+
+				if (escaped)
+				{
+					switch (c)
+					{
+					case 's':
+						tty_write_str(__builtin_va_arg(args, const char*));
+						break;
+					case 'c':
+						tty_write((char)__builtin_va_arg(args, int));
+						break;
+					case 'd':
+					case 'i':
+						tty_write_str(util::compose(__builtin_va_arg(args, int32), 10).val().raw());
+						break;
+					case 'u':
+						tty_write_str(util::compose(__builtin_va_arg(args, uint32), 10).val().raw());
+						break;
+					case 'X':
+						tty_write_str(util::compose(__builtin_va_arg(args, int32), 16).val().raw());
+						break;
+					case 'o':
+						tty_write_str(util::compose(__builtin_va_arg(args, int32), 8).val().raw());
+						break;
+
+					// Unimplemented
+					case 'x':
+						{
+							__builtin_va_arg(args, int);
+							tty_write_str("NAN");
+						}
+						break;
+
+					default:
+						repeat = true;
+						break;
+					}
+
+					escaped = false;
+				}
+				else
+				{
+					switch (c)
+					{
+					case '%':
+						escaped = true;
+						break;
+
+					default:
+						tty_write(c);
+						break;
+					}
+				}
+
+				if (!repeat)
+					i ++;
+			}
+
+			__builtin_va_end(args);
+		}
 	}
 }

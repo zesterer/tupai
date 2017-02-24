@@ -39,20 +39,37 @@ namespace tupai
 	extern "C" byte kernel_start;
 	extern "C" byte kernel_end;
 
+	const umem MEMORY_PAGE_SIZE = 4096; // 4K - Size of one page
+	const umem MEMORY_FRAME_PAGES = 4; // In Pages (4K)
+	const umem MEMORY_FRAME_SIZE = MEMORY_PAGE_SIZE * MEMORY_FRAME_PAGES;
+	const umem MEMORY_SIZE_KB = 0x40000;
+	const umem MEMORY_FRAME_COUNT = (0x40000 / MEMORY_FRAME_SIZE) * 1024;
+	const umem MEMORY_PROCESS_FRAME_COUNT = (0x10000 / MEMORY_FRAME_SIZE) * 1024; // 1G (configurable)
+
 	static ptr_t memory_early_alloc(umem size);
 
 	struct memory_global_map
 	{
 		umem phys_offset = 0; // Offset of the global physical memory table in memory (usually above kernel_end)
-		memory_phys_frame phys_frames[262144]; // 4G - entire physical address space. TODO : Expand this dynamically
+		memory_phys_frame phys_frames[MEMORY_FRAME_COUNT]; // 4G - entire physical address space. TODO : Expand this dynamically
 
 		umem get_phys_addr(umem index) { return this->phys_offset + index * MEMORY_FRAME_SIZE; }
+	};
+
+	struct memory_process_map
+	{
+		uint32 pid; // 0 = none, 1 = kernel, 2 = processes
+		umem virt_offset = 0; // For the kernel, this is 0xC0000000
+
+		memory_virt_frame virt_frames[MEMORY_PROCESS_FRAME_COUNT]; // 1G for now. TODO : Expand this dynamically for larger processes
+
+		umem get_virt_addr(umem index) { return this->virt_offset + index * MEMORY_FRAME_SIZE; }
 	};
 
 	struct memory_map
 	{
 		memory_global_map global_map;
-		memory_process_map process_map[16]; // Allow space for 16 processes for now
+		memory_process_map process_maps[16]; // Allow space for 16 processes for now
 
 		memory_map() {}
 	};
@@ -107,17 +124,22 @@ namespace tupai
 		return ptr;
 	}
 
-	bool memory_map_frame(umem address, uint32 pid, byte flags)
+	bool memory_map_frame(umem phys_addr, umem virt_addr, uint32 pid, byte phys_flags, byte virt_flags)
 	{
-		umem index = util::align_floor(address, MEMORY_FRAME_SIZE) / MEMORY_FRAME_SIZE;
-		memory_phys_frame* frame = &g_memory_map->global_map.phys_frames[index];
+		umem phys_index = util::align_floor(phys_addr, MEMORY_FRAME_SIZE) / MEMORY_FRAME_SIZE;
+		memory_phys_frame* phys_frame = &g_memory_map->global_map.phys_frames[phys_index];
 
-		if (frame->is_used())
+		umem virt_index = util::align_floor(virt_addr - g_memory_map->process_maps[pid].virt_offset, MEMORY_FRAME_SIZE) / MEMORY_FRAME_SIZE;
+		memory_virt_frame* virt_frame = &g_memory_map->process_maps[pid].virt_frames[virt_index];
+
+		if (phys_frame->is_used() || virt_frame->is_used())
 			return false;
 		else
 		{
-			frame->flags = flags | MEMORY_FLAG_USED;
-			frame->pid = pid;
+			phys_frame->flags = phys_flags | MEMORY_PHYS_FLAG_USED;
+			phys_frame->pid = pid;
+			virt_frame->phys_index = phys_index;
+			virt_frame->flags = virt_flags | MEMORY_VIRT_FLAG_USED;
 			return true;
 		}
 	}

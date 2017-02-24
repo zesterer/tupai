@@ -240,7 +240,7 @@ namespace tupai
 
 			// Find size
 			int digits = 0;
-			for (T test = val; test > 0 || digits == 0; test /= base) { digits ++; }
+			for (T test = abs(val); test > 0; test /= base) { digits ++; }
 
 			umem str_count = 0;
 
@@ -249,6 +249,8 @@ namespace tupai
 			{
 				nstr[str_count] = '-';
 				str_count ++;
+
+				val = abs(val);
 			}
 
 			// Add padding (inc val = 0 case)

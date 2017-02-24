@@ -55,7 +55,7 @@ namespace tupai
 						util::print(util::compose(address - 1, 16, 8).val().raw());
 						util::print(" : ");
 
-						if (flags & MEMORY_FLAG_USED)
+						if (flags & MEMORY_PHYS_FLAG_USED)
 						{
 							util::print("pid = ");
 							util::print(util::compose(pid, 10).val().raw());

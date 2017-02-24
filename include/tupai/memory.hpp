@@ -37,21 +37,24 @@ namespace tupai
 		}
 	};
 
-	const byte MEMORY_FLAG_USED   = (1 << 0); // Is this region allocated?
-	const byte MEMORY_FLAG_GPMEM  = (1 << 1); // General-purpose RAM?
-	const byte MEMORY_FLAG_STATIC = (1 << 2); // Is this memory statically used by something (i.e: kernel VBE video memory)?
+	const byte MEMORY_PHYS_FLAG_USED   = (1 << 0); // Is this region allocated?
+	const byte MEMORY_PHYS_FLAG_GPMEM  = (1 << 1); // General-purpose RAM?
+	const byte MEMORY_PHYS_FLAG_STATIC = (1 << 2); // Is this memory statically used by something (i.e: kernel VBE video memory)?
 
-	const umem MEMORY_PAGE_SIZE = 4096; // 4K - Size of one page
-	const umem MEMORY_FRAME_PAGES = 4; // In Pages (4K)
-	const umem MEMORY_FRAME_SIZE = MEMORY_PAGE_SIZE * MEMORY_FRAME_PAGES;
+	const byte MEMORY_VIRT_FLAG_USED = (1 << 0); // Is this frame in use?
+	const byte MEMORY_VIRT_FLAG_SHARED = (1 << 1); // Is this frame shared by another process (not including threads)?
+	const byte MEMORY_VIRT_FLAG_OWNER  = (1 << 2); // If this frame is shared, are we the owner of it?
+
+	extern const umem MEMORY_PAGE_SIZE; // 4K - Size of one page
+	extern const umem MEMORY_FRAME_PAGES; // In Pages (4K)
+	extern const umem MEMORY_FRAME_SIZE;
 
 	struct memory_virt_frame
 	{
-		static const byte FLAG_SHARED = (1 << 0); // Is this region shared by another process (not including threads)?
-		static const byte FLAG_OWNER  = (1 << 1); // If this region is shared, are we the owner of it?
-
 		byte flags;
 		umem phys_index; // Index into the global physical memory table
+
+		bool is_used() { return this->flags & MEMORY_PHYS_FLAG_USED; }
 	};
 
 	struct memory_phys_frame
@@ -60,24 +63,14 @@ namespace tupai
 		uint32 pid = 0; // 0 = Kernel
 		umem virt_index; // Index into the process's virtual memory table
 
-		bool is_used() { return this->flags & MEMORY_FLAG_USED; }
-	};
-
-	struct memory_process_map
-	{
-		uint32 pid; // 0 = none, 1 = kernel, 2 = processes
-		umem virt_offset = 0; // For the kernel, this is 0xC0000000
-
-		memory_virt_frame virt_frames[65536]; // 1G for now. TODO : Expand this dynamically for larger processes
-
-		umem get_virt_addr(umem index) { return this->virt_offset + index * MEMORY_FRAME_SIZE; }
+		bool is_used() { return this->flags & MEMORY_VIRT_FLAG_USED; }
 	};
 
 	void memory_init();
 	void memory_enforce(); // On most systems, this means 'enable paging'
 
 	memory_info memory_get_info();
-	bool memory_map_frame(umem address, uint32 pid, byte flags);
+	bool memory_map_frame(umem phys_addr, umem virt_addr, uint32 pid, byte phys_flags = 0, byte virt_flags = 0);
 	umem memory_get_size_kb();
 	const memory_phys_frame* memory_get_frame(umem address);
 }
