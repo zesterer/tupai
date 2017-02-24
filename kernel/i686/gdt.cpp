@@ -22,9 +22,6 @@
 #include <tupai/i686/i686.hpp>
 #include <tupai/mempool.hpp>
 
-// Libk
-#include <libk/stdio.hpp>
-
 namespace tupai
 {
 	struct gdt_entry

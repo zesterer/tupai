@@ -1,5 +1,5 @@
 /*
-* 	file : time.hpp
+* 	file : time.cpp
 *
 * 	This file is part of Tupai.
 *
@@ -17,20 +17,31 @@
 * 	along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef _TIME_HPP
-#define _TIME_HPP
-
 // Tupai
-#include <tupai/type.hpp>
+#include <tupai/util/time.hpp>
 
-namespace libk
+#include <tupai/sys/timer.hpp>
+
+namespace tupai
 {
-	typedef uint32 useconds_t;
+	namespace util
+	{
+		void sleep(uint64 sec)
+		{
+			counter_t ctime = sys::timer_get_nanoseconds();
+			counter_t elapsed = sec * 1000 * 1000;
 
-	/* Time functions */
+			while (sys::timer_get_nanoseconds() - ctime < elapsed)
+				asm volatile ("int $0x80");
+		}
 
-	void sleep(useconds_t sec);
-	void usleep(useconds_t usec);
+		void usleep(uint64 usec)
+		{
+			counter_t ctime = sys::timer_get_nanoseconds();
+			counter_t elapsed = usec * 1000;
+
+			while (sys::timer_get_nanoseconds() - ctime < elapsed)
+				asm volatile ("int $0x80");
+		}
+	}
 }
-
-#endif

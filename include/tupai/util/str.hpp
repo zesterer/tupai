@@ -25,8 +25,6 @@
 #include <tupai/util/safetype.hpp>
 #include <tupai/kdebug.hpp>
 
-#include <libk/string.hpp>
-
 namespace tupai
 {
 	namespace util

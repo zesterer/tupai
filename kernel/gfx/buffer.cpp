@@ -21,8 +21,6 @@
 #include <tupai/gfx/buffer.hpp>
 #include <tupai/util/mem.hpp>
 
-#include <libk/stdio.hpp>
-
 namespace tupai
 {
 	namespace gfx

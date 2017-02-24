@@ -21,7 +21,6 @@
 #include <tupai/type.hpp>
 #include <tupai/gfx/bmp.hpp>
 
-#include <libk/stdio.hpp>
 #include <tupai/util/conv.hpp>
 
 namespace tupai
@@ -34,8 +33,6 @@ namespace tupai
 
 			byte* data = (byte*)((umem)this->self + this->file_header.offbits); // BGR format
 			uint32* pixels = nbuffer.data_mut().val();
-
-			libk::printf("OFF = 0x%X\n", this->file_header.offbits);
 
 			for (uint32 i = 0; i < nbuffer.width * nbuffer.height; i ++)
 				pixels[i] = (data[i * 4 + 2] << 16) | (data[i * 4 + 1] << 8) | (data[i * 4 + 3] << 24) | 0xFF;

@@ -28,9 +28,9 @@
 
 #include <tupai/util/mem.hpp>
 #include <tupai/util/math.hpp>
-#include <tupai/kdebug.hpp>
+#include <tupai/util/time.hpp>
 
-#include <libk/time.hpp>
+#include <tupai/kdebug.hpp>
 
 //#define DOUBLE_BUFFERED 0
 
@@ -430,7 +430,7 @@ namespace tupai
 				vga_virtualtty.vga_cursor_phase = (vga_virtualtty.vga_cursor_phase + 1) % vga_cursor_freq;
 				vga_virtualtty.buffer[vga_virtualtty.cursor].change_stamp ++;
 				vga_virtualtty.change_counter ++;
-				libk::usleep(50);
+				util::usleep(50);
 
 				asm volatile ("int $0x80");
 			}

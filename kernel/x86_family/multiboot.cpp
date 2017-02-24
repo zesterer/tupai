@@ -28,9 +28,6 @@
 
 #include <tupai/kdebug.hpp>
 
-// Libk
-#include <libk/stdio.hpp>
-
 namespace tupai
 {
 	namespace x86_family

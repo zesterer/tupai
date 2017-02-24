@@ -1,5 +1,5 @@
 /*
-* 	file : ctype.hpp
+* 	file : time.hpp
 *
 * 	This file is part of Tupai.
 *
@@ -17,33 +17,19 @@
 * 	along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef _CTYPE_HPP
-#define _CTYPE_HPP
+#ifndef TUPAI_UTIL_TIME_HPP
+#define TUPAI_UTIL_TIME_HPP
 
 // Tupai
 #include <tupai/type.hpp>
 
-namespace libk
+namespace tupai
 {
-	/* Character Classification Functions */
-
-	bool isalnum(sint c);
-	bool isalpha(sint c);
-	bool isblank(sint c);
-	bool iscntrl(sint c);
-	bool isdigit(sint c);
-	bool isgraph(sint c);
-	bool islower(sint c);
-	bool isprint(sint c);
-	bool ispunct(sint c);
-	bool isspace(sint c);
-	bool isupper(sint c);
-	bool isxdigit(sint c);
-
-	/* Character Conversion Functions */
-
-	sint toupper(sint c);
-	sint tolower(sint c);
+	namespace util
+	{
+		void sleep(uint64 sec);
+		void usleep(uint64 usec);
+	}
 }
 
 #endif

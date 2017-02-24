@@ -25,9 +25,6 @@
 #include <tupai/kdebug.hpp>
 #include <tupai/util/mutex.hpp>
 
-// Libk
-#include <libk/stdio.hpp>
-
 namespace tupai
 {
 	namespace generic

@@ -21,6 +21,8 @@
 #include <tupai/syscall.hpp>
 #include <tupai/task.hpp>
 
+#include <tupai/util/out.hpp>
+
 #if defined(SYSTEM_ARCH_i686)
 	#include <tupai/i686/interrupt.hpp>
 	#include <tupai/i686/idt.hpp>
@@ -29,9 +31,6 @@
 #endif
 
 #include <tupai/util/conv.hpp>
-
-// Libk
-#include <libk/stdio.hpp>
 
 namespace tupai
 {
@@ -64,19 +63,6 @@ namespace tupai
 		task_save_state(state_pushal, state_int);
 		task_preempt();
 
-		libk::printf("SYSCALL!\n");
-
-		libk::printf("--- State ---\nEAX : 0x%s\nEBX : 0x%s\nECX : 0x%s\nEDX : 0x%s\nESP : 0x%s\nEBP : 0x%s\nESI : 0x%s\nEDI : 0x%s\nEIP : 0x%s\nCS : 0x%s\nEFLAGS : 0x%s\n",
-		util::compose(state_pushal.eax, 16).val(),
-		util::compose(state_pushal.ebx, 16).val(),
-		util::compose(state_pushal.ecx, 16).val(),
-		util::compose(state_pushal.edx, 16).val(),
-		util::compose(state_pushal.esp, 16).val(),
-		util::compose(state_pushal.ebp, 16).val(),
-		util::compose(state_pushal.esi, 16).val(),
-		util::compose(state_pushal.edi, 16).val(),
-		util::compose(state_int.eip, 16).val(),
-		util::compose(state_int.cs, 16).val(),
-		util::compose(state_int.eflags, 16).val());
+		util::println("SYSCALL!");
 	}
 }

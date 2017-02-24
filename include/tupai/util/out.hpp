@@ -33,7 +33,7 @@ namespace tupai
 		void printc(char c);
 		void print(const char* str);
 		void println(const char* str);
-		void printf(const char* fmt, ...) __attribute__((format(printf, 1, 2)));
+		void printf(const char* fmt, ...);// __attribute__((format(printf, 1, 2))); TODO : reinstate this
 	}
 }
 

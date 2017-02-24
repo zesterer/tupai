@@ -28,9 +28,6 @@
 	#include <tupai/i686/serial.hpp>
 #endif
 
-// Libk
-#include <libk/ctype.hpp>
-
 namespace tupai
 {
 	safeptr<console> g_console;

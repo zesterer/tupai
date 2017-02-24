@@ -20,15 +20,19 @@
 // Tupai
 #include <tupai/util/cstr.hpp>
 
-#include <libk/string.hpp>
-
 namespace tupai
 {
 	namespace util
 	{
 		bool cstr_equal(const char* a, const char* b)
 		{
-			return libk::strcmp(a, b) == 0;
+			for (umem i = 0; a[i] != '\0' || b[i] != '\0'; i ++)
+			{
+				if (a[i] != b[i])
+					return ((int)a[i] - (int)b[i]) == 0;
+			}
+
+			return true;
 		}
 
 		void cstr_copy(const char* src, char* dest, umem max)
@@ -50,7 +54,9 @@ namespace tupai
 
 		umem cstr_length(const char* a)
 		{
-			return libk::strlen(a);
+			umem i;
+			for (i = 0; a[i] != '\0'; i ++);
+			return i;
 		}
 	}
 }

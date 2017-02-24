@@ -20,11 +20,10 @@
 // Tupai
 #include <tupai/prog/timer.hpp>
 
-// Libk
-#include <libk/stdio.hpp>
-#include <libk/time.hpp>
-
-using namespace libk;
+#include <tupai/util/out.hpp>
+#include <tupai/util/time.hpp>
+#include <tupai/util/conv.hpp>
+#include <tupai/util/cstr.hpp>
 
 namespace tupai
 {
@@ -32,23 +31,59 @@ namespace tupai
 	{
 		int timer_main(int argc __attribute__ ((unused)), char* argv[] __attribute__ ((unused)))
 		{
-			printf("Counting 5 seconds in second increments...\n");
+			int mode = 0; // 0 = Seconds, 1 = Milliseconds
+			bool chosen_time = false;
+			uint64 time = 0;
 
-			for (int i = 0; i < 5; i ++)
+			for (int i = 0; i < argc; i ++)
 			{
-				libk::sleep(1);
-				printf("Second %i.\n", i + 1);
+				if (util::cstr_equal(argv[i], "-s"))
+					mode = 0;
+				else if (util::cstr_equal(argv[i], "-u"))
+					mode = 1;
+				else
+				{
+					safeval<uint64> n = util::parse<uint64>(argv[i]);
+
+					if (n.is_valid())
+					{
+						if (!chosen_time)
+						{
+							time = n.val();
+							chosen_time = true;
+						}
+						else
+						{
+							util::println("Error: multiple time values given");
+							return 1;
+						}
+					}
+					else
+					{
+						util::printf("Error: '%s' is not a valid integer\n", argv[i]);
+						return 1;
+					}
+				}
 			}
 
-			printf("Counting 1 second in 50 millisecond increments...\n");
-
-			for (int i = 0; i < 20; i ++)
+			if (!chosen_time)
 			{
-				libk::usleep(50);
-				printf("Millisecond %i.\n", (i + 1) * 50);
+				util::println("Error: time not specified");
+				return 1;
 			}
 
-			printf("Done!\n");
+			util::printf("Counting %u %s...\n", (uint32)time, (mode == 0) ? "seconds" : "milliseconds");
+			for (uint64 i = 0; i < time; i ++)
+			{
+				if (mode == 0)
+					util::sleep(1);
+				else
+					util::usleep(1);
+
+				util::printf("%u\n", (uint32)i + 1);
+			}
+
+			util::println("Done!");
 
 			return 0;
 		}

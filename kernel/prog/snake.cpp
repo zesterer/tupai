@@ -20,13 +20,13 @@
 // Tupai
 #include <tupai/prog/snake.hpp>
 
+#include <tupai/util/in.hpp>
 #include <tupai/util/out.hpp>
 #include <tupai/util/ansi.hpp>
+#include <tupai/util/math.hpp>
+#include <tupai/util/time.hpp>
 
-// Libk
-#include <libk/stdio.hpp>
-#include <libk/stdlib.hpp>
-#include <libk/time.hpp>
+#include <tupai/sys/random.hpp>
 
 namespace tupai
 {
@@ -44,8 +44,8 @@ namespace tupai
 			int body_y[256];
 			int score = 0;
 
-			int foodx = libk::abs(libk::rand()) % 16;
-			int foody = libk::abs(libk::rand()) % 16;
+			int foodx = util::abs(sys::random_get()) % 16;
+			int foody = util::abs(sys::random_get()) % 16;
 
 			int level = 1;
 
@@ -61,11 +61,11 @@ namespace tupai
 				if (level > 10)
 					level = 10;
 
-				libk::usleep(300 - level * 26);
+				util::usleep(300 - level * 26);
 
-				if (!libk::getisempty())
+				if (util::is_input())
 				{
-					char k = libk::getchar();
+					char k = util::getc();
 					if (k == 'w' && dy <= 0) { dx = +0; dy = -1; }
 					if (k == 'a' && dx <= 0) { dx = -1; dy = +0; }
 					if (k == 's' && dy >= 0) { dx = +0; dy = +1; }
@@ -81,8 +81,8 @@ namespace tupai
 
 				if (foodx == sx && foody == sy)
 				{
-					foodx = libk::abs(libk::rand()) % 16;
-					foody = libk::abs(libk::rand()) % 16;
+					foodx = util::abs(sys::random_get()) % 16;
+					foody = util::abs(sys::random_get()) % 16;
 					score += 500;
 					slen ++;
 				}
@@ -143,7 +143,7 @@ namespace tupai
 
 				util::ansi_set_fg_color(0xC);
 				util::ansi_place_cursor(foodx + offx, foody + offy);
-				libk::putchar('@');
+				util::printc('@');
 				util::ansi_set_fg_color(0xF);
 
 				util::ansi_set_bg_color(0x0);
@@ -153,15 +153,14 @@ namespace tupai
 				util::ansi_set_bg_color(0x2);
 				for (int i = 0; i < 80; i ++) util::printc(' ');
 				util::ansi_place_cursor(0, 0);
-				libk::printf("Snake   Score : %i   Level : %i   WASD to move, Backspace to exit", score, level);
+				util::printf("Snake   Score : %i   Level : %i   WASD to move, Backspace to exit", score, level);
 				util::ansi_reset();
 			}
 
 			util::ansi_place_cursor(0, 24);
 			util::ansi_show_cursor();
-			util::print("Game Over!\n");
-			libk::printf("Score: %i", score);
-			libk::putchar('\n');
+			util::println("Game Over!");
+			util::printf("Score: %i\n", score);
 			return 0;
 		}
 	}

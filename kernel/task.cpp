@@ -27,10 +27,6 @@
 
 #include <tupai/util/conv.hpp>
 
-// Libk
-#include <libk/stdio.hpp>
-#include <libk/stdlib.hpp>
-
 namespace tupai
 {
 	generic::ringbuff<task> tasks;

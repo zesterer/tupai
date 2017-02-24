@@ -20,16 +20,12 @@
 // Tupai
 #include <tupai/prog/sys.hpp>
 
+#include <tupai/util/in.hpp>
+#include <tupai/util/out.hpp>
 #include <tupai/util/conv.hpp>
 
 #include <tupai/x86_family/multiboot.hpp>
 #include <tupai/memory.hpp>
-
-// Libk
-#include <libk/stdio.hpp>
-#include <libk/stdlib.hpp>
-
-using namespace libk;
 
 namespace tupai
 {
@@ -37,57 +33,53 @@ namespace tupai
 	{
 		void sys_wait()
 		{
-			puts("\nPress any key to continue.\n");
-			getchar();
-			putchar('\n');
+			util::println("\nPress any key to continue.");
+			util::getc();
+			util::printc('\n');
 		}
 
 		int sys_main(int argc __attribute__ ((unused)), char* argv[] __attribute__ ((unused)))
 		{
-			printf("--- Brief ---\n");
-			printf("%s %s.%s.%s on %s\n", SYSTEM_NAME_DECORATIVE, SYSTEM_VERSION_MAJOR, SYSTEM_VERSION_MINOR, SYSTEM_VERSION_RELEASE, SYSTEM_ARCH);
+			util::println("--- Brief ---");
+			util::printf("%s %s.%s.%s on %s\n", SYSTEM_NAME_DECORATIVE, SYSTEM_VERSION_MAJOR, SYSTEM_VERSION_MINOR, SYSTEM_VERSION_RELEASE, SYSTEM_ARCH);
 
 			sys_wait();
 
-			printf("--- System Information ---\n");
-			printf("SYSTEM_NAME            : %s\n", SYSTEM_NAME);
-			printf("SYSTEM_NAME_DECORATIVE : %s\n", SYSTEM_NAME_DECORATIVE);
-			printf("SYSTEM_VERSION_MAJOR   : %s\n", SYSTEM_VERSION_MAJOR);
-			printf("SYSTEM_VERSION_MINOR   : %s\n", SYSTEM_VERSION_MINOR);
-			printf("SYSTEM_VERSION_RELEASE : %s\n", SYSTEM_VERSION_RELEASE);
-			printf("SYSTEM_ARCH            : %s\n", SYSTEM_ARCH);
+			util::println("--- System Information ---");
+			util::printf("SYSTEM_NAME            : %s\n", SYSTEM_NAME);
+			util::printf("SYSTEM_NAME_DECORATIVE : %s\n", SYSTEM_NAME_DECORATIVE);
+			util::printf("SYSTEM_VERSION_MAJOR   : %s\n", SYSTEM_VERSION_MAJOR);
+			util::printf("SYSTEM_VERSION_MINOR   : %s\n", SYSTEM_VERSION_MINOR);
+			util::printf("SYSTEM_VERSION_RELEASE : %s\n", SYSTEM_VERSION_RELEASE);
+			util::printf("SYSTEM_ARCH            : %s\n", SYSTEM_ARCH);
 
 			sys_wait();
 
-			printf("--- Type Information ---\n");
-			printf("sizeof(void*)       : %i\n", sizeof(void*));
-			printf("sizeof(size_t)      : %i\n", sizeof(size_t));
-			printf("sizeof(char)        : %i\n", sizeof(char));
-			printf("sizeof(short)       : %i\n", sizeof(short));
-			printf("sizeof(int)         : %i\n", sizeof(int));
-			printf("sizeof(long)        : %i\n", sizeof(long));
-			printf("sizeof(long long)   : %i\n", sizeof(long long));
-			printf("sizeof(float)       : %i\n", sizeof(float));
-			printf("sizeof(double)      : %i\n", sizeof(double));
-			printf("sizeof(long double) : %i\n", sizeof(long double));
+			util::println("--- Type Information ---");
+			util::printf("sizeof(void*)       : %i\n", sizeof(void*));
+			util::printf("sizeof(size_t)      : %i\n", sizeof(size_t));
+			util::printf("sizeof(char)        : %i\n", sizeof(char));
+			util::printf("sizeof(short)       : %i\n", sizeof(short));
+			util::printf("sizeof(int)         : %i\n", sizeof(int));
+			util::printf("sizeof(long)        : %i\n", sizeof(long));
+			util::printf("sizeof(long long)   : %i\n", sizeof(long long));
+			util::printf("sizeof(float)       : %i\n", sizeof(float));
+			util::printf("sizeof(double)      : %i\n", sizeof(double));
+			util::printf("sizeof(long double) : %i\n", sizeof(long double));
 
 			sys_wait();
 
-			printf("--- Syscall ---\n");
-			asm volatile ("xchg %bx, %bx; int $0x80");
+			util::println("--- Multiboot Information ---");
+			util::printf("Available Lower : 0x%s\n", util::compose(x86_family::multiboot_get_header().mem_lower * 1024, 16));
+			util::printf("Available Upper : 0x%s\n", util::compose(x86_family::multiboot_get_header().mem_upper * 1024, 16));
+			util::printf("Available Total : 0x%s\n", util::compose((x86_family::multiboot_get_header().mem_upper - x86_family::multiboot_get_header().mem_lower) * 1024, 16));
 
 			sys_wait();
 
-			printf("--- Multiboot Information ---\n");
-			printf("Available Lower : 0x%s\n", util::compose(x86_family::multiboot_get_header().mem_lower * 1024, 16));
-			printf("Available Upper : 0x%s\n", util::compose(x86_family::multiboot_get_header().mem_upper * 1024, 16));
-			printf("Available Total : 0x%s\n", util::compose((x86_family::multiboot_get_header().mem_upper - x86_family::multiboot_get_header().mem_lower) * 1024, 16));
+			util::println("--- Memory Information ---");
+			util::printf("Used  : 0x%s\n", util::compose(memory_get_info().used, 16));
+			util::printf("Total : 0x%s\n", util::compose(memory_get_info().size, 16));
 
-			sys_wait();
-
-			printf("--- Memory Information ---\n");
-			printf("Used  : 0x%s\n", util::compose(memory_get_info().used, 16));
-			printf("Total : 0x%s\n", util::compose(memory_get_info().size, 16));
 			sys_wait();
 
 			return 0;

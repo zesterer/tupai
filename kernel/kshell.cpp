@@ -24,6 +24,7 @@
 
 #include <tupai/fs/fs.hpp>
 
+#include <tupai/util/in.hpp>
 #include <tupai/util/out.hpp>
 #include <tupai/util/ansi.hpp>
 #include <tupai/util/cstr.hpp>
@@ -33,12 +34,8 @@
 // Programs
 #include <tupai/prog/snake.hpp>
 #include <tupai/prog/sys.hpp>
-#include <tupai/prog/adventure.hpp>
 #include <tupai/prog/timer.hpp>
 #include <tupai/prog/mmap.hpp>
-
-// Libk
-#include <libk/stdio.hpp>
 
 namespace tupai
 {
@@ -48,7 +45,7 @@ namespace tupai
 
 		while (true)
 		{
-			char c = libk::getchar();
+			char c = util::getc();
 
 			if (c == '\n' || c == '\0')
 			{
@@ -165,7 +162,6 @@ namespace tupai
 		util::print("Additional commands:\n");
 		util::print("  snake     Run command-line snake\n");
 		util::print("  sys       Display system details\n");
-		util::print("  adventure Play an adventure game\n");
 		util::print("  timer     Run a test timer\n");
 		util::print("  mmap      View the memory map\n");
 	}
@@ -312,11 +308,7 @@ namespace tupai
 			{
 				return prog::sys_main(argc - 1, &argv[1]);
 			}
-			else if (util::cstr_equal(argv[0], "adventure") && argc == 1)
-			{
-				return prog::adventure_main(argc - 1, &argv[1]);
-			}
-			else if (util::cstr_equal(argv[0], "timer") && argc == 1)
+			else if (util::cstr_equal(argv[0], "timer"))
 			{
 				return prog::timer_main(argc - 1, &argv[1]);
 			}
@@ -386,7 +378,7 @@ namespace tupai
 							util::print("  ");
 							util::ansi_reset();
 						}
-						libk::putchar('\n');
+						util::printc('\n');
 					}
 					else
 						util::print("Unknown error\n");

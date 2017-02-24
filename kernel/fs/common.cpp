@@ -21,9 +21,6 @@
 #include <tupai/fs/common.hpp>
 #include <tupai/util/cstr.hpp>
 
-// Libk
-#include <libk/stdio.hpp>
-
 namespace tupai
 {
 	namespace fs

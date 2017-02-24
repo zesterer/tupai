@@ -1,5 +1,5 @@
 /*
-* 	file : adventure.hpp
+* 	file : in.cpp
 *
 * 	This file is part of Tupai.
 *
@@ -17,15 +17,39 @@
 * 	along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TUPAI_PROG_ADVENTURE_HPP
-#define TUPAI_PROG_ADVENTURE_HPP
+// Tupai
+#include <tupai/util/in.hpp>
+
+#if defined(SYSTEM_ARCH_i686)
+	#include <tupai/i686/kbd.hpp>
+#endif
 
 namespace tupai
 {
-	namespace prog
+	namespace util
 	{
-		int adventure_main(int argc, char* argv[]);
+		bool is_input()
+		{
+			#if defined(SYSTEM_ARCH_i686)
+				return kbd_ringbuffer.length() > 0;
+			#else
+				true;
+			#endif
+		}
+
+		int getc()
+		{
+			#if defined(SYSTEM_ARCH_i686)
+				while (true)
+				{
+					if (kbd_ringbuffer.length() > 0)
+						return kbd_ringbuffer.pop();
+					else
+						asm volatile ("int $0x80");
+				}
+			#else
+				return '\0';
+			#endif
+		}
 	}
 }
-
-#endif

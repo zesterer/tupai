@@ -25,9 +25,6 @@
 
 #include <tupai/i686/port.hpp>
 
-// Libk
-#include <libk/stdio.hpp>
-
 namespace tupai
 {
 	extern "C" void _kpanic(const char* msg, uint32 code) __attribute__((noreturn));

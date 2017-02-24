@@ -37,7 +37,6 @@
 // --- CONSOLE & I/O ---
 #include <tupai/tty.hpp>
 #include <tupai/console.hpp>
-#include <tupai/prompt.hpp>
 #include <tupai/kshell.hpp>
 
 // --- FILESYSTEM ---
@@ -192,10 +191,6 @@ namespace tupai
 		startup_welcome();
 
 		while (true)
-		{
 			kshell(0, nullptr);
-			prompt();
-			util::print("Lowest-level shell exited. Restarting session.\n");
-		}
 	}
 }
