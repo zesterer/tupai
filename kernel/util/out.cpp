@@ -50,6 +50,7 @@ namespace tupai
 			__builtin_va_start(args, fmt);
 
 			bool escaped = false;
+			bool escape_blocked = false;
 			for (umem i = 0; fmt[i] != '\0';)
 			{
 				char c = fmt[i];
@@ -99,11 +100,26 @@ namespace tupai
 					switch (c)
 					{
 					case '%':
-						escaped = true;
+						{
+							if (!escape_blocked)
+								escaped = true;
+							else
+							{
+								tty_write(c);
+								escape_blocked = false;
+							}
+						}
+						break;
+
+					case '\\':
+						escape_blocked = true;
 						break;
 
 					default:
-						tty_write(c);
+						{
+							tty_write(c);
+							escape_blocked = false;
+						}
 						break;
 					}
 				}
