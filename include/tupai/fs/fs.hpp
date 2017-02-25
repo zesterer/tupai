@@ -22,7 +22,9 @@
 
 // Tupai
 #include <tupai/type.hpp>
-#include <tupai/util/safetype.hpp>
+
+#include <tupai/util/string.hpp>
+
 #include <tupai/fs/common.hpp>
 #include <tupai/fs/node.hpp>
 

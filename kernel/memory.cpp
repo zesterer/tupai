@@ -87,7 +87,7 @@ namespace tupai
 
 		// Get space for the memory map and call the constructor
 		g_memory_map = (memory_map*)memory_early_alloc(sizeof(memory_map));
-		new (g_memory_map) memory_map(); // TODO : Use an early 1G paging map with ASM to allow this
+		new (g_memory_map) memory_map();
 	}
 
 	void memory_enforce()
@@ -104,7 +104,7 @@ namespace tupai
 
 		// Map default kernel memory
 		for (umem addr = 0x0; addr < kernel_dyn_end; addr += MEMORY_FRAME_SIZE)
-			memory_map_frame(addr, 0, 0x0);
+			memory_map_frame(addr, addr, 0, 0x0, 0x0);
 
 		#if defined(SYSTEM_ARCH_i686)
 			x86_family::paging_enable();
@@ -138,8 +138,8 @@ namespace tupai
 		{
 			phys_frame->flags = phys_flags | MEMORY_PHYS_FLAG_USED;
 			phys_frame->pid = pid;
-			virt_frame->phys_index = phys_index;
-			virt_frame->flags = virt_flags | MEMORY_VIRT_FLAG_USED;
+			//virt_frame->phys_index = phys_index;
+			//virt_frame->flags = virt_flags | MEMORY_VIRT_FLAG_USED;
 			return true;
 		}
 	}

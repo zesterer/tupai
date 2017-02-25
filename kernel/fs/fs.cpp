@@ -21,6 +21,8 @@
 #include <tupai/fs/fs.hpp>
 #include <tupai/fs/node.hpp>
 
+#include <tupai/util/out.hpp>
+
 namespace tupai
 {
 	namespace fs

@@ -46,7 +46,7 @@ namespace tupai
 		static void vga_textmode_place_entry(uint32 c, uint16 col, uint16 row, byte fg_color, byte bg_color);
 
 		static inline uint32 color_blend(uint32 lower, uint32 higher);
-		static void blit_character(uint32 c, uint16 x, uint16 y, uint32 fg_color, uint32 bg_color, uint8 alpha = 225);
+		static void blit_character(uint32 c, uint16 x, uint16 y, uint32 fg_color, uint32 bg_color, uint8 alpha = 180);
 
 		struct bmp_header // TODO : this
 		{
@@ -119,6 +119,7 @@ namespace tupai
 
 		static int vga_cursor_freq = 30;
 
+		/*
 		static const uint32 vga_virtualtty_palette[] =
 		{
 			0xFF000000, // Black
@@ -137,6 +138,27 @@ namespace tupai
 			0xFF0000FF, // Light Blue
 			0xFFFF00FF, // Light Magenta
 			0xFF00FFFF, // Light Cyan
+			0xFFFFFFFF, // White
+		};
+		*/
+		static const uint32 vga_virtualtty_palette[] =
+		{
+			0xFF000000, // Black
+			0xFFC75646, // Red
+			0xFF8EB33B, // Green
+			0xFFD0B03C, // Yellow
+			0xFF72B3CC, // Blue
+			0xFFC8A0D1, // Magenta
+			0xFF008080, // Cyan
+			0xFF218693, // Light Grey
+
+			0xFF5D5D5D, // Dark Grey
+			0xFFE09690, // Light Red
+			0xFFCDEE69, // Light Green
+			0xFFFFE377, // Light Yellow
+			0xFF9CD9F0, // Light Blue
+			0xFFFBB1F9, // Light Magenta
+			0xFF77DFD8, // Light Cyan
 			0xFFFFFFFF, // White
 		};
 

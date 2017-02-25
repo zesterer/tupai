@@ -32,19 +32,17 @@ namespace tupai
 
 		if (status == 0)
 		{
-			util::ansi_set_fg_color(0x0A);
+			util::ansi_set_fg_color(2);
 			util::print(" OK ");
 		}
 		else
 		{
-			util::ansi_set_fg_color(0x0C);
+			util::ansi_set_fg_color(4);
 			util::print("FAIL");
 		}
 
 		util::ansi_reset();
-		util::print("] ");
-		util::print("Initiated '");
-		util::println(name);
+		util::printf("] Initiated '%s'\n", name);
 	}
 
 	void startup_welcome()

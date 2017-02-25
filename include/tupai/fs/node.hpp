@@ -23,7 +23,8 @@
 // Tupai
 #include <tupai/type.hpp>
 #include <tupai/fs/common.hpp>
-#include <tupai/util/safetype.hpp>
+
+#include <tupai/util/string.hpp>
 
 namespace tupai
 {
@@ -40,7 +41,7 @@ namespace tupai
 
 		struct node
 		{
-			node_name name;
+			util::string name;
 			node_type type = node_type::DIR;
 
 			node* parent = nullptr;
@@ -48,9 +49,9 @@ namespace tupai
 			node* child = nullptr;
 
 			node() {}
-			node(const char* name, node_type type = node_type::PLACEHOLDER, node* parent = nullptr)
+			node(util::string name, node_type type = node_type::PLACEHOLDER, node* parent = nullptr)
 			{
-				this->name = node_name(name);
+				this->name = name;
 				this->type = type;
 				this->parent = parent;
 			}
@@ -81,7 +82,7 @@ namespace tupai
 				return 0;
 			}
 
-			node* get_child(node_name name)
+			node* get_child(util::string name)
 			{
 				if (this->child == nullptr)
 					return nullptr;
@@ -119,7 +120,7 @@ namespace tupai
 					if (!this->parent->is_root())
 						util::cstr_append("/", buffer);
 
-					util::cstr_append(this->name.str(), buffer);
+					util::cstr_append(this->name.raw(), buffer);
 				}
 				else
 					util::cstr_copy("/", buffer);

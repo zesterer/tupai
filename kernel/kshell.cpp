@@ -122,19 +122,19 @@ namespace tupai
 		util::print("Usage: kshell [options]\n");
 		util::ansi_reset();
 		util::print("Tupai kernel shell\n\n");
-		util::ansi_set_fg_color(11);
+		util::ansi_set_fg_color(3);
 		util::print("Options:\n");
 		util::ansi_reset();
 		util::print("  -h      Display this help screen\n");
 		util::print("  -v      Display version\n");
-		util::ansi_set_fg_color(11);
+		util::ansi_set_fg_color(3);
 		util::print("Special commands:\n");
 		util::ansi_reset();
 		util::print("  help    Display this help screen\n");
 		util::print("  list    List additional commands\n");
 		util::print("  clear   Clear the screen\n");
 		util::print("  exit    Exit the session\n");
-		util::ansi_set_fg_color(11);
+		util::ansi_set_fg_color(3);
 		util::print("Utility commands:\n");
 		util::ansi_reset();
 		util::print("  repeat <n> <cmd> [args] Repeat a command n times\n");
@@ -142,7 +142,7 @@ namespace tupai
 		util::print("  color                   Display color information\n");
 		util::print("  chars                   Display character set\n");
 		util::print("  uptime                  Display system uptime\n");
-		util::ansi_set_fg_color(11);
+		util::ansi_set_fg_color(3);
 		util::print("Filesystem commands:\n");
 		util::ansi_reset();
 		util::print("  ls [dir]     List files in the current directory\n");
@@ -159,7 +159,9 @@ namespace tupai
 
 	void kshell_display_list()
 	{
+		util::ansi_set_fg_color(3);
 		util::print("Additional commands:\n");
+		util::ansi_reset();
 		util::print("  snake     Run command-line snake\n");
 		util::print("  sys       Display system details\n");
 		util::print("  timer     Run a test timer\n");
@@ -260,7 +262,7 @@ namespace tupai
 				util::print("|-");
 			util::ansi_reset();
 			util::ansi_set_fg_color((byte)node->type + 9);
-			util::print(node->name.str());
+			util::print(node->name.raw());
 			util::ansi_reset();
 
 			if (node->is_directory())
@@ -280,19 +282,19 @@ namespace tupai
 	{
 		if (argc > 0)
 		{
-			if (util::cstr_equal(argv[0], "exit") && argc == 1)
+			if (util::cstr_equal(argv[0], "exit"))
 			{
 				return 2;
 			}
-			else if (util::cstr_equal(argv[0], "clear") && argc == 1)
+			else if (util::cstr_equal(argv[0], "clear"))
 			{
 				util::ansi_clear();
 			}
-			else if (util::cstr_equal(argv[0], "list") && argc == 1)
+			else if (util::cstr_equal(argv[0], "list"))
 			{
 				kshell_display_list();
 			}
-			else if (util::cstr_equal(argv[0], "help") && argc == 1)
+			else if (util::cstr_equal(argv[0], "help"))
 			{
 				kshell_display_help();
 			}
@@ -300,11 +302,11 @@ namespace tupai
 			{
 				return kshell(argc - 1, &argv[1], cdir);
 			}
-			else if (util::cstr_equal(argv[0], "snake") && argc == 1)
+			else if (util::cstr_equal(argv[0], "snake"))
 			{
 				return prog::snake_main(argc - 1, &argv[1]);
 			}
-			else if (util::cstr_equal(argv[0], "sys") && argc == 1)
+			else if (util::cstr_equal(argv[0], "sys"))
 			{
 				return prog::sys_main(argc - 1, &argv[1]);
 			}
@@ -312,109 +314,131 @@ namespace tupai
 			{
 				return prog::timer_main(argc - 1, &argv[1]);
 			}
-			else if (util::cstr_equal(argv[0], "mmap") && argc == 1)
+			else if (util::cstr_equal(argv[0], "mmap"))
 			{
 				return prog::mmap_main(argc - 1, &argv[1]);
 			}
-			else if (util::cstr_equal(argv[0], "repeat") && argc >= 2)
+			else if (util::cstr_equal(argv[0], "repeat"))
 			{
-				safeval<uint32> n = util::parse<uint32>(argv[1]);
-
-				if (!n.is_valid())
+				if (argc < 2)
 				{
-					util::printc('"');
-					util::print(argv[1]);
-					util::print("\" is not a valid integer\n");
+					util::println("Error: requires at least 2 arguments");
 				}
 				else
 				{
-					for (uint32 i = 0; i < n.val(); i ++)
-					{
-						kshell_execute(argc - 2, &argv[2], cdir);
+					safeval<uint32> n = util::parse<uint32>(argv[1]);
 
-						// Preempt TODO : Remove this
-						asm volatile ("int $0x80");
+					if (!n.is_valid())
+					{
+						util::printc('"');
+						util::print(argv[1]);
+						util::print("\" is not a valid integer\n");
+					}
+					else
+					{
+						for (uint32 i = 0; i < n.val(); i ++)
+						{
+							kshell_execute(argc - 2, &argv[2], cdir);
+
+							// Preempt TODO : Remove this
+							asm volatile ("int $0x80");
+						}
 					}
 				}
 			}
-			else if (util::cstr_equal(argv[0], "echo") && argc == 2)
+			else if (util::cstr_equal(argv[0], "echo"))
 			{
-				util::println(argv[1]);
+				if (argc > 1)
+					util::println(argv[1]);
 			}
-			else if (util::cstr_equal(argv[0], "color") && argc == 1)
+			else if (util::cstr_equal(argv[0], "color"))
 			{
 				kshell_display_color();
 			}
-			else if (util::cstr_equal(argv[0], "chars") && argc == 1)
+			else if (util::cstr_equal(argv[0], "chars"))
 			{
 				kshell_display_chars();
 			}
-			else if (util::cstr_equal(argv[0], "uptime") && argc == 1)
+			else if (util::cstr_equal(argv[0], "uptime"))
 			{
 				kshell_display_uptime();
 			}
-			else if (util::cstr_equal(argv[0], "ls") && argc <= 2)
+			else if (util::cstr_equal(argv[0], "ls"))
 			{
-				char* ndir = util::alloc<char>(fs::PATH_MAX_LENGTH + 1).val();
-				if (argc == 1)
-					util::cstr_copy(cdir, ndir);
-				else
-					fs::path_concat(cdir, argv[1], ndir);
-
-				fs::node* current_node = fs::fs_find(ndir);
-				if (current_node != nullptr)
+				if (argc > 2)
 				{
-					fs::node* nodebuff[32];
-					umem count;
-					status_t status = fs::fs_list_children(current_node, nodebuff, &count, 0);
+					util::println("Error: Requires at least 1 argument");
+				}
+				else
+				{
+					char* ndir = util::alloc<char>(fs::PATH_MAX_LENGTH + 1).val();
+					if (argc == 1)
+						util::cstr_copy(cdir, ndir);
+					else
+						fs::path_concat(cdir, argv[1], ndir);
 
-					if (status == 0)
+					fs::node* current_node = fs::fs_find(ndir);
+					if (current_node != nullptr)
 					{
-						for (umem i = 0; i < count; i ++)
+						fs::node* nodebuff[32];
+						umem count;
+						status_t status = fs::fs_list_children(current_node, nodebuff, &count, 0);
+
+						if (status == 0)
 						{
-							const char* nodename = nodebuff[i]->name.str();
-							util::ansi_set_fg_color((byte)nodebuff[i]->type + 9);
-							util::print(nodename);
-							util::print("  ");
-							util::ansi_reset();
+							for (umem i = 0; i < count; i ++)
+							{
+								const char* nodename = nodebuff[i]->name.raw();
+								util::ansi_set_fg_color((byte)nodebuff[i]->type + 9);
+								util::print(nodename);
+								util::print("  ");
+								util::ansi_reset();
+							}
+							util::printc('\n');
 						}
-						util::printc('\n');
+						else
+							util::print("Unknown error\n");
 					}
 					else
-						util::print("Unknown error\n");
-				}
-				else
-				{
-					util::print("Invalid path '");
-					util::print(cdir);
-					util::print("'\n");
-				}
+					{
+						util::print("Invalid path '");
+						util::print(cdir);
+						util::print("'\n");
+					}
 
-				delete ndir;
+					delete ndir;
+				}
 			}
-			else if (util::cstr_equal(argv[0], "tree") && argc <= 2)
+			else if (util::cstr_equal(argv[0], "tree"))
 			{
-				char* ndir = util::alloc<char>(fs::PATH_MAX_LENGTH + 1).val();
-				if (argc == 1)
-					util::cstr_copy(cdir, ndir);
-				else
-					fs::path_concat(cdir, argv[1], ndir);
-
-				fs::node* current_node = fs::fs_find(ndir);
-				if (current_node != nullptr)
+				if (argc > 2)
 				{
-					kshell_display_node_tree(current_node, 0);
+					util::println("Error: Requires at least 1 argument");
 				}
 				else
 				{
-					util::print("Invalid path '");
-					util::print(cdir);
-					util::print("'\n");
-				}
+					char* ndir = util::alloc<char>(fs::PATH_MAX_LENGTH + 1).val();
+					if (argc == 1)
+						util::cstr_copy(cdir, ndir);
+					else
+						fs::path_concat(cdir, argv[1], ndir);
 
-				delete ndir;
+					fs::node* current_node = fs::fs_find(ndir);
+					if (current_node != nullptr)
+					{
+						kshell_display_node_tree(current_node, 0);
+					}
+					else
+					{
+						util::print("Invalid path '");
+						util::print(cdir);
+						util::print("'\n");
+					}
+
+					delete ndir;
+				}
 			}
-			else if (util::cstr_equal(argv[0], "cd") && argc <= 2)
+			else if (util::cstr_equal(argv[0], "cd"))
 			{
 				if (argc == 2)
 				{
@@ -437,18 +461,22 @@ namespace tupai
 						util::print("'\n");
 					}
 				}
-				else
+				else if (argc == 1)
 				{
 					delete cdir;
 					cdir = util::alloc<char>(fs::PATH_MAX_LENGTH + 1).val();
 					util::cstr_copy("/", cdir);
 				}
+				else if (argc > 2)
+				{
+					util::println("Error: Too many arguments");
+				}
 			}
-			else if (util::cstr_equal(argv[0], "pwd") && argc == 1)
+			else if (util::cstr_equal(argv[0], "pwd"))
 			{
 				util::println(cdir);
 			}
-			else if (util::cstr_equal(argv[0], "mkdir") && argc <= 2)
+			else if (util::cstr_equal(argv[0], "mkdir"))
 			{
 				if (argc == 2)
 				{
@@ -458,8 +486,12 @@ namespace tupai
 						nnode->add_child(new fs::node(argv[1], fs::node_type::DIR));
 					}
 				}
-				else
+				else if (argc == 1)
 					util::print("Error: directory name not specified\n");
+				else if (argc > 2)
+				{
+					util::println("Error: Too many arguments");
+				}
 			}
 			else if (util::cstr_length(argv[0]) > 0)
 			{
@@ -505,7 +537,7 @@ namespace tupai
 		{
 			// Prompt
 			//util::print("[");
-			util::ansi_set_fg_color(util::ansi::LIGHT_RED);
+			util::ansi_set_fg_color(util::ansi::RED);
 			util::print("kernel");
 			util::ansi_reset();
 			//util::printc('@');
@@ -513,7 +545,7 @@ namespace tupai
 			//util::print("tupai");
 			//util::ansi_reset();
 			util::printc(':');
-			util::ansi_set_fg_color(util::ansi::LIGHT_YELLOW);
+			util::ansi_set_fg_color(util::ansi::YELLOW);
 			util::print(cdir);
 			util::ansi_reset();
 			util::print(" $ ");
