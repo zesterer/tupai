@@ -24,6 +24,20 @@ namespace tupai
 {
 	namespace util
 	{
-		const umem MEM_ALIGN_PAGE = 1024 * 4;
+		umem align_floor(umem n, umem align)
+		{
+			return n - n % align;
+		}
+
+		umem align_ceiling(umem n, umem align)
+		{
+			return (n + align) - n % align;
+		}
+
+		void mem_copy(const byte* src, byte* dest, umem n)
+		{
+			for (umem i = 0; i < n; i ++)
+				dest[i] = src[i];
+		}
 	}
 }

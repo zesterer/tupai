@@ -30,17 +30,19 @@ namespace tupai
 	namespace util
 	{
 		template<typename T>
-		safeptr<T> alloc(umem n = 1)
+		safeptr<T> alloc(umem n = 1, const char* callee = __PRETTY_FUNCTION__)
 		{
-			T* ptr = (T*)mempool_alloc(sizeof(T) * n);
+			T* ptr = (T*)mempool_alloc(sizeof(T) * n, callee);
 			return safeptr<T>(ptr, ptr != nullptr);
 		}
 
 		template<typename T>
-		void dealloc(T* ptr)
+		void dealloc(T* ptr, const char* callee = __PRETTY_FUNCTION__)
 		{
-			mempool_dealloc(ptr);
+			mempool_dealloc(ptr, callee);
 		}
+
+		void mem_copy(const byte* src, byte* dest, umem n);
 
 		const umem MEM_ALIGN_BYTE = 1;
 		const umem MEM_ALIGN_WORD = 2;

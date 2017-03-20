@@ -253,7 +253,7 @@ namespace tupai
 		mempool_initiated = true;
 	}
 
-	static void* mempool_alloc_impl(umem n)
+	static void* mempool_alloc_impl(umem n, const char* callee)
 	{
 		umem block_num = mempool_size_to_mapcount(n); // How many blocks will we need?
 
@@ -269,38 +269,53 @@ namespace tupai
 			return mempool_index_to_ptr(new_region.start);
 		}
 		else
+		{
+			klog(callee, klog_level::ERROR);
 			kpanic("Mempool allocation failure: invalid region");
+		}
 	}
 
-	static void* mempool_realloc_impl(void* ptr, umem n)
+	static void* mempool_realloc_impl(void* ptr, umem n, const char* callee)
 	{
 		void* dest_ptr = mempool_alloc(n);
 
 		if (dest_ptr == nullptr)
+		{
+			klog(callee, klog_level::ERROR);
 			kpanic("Mempool reallocation failure: unsuccessful allocation");
+		}
 
 		umem src_index = mempool_ptr_to_index(ptr);
 		umem dest_index = mempool_ptr_to_index(dest_ptr);
 
 		if (src_index == MAP_INDEX_INVALID || dest_index == MAP_INDEX_INVALID)
+		{
+			klog(callee, klog_level::ERROR);
 			kpanic("Mempool reallocation failure: source or destination index invalid");
+		}
 
 		umem block_num = mempool_size_to_mapcount(n);
 
 		if (!mempool_transcribe_region(map_region(src_index, block_num), map_region(dest_index, block_num)))
+		{
+			klog(callee, klog_level::ERROR);
 			kpanic("Mempool reallocation failure: Unsuccessful region transcribe");
+		}
 
 		mempool_dealloc(ptr);
 
 		return dest_ptr;
 	}
 
-	static void mempool_dealloc_impl(void* ptr)
+	static void mempool_dealloc_impl(void* ptr, const char* callee)
 	{
 		umem map_index = mempool_ptr_to_index(ptr);
 
 		if (map_index == MAP_INDEX_INVALID)
+		{
+			klog(callee, klog_level::ERROR);
 			return kpanic("Mempool deallocation failure: Invalid index");
+		}
 
 		map_region mem_region = mempool_find_chain(map_index);
 
@@ -309,7 +324,10 @@ namespace tupai
 			mempool_flag_region(mem_region, MAP_ENTRY_NONE, MAP_ENTRY_ALL); // Flag everything to nothing
 		}
 		else
+		{
+			klog(callee, klog_level::ERROR);
 			return kpanic("Mempool deallocation failure: Invalid region");
+		}
 	}
 
 	void mempool_init(void* ptr, umem size, umem blocksize)
@@ -317,20 +335,20 @@ namespace tupai
 		mempool_init_impl(ptr, size, blocksize);
 	}
 
-	void* mempool_alloc(umem n)
+	void* mempool_alloc(umem n, const char* callee)
 	{
-		void* result = mempool_alloc_impl(n);
+		void* result = mempool_alloc_impl(n, callee);
 		return result;
 	}
 
-	void* mempool_realloc(void* ptr, umem n)
+	void* mempool_realloc(void* ptr, umem n, const char* callee)
 	{
-		void* result = mempool_realloc_impl(ptr, n);
+		void* result = mempool_realloc_impl(ptr, n, callee);
 		return result;
 	}
 
-	void mempool_dealloc(void* ptr)
+	void mempool_dealloc(void* ptr, const char* callee)
 	{
-		mempool_dealloc_impl(ptr);
+		mempool_dealloc_impl(ptr, callee);
 	}
 }

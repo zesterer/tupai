@@ -72,8 +72,8 @@ namespace tupai
 					while (pathbuff[end] != '/' && pathbuff[end] != '\0')
 						end ++;
 
-					char name_buff[node_name::MAX_LENGTH + 1];
-					util::cstr_copy(pathbuff + sizeof(char) * start, name_buff, util::min(node_name::MAX_LENGTH, end - start));
+					char name_buff[NODENAME_MAX__LENGTH + 1];
+					util::cstr_copy(pathbuff + sizeof(char) * start, name_buff, util::min(NODENAME_MAX__LENGTH, end - start));
 
 					if (util::cstr_equal(name_buff, "."))
 						cnode = cnode;

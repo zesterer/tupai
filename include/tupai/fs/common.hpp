@@ -22,48 +22,101 @@
 
 // Tupai
 #include <tupai/type.hpp>
+
 #include <tupai/util/mem.hpp>
 #include <tupai/util/cstr.hpp>
 #include <tupai/util/math.hpp>
+#include <tupai/util/string.hpp>
+#include <tupai/util/vector.hpp>
 
 namespace tupai
 {
 	namespace fs
 	{
 		static const umem PATH_MAX_LENGTH = 512;
+		static const umem NODENAME_MAX__LENGTH = 256;
 
-		struct node_name
+		struct path
 		{
-			static const umem MAX_LENGTH = 256;
+		private:
+			util::vector<util::string> pathvec;
+			bool absolute = true;
+			bool valid = true;
 
-			char* name = nullptr;
-
-			node_name() {}
-			node_name(const char* name)
+			void validate()
 			{
-				umem len = util::min(node_name::MAX_LENGTH, util::cstr_length(name));
-				this->name = util::alloc<char>(len + 1).val();
-				util::cstr_copy(name, this->name, len);
+				for (umem i = 0; i < this->pathvec.length(); i ++)
+				{
+					if (this->pathvec[i].length() <= 0)
+					{
+						this->valid = false;
+						return;
+					}
+				}
+
+				this->valid = true;
 			}
 
-			~node_name()
+			void set(util::string pathstr)
 			{
-				// TODO : Fix this
-				//if (this->name != nullptr)
-				//	util::dealloc(this->name);
+				this->pathvec = pathstr.split('/');
+				this->absolute = (pathstr[0] == '/');
+
+				this->validate();
 			}
 
-			const char* str() const
+		public:
+			path()
 			{
-				if (this->name == nullptr)
-					return "\0";
+				this->set("/");
+			}
+
+			path(util::string pathstr)
+			{
+				this->set(pathstr);
+			}
+
+			util::string& operator[](umem i)
+			{
+				return this->pathvec[i];
+			}
+
+			umem length()
+			{
+				return this->pathvec.length();
+			}
+
+			bool is_valid()
+			{
+				return this->valid;
+			}
+
+			bool is_absolute()
+			{
+				return this->absolute;
+			}
+
+			bool append(util::string pathstr)
+			{
+				path npath(pathstr);
+
+				if (npath.is_absolute() && npath.is_valid())
+					return false;
 				else
-					return this->name;
+				{
+					for (umem i = 0; i < npath.length(); i ++)
+						this->pathvec.push(npath[i]);
+
+					return true;
+				}
 			}
 
-			bool operator==(const node_name& other)
+			util::string str()
 			{
-				return util::cstr_equal(this->str(), other.str());
+				util::string nstr;
+				for (umem i = 0; i < this->pathvec.length(); i ++)
+					nstr += "/" + this->pathvec[i];
+				return nstr;
 			}
 		};
 

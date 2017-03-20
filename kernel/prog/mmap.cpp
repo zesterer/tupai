@@ -22,7 +22,10 @@
 
 #include <tupai/util/out.hpp>
 #include <tupai/util/conv.hpp>
+
 #include <tupai/util/string.hpp>
+
+#include <tupai/fs/common.hpp>
 
 #include <tupai/memory.hpp>
 
@@ -34,12 +37,9 @@ namespace tupai
 		{
 			util::print("--- Memory Map ---\n");
 
-			util::string a("Hello, ");
-			a[1] = '3';
-			util::string b("World!\n");
-			auto c = a + b;
-			c = c.substr(2, 6);
-			util::printf("util::string value = %s\n", c.raw());
+			//util::string ps = "this/is/a/test";
+			fs::path p("this/is/a/test");
+			util::printf("%s, %i\n", p.str().raw(), p.length());
 
 			umem mem_size_kb = memory_get_size_kb();
 			umem mem_frame_count = (mem_size_kb / MEMORY_FRAME_SIZE) * 1024;

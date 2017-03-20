@@ -24,11 +24,8 @@
 #include <tupai/type.hpp>
 
 #include <tupai/util/mem.hpp>
-#include <tupai/util/cstr.hpp>
 #include <tupai/util/math.hpp>
-
-// --- TESTING ---
-//#include <tupai/util/out.hpp>
+#include <tupai/util/vector.hpp>
 
 namespace tupai
 {
@@ -39,7 +36,7 @@ namespace tupai
 		{
 		private:
 			T* data = nullptr;
-			umem len;
+			umem len = 0;
 
 			void free()
 			{
@@ -58,6 +55,9 @@ namespace tupai
 				// Copy string
 				for (umem i = 0; i < other.length() + 1; i ++)
 					this->data[i] = other.raw()[i];
+
+				// Set length
+				this->len = other.length();
 			}
 
 			void set(const T* dat)
@@ -72,8 +72,9 @@ namespace tupai
 				this->data = alloc<T>(this->len + 1).val();
 
 				// Copy string
-				for (umem i = 0; i < this->len + 1; i ++)
+				for (umem i = 0; i < this->len; i ++)
 					this->data[i] = dat[i];
+				this->data[this->len] = '\0';
 			}
 
 			void set(const T* dat, umem start, umem n = ~(umem)0)
@@ -229,7 +230,7 @@ namespace tupai
 				//if (other.length() != this->len)
 				//	return false;
 
-				for (umem i = 0; i < this->len + 1; i ++)
+				for (umem i = 0; i < util::max(this->len, other.length()) + 1; i ++)
 				{
 					if (this->data[i] != other.raw()[i])
 						return false;
@@ -247,7 +248,38 @@ namespace tupai
 			{
 				return gen_string<T>(this->raw(), start, n);
 			}
+
+			operator const char*()
+			{
+				return this->data;
+			}
+
+			vector<gen_string<T>> split(T c = ' ')
+			{
+				vector<gen_string<T>> vec;
+
+				umem start = 0;
+				for (umem i = start; i < this->len + 1; i ++)
+				{
+					if (this->data[i] == c || this->data[i] == '\0')
+					{
+						vec.push(gen_string<T>(this->data, start, i - start));
+						start = i + 1;
+
+						if (this->data[i] == '\0')
+							break;
+					}
+				}
+
+				return vec;
+			}
 		};
+
+		template <typename T>
+		gen_string<T> operator+(const T* arr, gen_string<T> str)
+		{
+			return gen_string<T>(arr) + str;
+		}
 
 		typedef gen_string<char> string;
 	}

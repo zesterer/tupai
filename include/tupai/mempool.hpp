@@ -26,13 +26,13 @@
 
 namespace tupai
 {
-	const umem mempool_begin = 0x1000000 + KERNEL_VIRTUAL_OFFSET; // 16M offset + Kernel virtual offset
-	const umem mempool_size   = 0x1000000; // 16M size
+	const umem mempool_begin = 0x4000000 + KERNEL_VIRTUAL_OFFSET; // 64M offset + Kernel virtual offset
+	const umem mempool_size   = 0x4000000; // 64M size
 
 	void  mempool_init(void* ptr, umem size, umem blocksize);
-	void* mempool_alloc(umem n);
-	void* mempool_realloc(void* ptr, umem n);
-	void  mempool_dealloc(void* ptr);
+	void* mempool_alloc(umem n, const char* callee = __PRETTY_FUNCTION__);
+	void* mempool_realloc(void* ptr, umem n, const char* callee = __PRETTY_FUNCTION__);
+	void  mempool_dealloc(void* ptr, const char* callee = __PRETTY_FUNCTION__);
 }
 
 #endif

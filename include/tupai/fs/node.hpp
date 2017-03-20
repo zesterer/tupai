@@ -25,6 +25,7 @@
 #include <tupai/fs/common.hpp>
 
 #include <tupai/util/string.hpp>
+#include <tupai/util/cstr.hpp>
 
 namespace tupai
 {

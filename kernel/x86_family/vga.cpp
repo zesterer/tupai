@@ -150,7 +150,7 @@ namespace tupai
 			0xFF72B3CC, // Blue
 			0xFFC8A0D1, // Magenta
 			0xFF008080, // Cyan
-			0xFF218693, // Light Grey
+			0xFFA0A0A0, // Light Grey
 
 			0xFF5D5D5D, // Dark Grey
 			0xFFE09690, // Light Red
