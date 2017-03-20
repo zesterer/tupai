@@ -130,9 +130,19 @@ namespace tupai
 				return item;
 			}
 
-			T& operator[](umem i)
+			const T& getAt(umem i) const
 			{
 				return this->data[i];
+			}
+
+			T& getAtMut(umem i)
+			{
+				return this->data[i];
+			}
+
+			T& operator[](umem i)
+			{
+				return this->getAtMut(i);
 			}
 
 			umem length() const

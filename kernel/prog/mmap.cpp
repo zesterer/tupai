@@ -39,7 +39,7 @@ namespace tupai
 
 			//util::string ps = "this/is/a/test";
 			fs::path p("this/is/a/test");
-			util::printf("%s, %i\n", p.str().raw(), p.length());
+			util::printf("%s, %i\n", p.str().raw(), p.depth());
 
 			umem mem_size_kb = memory_get_size_kb();
 			umem mem_frame_count = (mem_size_kb / MEMORY_FRAME_SIZE) * 1024;

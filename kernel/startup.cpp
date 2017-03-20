@@ -42,7 +42,7 @@ namespace tupai
 		}
 
 		util::ansi_reset();
-		util::printf("] Initiated '%s'\n", name);
+		util::printf("] Initiated %s\n", name);
 	}
 
 	void startup_welcome()

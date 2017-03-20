@@ -76,47 +76,79 @@ namespace tupai
 				this->set(pathstr);
 			}
 
-			util::string& operator[](umem i)
+			const util::string& getAt(umem i) const
 			{
-				return this->pathvec[i];
+				return this->pathvec.getAt(i);
 			}
 
-			umem length()
+			util::string& getAtMut(umem i)
+			{
+				return this->pathvec.getAtMut(i);
+			}
+
+			util::string& operator[](umem i)
+			{
+				return this->getAtMut(i);
+			}
+
+			util::vector<util::string>& vec()
+			{
+				return this->pathvec;
+			}
+
+			umem depth() const
 			{
 				return this->pathvec.length();
 			}
 
-			bool is_valid()
+			bool is_valid() const
 			{
 				return this->valid;
 			}
 
-			bool is_absolute()
+			bool is_absolute() const
 			{
 				return this->absolute;
 			}
 
-			bool append(util::string pathstr)
+			bool append(path npath)
 			{
-				path npath(pathstr);
-
 				if (npath.is_absolute() && npath.is_valid())
 					return false;
 				else
 				{
-					for (umem i = 0; i < npath.length(); i ++)
+					for (umem i = 0; i < npath.depth(); i ++)
 						this->pathvec.push(npath[i]);
 
 					return true;
 				}
 			}
 
-			util::string str()
+			bool append(util::string pathstr)
+			{
+				return this->append(path(pathstr));
+			}
+
+			util::string str() const
 			{
 				util::string nstr;
 				for (umem i = 0; i < this->pathvec.length(); i ++)
-					nstr += "/" + this->pathvec[i];
+					nstr += "/" + this->pathvec.getAt(i);
 				return nstr;
+			}
+
+			bool equals(const path& other) const
+			{
+				if (this->pathvec.length() != other.depth())
+					return false;
+
+				for (umem i = 0; i < this->pathvec.length(); i ++)
+				{
+					if (this->pathvec.getAt(i) != other.getAt(i))
+						return false;
+				}
+
+				return true;
 			}
 		};
 

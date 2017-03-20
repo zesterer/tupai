@@ -23,6 +23,7 @@
 // Tupai
 #include <tupai/type.hpp>
 
+#include <tupai/util/char.hpp>
 #include <tupai/util/mem.hpp>
 #include <tupai/util/math.hpp>
 #include <tupai/util/vector.hpp>
@@ -204,9 +205,19 @@ namespace tupai
 				return this->add(other);
 			}
 
-			T& operator[](umem i)
+			const T& getAt(umem i) const
 			{
 				return this->data[i];
+			}
+
+			T& getAtMut(umem i)
+			{
+				return this->data[i];
+			}
+
+			T& operator[](umem i)
+			{
+				return this->getAtMut(i);
 			}
 
 			umem length() const
@@ -244,6 +255,11 @@ namespace tupai
 				return this->equals(other);
 			}
 
+			bool operator!=(const gen_string<T>& other) const
+			{
+				return !this->equals(other);
+			}
+
 			gen_string<T> substr(umem start, umem n = ~(umem)0)
 			{
 				return gen_string<T>(this->raw(), start, n);
@@ -272,6 +288,19 @@ namespace tupai
 				}
 
 				return vec;
+			}
+
+			bool operator>(const gen_string<T>& other)
+			{
+				for (umem i = 0; i < min(this->len, other.length()); i ++)
+				{
+					if (to_lowercase(this->data[i]) > to_lowercase(other.getAt(i)))
+						return true;
+					else if (to_lowercase(this->data[i]) < to_lowercase(other.getAt(i)))
+						return false;
+				}
+
+				return (this->len >= other.length());
 			}
 		};
 

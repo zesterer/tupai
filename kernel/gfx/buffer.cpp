@@ -37,7 +37,7 @@ namespace tupai
 			for (uint16 line_count = 0; line_count < height; line_count ++)
 			{
 				for (uint16 col_count = 0; col_count < width; col_count ++)
-					this->pixels[tgt_line + col_count] = other.pixels[src_line + col_count];
+					this->pixels[tgt_line + col_count] = merge_color(this->pixels[tgt_line + col_count], other.pixels[src_line + col_count]).value;//other.pixels[src_line + col_count];
 
 				tgt_line += skip;
 				src_line += other.width;

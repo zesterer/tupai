@@ -66,16 +66,46 @@ namespace tupai
 					this->child = nnode;
 				else
 				{
+					node** ptr2node = nullptr;
 					node* tmpnode = this->child;
 
 					while (tmpnode->next != nullptr)
 					{
 						if (tmpnode->name == nnode->name)
 							return 1;
-						tmpnode = tmpnode->next;
+
+						if (nnode->name > tmpnode->name)
+						{
+							ptr2node = &tmpnode->next;
+							tmpnode = tmpnode->next;
+						}
+						else
+							break;
 					}
 
-					tmpnode->next = nnode;
+					if (tmpnode == this->child)
+					{
+						node* swapnode = this->child;
+						this->child = nnode;
+						nnode->next = swapnode;
+					}
+					else
+					{
+						node* swapnode = *ptr2node;
+						*ptr2node = nnode;
+						nnode->next = swapnode;
+					}
+
+					/*
+					while (tmpnode->next != nullptr)
+					{
+						if (tmpnode->name == nnode->name)
+							return 1;
+						tmpnode = tmpnode->next;
+					}
+					*/
+
+					//tmpnode->next = nnode;
 				}
 
 				nnode->parent = this;
@@ -114,7 +144,9 @@ namespace tupai
 
 			void get_path(char* buffer)
 			{
-				if (!this->is_root())
+				if (this->is_root())
+					util::cstr_copy("/", buffer);
+				else
 				{
 					this->parent->get_path(buffer);
 
@@ -123,8 +155,28 @@ namespace tupai
 
 					util::cstr_append(this->name.raw(), buffer);
 				}
+			}
+
+			path get_path()
+			{
+				if (this->is_root())
+					return path();
 				else
-					util::cstr_copy("/", buffer);
+				{
+					path p(this->name);
+					node* cnode = this;
+
+					while (!cnode->is_root())
+					{
+						cnode = cnode->parent;
+
+						path np(cnode->name);
+						np.append(p);
+						p = np;
+					}
+
+					return p;
+				}
 			}
 		};
 	}
