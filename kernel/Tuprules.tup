@@ -1,36 +1,15 @@
-DEFINITION_FLAGS=-DIS_TUPAI_KERNEL=1 -DSYSTEM_ARCH_@(TARGET_ARCH) -DSYSTEM_ARCH=\"@(TARGET_ARCH)\" -DSYSTEM_NAME=\"$(P_NAME)\" -DSYSTEM_NAME_DECORATIVE=\"$(P_NAME_DECORATIVE)\" -DSYSTEM_VERSION_MAJOR=\"$(P_VERSION_MAJOR)\" -DSYSTEM_VERSION_MINOR=\"$(P_VERSION_MINOR)\" -DSYSTEM_VERSION_RELEASE=\"$(P_VERSION_RELEASE)\"
+# Commands
 
-# Configuration Flags
+RUSTC_EXEC=rustc
 
-ifeq (@(CFG_SHOW_LICENCE_AT_BOOT),TRUE)
-	DEFINITION_FLAGS=-DCFG_SHOW_LICENSE_AT_BOOT $(DEFINITION_FLAGS)
-endif
-ifeq (@(CFG_ENABLE_VGA_FRAMEBUFFER),TRUE)
-	DEFINITION_FLAGS=-DCFG_ENABLE_VGA_FRAMEBUFFER $(DEFINITION_FLAGS)
-endif
-ifeq (@(CFG_ENABLE_SERIAL_DEBUG),TRUE)
-	DEFINITION_FLAGS=-DCFG_ENABLE_SERIAL_DEBUG $(DEFINITION_FLAGS)
-endif
+# Flags
 
-# Compiler flags
-
-COMMON_FLAGS=-std=gnu++14 -O3 -Wall -Wextra -pedantic -fno-rtti -fpic -fno-exceptions -ffreestanding -nostdlib
-LINK_FLAGS=-ffreestanding -nostdlib -lgcc
-
-ifeq (@(CFG_ENABLE_SSP),TRUE)
-	COMMON_FLAGS=$(COMMON_FLAGS) -fstack-protector-all
-endif
-
-# Target-specific
-
-ifeq (@(TARGET_ARCH),i686)
-	OBJECTS=
-	CPP_FLAGS=$(COMMON_FLAGS) $(DEFINITION_FLAGS)
-	KERNEL_LINK_SCRIPT=i686/linker.ld
-else
 ifeq (@(TARGET_ARCH),x86_64)
-	OBJECTS=
-	CPP_FLAGS=$(COMMON_FLAGS) -mcmodel=large -mno-red-zone -mno-mmx -mno-sse -mno-sse2 -z max-page-size=4096 $(DEFINITION_FLAGS)
-	KERNEL_LINK_SCRIPT=x86_64/linker.ld
+	RUST_TARGET=x86_64-unknown-linux-gnu
 endif
-endif
+
+RUST_FLAGS=--crate-type=staticlib --target=$(RUST_TARGET)
+
+# Compilation commands
+
+!RUSTC = |> $(RUSTC_EXEC) $(RUST_FLAGS) -o %o %f |> %B.o

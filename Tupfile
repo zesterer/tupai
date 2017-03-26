@@ -1,14 +1,16 @@
 include_rules
 
-# Compile the cross-compiler toolchain
-#: |> sh build-cross.sh |> tools/cross/bin/i686-elf-g++ tools/cross/bin/i686-elf-ar tools/cross/bin/i686-elf-ld tools/cross/bin/i686-elf-objcopy
+# Linking
+LINK_FLAGS=$(LINK_FLAGS) -T arch/x86_64/linker.ld
 
-# Generate Initial Ramdisk
-: |> cd sysroot && $(TAR) -cf ../%o ** --format=ustar |> initrd.tar
-: initrd.tar |> cp %f %o |> grub/isodir/boot/%b
+OBJECTS=$(OBJECTS) arch/x86_64/*.o
+OBJECTS=$(OBJECTS) arch/x86_family/*.o
+OBJECTS=$(OBJECTS) kernel/*.o
 
-# Create kernel ISO
-: kernel/$(P_EXEC).bin grub/isodir/boot/initrd.tar |> sh create-iso.sh |> tupai.iso grub/isodir/boot/$(P_EXEC).bin grub/isodir/boot/grub/grub.cfg
+: $(OBJECTS) |> !LINKER |> tupai.bin
 
-# Generate kernel symbols
-: kernel/$(P_EXEC).bin |> objdump --wide --syms kernel/$(P_EXEC).bin | grep -P '^[0-9A-Fa-f]+\s.*\s[a-zA-Z_][a-zA-Z0-9_]+$$' | sed -r 's/^(\S+)\s+.*\s+(\S+)$$/\1 \2/' | sort > ksymbols.txt |> ksymbols.txt
+# Create ISO
+: $(P_EXEC).bin |> sh create-iso.sh |> tupai.iso grub/isodir/boot/$(P_EXEC).bin grub/isodir/boot/grub/grub.cfg
+
+# Generate symbols
+: $(P_EXEC).bin |> objdump --wide --syms $(P_EXEC).bin | grep -P '^[0-9A-Fa-f]+\s.*\s[a-zA-Z_][a-zA-Z0-9_]+$$' | sed -r 's/^(\S+)\s+.*\s+(\S+)$$/\1 \2/' | sort > ksymbols.txt |> ksymbols.txt

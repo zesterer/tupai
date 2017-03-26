@@ -1,3 +1,5 @@
+# Project definitions
+
 P_NAME=tupai
 P_NAME_DECORATIVE=Tupai
 P_VERSION_MAJOR=0
@@ -6,38 +8,38 @@ P_VERSION_RELEASE=0
 
 P_EXEC=$(P_NAME)
 
-TAR=tar
+# Target-specific
+
+ifeq (@(TARGET_ARCH),x86_64)
+	KERNEL_LINK_SCRIPT=x86_64/linker.ld
+endif
+
+
+# Commands
 
 CROSS_PREFIX=
-
-COMPILER_CPP_i686_elf=$(CROSS_PREFIX)i686-elf-g++
-ARCHIVER_i686_elf=$(CROSS_PREFIX)i686-elf-ar
-LINKER_i686_elf=$(CROSS_PREFIX)i686-elf-g++
-OBJCOPY_i686_elf=$(CROSS_PREFIX)i686-elf-objcopy
-
-COMPILER_CPP_x86_64_elf=$(CROSS_PREFIX)x86_64-elf-g++
 ARCHIVER_x86_64_elf=$(CROSS_PREFIX)x86_64-elf-ar
-LINKER_x86_64_elf=$(CROSS_PREFIX)x86_64-elf-g++
+LINKER_x86_64_elf=$(CROSS_PREFIX)x86_64-elf-ld
 OBJCOPY_x86_64_elf=$(CROSS_PREFIX)x86_64-elf-objcopy
 
-!TAR = |> $(TAR) -cvf %o %f |> %o
+# Flags
+
+LINK_FLAGS=
+
+ifeq (@(TARGET_ARCH),x86_64)
+	LINK_FLAGS=$(LINK_FLAGS) -n
+endif
+
+# Compilation commands
 
 ifndef TARGET_ARCH
 	error "Error: No target architecture specified"
 else
-	ifeq (@(TARGET_ARCH),i686)
-		!COMPILER_CPP = |> $(COMPILER_CPP_i686_elf) $(CPPFLAGS) -c $(INCLUDES) -o %o %f |> %B.o
-		!LINKER       = |> $(LINKER_i686_elf) $(CPPFLAGS) -o %o %f $(LINK_FLAGS)        |> %B.o
-		!ARCHIVER     = |> $(ARCHIVER_i686_elf) rcs %o %f                               |> %B.a
-		!OBJCOPY      = |> $(OBJCOPY_i686_elf) -O elf32-i386 -B i386 -I binary %f %o    |> %B.o
-	else
 	ifeq (@(TARGET_ARCH),x86_64)
-		!COMPILER_CPP = |> $(COMPILER_CPP_x86_64_elf) $(CPPFLAGS) -c $(INCLUDES) -o %o %f  |> %B.o
-		!LINKER       = |> $(LINKER_x86_64_elf) $(CPPFLAGS) -o %o %f $(LINK_FLAGS)         |> %B.o
-		!ARCHIVER     = |> $(ARCHIVER_x86_64_elf) rcs %o %f                                |> %B.a
-		!OBJCOPY      = |> $(OBJCOPY_x86_64_elf) -O elf64-x86_64 -B x86_64 -I binary %f %o |> %B.o
+		!LINKER   = |> $(LINKER_x86_64_elf) $(LINK_FLAGS) -o %o %f                     |> %B
+		!ARCHIVER = |> $(ARCHIVER_x86_64_elf) rcs %o %f                                |> %B.a
+		!OBJCOPY  = |> $(OBJCOPY_x86_64_elf) -O elf64-x86_64 -B x86_64 -I binary %f %o |> %B.o
 	else
 		error "Error: Invalid target architecture '@(TARGET_ARCH)' specified"
-	endif
 	endif
 endif

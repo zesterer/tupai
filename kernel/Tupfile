@@ -1,27 +1,4 @@
 include_rules
 
-INCLUDES=-I../include
-
-OBJECTS=$(OBJECTS) prog/*.o util/*.o fs/*.o gfx/*.o sys/*.o
-
-ifeq (@(TARGET_ARCH),i686)
-	OBJECTS=$(OBJECTS) x86_family/*.o i686/*.o i686/boot/*.o i686/util/*.o
-else
-ifeq (@(TARGET_ARCH),x86_64)
-	OBJECTS=$(OBJECTS) x86_family/*.o x86_64/*.o x86_64/boot/*.o x86_64/util/*.o
-endif
-endif
-
 # Compiling
-: foreach *.s *.S *.c *.cpp              |> !COMPILER_CPP $(CPP_FLAGS)       |>
-
-# Screen font
-: data/fonts/@(CFG_VGA_SCREEN_FONT) |> cp %f %o |> screenfont.psfu
-: screenfont.psfu                   |> !OBJCOPY |>
-
-# Wallpaper
-: foreach data/graphics/*.bmp |> cp %f %o |> %B.bmp
-: foreach *.bmp               |> !OBJCOPY |>
-
-# Linking
-: *.o $(OBJECTS) | $(KERNEL_LINK_SCRIPT) |> !LINKER -T $(KERNEL_LINK_SCRIPT) |> $(P_EXEC).bin
+: foreach *.rs |> !RUSTC |>

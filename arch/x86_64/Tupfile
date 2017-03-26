@@ -1,0 +1,6 @@
+include_rules
+
+# Compiling
+ifeq (@(TARGET_ARCH),x86_64)
+	: foreach *.asm |> !NASM |>
+endif
