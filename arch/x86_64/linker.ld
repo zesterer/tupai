@@ -15,4 +15,16 @@ SECTIONS
 		/* Executable code */
 		*(.text)
 	}
+
+	.data :
+	{
+		/* Data */
+		*(.data)
+	}
+
+	.bss :
+	{
+		/* BSS */
+		*(.bss)
+	}
 }
