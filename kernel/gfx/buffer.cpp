@@ -25,7 +25,7 @@ namespace tupai
 {
 	namespace gfx
 	{
-		void buffer::blit(buffer& other, uint16 tgt_x, uint16 tgt_y, uint16 w, uint16 h, uint16 src_x, uint16 src_y)
+		void buffer::blit(buffer& other, uint16 tgt_x, uint16 tgt_y, uint16 w, uint16 h, uint16 src_x, uint16 src_y, color blend_col)
 		{
 			uint32 skip = this->width;
 
@@ -37,7 +37,7 @@ namespace tupai
 			for (uint16 line_count = 0; line_count < height; line_count ++)
 			{
 				for (uint16 col_count = 0; col_count < width; col_count ++)
-					this->pixels[tgt_line + col_count] = merge_color(this->pixels[tgt_line + col_count], other.pixels[src_line + col_count]).value;//other.pixels[src_line + col_count];
+					this->pixels[tgt_line + col_count] = merge_color(color(this->pixels[tgt_line + col_count]), color(other.pixels[src_line + col_count]) * blend_col).value;//other.pixels[src_line + col_count];
 
 				tgt_line += skip;
 				src_line += other.width;
@@ -70,7 +70,7 @@ namespace tupai
 			}
 		}
 
-		buffer buffer_create(uint16 width, uint16 height)
+		buffer buffer_create(uint16 width, uint16 height, color col)
 		{
 			buffer nbuffer;
 
@@ -78,6 +78,9 @@ namespace tupai
 			nbuffer.height = height;
 
 			nbuffer.pixels = util::alloc<color>(nbuffer.width * nbuffer.height).val();
+
+			for (umem i = 0; i < nbuffer.width * nbuffer.height; i ++)
+				nbuffer.pixels[i] = col;
 
 			return nbuffer;
 		}

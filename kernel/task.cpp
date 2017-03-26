@@ -21,10 +21,6 @@
 #include <tupai/task.hpp>
 #include <tupai/generic/ringbuff.hpp>
 
-#if defined(SYSTEM_ARCH_i686)
-	#include <tupai/i686/pit.hpp>
-#endif
-
 #include <tupai/util/conv.hpp>
 
 namespace tupai
@@ -45,7 +41,6 @@ namespace tupai
 	void task_init()
 	{
 		tasks.init(64);
-		//pit_set_tick_func(task_save_state);
 	}
 
 	void task_enable_scheduler(bool enable)

@@ -17,8 +17,8 @@
 * 	along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TUPAI_GFX_BMPHEADER_HPP
-#define TUPAI_GFX_BMPHEADER_HPP
+#ifndef TUPAI_GFX_BMP_HPP
+#define TUPAI_GFX_BMP_HPP
 
 // Tupai
 #include <tupai/type.hpp>

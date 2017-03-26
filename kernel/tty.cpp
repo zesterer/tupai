@@ -26,17 +26,23 @@
 
 #if defined(SYSTEM_ARCH_i686)
 	#include <tupai/i686/serial.hpp>
+
+	#include <tupai/x86_family/vga.hpp>
 #endif
 
 namespace tupai
 {
-	safeptr<console> g_console;
+	virtualtty g_virtualtty;
+	console g_console;
 	util::mutex tty_mutex;
 
 	void tty_init()
 	{
-		// Find the global console
-		g_console = console_get_global();
+		// Set the global console's virtualtty
+		#if defined(SYSTEM_ARCH_i686)
+			virtualtty* vga_vtty = x86_family::vga_get_virtualtty().val();
+			g_console.set_virtualtty(vga_vtty);
+		#endif
 
 		tty_clear();
 	}
@@ -44,8 +50,7 @@ namespace tupai
 	void tty_write(char c)
 	{
 		// If it's an invalid pointer, don't do anything
-		if (g_console.is_valid())
-			g_console.val()->write_char(c);
+		g_console.write_char(c);
 
 		#if defined(SYSTEM_ARCH_i686)
 			#if defined(CFG_ENABLE_SERIAL_DEBUG)

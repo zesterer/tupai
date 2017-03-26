@@ -40,12 +40,12 @@ namespace tupai
 
 			color sample_at(uint16 x, uint16 y) { return this->pixels[this->width * y + x]; }
 
-			void blit(buffer& other, uint16 tgt_x = 0, uint16 tgt_y = 0, uint16 w = 0, uint16 h = 0, uint16 src_x = 0, uint16 src_y = 0);
+			void blit(buffer& other, uint16 tgt_x = 0, uint16 tgt_y = 0, uint16 w = 0, uint16 h = 0, uint16 src_x = 0, uint16 src_y = 0, color blend_col = color(255, 255, 255, 255));
 			void mirror_horizontal();
 			void mirror_vertical();
 		};
 
-		buffer buffer_create(uint16 width, uint16 height);
+		buffer buffer_create(uint16 width, uint16 height, color col = color(0, 0, 0, 0));
 	}
 }
 

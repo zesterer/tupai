@@ -332,7 +332,7 @@ namespace tupai
 
 	void mempool_init(void* ptr, umem size, umem blocksize)
 	{
-		mempool_init_impl(ptr, size, blocksize);
+		mempool_init_impl(ptr, size, 32);
 	}
 
 	void* mempool_alloc(umem n, const char* callee)

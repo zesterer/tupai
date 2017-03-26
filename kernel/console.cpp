@@ -222,26 +222,4 @@ namespace tupai
 		if (rehandle)
 			this->write_char(c);
 	}
-
-	// Global console
-	console global_console;
-	bool global_console_initiated = false;
-
-	void console_init_global()
-	{
-		#if defined(SYSTEM_ARCH_i686)
-			virtualtty* vga_vtty = x86_family::vga_get_virtualtty().val();
-			global_console.set_virtualtty(vga_vtty);
-		#endif
-
-		global_console_initiated = true;
-	}
-
-	safeptr<console> console_get_global()
-	{
-		if (!global_console_initiated)
-			return safeptr<console>(nullptr, false);
-
-		return safeptr<console>(&global_console, true);
-	}
 }

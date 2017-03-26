@@ -39,8 +39,6 @@ namespace tupai
 	volatile counter_t pit_count = 0;
 	volatile uint16    pit_rate = 0;
 
-	void (*pit_tick_func)(cpu_pushal, cpu_int) = nullptr;
-
 	// PIT interrupt handler
 	extern "C" void pit_irq_handler();
 	//asm volatile ("pit_irq_handler: \n call pit_irq_handler_main \n iret");
@@ -81,18 +79,12 @@ namespace tupai
 		port_out8(PIT_DATA_CH0_PORT, (div >> 8) & 0xFF); // MSB
 	}
 
-	void pit_set_tick_func(void (*func)(cpu_pushal, cpu_int))
-	{
-		pit_tick_func = func;
-	}
-
 	extern "C" void pit_irq_handler_main(cpu_pushal state_pushal, cpu_int state_int)
 	{
 		interrupt_ack(IDT_REMAP_OFFSET + 0x0);
 
 		pit_count += 1000000 / pit_rate;
 
-		if (pit_tick_func != nullptr)
-			pit_tick_func(state_pushal, state_int);
+		task_save_state(state_pushal, state_int);
 	}
 }

@@ -36,7 +36,6 @@
 
 // --- CONSOLE & I/O ---
 #include <tupai/tty.hpp>
-#include <tupai/console.hpp>
 #include <tupai/kshell.hpp>
 
 // --- FILESYSTEM ---
@@ -83,7 +82,7 @@ namespace tupai
 			// Serial debug
 			#if defined(CFG_ENABLE_SERIAL_DEBUG)
 				serial_init();
-				startup_print_unit_init("Serial");
+				startup_print_unit_init("serial");
 				serial_open(1);
 				startup_print_unit_init("COM1 debugging");
 			#endif
@@ -91,20 +90,20 @@ namespace tupai
 
 		// Memory management unit
 		memory_init();
-		startup_print_unit_init("Memory");
+		startup_print_unit_init("memory");
 		memory_enforce();
-		startup_print_unit_init("Memory enforcement");
+		startup_print_unit_init("memory enforcement");
 
 		#if defined(SYSTEM_ARCH_i686)
 			// Paging
 			paging_init();
-			startup_print_unit_init("Paging structure");
+			startup_print_unit_init("paging structure");
 			paging_enable();
-			startup_print_unit_init("Paging");
+			startup_print_unit_init("paging");
 
 			// Dynamic memory pool
 			mempool_init((ubyte*)mempool_begin, mempool_size, 1024); // Blocks of 1K
-			startup_print_unit_init("Dynamic memory pool");
+			startup_print_unit_init("dynamic memory pool");
 
 			// GDT
 			gdt_init();
@@ -126,47 +125,40 @@ namespace tupai
 			startup_print_unit_init("VGA driver");
 		#endif
 
-		// Console
-		console_init_global();
-		startup_print_unit_init("Kernel console");
-
 		// TTY
 		tty_init();
-		startup_print_unit_init("Kernel TTY");
+		startup_print_unit_init("TTY");
 
 		// Now we have a TTY up and ready!
 
 		#if defined(SYSTEM_ARCH_i686)
 			// PIT
 			pit_init();
-			startup_print_unit_init("PIT");
+			startup_print_unit_init("timer");
 
 			// Keyboard
 			kbd_init();
-			startup_print_unit_init("Keyboard");
+			startup_print_unit_init("keyboard");
 
 			// Serial
 			serial_init();
-			startup_print_unit_init("Serial");
+			startup_print_unit_init("serial");
 		#endif
 
 		// Syscall procedure
 		syscall_init();
-		startup_print_unit_init("Syscall routine");
+		startup_print_unit_init("syscall routine");
 
 		// Kernel multi-tasking
 		task_init();
-		startup_print_unit_init("Task scheduler");
+		startup_print_unit_init("task scheduler");
 
 		// Filesystems and I/O
 		fs::fs_init();
-		startup_print_unit_init("Filesystem");
+		startup_print_unit_init("filesystem");
 
 		// System interfaces
 		sys::random_init();
-
-		// End of boot procedure
-		klog_init("Boot procedure complete");
 
 		// Enable various systems
 		interrupt_enable();

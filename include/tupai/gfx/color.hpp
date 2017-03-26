@@ -41,10 +41,20 @@ namespace tupai
 				this->value = (r << 24) | (g << 16) | (b << 8) | a;
 			}
 
-			byte r()   { return (this->value >> 24) & 0xFF; }
-			byte g() { return (this->value >> 16) & 0xFF; }
-			byte b()  { return (this->value >>  8) & 0xFF; }
-			byte a() { return (this->value >>  0) & 0xFF; }
+			byte r() const { return (this->value >> 24) & 0xFF; }
+			byte g() const { return (this->value >> 16) & 0xFF; }
+			byte b() const { return (this->value >>  8) & 0xFF; }
+			byte a() const { return (this->value >>  0) & 0xFF; }
+
+			color operator*(const color& other)
+			{
+				return color(
+					(this->r() * other.r()) >> 8,
+					(this->g() * other.g()) >> 8,
+					(this->b() * other.b()) >> 8,
+					(this->a() * other.a()) >> 8
+				);
+			}
 		} __attribute((packed));
 
 		static __attribute__ ((unused)) color merge_color(color lo, color hi)

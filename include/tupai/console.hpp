@@ -45,9 +45,6 @@ namespace tupai
 		void set_virtualtty(virtualtty* vtty);
 		void write_char(char c);
 	};
-
-	void console_init_global();
-	safeptr<console> console_get_global();
 }
 
 #endif

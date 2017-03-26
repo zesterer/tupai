@@ -1,5 +1,5 @@
 /*
-* 	file : pit.hpp
+* 	file : psf.hpp
 *
 * 	This file is part of Tupai.
 *
@@ -17,22 +17,37 @@
 * 	along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TUPAI_I686_PIT_HPP
-#define TUPAI_I686_PIT_HPP
+#ifndef TUPAI_GFX_PSF_HPP
+#define TUPAI_GFX_PSF_HPP
 
 // Tupai
 #include <tupai/type.hpp>
+#include <tupai/gfx/buffer.hpp>
 
-#include <tupai/i686/cpu.hpp>
+#include <tupai/util/vector.hpp>
 
 namespace tupai
 {
-	extern volatile counter_t pit_count;
-	extern volatile uint16    pit_rate;
+	namespace gfx
+	{
+		struct psf
+		{
+			util::vector<buffer> charbuffs;
 
-	void pit_init();
-	void pit_enable();
-	void pit_set_rate(uint16 rate);
+			psf()
+			{
+				for (int i = 0; i < 16; i ++)
+					this->charbuffs.push(buffer_create(8, 16, color(255, 255, 255, 255)));
+			}
+
+			const buffer& get_charbuff(char c)
+			{
+				return this->charbuffs[0];
+			}
+		};
+
+		bmp bmp_from(ptr_t header);
+	}
 }
 
 #endif

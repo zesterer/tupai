@@ -32,8 +32,6 @@
 
 #include <tupai/kdebug.hpp>
 
-//#define DOUBLE_BUFFERED 0
-
 namespace tupai
 {
 	namespace x86_family
@@ -47,11 +45,6 @@ namespace tupai
 
 		static inline uint32 color_blend(uint32 lower, uint32 higher);
 		static void blit_character(uint32 c, uint16 x, uint16 y, uint32 fg_color, uint32 bg_color, uint8 alpha = 180);
-
-		struct bmp_header // TODO : this
-		{
-
-		};
 
 		struct psf2_header
 		{
@@ -181,9 +174,9 @@ namespace tupai
 
 			// Load wallpaper
 			wallpaper_buffer = gfx::bmp_from(&_binary_wallpaper_bmp_start).to_buffer();
-			gfx::buffer test_buffer = gfx::bmp_from(&_binary_test_bmp_start).to_buffer();
-			wallpaper_buffer.blit(test_buffer, 100, 300);
-			wallpaper_buffer.blit(test_buffer, 200, 400, 150, 180);
+			//gfx::buffer test_buffer = gfx::bmp_from(&_binary_test_bmp_start).to_buffer();
+			//wallpaper_buffer.blit(test_buffer, 100, 300);
+			//wallpaper_buffer.blit(test_buffer, 200, 400, 150, 180);
 
 			// If the video mode is textmode, we need to adjust the framebuffer address since we're in the higher half
 			if (config.fb_type == vga_config::framebuffer_type::RGB)
