@@ -1,5 +1,5 @@
 //
-// file : check.s
+// file : check32.s
 //
 // This file is part of Tupai.
 //
@@ -17,12 +17,12 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-.global run_checks
+.global run_checks32
 
 .section .text.boot
 	.code32
 
-	run_checks: // Run a set of initial checks on the system
+	run_checks32: // Run a set of initial checks on the system
 		call check_multiboot
 		call check_cpuid
 		call check_longmode

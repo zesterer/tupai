@@ -18,7 +18,7 @@
 //
 
 .extern panic32
-.extern run_checks
+.extern run_checks32
 .extern start64
 
 .global start
@@ -32,7 +32,7 @@
 		mov $stack_top, %esp
 
 		// Run initial checks
-		call run_checks
+		call run_checks32
 
 		// Setup paging
 		call setup_paging

@@ -2,11 +2,11 @@ include_rules
 
 # Architecture-dependent stuff
 ifeq (@(TARGET_ARCH),x86_64)
-	OBJECTS=$(OBJECTS) x86_64/*.o x86_family/*.o
+	OBJECTS=$(OBJECTS) x86_family/x86_64/*.o x86_family/*.o
 	LINK_SCRIPT=x86_family/linker.ld
 else
 ifeq (@(TARGET_ARCH),i386)
-	OBJECTS=$(OBJECTS) i386/*.o x86_family/*.o
+	OBJECTS=$(OBJECTS) x86_family/i386/*.o x86_family/*.o
 	LINK_SCRIPT=x86_family/linker.ld
 endif
 endif

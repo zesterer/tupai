@@ -1,3 +1,17 @@
+# Target checking
+
+ifndef TARGET_ARCH
+	error "Error: No target architecture specified"
+else
+ifeq (@(TARGET_ARCH),x86_64)
+else
+ifeq (@(TARGET_ARCH),i386)
+else
+	error "Error: Invalid target architecture '@(TARGET_ARCH)' specified"
+endif
+endif
+endif
+
 # Commands
 
 ifeq (@(TARGET_ARCH),x86_64)
@@ -16,45 +30,29 @@ ifeq (@(TARGET_ARCH),i386)
 endif
 endif
 
+
 # Flags
 
-CC_FLAGS=-std=gnu11 -O3 -Wall -Wextra -pedantic -fpic -fno-exceptions -ffreestanding -nostdlib
+CC_FLAGS=$(CC_FLAGS)-std=gnu11 -O3 -Wall -Wextra -pedantic -ffreestanding -nostdlib
+LINK_FLAGS=$(LINK_FLAGS) -lgcc
+OBJCOPY_FLAGS=$(OBJCOPY_FLAGS) -I binary
 
-ifeq (@(TARGET_ARCH),x86_64)
-	CC_FLAGS=$(CC_FLAGS) -mcmodel=large -mno-red-zone -mno-mmx -mno-sse -mno-sse2 -z max-page-size=4096
-else
-ifeq (@(TARGET_ARCH),i386)
-	CC_FLAGS=$(CC_FLAGS)
-endif
-endif
-
-LINK_FLAGS=$(CC_FLAGS) -lgcc
 ifeq (@(TARGET_ARCH),x86_64)
 	LINK_FLAGS=$(LINK_FLAGS)
+	CC_FLAGS=$(CC_FLAGS) -fpic -fno-exceptions -mcmodel=large -mno-red-zone -mno-mmx -mno-sse -mno-sse2 -z max-page-size=4096
+	OBJCOPY_FLAGS=$(OBJCOPY_FLAGS) -O elf32-i386 -B i386
 else
 ifeq (@(TARGET_ARCH),i386)
 	LINK_FLAGS=$(LINK_FLAGS)
+	CC_FLAGS=$(CC_FLAGS) -fpic -fno-exceptions
+	OBJCOPY_FLAGS=$(OBJCOPY_FLAGS) -O elf64-x86_64 -B x86_64
 endif
 endif
 
 # Compilation commands
 
-!ASM      = |> $(ASM_EXEC) $(CC_FLAGS) -o %o -c %f                  |> %B.o
-!CC       = |> $(CC_EXEC) $(CC_FLAGS) $(INCLUDES) -o %o -c %f       |> %B.o
-!LINKER   = |> $(LINKER) $(LINK_FLAGS) -T $(LINK_SCRIPT) -o %o %f   |> %B
-!ARCHIVER = |> $(ARCHIVER) rcs %o %f                                |> %B.a
-!OBJCOPY  = |> $(OBJCOPY) -O elf64-x86_64 -B x86_64 -I binary %f %o |> %B.o
-
-# Target checking
-
-ifndef TARGET_ARCH
-	error "Error: No target architecture specified"
-else
-ifeq (@(TARGET_ARCH),x86_64)
-else
-ifeq (@(TARGET_ARCH),i386)
-else
-	error "Error: Invalid target architecture '@(TARGET_ARCH)' specified"
-endif
-endif
-endif
+!ASM      = |> $(ASM_EXEC) $(CC_FLAGS) -o %o -c %f                            |> %B.o
+!CC       = |> $(CC_EXEC) $(CC_FLAGS) $(INCLUDES) -o %o -c %f                 |> %B.o
+!LINKER   = |> $(LINKER) $(CC_FLAGS) -T $(LINK_SCRIPT) $(LINK_FLAGS) -o %o %f |> %B
+!ARCHIVER = |> $(ARCHIVER) rcs %o %f                                          |> %B.a
+!OBJCOPY  = |> $(OBJCOPY) $(OBJCOPY_FLAGS) %f %o                              |> %B.o
