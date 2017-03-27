@@ -1,5 +1,5 @@
 //
-// file : start.s
+// file : arch.h
 //
 // This file is part of Tupai.
 //
@@ -17,27 +17,4 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-.extern kmain
-
-.global start
-
-.section .text.boot
-	// Kernel entry
-	start:
-		// Set the stack pointer
-		mov $stack_top, %esp
-
-		// Call the kernel's main entry
-		call kmain
-
-		// Hang the kernel
-		hang:
-			hlt
-			jmp hang
-
-.section .bss.boot
-	// Stack
-	.align 64
-	stack_bottom:
-		.skip 256 // Reserve a 256-byte stack
-	stack_top:
+const char* x86_64_get_arch() { return "x86_64"; }

@@ -1,5 +1,5 @@
 //
-// file : tty.c
+// file : sys.c
 //
 // This file is part of Tupai.
 //
@@ -18,38 +18,41 @@
 //
 
 // Tupai
-#include <tupai/common/tty.h>
+#include <tupai/common/sys.h>
 
-#if defined(ARCH_x86_64) || defined(ARCH_i386)
-	#include <tupai/x86_family/textmode.h>
+#if defined(ARCH_x86_64)
+	#include <tupai/x86_family/x86_64/arch.h>
+#elif defined(ARCH_i386)
+	#include <tupai/x86_family/i386/arch.h>
 #elif defined(ARCH_arm)
-	#include <tupai/arm/uart.h>
+	#include <tupai/arm/arch.h>
 #else
-	#warning "Architecture provides no TTY interface!"
+	#warning "Architecture provides no architecture information!"
 #endif
 
 // Standard
 #include <stddef.h>
 #include <stdint.h>
 
-void tty_init()
+const char* sys_get_name_decorative()
 {
-	#if defined(ARCH_x86_64) || defined(ARCH_i386)
-		textmode_init();
-		textmode_clear();
+	return P_NAME_DECORATIVE;
+}
+
+const char* sys_get_arch()
+{
+	#if defined(ARCH_x86_64)
+		return x86_64_get_arch();
+	#elif defined(ARCH_i386)
+		return i386_get_arch();
 	#elif defined(ARCH_arm)
-		uart_init();
+		return arm_get_arch();
+	#else
+		return "unknown";
 	#endif
 }
 
-void tty_print(const char* str)
+const char* sys_get_version()
 {
-	for (size_t i = 0; str[i] != '\0'; i ++)
-	{
-		#if defined(ARCH_x86_64) || defined(ARCH_i386)
-			textmode_write(str[i]);
-		#elif defined(ARCH_arm)
-			uart_write(str[i]);
-		#endif
-	}
+	return P_VERSION_DECORATIVE;
 }

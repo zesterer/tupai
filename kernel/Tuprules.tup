@@ -7,7 +7,10 @@ ifeq (@(TARGET_ARCH),x86_64)
 else
 ifeq (@(TARGET_ARCH),i386)
 else
+ifeq (@(TARGET_ARCH),arm)
+else
 	error "Error: Invalid target architecture '@(TARGET_ARCH)' specified"
+endif
 endif
 endif
 endif
@@ -27,25 +30,47 @@ ifeq (@(TARGET_ARCH),i386)
 	ARCHIVER=i686-elf-ar
 	LINKER=i686-elf-gcc
 	OBJCOPY_=i686-elf-objcopy
+else
+ifeq (@(TARGET_ARCH),arm)
+	ASM_EXEC=arm-none-eabi-gcc
+	CC_EXEC=arm-none-eabi-gcc
+	ARCHIVER=arm-none-eabi-ar
+	LINKER=arm-none-eabi-gcc
+	OBJCOPY_=arm-none-eabi-objcopy
 endif
 endif
-
+endif
 
 # Flags
 
-CC_FLAGS=$(CC_FLAGS)-std=gnu11 -O3 -Wall -Wextra -pedantic -ffreestanding -nostdlib
+CC_FLAGS=$(CC_FLAGS) -DP_NAME_DECORATIVE=\"$(P_NAME_DECORATIVE)\" -DP_VERSION_DECORATIVE=\"$(P_VERSION_DECORATIVE)\"
+CC_FLAGS=$(CC_FLAGS) -std=gnu11 -Wall -Wextra -pedantic -fpic -ffreestanding -fno-exceptions -nostdlib
 LINK_FLAGS=$(LINK_FLAGS) -lgcc
 OBJCOPY_FLAGS=$(OBJCOPY_FLAGS) -I binary
 
 ifeq (@(TARGET_ARCH),x86_64)
+	CC_FLAGS=$(CC_FLAGS) -DARCH_x86_64
+	CC_FLAGS=$(CC_FLAGS) -mcmodel=large -mno-red-zone -mno-mmx -mno-sse -mno-sse2 -z max-page-size=4096
 	LINK_FLAGS=$(LINK_FLAGS)
-	CC_FLAGS=$(CC_FLAGS) -fpic -fno-exceptions -mcmodel=large -mno-red-zone -mno-mmx -mno-sse -mno-sse2 -z max-page-size=4096
+	LINK_SCRIPT=x86_family/linker.ld
+	OBJECTS=$(OBJECTS) x86_family/*.o x86_family/x86_64/*.o
 	OBJCOPY_FLAGS=$(OBJCOPY_FLAGS) -O elf32-i386 -B i386
 else
 ifeq (@(TARGET_ARCH),i386)
+	CC_FLAGS=$(CC_FLAGS) -DARCH_i386
 	LINK_FLAGS=$(LINK_FLAGS)
-	CC_FLAGS=$(CC_FLAGS) -fpic -fno-exceptions
+	LINK_SCRIPT=x86_family/linker.ld
+	OBJECTS=$(OBJECTS) x86_family/*.o x86_family/i386/*.o
 	OBJCOPY_FLAGS=$(OBJCOPY_FLAGS) -O elf64-x86_64 -B x86_64
+else
+ifeq (@(TARGET_ARCH),arm)
+	CC_FLAGS=$(CC_FLAGS) -DARCH_arm
+	CC_FLAGS=$(CC_FLAGS) -mcpu=arm1176jzf-s
+	LINK_FLAGS=$(LINK_FLAGS)
+	LINK_SCRIPT=arm/linker.ld
+	OBJECTS=$(OBJECTS) arm/*.o
+	OBJCOPY_FLAGS=$(OBJCOPY_FLAGS) -O eabi-arm -B arm
+endif
 endif
 endif
 

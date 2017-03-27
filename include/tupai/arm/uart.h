@@ -1,5 +1,5 @@
 //
-// file : tty.c
+// file : uart.h
 //
 // This file is part of Tupai.
 //
@@ -17,39 +17,10 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-// Tupai
-#include <tupai/common/tty.h>
-
-#if defined(ARCH_x86_64) || defined(ARCH_i386)
-	#include <tupai/x86_family/textmode.h>
-#elif defined(ARCH_arm)
-	#include <tupai/arm/uart.h>
-#else
-	#warning "Architecture provides no TTY interface!"
-#endif
-
 // Standard
 #include <stddef.h>
 #include <stdint.h>
 
-void tty_init()
-{
-	#if defined(ARCH_x86_64) || defined(ARCH_i386)
-		textmode_init();
-		textmode_clear();
-	#elif defined(ARCH_arm)
-		uart_init();
-	#endif
-}
-
-void tty_print(const char* str)
-{
-	for (size_t i = 0; str[i] != '\0'; i ++)
-	{
-		#if defined(ARCH_x86_64) || defined(ARCH_i386)
-			textmode_write(str[i]);
-		#elif defined(ARCH_arm)
-			uart_write(str[i]);
-		#endif
-	}
-}
+void uart_init();
+void uart_write(uint8_t b);
+uint8_t uart_read();

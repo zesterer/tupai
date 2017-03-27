@@ -1,14 +1,38 @@
+//
+// file : main.c
+//
+// This file is part of Tupai.
+//
+// Tupai is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Tupai is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY// without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
+//
+
 // Tupai
 #include <tupai/common/tty.h>
+#include <tupai/common/sys.h>
 
-#include <stdint.h>
+void kwelcome()
+{
+	tty_print(sys_get_name_decorative());
+	tty_print(" ");
+	tty_print(sys_get_version());
+	tty_print(" on ");
+	tty_print(sys_get_arch());
+	tty_print("\nCopyright 2017, Joshua Barretto\n");
+}
 
 void kmain()
 {
-	//uint16_t* test = (uint16_t*)0xB8000;
-	//test[0] = 0x4F65;
-	//return;
-
 	tty_init();
-	tty_print("Welcome to Tupai OS\nCopyright 2017, Joshua Barretto\n");
+	kwelcome();
 }

@@ -1,5 +1,5 @@
 //
-// file : tty.c
+// file : mmio.h
 //
 // This file is part of Tupai.
 //
@@ -17,39 +17,16 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-// Tupai
-#include <tupai/common/tty.h>
-
-#if defined(ARCH_x86_64) || defined(ARCH_i386)
-	#include <tupai/x86_family/textmode.h>
-#elif defined(ARCH_arm)
-	#include <tupai/arm/uart.h>
-#else
-	#warning "Architecture provides no TTY interface!"
-#endif
-
 // Standard
 #include <stddef.h>
 #include <stdint.h>
 
-void tty_init()
+static inline void mmio_write(uint32_t reg, uint32_t data)
 {
-	#if defined(ARCH_x86_64) || defined(ARCH_i386)
-		textmode_init();
-		textmode_clear();
-	#elif defined(ARCH_arm)
-		uart_init();
-	#endif
+	*(volatile uint32_t *)reg = data;
 }
 
-void tty_print(const char* str)
+static inline uint32_t mmio_read(uint32_t reg)
 {
-	for (size_t i = 0; str[i] != '\0'; i ++)
-	{
-		#if defined(ARCH_x86_64) || defined(ARCH_i386)
-			textmode_write(str[i]);
-		#elif defined(ARCH_arm)
-			uart_write(str[i]);
-		#endif
-	}
+	return *(volatile uint32_t *)reg;
 }
