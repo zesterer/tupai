@@ -1,0 +1,9 @@
+include_rules
+
+INCLUDES=$(INCLUDES) -I../../include
+
+# Compiling
+ifeq (@(TARGET_ARCH),x86_64)
+	: foreach *.s |> !ASM |>
+	: foreach *.c |> !CC |>
+endif

@@ -7,39 +7,3 @@ P_VERSION_MINOR=6
 P_VERSION_RELEASE=0
 
 P_EXEC=$(P_NAME)
-
-# Target-specific
-
-ifeq (@(TARGET_ARCH),x86_64)
-	KERNEL_LINK_SCRIPT=x86_64/linker.ld
-endif
-
-
-# Commands
-
-CROSS_PREFIX=
-ARCHIVER_x86_64_elf=$(CROSS_PREFIX)x86_64-elf-ar
-LINKER_x86_64_elf=$(CROSS_PREFIX)x86_64-elf-ld
-OBJCOPY_x86_64_elf=$(CROSS_PREFIX)x86_64-elf-objcopy
-
-# Flags
-
-LINK_FLAGS=
-
-ifeq (@(TARGET_ARCH),x86_64)
-	LINK_FLAGS=$(LINK_FLAGS) -n
-endif
-
-# Compilation commands
-
-ifndef TARGET_ARCH
-	error "Error: No target architecture specified"
-else
-	ifeq (@(TARGET_ARCH),x86_64)
-		!LINKER   = |> $(LINKER_x86_64_elf) $(LINK_FLAGS) -o %o %f                     |> %B
-		!ARCHIVER = |> $(ARCHIVER_x86_64_elf) rcs %o %f                                |> %B.a
-		!OBJCOPY  = |> $(OBJCOPY_x86_64_elf) -O elf64-x86_64 -B x86_64 -I binary %f %o |> %B.o
-	else
-		error "Error: Invalid target architecture '@(TARGET_ARCH)' specified"
-	endif
-endif

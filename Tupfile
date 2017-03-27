@@ -1,16 +1,11 @@
 include_rules
 
-# Linking
-LINK_FLAGS=$(LINK_FLAGS) -T arch/x86_64/linker.ld
-
-OBJECTS=$(OBJECTS) arch/x86_64/*.o
-OBJECTS=$(OBJECTS) arch/x86_family/*.o
-OBJECTS=$(OBJECTS) kernel/*.o
-
-: $(OBJECTS) |> !LINKER |> tupai.bin
+# Move everything into the right place
+: kernel/$(P_EXEC)-kernel.bin |> cp %f %o |> grub/isodir/boot/%B.bin
+: grub/grub.cfg               |> cp %f %o |> grub/isodir/boot/grub/grub.cfg
 
 # Create ISO
-: $(P_EXEC).bin |> sh create-iso.sh |> tupai.iso grub/isodir/boot/$(P_EXEC).bin grub/isodir/boot/grub/grub.cfg
+: grub/isodir/boot/$(P_EXEC)-kernel.bin grub/isodir/boot/grub/grub.cfg |> sh create-iso.sh |> tupai.iso
 
 # Generate symbols
-: $(P_EXEC).bin |> objdump --wide --syms $(P_EXEC).bin | grep -P '^[0-9A-Fa-f]+\s.*\s[a-zA-Z_][a-zA-Z0-9_]+$$' | sed -r 's/^(\S+)\s+.*\s+(\S+)$$/\1 \2/' | sort > ksymbols.txt |> ksymbols.txt
+: kernel/$(P_EXEC)-kernel.bin |> objdump --wide --syms %f | grep -P '^[0-9A-Fa-f]+\s.*\s[a-zA-Z_][a-zA-Z0-9_]+$$' | sed -r 's/^(\S+)\s+.*\s+(\S+)$$/\1 \2/' | sort > ksymbols.txt |> ksymbols.txt

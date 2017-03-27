@@ -1,15 +1,60 @@
 # Commands
 
-RUSTC_EXEC=rustc
+ifeq (@(TARGET_ARCH),x86_64)
+	ASM_EXEC=x86_64-elf-gcc
+	CC_EXEC=x86_64-elf-gcc
+	ARCHIVER=x86_64-elf-ar
+	LINKER=x86_64-elf-gcc
+	OBJCOPY=x86_64-elf-objcopy
+else
+ifeq (@(TARGET_ARCH),i386)
+	ASM_EXEC=i686-elf-gcc
+	CC_EXEC=i686-elf-gcc
+	ARCHIVER=i686-elf-ar
+	LINKER=i686-elf-gcc
+	OBJCOPY_=i686-elf-objcopy
+endif
+endif
 
 # Flags
 
+CC_FLAGS=-std=gnu11 -O3 -Wall -Wextra -pedantic -fpic -fno-exceptions -ffreestanding -nostdlib
+
 ifeq (@(TARGET_ARCH),x86_64)
-	RUST_TARGET=x86_64-unknown-linux-gnu
+	CC_FLAGS=$(CC_FLAGS) -mcmodel=large -mno-red-zone -mno-mmx -mno-sse -mno-sse2 -z max-page-size=4096
+else
+ifeq (@(TARGET_ARCH),i386)
+	CC_FLAGS=$(CC_FLAGS)
+endif
 endif
 
-RUST_FLAGS=--crate-type=staticlib --target=$(RUST_TARGET)
+LINK_FLAGS=$(CC_FLAGS) -lgcc
+ifeq (@(TARGET_ARCH),x86_64)
+	LINK_FLAGS=$(LINK_FLAGS)
+else
+ifeq (@(TARGET_ARCH),i386)
+	LINK_FLAGS=$(LINK_FLAGS)
+endif
+endif
 
 # Compilation commands
 
-!RUSTC = |> $(RUSTC_EXEC) $(RUST_FLAGS) -o %o %f |> %B.o
+!ASM      = |> $(ASM_EXEC) $(CC_FLAGS) -o %o -c %f                  |> %B.o
+!CC       = |> $(CC_EXEC) $(CC_FLAGS) $(INCLUDES) -o %o -c %f       |> %B.o
+!LINKER   = |> $(LINKER) $(LINK_FLAGS) -T $(LINK_SCRIPT) -o %o %f   |> %B
+!ARCHIVER = |> $(ARCHIVER) rcs %o %f                                |> %B.a
+!OBJCOPY  = |> $(OBJCOPY) -O elf64-x86_64 -B x86_64 -I binary %f %o |> %B.o
+
+# Target checking
+
+ifndef TARGET_ARCH
+	error "Error: No target architecture specified"
+else
+ifeq (@(TARGET_ARCH),x86_64)
+else
+ifeq (@(TARGET_ARCH),i386)
+else
+	error "Error: Invalid target architecture '@(TARGET_ARCH)' specified"
+endif
+endif
+endif
