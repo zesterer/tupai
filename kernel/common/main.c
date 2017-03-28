@@ -27,6 +27,8 @@ void kwelcome()
 	tty_print(" ");
 	tty_print(sys_get_version());
 	tty_print(" on ");
+	tty_print(sys_get_family());
+	tty_print("/");
 	tty_print(sys_get_arch());
 	tty_print("\nCopyright 2017, Joshua Barretto\n");
 }

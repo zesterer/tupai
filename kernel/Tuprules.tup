@@ -1,23 +1,6 @@
-# Target checking
-
-ifndef TARGET_ARCH
-	error "Error: No target architecture specified"
-else
-ifeq (@(TARGET_ARCH),x86_64)
-else
-ifeq (@(TARGET_ARCH),i386)
-else
-ifeq (@(TARGET_ARCH),arm)
-else
-	error "Error: Invalid target architecture '@(TARGET_ARCH)' specified"
-endif
-endif
-endif
-endif
-
 # Commands
 
-ifeq (@(TARGET_ARCH),x86_64)
+ifeq (@(TARGET_ARCH),amd64)
 	ASM_EXEC=x86_64-elf-gcc
 	CC_EXEC=x86_64-elf-gcc
 	ARCHIVER=x86_64-elf-ar
@@ -29,14 +12,14 @@ ifeq (@(TARGET_ARCH),i386)
 	CC_EXEC=i686-elf-gcc
 	ARCHIVER=i686-elf-ar
 	LINKER=i686-elf-gcc
-	OBJCOPY_=i686-elf-objcopy
+	OBJCOPY=i686-elf-objcopy
 else
-ifeq (@(TARGET_ARCH),arm)
+ifeq (@(TARGET_ARCH),rpi2)
 	ASM_EXEC=arm-none-eabi-gcc
 	CC_EXEC=arm-none-eabi-gcc
 	ARCHIVER=arm-none-eabi-ar
 	LINKER=arm-none-eabi-gcc
-	OBJCOPY_=arm-none-eabi-objcopy
+	OBJCOPY=arm-none-eabi-objcopy
 endif
 endif
 endif
@@ -44,32 +27,38 @@ endif
 # Flags
 
 CC_FLAGS=$(CC_FLAGS) -DP_NAME_DECORATIVE=\"$(P_NAME_DECORATIVE)\" -DP_VERSION_DECORATIVE=\"$(P_VERSION_DECORATIVE)\"
-CC_FLAGS=$(CC_FLAGS) -std=gnu11 -Wall -Wextra -pedantic -fpic -ffreestanding -fno-exceptions -nostdlib
-LINK_FLAGS=$(LINK_FLAGS) -lgcc
-OBJCOPY_FLAGS=$(OBJCOPY_FLAGS) -I binary
+CC_FLAGS=$(CC_FLAGS) -DARCH_FAMILY_$(TARGET_FAMILY)
+CC_FLAGS=$(CC_FLAGS) -std=gnu11 -Wall -Wextra -pedantic -O3 -fpic -ffreestanding -fno-exceptions -nostdlib -g
 
-ifeq (@(TARGET_ARCH),x86_64)
-	CC_FLAGS=$(CC_FLAGS) -DARCH_x86_64
+OBJECTS=$(OBJECTS) common/*.o
+
+LINK_FLAGS=$(LINK_FLAGS) -lgcc
+
+ifeq (@(TARGET_ARCH),amd64)
+	CC_FLAGS=$(CC_FLAGS) -DARCH_amd64
 	CC_FLAGS=$(CC_FLAGS) -mcmodel=large -mno-red-zone -mno-mmx -mno-sse -mno-sse2 -z max-page-size=4096
+
+	OBJECTS=$(OBJECTS) x86/*.o x86/amd64/*.o
+
 	LINK_FLAGS=$(LINK_FLAGS)
-	LINK_SCRIPT=x86_family/linker.ld
-	OBJECTS=$(OBJECTS) x86_family/*.o x86_family/x86_64/*.o
-	OBJCOPY_FLAGS=$(OBJCOPY_FLAGS) -O elf32-i386 -B i386
+	LINK_SCRIPT=x86/linker.ld
 else
 ifeq (@(TARGET_ARCH),i386)
 	CC_FLAGS=$(CC_FLAGS) -DARCH_i386
+
+	OBJECTS=$(OBJECTS) x86/*.o x86/i386/*.o
+
 	LINK_FLAGS=$(LINK_FLAGS)
-	LINK_SCRIPT=x86_family/linker.ld
-	OBJECTS=$(OBJECTS) x86_family/*.o x86_family/i386/*.o
-	OBJCOPY_FLAGS=$(OBJCOPY_FLAGS) -O elf64-x86_64 -B x86_64
+	LINK_SCRIPT=x86/linker.ld
 else
-ifeq (@(TARGET_ARCH),arm)
-	CC_FLAGS=$(CC_FLAGS) -DARCH_arm
+ifeq (@(TARGET_ARCH),rpi2)
+	CC_FLAGS=$(CC_FLAGS) -DARCH_rpi2
 	CC_FLAGS=$(CC_FLAGS) -mcpu=arm1176jzf-s
+
+	OBJECTS=$(OBJECTS) arm/*.o arm/rpi2/*.o
+
 	LINK_FLAGS=$(LINK_FLAGS)
-	LINK_SCRIPT=arm/linker.ld
-	OBJECTS=$(OBJECTS) arm/*.o
-	OBJCOPY_FLAGS=$(OBJCOPY_FLAGS) -O eabi-arm -B arm
+	LINK_SCRIPT=arm/rpi2/linker.ld
 endif
 endif
 endif

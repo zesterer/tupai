@@ -20,14 +20,22 @@
 // Tupai
 #include <tupai/common/sys.h>
 
-#if defined(ARCH_x86_64)
-	#include <tupai/x86_family/x86_64/arch.h>
+#if defined(ARCH_amd64)
+	#include <tupai/x86/amd64/arch.h>
 #elif defined(ARCH_i386)
-	#include <tupai/x86_family/i386/arch.h>
-#elif defined(ARCH_arm)
-	#include <tupai/arm/arch.h>
+	#include <tupai/x86/i386/arch.h>
+#elif defined(ARCH_rpi2)
+	#include <tupai/arm/rpi2/arch.h>
 #else
 	#warning "Architecture provides no architecture information!"
+#endif
+
+#if defined(ARCH_FAMILY_x86)
+	#include <tupai/x86/arch.h>
+#elif defined(ARCH_FAMILY_arm)
+	#include <tupai/arm/arch.h>
+#else
+	#warning "Architecture provides no family information!"
 #endif
 
 // Standard
@@ -41,12 +49,23 @@ const char* sys_get_name_decorative()
 
 const char* sys_get_arch()
 {
-	#if defined(ARCH_x86_64)
-		return x86_64_get_arch();
+	#if defined(ARCH_amd64)
+		return amd64_get_arch();
 	#elif defined(ARCH_i386)
 		return i386_get_arch();
-	#elif defined(ARCH_arm)
-		return arm_get_arch();
+	#elif defined(ARCH_rpi2)
+		return rpi2_get_arch();
+	#else
+		return "unknown";
+	#endif
+}
+
+const char* sys_get_family()
+{
+	#if defined(ARCH_FAMILY_x86)
+		return x86_get_family();
+	#elif defined(ARCH_FAMILY_arm)
+		return arm_get_family();
 	#else
 		return "unknown";
 	#endif

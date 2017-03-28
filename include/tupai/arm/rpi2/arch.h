@@ -1,5 +1,5 @@
 //
-// file : textmode.h
+// file : arch.h
 //
 // This file is part of Tupai.
 //
@@ -17,8 +17,9 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-void textmode_init();
-void textmode_write(char c);
-void textmode_cursor(int col, int row);
-void textmode_scroll(int n);
-void textmode_clear();
+#ifndef TUPAI_ARM_RPI2_ARCH_H
+#define TUPAI_ARM_RPI2_ARCH_H
+
+static inline const char* rpi2_get_arch() { return "rpi2"; }
+
+#endif

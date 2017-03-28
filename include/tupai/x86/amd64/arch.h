@@ -17,4 +17,9 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-const char* x86_64_get_arch() { return "x86_64"; }
+#ifndef TUPAI_X86_AMD64_ARCH_H
+#define TUPAI_X86_AMD64_ARCH_H
+
+static inline const char* amd64_get_arch() { return "amd64"; }
+
+#endif

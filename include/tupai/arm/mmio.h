@@ -17,6 +17,9 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+#ifndef TUPAI_ARM_MMIO_H
+#define TUPAI_ARM_MMIO_H
+
 // Standard
 #include <stddef.h>
 #include <stdint.h>
@@ -30,3 +33,5 @@ static inline uint32_t mmio_read(uint32_t reg)
 {
 	return *(volatile uint32_t *)reg;
 }
+
+#endif

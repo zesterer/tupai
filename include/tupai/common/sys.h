@@ -17,6 +17,12 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+#ifndef TUPAI_COMMON_SYS_H
+#define TUPAI_COMMON_SYS_H
+
 const char* sys_get_name_decorative();
 const char* sys_get_arch();
+const char* sys_get_family();
 const char* sys_get_version();
+
+#endif

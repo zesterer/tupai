@@ -3,7 +3,7 @@ include_rules
 INCLUDES=$(INCLUDES) -I../../include
 
 # Compiling
-ifeq ($(TARGET_FAMILY),arm)
+ifeq (@(TARGET_ARCH),rpi2)
 	: foreach *.s |> !ASM |>
 	: foreach *.c |> !CC |>
 endif

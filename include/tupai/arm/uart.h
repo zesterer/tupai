@@ -17,6 +17,9 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+#ifndef TUPAI_ARM_UART_H
+#define TUPAI_ARM_UART_H
+
 // Standard
 #include <stddef.h>
 #include <stdint.h>
@@ -24,3 +27,5 @@
 void uart_init();
 void uart_write(uint8_t b);
 uint8_t uart_read();
+
+#endif

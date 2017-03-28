@@ -17,4 +17,9 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-const char* arm_get_arch() { return "arm"; }
+#ifndef TUPAI_ARM_ARCH_H
+#define TUPAI_ARM_ARCH_H
+
+static inline const char* arm_get_family() { return "arm"; }
+
+#endif

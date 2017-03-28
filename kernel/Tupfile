@@ -1,7 +1,9 @@
 include_rules
 
-# Tupai
-OBJECTS=$(OBJECTS) common/*.o
-
 # Linking
-: $(OBJECTS) |> !LINKER |> $(P_EXEC)-kernel.bin
+: $(OBJECTS) |> !LINKER |> $(P_EXEC)-kernel.elf
+
+# Objcopy to flat binary
+ifeq ($(TARGET_FAMILY),arm)
+	: $(P_EXEC)-kernel.elf |> !OBJCOPY -O binary |> %B.bin
+endif

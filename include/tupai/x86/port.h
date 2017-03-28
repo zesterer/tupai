@@ -17,6 +17,9 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+#ifndef TUPAI_X86_PORT_H
+#define TUPAI_X86_PORT_H
+
 // Standard
 #include <stddef.h>
 #include <stdint.h>
@@ -56,3 +59,5 @@ static inline uint32_t inl(uint16_t port)
 	asm volatile ("inl %1, %0" : "=a"(value) : "Nd"(port));
 	return value;
 }
+
+#endif

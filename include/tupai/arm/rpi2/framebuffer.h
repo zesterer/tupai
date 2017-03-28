@@ -1,5 +1,5 @@
 //
-// file : arch.h
+// file : framebuffer.h
 //
 // This file is part of Tupai.
 //
@@ -17,4 +17,7 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-const char* i386_get_arch() { return "i386"; }
+#ifndef TUPAI_ARM_RPI2_FRAMEBUFFER_H
+#define TUPAI_ARM_RPI2_FRAMEBUFFER_H
+
+#endif

@@ -20,9 +20,9 @@
 // Tupai
 #include <tupai/common/tty.h>
 
-#if defined(ARCH_x86_64) || defined(ARCH_i386)
-	#include <tupai/x86_family/textmode.h>
-#elif defined(ARCH_arm)
+#if defined(ARCH_FAMILY_x86)
+	#include <tupai/x86/textmode.h>
+#elif defined(ARCH_FAMILY_arm)
 	#include <tupai/arm/uart.h>
 #else
 	#warning "Architecture provides no TTY interface!"
@@ -34,10 +34,10 @@
 
 void tty_init()
 {
-	#if defined(ARCH_x86_64) || defined(ARCH_i386)
+	#if defined(ARCH_FAMILY_x86)
 		textmode_init();
 		textmode_clear();
-	#elif defined(ARCH_arm)
+	#elif defined(ARCH_FAMILY_arm)
 		uart_init();
 	#endif
 }
@@ -46,9 +46,9 @@ void tty_print(const char* str)
 {
 	for (size_t i = 0; str[i] != '\0'; i ++)
 	{
-		#if defined(ARCH_x86_64) || defined(ARCH_i386)
+		#if defined(ARCH_FAMILY_x86)
 			textmode_write(str[i]);
-		#elif defined(ARCH_arm)
+		#elif defined(ARCH_FAMILY_arm)
 			uart_write(str[i]);
 		#endif
 	}

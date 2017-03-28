@@ -28,8 +28,10 @@
 
 enum
 {
+	PERIPHERAL_BASE = 0x3F000000,
+
 	// The GPIO registers base address.
-	GPIO_BASE = 0x20200000, // 0x3F200000 for raspi2 and raspi3
+	GPIO_BASE = PERIPHERAL_BASE + 0x200000,
 
 	// The offsets for reach register.
 
@@ -40,7 +42,7 @@ enum
 	GPPUDCLK0 = (GPIO_BASE + 0x98),
 
 	// The base address for UART.
-	UART0_BASE = 0x20201000, // 0x3F201000 for raspi 2 and raspi3
+	UART0_BASE = GPIO_BASE + 0x1000,
 
 	// The offsets for reach register for the UART.
 	UART0_DR     = (UART0_BASE + 0x00),
@@ -101,9 +103,6 @@ void uart_init()
 
 	// Enable UART0, receive & transfer part of UART
 	mmio_write(UART0_CR, (1 << 0) | (1 << 8) | (1 << 9));
-
-	//while (1)
-	//	uart_write(uart_read());
 }
 
 void uart_write(uint8_t b)

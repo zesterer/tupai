@@ -1,5 +1,5 @@
 //
-// file : tty.h
+// file : textmode.h
 //
 // This file is part of Tupai.
 //
@@ -17,10 +17,13 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_COMMON_TTY_H
-#define TUPAI_COMMON_TTY_H
+#ifndef TUPAI_X86_TEXTMODE_H
+#define TUPAI_X86_TEXTMODE_H
 
-void tty_init();
-void tty_print(const char* str);
+void textmode_init();
+void textmode_write(char c);
+void textmode_cursor(int col, int row);
+void textmode_scroll(int n);
+void textmode_clear();
 
 #endif

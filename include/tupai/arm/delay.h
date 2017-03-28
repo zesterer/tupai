@@ -17,6 +17,9 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+#ifndef TUPAI_ARM_DELAY_H
+#define TUPAI_ARM_DELAY_H
+
 // Standard
 #include <stddef.h>
 #include <stdint.h>
@@ -26,3 +29,5 @@ static inline void delay(int32_t count)
 {
 	asm volatile ("__delay_%=: subs %[count], %[count], #1; bne __delay_%=\n" : "=r"(count): [count]"0"(count) : "cc");
 }
+
+#endif

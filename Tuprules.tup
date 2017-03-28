@@ -2,9 +2,29 @@
 
 P_NAME=tupai
 P_NAME_DECORATIVE=Tupai
+P_EXEC=$(P_NAME)
 P_VERSION_MAJOR=0
 P_VERSION_MINOR=6
 P_VERSION_RELEASE=0
 P_VERSION_DECORATIVE=$(P_VERSION_MAJOR).$(P_VERSION_MINOR).$(P_VERSION_RELEASE)
 
-P_EXEC=$(P_NAME)
+# Target checking
+
+TARGET_FAMILY=none
+ifndef TARGET_ARCH
+	error "Error: No target architecture specified"
+else
+ifeq (@(TARGET_ARCH),amd64)
+	TARGET_FAMILY=x86
+else
+ifeq (@(TARGET_ARCH),i386)
+	TARGET_FAMILY=x86
+else
+ifeq (@(TARGET_ARCH),rpi2)
+	TARGET_FAMILY=arm
+else
+	error "Error: Invalid target architecture '@(TARGET_ARCH)' specified"
+endif
+endif
+endif
+endif

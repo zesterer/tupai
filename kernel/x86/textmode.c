@@ -18,8 +18,8 @@
 //
 
 // Tupai
-#include <tupai/x86_family/textmode.h>
-#include <tupai/x86_family/port.h>
+#include <tupai/x86/textmode.h>
+#include <tupai/x86/port.h>
 
 // Standard
 #include <stddef.h>

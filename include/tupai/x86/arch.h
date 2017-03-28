@@ -1,5 +1,5 @@
 //
-// file : tty.h
+// file : arch.h
 //
 // This file is part of Tupai.
 //
@@ -17,10 +17,9 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_COMMON_TTY_H
-#define TUPAI_COMMON_TTY_H
+#ifndef TUPAI_X86_ARCH_H
+#define TUPAI_X86_ARCH_H
 
-void tty_init();
-void tty_print(const char* str);
+static inline const char* x86_get_family() { return "x86"; }
 
 #endif

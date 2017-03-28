@@ -2,17 +2,12 @@ ENTRY(start)
 
 SECTIONS
 {
+	/* Start at LOADER_ADDR */
 	. = 0x8000;
-
-	/* Place the Multiboot header at the beginning */
-	.rodata.multiboot BLOCK(4K) : ALIGN(4K)
-	{
-		*(.rodata.multiboot)
-	}
 
 	.text.boot BLOCK(4K) : ALIGN(4K)
 	{
-		*(.text.boot)
+		KEEP(*(.text.boot))
 	}
 
 	.data.boot BLOCK(4K) : ALIGN(4K)
@@ -35,11 +30,12 @@ SECTIONS
 		*(.data)
 	}
 
-	__bss_start = .;
 	.bss BLOCK(4K) : ALIGN(4K)
 	{
 		*(COMMON)
+		__bss_start = .;
+		bss = .;
 		*(.bss)
+		__bss_end = .;
 	}
-	__bss_end = .;
 }
