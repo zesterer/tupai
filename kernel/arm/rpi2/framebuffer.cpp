@@ -1,5 +1,5 @@
 //
-// file : start64.s
+// file : framebuffer.cpp
 //
 // This file is part of Tupai.
 //
@@ -17,27 +17,12 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-.extern kmain
+// Tupai
+#include <tupai/arm/rpi2/framebuffer.hpp>
 
-.global start64
+framebuffer_t g_framebuffer;
 
-.section .text.boot
-	.code64
-
-	// Kernel entry
-	start64:
-		// Clear the data segment registers to the null segment descriptor
-		mov $0, %ax
-		mov %ax, %ss
-		mov %ax, %ds
-		mov %ax, %es
-		mov %ax, %fs
-		mov %ax, %gs
-
-		// Call the kernel's main entry
-		call amd64_kmain
-
-	// Hang the kernel
-	hang:
-		hlt
-		jmp hang
+void rpi2_framebuffer_init(size_t width, size_t height)
+{
+	g_framebuffer.valid = 0;
+}

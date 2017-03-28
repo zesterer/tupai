@@ -1,5 +1,5 @@
 //
-// file : mmio.h
+// file : init.cpp
 //
 // This file is part of Tupai.
 //
@@ -17,21 +17,26 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_ARM_MMIO_H
-#define TUPAI_ARM_MMIO_H
+// Tupai
+#include <tupai/arm/rpi2/init.hpp>
+#include <tupai/arm/mmio.hpp>
 
-// Standard
-#include <stddef.h>
-#include <stdint.h>
+const size_t CORE_OFFSET = 0x4000008C;
+const int    CORE_COUNT = 4;
 
-static inline void mmio_write(uint32_t reg, uint32_t data)
+void core_hang();
+
+int rpi2_init()
 {
-	*(volatile uint32_t *)reg = data;
+	// Wake up other cores and hang them to prevent slowdown
+	for (int i = 1; i < CORE_COUNT; i ++)
+		mmio_write(CORE_OFFSET * 0x10 * i, (size_t)&core_hang);
+
+	return 0;
 }
 
-static inline uint32_t mmio_read(uint32_t reg)
+void core_hang()
 {
-	return *(volatile uint32_t *)reg;
+	while (1) // Hang forever
+		asm volatile ("wfe");
 }
-
-#endif

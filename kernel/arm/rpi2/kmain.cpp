@@ -1,5 +1,5 @@
 //
-// file : start64.s
+// file : kmain.cpp
 //
 // This file is part of Tupai.
 //
@@ -17,27 +17,22 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-.extern kmain
+// Tupai
+#include <tupai/common/kmain.hpp>
 
-.global start64
+// Standard
+#include <stddef.h>
+#include <stdint.h>
 
-.section .text.boot
-	.code64
+namespace tupai
+{
+	extern "C" void rpi2_kmain(uint32_t r0, uint32_t r1, uint32_t atags)
+	{
+		// Declare as unused
+		(void) r0;
+		(void) r1;
+		(void) atags;
 
-	// Kernel entry
-	start64:
-		// Clear the data segment registers to the null segment descriptor
-		mov $0, %ax
-		mov %ax, %ss
-		mov %ax, %ds
-		mov %ax, %es
-		mov %ax, %fs
-		mov %ax, %gs
-
-		// Call the kernel's main entry
-		call amd64_kmain
-
-	// Hang the kernel
-	hang:
-		hlt
-		jmp hang
+		kmain();
+	}
+}

@@ -1,5 +1,5 @@
 //
-// file : start64.s
+// file : delay.hpp
 //
 // This file is part of Tupai.
 //
@@ -17,27 +17,17 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-.extern kmain
+#ifndef TUPAI_ARM_DELAY_HPP
+#define TUPAI_ARM_DELAY_HPP
 
-.global start64
+// Standard
+#include <stddef.h>
+#include <stdint.h>
 
-.section .text.boot
-	.code64
+// Loop <delay> times in a way that the compiler won't optimize away
+static inline void delay(int32_t count)
+{
+	asm volatile ("__delay_%=: subs %[count], %[count], #1; bne __delay_%=\n" : "=r"(count): [count]"0"(count) : "cc");
+}
 
-	// Kernel entry
-	start64:
-		// Clear the data segment registers to the null segment descriptor
-		mov $0, %ax
-		mov %ax, %ss
-		mov %ax, %ds
-		mov %ax, %es
-		mov %ax, %fs
-		mov %ax, %gs
-
-		// Call the kernel's main entry
-		call amd64_kmain
-
-	// Hang the kernel
-	hang:
-		hlt
-		jmp hang
+#endif

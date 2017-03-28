@@ -1,5 +1,5 @@
 //
-// file : textmode.c
+// file : textmode.cpp
 //
 // This file is part of Tupai.
 //
@@ -18,8 +18,8 @@
 //
 
 // Tupai
-#include <tupai/x86/textmode.h>
-#include <tupai/x86/port.h>
+#include <tupai/x86/textmode.hpp>
+#include <tupai/x86/port.hpp>
 
 // Standard
 #include <stddef.h>

@@ -1,5 +1,5 @@
 //
-// file : main.c
+// file : str.h
 //
 // This file is part of Tupai.
 //
@@ -17,24 +17,26 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-// Tupai
-#include <tupai/common/tty.h>
-#include <tupai/common/sys.h>
+#ifndef TUPAI_UTIL_STR_H
+#define TUPAI_UTIL_STR_H
 
-void kwelcome()
+// Standard
+#include <stddef.h>
+#include <stdint.h>
+
+static inline size_t str_len(const char* str)
 {
-	tty_print(sys_get_name_decorative());
-	tty_print(" ");
-	tty_print(sys_get_version());
-	tty_print(" on ");
-	tty_print(sys_get_family());
-	tty_print("/");
-	tty_print(sys_get_arch());
-	tty_print("\nCopyright 2017, Joshua Barretto\n");
+	size_t i;
+	for (i = 0; str[i] != '\0'; i ++);
+	return i;
 }
 
-void kmain()
+static inline void str_cpy(const char* src, char* dest)
 {
-	tty_init();
-	kwelcome();
+	size_t i;
+	for (i = 0; src[i] != '\0'; i ++)
+		dest[i] = src[i];
+	dest[i] = '\0';
 }
+
+#endif

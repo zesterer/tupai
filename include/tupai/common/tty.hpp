@@ -1,5 +1,5 @@
 //
-// file : start64.s
+// file : tty.hpp
 //
 // This file is part of Tupai.
 //
@@ -17,27 +17,13 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-.extern kmain
+#ifndef TUPAI_COMMON_TTY_HPP
+#define TUPAI_COMMON_TTY_HPP
 
-.global start64
+namespace tupai
+{
+	void tty_init();
+	void tty_print(const char* str);
+}
 
-.section .text.boot
-	.code64
-
-	// Kernel entry
-	start64:
-		// Clear the data segment registers to the null segment descriptor
-		mov $0, %ax
-		mov %ax, %ss
-		mov %ax, %ds
-		mov %ax, %es
-		mov %ax, %fs
-		mov %ax, %gs
-
-		// Call the kernel's main entry
-		call amd64_kmain
-
-	// Hang the kernel
-	hang:
-		hlt
-		jmp hang
+#endif

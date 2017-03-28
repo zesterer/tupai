@@ -1,5 +1,5 @@
 //
-// file : port.h
+// file : port.hpp
 //
 // This file is part of Tupai.
 //
@@ -17,8 +17,8 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_X86_PORT_H
-#define TUPAI_X86_PORT_H
+#ifndef TUPAI_X86_PORT_HPP
+#define TUPAI_X86_PORT_HPP
 
 // Standard
 #include <stddef.h>

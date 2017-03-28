@@ -1,5 +1,5 @@
 //
-// file : arch.h
+// file : init.hpp
 //
 // This file is part of Tupai.
 //
@@ -17,9 +17,9 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_ARM_RPI2_ARCH_H
-#define TUPAI_ARM_RPI2_ARCH_H
+#ifndef TUPAI_ARM_AMD64_INIT_HPP
+#define TUPAI_ARM_AMD64_INIT_HPP
 
-static inline const char* rpi2_get_arch() { return "rpi2"; }
+int amd64_init();
 
 #endif

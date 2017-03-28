@@ -1,5 +1,5 @@
 //
-// file : arch.h
+// file : arch.hpp
 //
 // This file is part of Tupai.
 //
@@ -17,9 +17,9 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_X86_ARCH_H
-#define TUPAI_X86_ARCH_H
+#ifndef TUPAI_X86_I386_ARCH_HPP
+#define TUPAI_X86_I386_ARCH_HPP
 
-static inline const char* x86_get_family() { return "x86"; }
+static inline const char* i386_get_arch() { return "i386"; }
 
 #endif

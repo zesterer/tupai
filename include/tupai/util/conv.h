@@ -1,5 +1,5 @@
 //
-// file : start64.s
+// file : conv.h
 //
 // This file is part of Tupai.
 //
@@ -17,27 +17,17 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-.extern kmain
+#ifndef TUPAI_UTIL_CONV_H
+#define TUPAI_UTIL_CONV_H
 
-.global start64
+// Tupai
+#include <tupai/util/str.h>
+#include <tupai/util/char.h>
 
-.section .text.boot
-	.code64
+// Standard
+#include <stddef.h>
+#include <stdint.h>
 
-	// Kernel entry
-	start64:
-		// Clear the data segment registers to the null segment descriptor
-		mov $0, %ax
-		mov %ax, %ss
-		mov %ax, %ds
-		mov %ax, %es
-		mov %ax, %fs
-		mov %ax, %gs
 
-		// Call the kernel's main entry
-		call amd64_kmain
 
-	// Hang the kernel
-	hang:
-		hlt
-		jmp hang
+#endif

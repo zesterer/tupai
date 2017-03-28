@@ -1,5 +1,5 @@
 //
-// file : uart.h
+// file : kmain.cpp
 //
 // This file is part of Tupai.
 //
@@ -17,15 +17,21 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_ARM_UART_H
-#define TUPAI_ARM_UART_H
+// Tupai
+#include <tupai/common/kmain.hpp>
 
 // Standard
 #include <stddef.h>
 #include <stdint.h>
 
-void uart_init();
-void uart_write(uint8_t b);
-uint8_t uart_read();
+namespace tupai
+{
+	extern "C" void i386_kmain(uint32_t mb_header, uint32_t stack)
+	{
+		// Declare as unused
+		(void) mb_header;
+		(void) stack;
 
-#endif
+		kmain();
+	}
+}

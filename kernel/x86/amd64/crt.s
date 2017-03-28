@@ -1,5 +1,5 @@
 //
-// file : start64.s
+// file : crt.s
 //
 // This file is part of Tupai.
 //
@@ -17,27 +17,28 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-.extern kmain
+.section .init
+	.global _init
+	.type _init, @function
+	_init:
+		push %rbp
+		movq %rsp, %rbp
+		// GCC will nicely put the contents of crtbegin.o's init section here.
 
-.global start64
+.section .fini
+	.global _fini
+	.type _fini, @function
+	_fini:
+		push %rbp
+		movq %rsp, %rbp
+		// GCC will nicely put the contents of crtbegin.o's fini section here.
 
-.section .text.boot
-	.code64
+.section .init
+	// GCC should place crtend.o init code here
+	popq %rbp
+	ret
 
-	// Kernel entry
-	start64:
-		// Clear the data segment registers to the null segment descriptor
-		mov $0, %ax
-		mov %ax, %ss
-		mov %ax, %ds
-		mov %ax, %es
-		mov %ax, %fs
-		mov %ax, %gs
-
-		// Call the kernel's main entry
-		call amd64_kmain
-
-	// Hang the kernel
-	hang:
-		hlt
-		jmp hang
+.section .fini
+	// GCC should place crtend.o fini code here
+	popq %rbp
+	ret

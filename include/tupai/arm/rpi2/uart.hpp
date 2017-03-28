@@ -1,5 +1,5 @@
 //
-// file : sys.h
+// file : uart.hpp
 //
 // This file is part of Tupai.
 //
@@ -17,12 +17,15 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_COMMON_SYS_H
-#define TUPAI_COMMON_SYS_H
+#ifndef TUPAI_ARM_RPI2_UART_HPP
+#define TUPAI_ARM_RPI2_UART_HPP
 
-const char* sys_get_name_decorative();
-const char* sys_get_arch();
-const char* sys_get_family();
-const char* sys_get_version();
+// Standard
+#include <stddef.h>
+#include <stdint.h>
+
+void    uart_init();
+void    uart_write(uint8_t b);
+uint8_t uart_read();
 
 #endif

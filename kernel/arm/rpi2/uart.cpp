@@ -1,5 +1,5 @@
 //
-// file : uart.c
+// file : uart.cpp
 //
 // This file is part of Tupai.
 //
@@ -18,9 +18,9 @@
 //
 
 // Tupai
-#include <tupai/arm/uart.h>
-#include <tupai/arm/mmio.h>
-#include <tupai/arm/delay.h>
+#include <tupai/arm/rpi2/uart.hpp>
+#include <tupai/arm/mmio.hpp>
+#include <tupai/arm/delay.hpp>
 
 // Standard
 #include <stddef.h>
@@ -107,6 +107,10 @@ void uart_init()
 
 void uart_write(uint8_t b)
 {
+	// Serial regards a carriage return as a newline character
+	if (b == '\n')
+		uart_write('\r');
+
 	while (mmio_read(UART0_FR) & (1 << 5));
 	mmio_write(UART0_DR, b);
 }

@@ -1,5 +1,5 @@
 //
-// file : arch.h
+// file : framebuffer.hpp
 //
 // This file is part of Tupai.
 //
@@ -17,9 +17,23 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_X86_AMD64_ARCH_H
-#define TUPAI_X86_AMD64_ARCH_H
+#ifndef TUPAI_ARM_RPI2_FRAMEBUFFER_HPP
+#define TUPAI_ARM_RPI2_FRAMEBUFFER_HPP
 
-static inline const char* amd64_get_arch() { return "amd64"; }
+// Standard
+#include <stddef.h>
+#include <stdint.h>
+
+struct framebuffer_t
+{
+	int       valid;
+	size_t    width;
+	size_t    height;
+	uint32_t* data;
+};
+
+extern framebuffer_t g_framebuffer;
+
+void rpi2_framebuffer_init(size_t width, size_t height);
 
 #endif

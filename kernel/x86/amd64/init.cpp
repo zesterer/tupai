@@ -1,5 +1,5 @@
 //
-// file : tty.h
+// file : init.cpp
 //
 // This file is part of Tupai.
 //
@@ -17,10 +17,10 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_COMMON_TTY_H
-#define TUPAI_COMMON_TTY_H
+// Tupai
+#include <tupai/x86/amd64/init.hpp>
 
-void tty_init();
-void tty_print(const char* str);
-
-#endif
+int amd64_init()
+{
+	return 0;
+}

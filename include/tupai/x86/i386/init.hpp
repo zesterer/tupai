@@ -1,5 +1,5 @@
 //
-// file : textmode.h
+// file : init.hpp
 //
 // This file is part of Tupai.
 //
@@ -17,13 +17,9 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_X86_TEXTMODE_H
-#define TUPAI_X86_TEXTMODE_H
+#ifndef TUPAI_ARM_I386_INIT_HPP
+#define TUPAI_ARM_I386_INIT_HPP
 
-void textmode_init();
-void textmode_write(char c);
-void textmode_cursor(int col, int row);
-void textmode_scroll(int n);
-void textmode_clear();
+int i386_init();
 
 #endif

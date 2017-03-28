@@ -1,5 +1,5 @@
 //
-// file : start64.s
+// file : kmain.cpp
 //
 // This file is part of Tupai.
 //
@@ -17,27 +17,38 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-.extern kmain
+// Tupai
+#include <tupai/common/kmain.hpp>
+#include <tupai/common/init.hpp>
+#include <tupai/common/tty.hpp>
+#include <tupai/common/sys.hpp>
 
-.global start64
+namespace tupai
+{
+	void kwelcome()
+	{
+		tty_print(sys_get_name_decorative());
+		tty_print(" ");
+		tty_print(sys_get_version());
+		tty_print(" on ");
+		tty_print(sys_get_family());
+		tty_print("/");
+		tty_print(sys_get_arch());
+		tty_print("\nCopyright 2017, Joshua Barretto\n");
+		tty_print("\n");
+	}
 
-.section .text.boot
-	.code64
+	int kmain()
+	{
+		// Init a stable environment
+		init();
 
-	// Kernel entry
-	start64:
-		// Clear the data segment registers to the null segment descriptor
-		mov $0, %ax
-		mov %ax, %ss
-		mov %ax, %ds
-		mov %ax, %es
-		mov %ax, %fs
-		mov %ax, %gs
+		// TTY
+		tty_init();
+		kwelcome();
 
-		// Call the kernel's main entry
-		call amd64_kmain
+		tty_print("Welcome to the kernel. It doesn't do much yet.\n");
 
-	// Hang the kernel
-	hang:
-		hlt
-		jmp hang
+		return 0;
+	}
+}

@@ -1,5 +1,5 @@
 //
-// file : start64.s
+// file : arch.hpp
 //
 // This file is part of Tupai.
 //
@@ -17,27 +17,9 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-.extern kmain
+#ifndef TUPAI_X86_AMD64_ARCH_HPP
+#define TUPAI_X86_AMD64_ARCH_HPP
 
-.global start64
+static inline const char* amd64_get_arch() { return "amd64"; }
 
-.section .text.boot
-	.code64
-
-	// Kernel entry
-	start64:
-		// Clear the data segment registers to the null segment descriptor
-		mov $0, %ax
-		mov %ax, %ss
-		mov %ax, %ds
-		mov %ax, %es
-		mov %ax, %fs
-		mov %ax, %gs
-
-		// Call the kernel's main entry
-		call amd64_kmain
-
-	// Hang the kernel
-	hang:
-		hlt
-		jmp hang
+#endif

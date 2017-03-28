@@ -28,7 +28,7 @@
 		mov $stack_top, %esp
 
 		// Call the kernel's main entry
-		call kmain
+		call i386_kmain
 
 		// Hang the kernel
 		hang:

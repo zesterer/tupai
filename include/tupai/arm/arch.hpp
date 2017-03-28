@@ -1,5 +1,5 @@
 //
-// file : arch.h
+// file : arch.hpp
 //
 // This file is part of Tupai.
 //
@@ -17,8 +17,8 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_ARM_ARCH_H
-#define TUPAI_ARM_ARCH_H
+#ifndef TUPAI_ARM_ARCH_HPP
+#define TUPAI_ARM_ARCH_HPP
 
 static inline const char* arm_get_family() { return "arm"; }
 

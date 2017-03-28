@@ -1,5 +1,5 @@
 //
-// file : start64.s
+// file : init.cpp
 //
 // This file is part of Tupai.
 //
@@ -17,27 +17,27 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-.extern kmain
+// Tupai
+#include <tupai/common/init.hpp>
 
-.global start64
+#if defined(ARCH_amd64)
+	#include <tupai/x86/amd64/init.hpp>
+#elif defined(ARCH_i386)
+	#include <tupai/x86/i386/init.hpp>
+#elif defined(ARCH_rpi2)
+	#include <tupai/arm/rpi2/init.hpp>
+#endif
 
-.section .text.boot
-	.code64
-
-	// Kernel entry
-	start64:
-		// Clear the data segment registers to the null segment descriptor
-		mov $0, %ax
-		mov %ax, %ss
-		mov %ax, %ds
-		mov %ax, %es
-		mov %ax, %fs
-		mov %ax, %gs
-
-		// Call the kernel's main entry
-		call amd64_kmain
-
-	// Hang the kernel
-	hang:
-		hlt
-		jmp hang
+namespace tupai
+{
+	int init()
+	{
+		#if defined(ARCH_amd64)
+			return amd64_init();
+		#elif defined(ARCH_i386)
+			return i386_init();
+		#elif defined(ARCH_rpi2)
+			return rpi2_init();
+		#endif
+	}
+}

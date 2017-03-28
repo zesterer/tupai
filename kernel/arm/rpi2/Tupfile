@@ -1,9 +1,10 @@
 include_rules
 
-INCLUDES=$(INCLUDES) -I../../include
+INCLUDES=$(INCLUDES) -I../../../include
 
 # Compiling
 ifeq (@(TARGET_ARCH),rpi2)
-	: foreach *.s |> !ASM |>
-	: foreach *.c |> !CC |>
+	: foreach *.s   |> !ASM |>
+	: foreach *.c   |> !CC  |>
+	: foreach *.cpp |> !CPP |>
 endif

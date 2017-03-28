@@ -1,5 +1,5 @@
 //
-// file : framebuffer.h
+// file : init.cpp
 //
 // This file is part of Tupai.
 //
@@ -17,7 +17,10 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_ARM_RPI2_FRAMEBUFFER_H
-#define TUPAI_ARM_RPI2_FRAMEBUFFER_H
+// Tupai
+#include <tupai/x86/i386/init.hpp>
 
-#endif
+int i386_init()
+{
+	return 0;
+}

@@ -1,5 +1,5 @@
 //
-// file : tty.c
+// file : kmain.cpp
 //
 // This file is part of Tupai.
 //
@@ -18,38 +18,20 @@
 //
 
 // Tupai
-#include <tupai/common/tty.h>
-
-#if defined(ARCH_FAMILY_x86)
-	#include <tupai/x86/textmode.h>
-#elif defined(ARCH_FAMILY_arm)
-	#include <tupai/arm/uart.h>
-#else
-	#warning "Architecture provides no TTY interface!"
-#endif
+#include <tupai/common/kmain.hpp>
 
 // Standard
 #include <stddef.h>
 #include <stdint.h>
 
-void tty_init()
+namespace tupai
 {
-	#if defined(ARCH_FAMILY_x86)
-		textmode_init();
-		textmode_clear();
-	#elif defined(ARCH_FAMILY_arm)
-		uart_init();
-	#endif
-}
-
-void tty_print(const char* str)
-{
-	for (size_t i = 0; str[i] != '\0'; i ++)
+	extern "C" void amd64_kmain(uint32_t mb_header, uint32_t stack)
 	{
-		#if defined(ARCH_FAMILY_x86)
-			textmode_write(str[i]);
-		#elif defined(ARCH_FAMILY_arm)
-			uart_write(str[i]);
-		#endif
+		// Declare as unused
+		(void) mb_header;
+		(void) stack;
+
+		kmain();
 	}
 }

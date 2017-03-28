@@ -1,5 +1,5 @@
 //
-// file : start64.s
+// file : mmio.hpp
 //
 // This file is part of Tupai.
 //
@@ -17,27 +17,21 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-.extern kmain
+#ifndef TUPAI_ARM_MMIO_HPP
+#define TUPAI_ARM_MMIO_HPP
 
-.global start64
+// Standard
+#include <stddef.h>
+#include <stdint.h>
 
-.section .text.boot
-	.code64
+static inline void mmio_write(uint32_t reg, uint32_t data)
+{
+	*(volatile uint32_t *)reg = data;
+}
 
-	// Kernel entry
-	start64:
-		// Clear the data segment registers to the null segment descriptor
-		mov $0, %ax
-		mov %ax, %ss
-		mov %ax, %ds
-		mov %ax, %es
-		mov %ax, %fs
-		mov %ax, %gs
+static inline uint32_t mmio_read(uint32_t reg)
+{
+	return *(volatile uint32_t *)reg;
+}
 
-		// Call the kernel's main entry
-		call amd64_kmain
-
-	// Hang the kernel
-	hang:
-		hlt
-		jmp hang
+#endif

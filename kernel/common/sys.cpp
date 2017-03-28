@@ -1,5 +1,5 @@
 //
-// file : sys.c
+// file : sys.cpp
 //
 // This file is part of Tupai.
 //
@@ -18,22 +18,22 @@
 //
 
 // Tupai
-#include <tupai/common/sys.h>
+#include <tupai/common/sys.hpp>
 
 #if defined(ARCH_amd64)
-	#include <tupai/x86/amd64/arch.h>
+	#include <tupai/x86/amd64/arch.hpp>
 #elif defined(ARCH_i386)
-	#include <tupai/x86/i386/arch.h>
+	#include <tupai/x86/i386/arch.hpp>
 #elif defined(ARCH_rpi2)
-	#include <tupai/arm/rpi2/arch.h>
+	#include <tupai/arm/rpi2/arch.hpp>
 #else
 	#warning "Architecture provides no architecture information!"
 #endif
 
 #if defined(ARCH_FAMILY_x86)
-	#include <tupai/x86/arch.h>
+	#include <tupai/x86/arch.hpp>
 #elif defined(ARCH_FAMILY_arm)
-	#include <tupai/arm/arch.h>
+	#include <tupai/arm/arch.hpp>
 #else
 	#warning "Architecture provides no family information!"
 #endif
@@ -42,36 +42,39 @@
 #include <stddef.h>
 #include <stdint.h>
 
-const char* sys_get_name_decorative()
+namespace tupai
 {
-	return P_NAME_DECORATIVE;
-}
+	const char* sys_get_name_decorative()
+	{
+		return P_NAME_DECORATIVE;
+	}
 
-const char* sys_get_arch()
-{
-	#if defined(ARCH_amd64)
-		return amd64_get_arch();
-	#elif defined(ARCH_i386)
-		return i386_get_arch();
-	#elif defined(ARCH_rpi2)
-		return rpi2_get_arch();
-	#else
-		return "unknown";
-	#endif
-}
+	const char* sys_get_arch()
+	{
+		#if defined(ARCH_amd64)
+			return amd64_get_arch();
+		#elif defined(ARCH_i386)
+			return i386_get_arch();
+		#elif defined(ARCH_rpi2)
+			return rpi2_get_arch();
+		#else
+			return "unknown";
+		#endif
+	}
 
-const char* sys_get_family()
-{
-	#if defined(ARCH_FAMILY_x86)
-		return x86_get_family();
-	#elif defined(ARCH_FAMILY_arm)
-		return arm_get_family();
-	#else
-		return "unknown";
-	#endif
-}
+	const char* sys_get_family()
+	{
+		#if defined(ARCH_FAMILY_x86)
+			return x86_get_family();
+		#elif defined(ARCH_FAMILY_arm)
+			return arm_get_family();
+		#else
+			return "unknown";
+		#endif
+	}
 
-const char* sys_get_version()
-{
-	return P_VERSION_DECORATIVE;
+	const char* sys_get_version()
+	{
+		return P_VERSION_DECORATIVE;
+	}
 }
