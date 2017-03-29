@@ -25,73 +25,79 @@
 #include <stddef.h>
 #include <stdint.h>
 
-volatile uint16_t* buffer = (uint16_t*)0xB8000;
-const int col_max = 80;
-const int row_max = 25;
-const unsigned char color = 0x0F;
-
-int col, row;
-
-void textmode_init()
+namespace tupai
 {
-	col = 0;
-	row = 0;
-}
-
-void textmode_write(char c)
-{
-	switch (c)
+	namespace x86
 	{
-	case '\n':
+		volatile uint16_t* buffer = (uint16_t*)0xB8000;
+		const int col_max = 80;
+		const int row_max = 25;
+		const unsigned char color = 0x0F;
+
+		int col, row;
+
+		void textmode_init()
 		{
 			col = 0;
-			row ++;
+			row = 0;
 		}
-		break;
 
-	default:
-		buffer[col_max * row + col] = (color << 8) | c;
-		col ++;
-		break;
+		void textmode_write(char c)
+		{
+			switch (c)
+			{
+			case '\n':
+				{
+					col = 0;
+					row ++;
+				}
+				break;
+
+			default:
+				buffer[col_max * row + col] = (color << 8) | c;
+				col ++;
+				break;
+			}
+
+			if (col >= col_max)
+			{
+				col = 0;
+				row ++;
+			}
+
+			while (row >= row_max)
+			{
+				textmode_scroll(1);
+				row --;
+			}
+
+			textmode_cursor(col, row);
+		}
+
+		void textmode_cursor(int col, int row)
+		{
+			uint16_t pos = col_max * row + col;
+			outb(0x3D4, 0x0F);
+			outb(0x3D5, (uint8_t)(pos & 0xFF));
+			outb(0x3D4, 0x0E);
+			outb(0x3D5, (uint8_t)((pos >> 8) & 0xFF));
+		}
+
+		void textmode_clear()
+		{
+			for (int row = 0; row < row_max; row ++)
+				for (int col = 0; col < col_max; col ++)
+					buffer[col_max * row + col] = (color << 8) | ' ';
+		}
+
+		void textmode_scroll(int n)
+		{
+			if (n <= 0)
+				return;
+
+			for (int row = n; row < row_max; row ++)
+				for (int col = 0; col < col_max; col ++)
+					buffer[col_max * (row - n) + col] = buffer[col_max * row + col];
+		}
 	}
-
-	if (col >= col_max)
-	{
-		col = 0;
-		row ++;
-	}
-
-	while (row >= row_max)
-	{
-		textmode_scroll(1);
-		row --;
-	}
-
-	textmode_cursor(col, row);
-}
-
-void textmode_cursor(int col, int row)
-{
-	uint16_t pos = col_max * row + col;
-	outb(0x3D4, 0x0F);
-	outb(0x3D5, (uint8_t)(pos & 0xFF));
-	outb(0x3D4, 0x0E);
-	outb(0x3D5, (uint8_t)((pos >> 8) & 0xFF));
-}
-
-void textmode_clear()
-{
-	for (int row = 0; row < row_max; row ++)
-		for (int col = 0; col < col_max; col ++)
-			buffer[col_max * row + col] = (color << 8) | ' ';
-}
-
-void textmode_scroll(int n)
-{
-	if (n <= 0)
-		return;
-
-	for (int row = n; row < row_max; row ++)
-		for (int col = 0; col < col_max; col ++)
-			buffer[col_max * (row - n) + col] = buffer[col_max * row + col];
 }

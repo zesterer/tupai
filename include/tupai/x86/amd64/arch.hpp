@@ -20,6 +20,15 @@
 #ifndef TUPAI_X86_AMD64_ARCH_HPP
 #define TUPAI_X86_AMD64_ARCH_HPP
 
-static inline const char* amd64_get_arch() { return "amd64"; }
+namespace tupai
+{
+	namespace x86
+	{
+		namespace amd64
+		{
+			static inline const char* get_arch() { return "amd64"; }
+		}
+	}
+}
 
 #endif

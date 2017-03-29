@@ -20,10 +20,16 @@
 #ifndef TUPAI_X86_TEXTMODE_HPP
 #define TUPAI_X86_TEXTMODE_HPP
 
-void textmode_init();
-void textmode_write(char c);
-void textmode_cursor(int col, int row);
-void textmode_scroll(int n);
-void textmode_clear();
+namespace tupai
+{
+	namespace x86
+	{
+		void textmode_init();
+		void textmode_write(char c);
+		void textmode_cursor(int col, int row);
+		void textmode_scroll(int n);
+		void textmode_clear();
+	}
+}
 
 #endif

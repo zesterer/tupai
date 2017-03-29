@@ -20,6 +20,15 @@
 #ifndef TUPAI_X86_I386_ARCH_HPP
 #define TUPAI_X86_I386_ARCH_HPP
 
-static inline const char* i386_get_arch() { return "i386"; }
+namespace tupai
+{
+	namespace x86
+	{
+		namespace i386
+		{
+			static inline const char* get_arch() { return "i386"; }
+		}
+	}
+}
 
 #endif

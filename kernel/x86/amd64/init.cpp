@@ -20,7 +20,16 @@
 // Tupai
 #include <tupai/x86/amd64/init.hpp>
 
-int amd64_init()
+namespace tupai
 {
-	return 0;
+	namespace x86
+	{
+		namespace amd64
+		{
+			int init()
+			{
+				return 0;
+			}
+		}
+	}
 }

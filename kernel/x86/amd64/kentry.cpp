@@ -1,5 +1,5 @@
 //
-// file : kmain.cpp
+// file : kentry.cpp
 //
 // This file is part of Tupai.
 //
@@ -26,13 +26,18 @@
 
 namespace tupai
 {
-	extern "C" void rpi2_kmain(uint32_t r0, uint32_t r1, uint32_t atags)
+	namespace x86
 	{
-		// Declare as unused
-		(void) r0;
-		(void) r1;
-		(void) atags;
+		namespace amd64
+		{
+			extern "C" void x86_amd64_kentry(uint32_t mb_header, uint32_t stack)
+			{
+				// Declare as unused
+				(void) mb_header;
+				(void) stack;
 
-		kmain();
+				kmain();
+			}
+		}
 	}
 }

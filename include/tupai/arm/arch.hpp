@@ -20,6 +20,12 @@
 #ifndef TUPAI_ARM_ARCH_HPP
 #define TUPAI_ARM_ARCH_HPP
 
-static inline const char* arm_get_family() { return "arm"; }
+namespace tupai
+{
+	namespace arm
+	{
+		static inline const char* get_family() { return "arm"; }
+	}
+}
 
 #endif

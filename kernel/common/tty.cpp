@@ -22,7 +22,7 @@
 
 #if defined(ARCH_FAMILY_x86)
 	#include <tupai/x86/textmode.hpp>
-#elif defined(ARCH_FAMILY_arm)
+#elif defined(ARCH_rpi2)
 	#include <tupai/arm/rpi2/uart.hpp>
 #else
 	#warning "Architecture provides no TTY interface!"
@@ -37,10 +37,10 @@ namespace tupai
 	void tty_init()
 	{
 		#if defined(ARCH_FAMILY_x86)
-			textmode_init();
-			textmode_clear();
-		#elif defined(ARCH_FAMILY_arm)
-			uart_init();
+			x86::textmode_init();
+			x86::textmode_clear();
+		#elif defined(ARCH_rpi2)
+			arm::rpi2::uart_init();
 		#endif
 	}
 
@@ -49,9 +49,9 @@ namespace tupai
 		for (size_t i = 0; str[i] != '\0'; i ++)
 		{
 			#if defined(ARCH_FAMILY_x86)
-				textmode_write(str[i]);
-			#elif defined(ARCH_FAMILY_arm)
-				uart_write(str[i]);
+				x86::textmode_write(str[i]);
+			#elif defined(ARCH_rpi2)
+				arm::rpi2::uart_write(str[i]);
 			#endif
 		}
 	}

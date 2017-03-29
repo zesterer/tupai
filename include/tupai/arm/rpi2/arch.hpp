@@ -20,6 +20,15 @@
 #ifndef TUPAI_ARM_RPI2_ARCH_HPP
 #define TUPAI_ARM_RPI2_ARCH_HPP
 
-static inline const char* rpi2_get_arch() { return "rpi2"; }
+namespace tupai
+{
+	namespace arm
+	{
+		namespace rpi2
+		{
+			static inline const char* get_arch() { return "rpi2"; }
+		}
+	}
+}
 
 #endif

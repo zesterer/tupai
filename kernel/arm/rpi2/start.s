@@ -51,7 +51,7 @@
 			blo 1b
 
 		// Enter kernel main
-		ldr r3, =rpi2_kmain
+		ldr r3, =rpi2_kentry
 		blx r3
 
 	hang:

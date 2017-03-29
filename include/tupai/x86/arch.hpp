@@ -20,6 +20,12 @@
 #ifndef TUPAI_X86_ARCH_HPP
 #define TUPAI_X86_ARCH_HPP
 
-static inline const char* x86_get_family() { return "x86"; }
+namespace tupai
+{
+	namespace x86
+	{
+		static inline const char* get_family() { return "x86"; }
+	}
+}
 
 #endif

@@ -20,6 +20,15 @@
 #ifndef TUPAI_ARM_RPI2_INIT_HPP
 #define TUPAI_ARM_RPI2_INIT_HPP
 
-int rpi2_init();
+namespace tupai
+{
+	namespace arm
+	{
+		namespace rpi2
+		{
+			int init();
+		}
+	}
+}
 
 #endif

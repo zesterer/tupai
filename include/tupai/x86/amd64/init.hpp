@@ -20,6 +20,15 @@
 #ifndef TUPAI_ARM_AMD64_INIT_HPP
 #define TUPAI_ARM_AMD64_INIT_HPP
 
-int amd64_init();
+namespace tupai
+{
+	namespace x86
+	{
+		namespace amd64
+		{
+			int init();
+		}
+	}
+}
 
 #endif

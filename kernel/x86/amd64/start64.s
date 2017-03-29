@@ -34,8 +34,8 @@
 		mov %ax, %fs
 		mov %ax, %gs
 
-		// Call the kernel's main entry
-		call amd64_kmain
+		// Call the kernel's entry point
+		call x86_amd64_kentry
 
 	// Hang the kernel
 	hang:

@@ -20,9 +20,18 @@
 // Tupai
 #include <tupai/arm/rpi2/framebuffer.hpp>
 
-framebuffer_t g_framebuffer;
-
-void rpi2_framebuffer_init(size_t width, size_t height)
+namespace tupai
 {
-	g_framebuffer.valid = 0;
+	namespace arm
+	{
+		namespace rpi2
+		{
+			framebuffer_t g_framebuffer;
+
+			void framebuffer_init(size_t width, size_t height)
+			{
+				g_framebuffer.valid = 0;
+			}
+		}
+	}
 }

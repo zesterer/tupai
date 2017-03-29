@@ -52,11 +52,11 @@ namespace tupai
 	const char* sys_get_arch()
 	{
 		#if defined(ARCH_amd64)
-			return amd64_get_arch();
+			return x86::amd64::get_arch();
 		#elif defined(ARCH_i386)
-			return i386_get_arch();
+			return x86::i386::get_arch();
 		#elif defined(ARCH_rpi2)
-			return rpi2_get_arch();
+			return arm::rpi2::get_arch();
 		#else
 			return "unknown";
 		#endif
@@ -65,9 +65,9 @@ namespace tupai
 	const char* sys_get_family()
 	{
 		#if defined(ARCH_FAMILY_x86)
-			return x86_get_family();
+			return x86::get_family();
 		#elif defined(ARCH_FAMILY_arm)
-			return arm_get_family();
+			return arm::get_family();
 		#else
 			return "unknown";
 		#endif

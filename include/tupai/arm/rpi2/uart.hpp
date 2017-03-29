@@ -24,8 +24,17 @@
 #include <stddef.h>
 #include <stdint.h>
 
-void    uart_init();
-void    uart_write(uint8_t b);
-uint8_t uart_read();
+namespace tupai
+{
+	namespace arm
+	{
+		namespace rpi2
+		{
+			void    uart_init();
+			void    uart_write(uint8_t b);
+			uint8_t uart_read();
+		}
+	}
+}
 
 #endif

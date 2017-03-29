@@ -33,11 +33,11 @@ namespace tupai
 	int init()
 	{
 		#if defined(ARCH_amd64)
-			return amd64_init();
+			return x86::amd64::init();
 		#elif defined(ARCH_i386)
-			return i386_init();
+			return x86::i386::init();
 		#elif defined(ARCH_rpi2)
-			return rpi2_init();
+			return arm::rpi2::init();
 		#endif
 	}
 }

@@ -27,8 +27,8 @@
 		// Set the stack pointer
 		mov $stack_top, %esp
 
-		// Call the kernel's main entry
-		call i386_kmain
+		// Call the kernel's entry point
+		call x86_i386_kentry
 
 		// Hang the kernel
 		hang:

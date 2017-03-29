@@ -24,16 +24,26 @@
 #include <stddef.h>
 #include <stdint.h>
 
-struct framebuffer_t
+namespace tupai
 {
-	int       valid;
-	size_t    width;
-	size_t    height;
-	uint32_t* data;
-};
+	namespace arm
+	{
+		namespace rpi2
+		{
 
-extern framebuffer_t g_framebuffer;
+			struct framebuffer_t
+			{
+				int       valid;
+				size_t    width;
+				size_t    height;
+				uint32_t* data;
+			};
 
-void rpi2_framebuffer_init(size_t width, size_t height);
+			extern framebuffer_t g_framebuffer;
+
+			void framebuffer_init(size_t width, size_t height);
+		}
+	}
+}
 
 #endif

@@ -20,6 +20,15 @@
 #ifndef TUPAI_ARM_I386_INIT_HPP
 #define TUPAI_ARM_I386_INIT_HPP
 
-int i386_init();
+namespace tupai
+{
+	namespace x86
+	{
+		namespace i386
+		{
+			int init();
+		}
+	}
+}
 
 #endif

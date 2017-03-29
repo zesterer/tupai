@@ -20,7 +20,16 @@
 // Tupai
 #include <tupai/x86/i386/init.hpp>
 
-int i386_init()
+namespace tupai
 {
-	return 0;
+	namespace x86
+	{
+		namespace i386
+		{
+			int init()
+			{
+				return 0;
+			}
+		}
+	}
 }
