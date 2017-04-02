@@ -1,5 +1,5 @@
 //
-// file : kmain.hpp
+// file : serial.hpp
 //
 // This file is part of Tupai.
 //
@@ -17,12 +17,39 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_COMMON_KMAIN_HPP
-#define TUPAI_COMMON_KMAIN_HPP
+#ifndef TUPAI_X86_SERIAL_HPP
+#define TUPAI_X86_SERIAL_HPP
+
+// Standard
+#include <stddef.h>
+#include <stdint.h>
 
 namespace tupai
 {
-	int kmain();
+	namespace x86
+	{
+		enum class serial_port : uint8_t
+		{
+			COM1 = 0,
+			COM2 = 1,
+			COM3 = 2,
+			COM4 = 3,
+		};
+
+		enum class serial_parity : uint8_t
+		{
+			NONE  = 0b000000,
+			ODD   = 0b001000,
+			EVEN  = 0b011000,
+			MARK  = 0b101000,
+			SPACE = 0b111000,
+		};
+
+		void    serial_init();
+		void    serial_open(serial_port port, uint32_t baudrate = 57600, uint8_t databits = 8, uint8_t stopbits = 1, serial_parity parity = serial_parity::NONE);
+		void    serial_write(serial_port port, uint8_t c);
+		uint8_t serial_read(serial_port port);
+	}
 }
 
 #endif

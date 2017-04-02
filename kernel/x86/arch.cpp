@@ -1,5 +1,5 @@
 //
-// file : init.hpp
+// file : arch.cpp
 //
 // This file is part of Tupai.
 //
@@ -17,18 +17,13 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_ARM_RPI2_INIT_HPP
-#define TUPAI_ARM_RPI2_INIT_HPP
+// Tupai
+#include <tupai/arch.hpp>
 
 namespace tupai
 {
-	namespace arm
+	const char* arch_get_family()
 	{
-		namespace rpi2
-		{
-			int init();
-		}
+		return "x86";
 	}
 }
-
-#endif

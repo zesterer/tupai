@@ -1,5 +1,5 @@
 //
-// file : kmain.cpp
+// file : debug.hpp
 //
 // This file is part of Tupai.
 //
@@ -17,38 +17,14 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-// Tupai
-#include <tupai/common/kmain.hpp>
-#include <tupai/common/init.hpp>
-#include <tupai/common/tty.hpp>
-#include <tupai/common/sys.hpp>
+#ifndef TUPAI_DEBUG_HPP
+#define TUPAI_DEBUG_HPP
 
 namespace tupai
 {
-	void kwelcome()
-	{
-		tty_print(sys_get_name_decorative());
-		tty_print(" ");
-		tty_print(sys_get_version());
-		tty_print(" on ");
-		tty_print(sys_get_family());
-		tty_print("/");
-		tty_print(sys_get_arch());
-		tty_print("\nCopyright 2017, Joshua Barretto\n");
-		tty_print("\n");
-	}
-
-	int kmain()
-	{
-		// Init a stable environment
-		init();
-
-		// TTY
-		tty_init();
-		kwelcome();
-
-		tty_print("Welcome to the kernel. It doesn't do much yet.\n");
-
-		return 0;
-	}
+	void debug_init();
+	void debug_write(char c);
+	void debug_print(const char* str);
 }
+
+#endif

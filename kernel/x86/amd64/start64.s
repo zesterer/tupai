@@ -17,7 +17,8 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-.extern kmain
+.extern _init
+.extern kentry
 
 .global start64
 
@@ -34,8 +35,11 @@
 		mov %ax, %fs
 		mov %ax, %gs
 
+		// Call global constructor code
+		call _init
+
 		// Call the kernel's entry point
-		call x86_amd64_kentry
+		call kentry
 
 	// Hang the kernel
 	hang:

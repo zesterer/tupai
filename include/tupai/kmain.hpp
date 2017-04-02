@@ -1,5 +1,5 @@
 //
-// file : init.cpp
+// file : kmain.hpp
 //
 // This file is part of Tupai.
 //
@@ -17,19 +17,12 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-// Tupai
-#include <tupai/x86/i386/init.hpp>
+#ifndef TUPAI_KMAIN_HPP
+#define TUPAI_KMAIN_HPP
 
 namespace tupai
 {
-	namespace x86
-	{
-		namespace i386
-		{
-			int init()
-			{
-				return 0;
-			}
-		}
-	}
+	int kmain();
 }
+
+#endif

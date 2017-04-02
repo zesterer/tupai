@@ -1,5 +1,5 @@
 //
-// file : init.hpp
+// file : tupai.cpp
 //
 // This file is part of Tupai.
 //
@@ -17,18 +17,23 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_ARM_AMD64_INIT_HPP
-#define TUPAI_ARM_AMD64_INIT_HPP
+// Tupai
+#include <tupai/tupai.hpp>
 
 namespace tupai
 {
-	namespace x86
+	const char* tupai_get_name()
 	{
-		namespace amd64
-		{
-			int init();
-		}
+		return P_NAME;
+	}
+
+	const char* tupai_get_name_decorative()
+	{
+		return P_NAME_DECORATIVE;
+	}
+
+	const char* tupai_get_version()
+	{
+		return P_VERSION_DECORATIVE;
 	}
 }
-
-#endif

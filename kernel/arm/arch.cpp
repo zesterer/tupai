@@ -1,5 +1,5 @@
 //
-// file : init.cpp
+// file : arch.cpp
 //
 // This file is part of Tupai.
 //
@@ -18,34 +18,12 @@
 //
 
 // Tupai
-#include <tupai/arm/rpi2/init.hpp>
-#include <tupai/arm/mmio.hpp>
+#include <tupai/arch.hpp>
 
 namespace tupai
 {
-	namespace arm
+	const char* arch_get_family()
 	{
-		namespace rpi2
-		{
-			const size_t CORE_OFFSET = 0x4000008C;
-			const int    CORE_COUNT = 4;
-
-			void core_hang();
-
-			int init()
-			{
-				// Wake up other cores and hang them to prevent slowdown
-				for (int i = 1; i < CORE_COUNT; i ++)
-					mmio_write(CORE_OFFSET * 0x10 * i, (size_t)&core_hang);
-
-				return 0;
-			}
-
-			void core_hang()
-			{
-				while (1) // Hang forever
-					asm volatile ("wfe");
-			}
-		}
+		return "arm";
 	}
 }

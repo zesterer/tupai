@@ -1,5 +1,5 @@
 //
-// file : tty.hpp
+// file : arch.cpp
 //
 // This file is part of Tupai.
 //
@@ -17,13 +17,13 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_COMMON_TTY_HPP
-#define TUPAI_COMMON_TTY_HPP
+// Tupai
+#include <tupai/arch.hpp>
 
 namespace tupai
 {
-	void tty_init();
-	void tty_print(const char* str);
+	const char* arch_get_target()
+	{
+		return "i386";
+	}
 }
-
-#endif

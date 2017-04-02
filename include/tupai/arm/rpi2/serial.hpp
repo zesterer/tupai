@@ -1,5 +1,5 @@
 //
-// file : init.hpp
+// file : serial.hpp
 //
 // This file is part of Tupai.
 //
@@ -17,12 +17,24 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_COMMON_INIT_HPP
-#define TUPAI_COMMON_INIT_HPP
+#ifndef TUPAI_ARM_RPI2_SERIAL_HPP
+#define TUPAI_ARM_RPI2_SERIAL_HPP
+
+// Standard
+#include <stddef.h>
+#include <stdint.h>
 
 namespace tupai
 {
-	int init();
+	namespace arm
+	{
+		namespace rpi2
+		{
+			void    serial_init();
+			void    serial_write(uint8_t b);
+			uint8_t serial_read();
+		}
+	}
 }
 
 #endif

@@ -17,7 +17,9 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-.extern kmain
+.extern _init
+.extern kentry
+.extern run_checks
 
 .global start
 
@@ -27,8 +29,14 @@
 		// Set the stack pointer
 		mov $stack_top, %esp
 
+		// Run initial checks
+		call run_checks
+
+		// Call global constructor code
+		call _init
+
 		// Call the kernel's entry point
-		call x86_i386_kentry
+		call kentry
 
 		// Hang the kernel
 		hang:

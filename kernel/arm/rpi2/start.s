@@ -17,7 +17,7 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-.extern kmain
+.extern kentry
 
 .global start
 
@@ -51,7 +51,7 @@
 			blo 1b
 
 		// Enter kernel main
-		ldr r3, =rpi2_kentry
+		ldr r3, =kentry
 		blx r3
 
 	hang:

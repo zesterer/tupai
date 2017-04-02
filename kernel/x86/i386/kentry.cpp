@@ -18,7 +18,8 @@
 //
 
 // Tupai
-#include <tupai/common/kmain.hpp>
+#include <tupai/kmain.hpp>
+#include <tupai/debug.hpp>
 
 // Standard
 #include <stddef.h>
@@ -26,18 +27,17 @@
 
 namespace tupai
 {
-	namespace x86
+	extern "C" void kentry(size_t mb_header, size_t stack)
 	{
-		namespace i386
-		{
-			extern "C" void x86_i386_kentry(uint32_t mb_header, uint32_t stack)
-			{
-				// Declare as unused
-				(void) mb_header;
-				(void) stack;
+		// Declare as unused
+		(void) mb_header;
+		(void) stack;
 
-				kmain();
-			}
-		}
+		// Initiate debugging
+		debug_init();
+
+		// Enter the kernel main with a stable environment
+		debug_print("Finished i386 initiation\n");
+		kmain();
 	}
 }

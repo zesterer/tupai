@@ -17,18 +17,13 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_X86_I386_ARCH_HPP
-#define TUPAI_X86_I386_ARCH_HPP
+#ifndef TUPAI_ARCH_HPP
+#define TUPAI_ARCH_HPP
 
 namespace tupai
 {
-	namespace x86
-	{
-		namespace i386
-		{
-			static inline const char* get_arch() { return "i386"; }
-		}
-	}
+	const char* arch_get_target();
+	const char* arch_get_family();
 }
 
 #endif

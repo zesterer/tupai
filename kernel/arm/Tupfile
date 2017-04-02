@@ -4,6 +4,7 @@ INCLUDES=$(INCLUDES) -I../../include
 
 # Compiling
 ifeq ($(TARGET_FAMILY),arm)
-	: foreach *.s |> !ASM |>
-	: foreach *.c |> !CC |>
+	: foreach *.s   |> !ASM |>
+	: foreach *.c   |> !CC  |>
+	: foreach *.cpp |> !CPP |>
 endif

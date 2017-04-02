@@ -1,9 +1,21 @@
 include_rules
 
+# Includes
+
+INCLUDES=$(INCLUDES) -I../include
+
+# Compiling
+
+: foreach *.s   |> !ASM |>
+: foreach *.c   |> !CC  |>
+: foreach *.cpp |> !CPP |>
+
 # Linking
+
 : $(OBJECTS) |> !LINKER |> $(P_EXEC)-kernel.elf
 
 # Objcopy to flat binary
+
 ifeq ($(TARGET_FAMILY),arm)
 	: $(P_EXEC)-kernel.elf |> !OBJCOPY -O binary |> %B.bin
 endif

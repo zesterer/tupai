@@ -1,5 +1,5 @@
 //
-// file : init.cpp
+// file : tty.cpp
 //
 // This file is part of Tupai.
 //
@@ -18,18 +18,46 @@
 //
 
 // Tupai
-#include <tupai/x86/amd64/init.hpp>
+#include <tupai/tty.hpp>
+#include <tupai/debug.hpp>
+
+#if defined(ARCH_FAMILY_x86)
+	#include <tupai/x86/textmode.hpp>
+#else
+	#warning "Architecture provides no TTY interface!"
+#endif
+
+// Standard
+#include <stddef.h>
+#include <stdint.h>
 
 namespace tupai
 {
-	namespace x86
+	void tty_init()
 	{
-		namespace amd64
+		// Mirror with debugging interface
+		debug_init();
+
+		#if defined(ARCH_FAMILY_x86)
 		{
-			int init()
+			x86::textmode_init();
+			x86::textmode_clear();
+		}
+		#endif
+	}
+
+	void tty_print(const char* str)
+	{
+		for (size_t i = 0; str[i] != '\0'; i ++)
+		{
+			// Mirror TTY output with the debugging interface
+			debug_write(str[i]);
+
+			#if defined(ARCH_FAMILY_x86)
 			{
-				return 0;
+				x86::textmode_write(str[i]);
 			}
+			#endif
 		}
 	}
 }

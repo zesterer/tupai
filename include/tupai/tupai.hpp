@@ -1,5 +1,5 @@
 //
-// file : init.cpp
+// file : tupai.hpp
 //
 // This file is part of Tupai.
 //
@@ -17,27 +17,14 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-// Tupai
-#include <tupai/common/init.hpp>
-
-#if defined(ARCH_amd64)
-	#include <tupai/x86/amd64/init.hpp>
-#elif defined(ARCH_i386)
-	#include <tupai/x86/i386/init.hpp>
-#elif defined(ARCH_rpi2)
-	#include <tupai/arm/rpi2/init.hpp>
-#endif
+#ifndef TUPAI_TUPAI_HPP
+#define TUPAI_TUPAI_HPP
 
 namespace tupai
 {
-	int init()
-	{
-		#if defined(ARCH_amd64)
-			return x86::amd64::init();
-		#elif defined(ARCH_i386)
-			return x86::i386::init();
-		#elif defined(ARCH_rpi2)
-			return arm::rpi2::init();
-		#endif
-	}
+	const char* tupai_get_name();
+	const char* tupai_get_name_decorative();
+	const char* tupai_get_version();
 }
+
+#endif

@@ -1,5 +1,5 @@
 //
-// file : uart.hpp
+// file : arch.cpp
 //
 // This file is part of Tupai.
 //
@@ -17,24 +17,13 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_ARM_RPI2_UART_HPP
-#define TUPAI_ARM_RPI2_UART_HPP
-
-// Standard
-#include <stddef.h>
-#include <stdint.h>
+// Tupai
+#include <tupai/arch.hpp>
 
 namespace tupai
 {
-	namespace arm
+	const char* arch_get_target()
 	{
-		namespace rpi2
-		{
-			void    uart_init();
-			void    uart_write(uint8_t b);
-			uint8_t uart_read();
-		}
+		return "amd64";
 	}
 }
-
-#endif

@@ -17,15 +17,18 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+.set MB_MAGIC, 0xE85250D6
+.set MB_ARCH,  0
+.set MB_SIZE,  (mb_end - mb_start)
+.set MB_CHECKSUM, (0 - (MB_MAGIC + MB_ARCH + MB_SIZE))
+
 .section .rodata.multiboot
 	.align 4
 	mb_start:
-		.long 0xE85250D6                  // Multiboot 2 magic number
-		.long 0                           // Architecture 0 (protected mode i386)
-		.long (mb_end - mb_start) // Header length
-
-		// Checksum
-		.long (0x100000000 - (0xE85250D6 + 0 + (mb_end - mb_start)))
+		.long MB_MAGIC
+		.long MB_ARCH
+		.long MB_SIZE
+		.long MB_CHECKSUM
 
 		// Optional Multiboot tags [none yet]
 		.long

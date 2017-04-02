@@ -1,5 +1,5 @@
 //
-// file : arch.hpp
+// file : tty.hpp
 //
 // This file is part of Tupai.
 //
@@ -17,15 +17,13 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_X86_ARCH_HPP
-#define TUPAI_X86_ARCH_HPP
+#ifndef TUPAI_TTY_HPP
+#define TUPAI_TTY_HPP
 
 namespace tupai
 {
-	namespace x86
-	{
-		static inline const char* get_family() { return "x86"; }
-	}
+	void tty_init();
+	void tty_print(const char* str);
 }
 
 #endif
