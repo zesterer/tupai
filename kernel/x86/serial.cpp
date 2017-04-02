@@ -29,6 +29,7 @@ namespace tupai
 {
 	namespace x86
 	{
+		const char*    port_names[4] = {"COM1", "COM2", "COM3", "COM4"};
 		const uint16_t port_offsets[4] = { 0x03F8, 0x02F8, 0x03E8, 0x02E8 };
 		const uint32_t UART_CLOCK_RATE = 115200;
 
@@ -40,13 +41,26 @@ namespace tupai
 			serial_initiated = true;
 		}
 
-		void serial_open(serial_port port, uint32_t baudrate, uint8_t databits, uint8_t stopbits, serial_parity parity)
+		size_t serial_count_ports()
 		{
-			if (serial_port_open[(int)port])
+			return 4;
+		}
+
+		const char** serial_list_ports()
+		{
+			return port_names;
+		}
+
+		void serial_open_port(int port_id, uint32_t baudrate, uint8_t databits, uint8_t stopbits, serial_parity parity)
+		{
+			if (port_id == -1) // Make sure the port id is valid
+				return;
+
+			if (serial_port_open[port_id])
 				return; // It's already open
 
 			// Find the serial port's I/O port
-			uint16_t port_offset = port_offsets[(int)port];
+			uint16_t port_offset = port_offsets[port_id];
 
 			if (databits < 5 || databits > 8)
 				return; // Invalid number of data bits
@@ -72,19 +86,27 @@ namespace tupai
 			outb(port_offset + 4, 0x0B); // Reenable serial interrupts
 
 			// Flag the port as open
-			serial_port_open[(int)port] = true;
+			serial_port_open[port_id] = true;
 		}
 
-		void serial_write(serial_port port, uint8_t c)
+		void serial_write(int port_id, uint8_t c)
 		{
-			uint16_t port_offset = port_offsets[(int)port]; // Find the serial port's I/O port
+			if (port_id == -1) // Make sure the port id is valid
+				return;
+
+			uint16_t port_offset = port_offsets[port_id]; // Find the serial port's I/O port
+
 			while ((inb(port_offset + 5) & 0x20) == 0); // Wait until port is ready for writing
 			outb(port_offset, c);
 		}
 
-		uint8_t serial_read(serial_port port)
+		uint8_t serial_read(int port_id)
 		{
-			uint16_t port_offset = port_offsets[(int)port]; // Find the serial port's I/O port
+			if (port_id == -1) // Make sure the port id is valid
+				return 0; // Return null data
+
+			uint16_t port_offset = port_offsets[port_id]; // Find the serial port's I/O port
+
 			while ((inb(port_offset + 5) & 0x1) == 0); // Wait until port is ready for reading
 			return inb(port_offset);
 		}

@@ -48,10 +48,10 @@ namespace tupai
 		for (int i = 1; i < CORE_COUNT; i ++)
 			arm::mmio_write(CORE_OFFSET * 0x10 * i, (size_t)&core_hang);
 		arm::delay(500); // Wait for the cores to wake up
-		debug_print("Made cores [2, 3, 4] idle\n");
+		debug_print("[DBG] Made cores [2, 3, 4] idle\n");
 
 		// Enter the kernel main with a stable environment
-		debug_print("Finished rpi2 initiation\n");
+		debug_print("[DBG] Finished rpi2 initiation\n");
 		kmain();
 	}
 

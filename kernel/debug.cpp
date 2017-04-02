@@ -19,64 +19,46 @@
 
 // Tupai
 #include <tupai/debug.hpp>
-
-#if defined(ARCH_FAMILY_x86)
-	#include <tupai/x86/serial.hpp>
-#elif defined(ARCH_rpi2)
-	#include <tupai/arm/rpi2/serial.hpp>
-#else
-	#warning "Architecture provides no debugging interface!"
-#endif
+#include <tupai/dev/serial.hpp>
 
 namespace tupai
 {
 	bool debug_initiated = false;
+	int debug_serial_port_id;
 
 	void debug_init()
 	{
 		if (debug_initiated)
 			return;
 
-		#if defined(ARCH_FAMILY_x86)
+		dev::serial_init();
+
+		const char** serial_port_names = dev::serial_list_ports();
+		// Search the serial port list, trying to open a debugging port
+		for (size_t i = 0; i < dev::serial_count_ports() && debug_serial_port_id == -1; i ++)
+			debug_serial_port_id = dev::serial_open_port(serial_port_names[i]);
+
+		if (debug_serial_port_id != -1)
 		{
-			x86::serial_init();
-			x86::serial_open(x86::serial_port::COM1);
-			debug_print("Started kernel debugging on COM1\n");
+			debug_print("[DBG] Started serial debug output on ");
+			debug_print(serial_port_names[debug_serial_port_id]);
+			debug_print(".\n");
 		}
-		#elif defined(ARCH_rpi2)
-		{
-			arm::rpi2::serial_init();
-			debug_print("Started kernel debugging on UART0\n");
-		}
-		#endif
+		else
+			debug_print("[DBG] Could not find port for serial debug output!\n");
 
 		debug_initiated = true;
 	}
 
 	void debug_write(char c)
 	{
-		#if defined(ARCH_FAMILY_x86)
-		{
-			x86::serial_write(x86::serial_port::COM1, c);
-			if (c == '\n') // Serial debugging interfaces regard a carriage return as a newline
-				x86::serial_write(x86::serial_port::COM1, '\r');
-		}
-		#elif defined(ARCH_rpi2)
-		{
-			arm::rpi2::serial_write(c);
-			if (c == '\n') // Serial debugging interfaces regard a carriage return as a newline
-				arm::rpi2::serial_write('\r');
-		}
-		#endif
+		dev::serial_write(debug_serial_port_id, c);
+		if (c == '\n') // Serial debugging interfaces regard a carriage return as a newline
+			dev::serial_write(debug_serial_port_id, '\r');
 	}
 
 	void debug_print(const char* str)
 	{
-		// Display debugging prefix
-		const char* prefix = "DEBUG: ";
-		for (size_t i = 0; prefix[i] != '\0'; i ++)
-			debug_write(prefix[i]);
-
 		for (size_t i = 0; str[i] != '\0'; i ++)
 			debug_write(str[i]);
 	}

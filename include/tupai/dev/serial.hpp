@@ -1,5 +1,5 @@
 //
-// file : str.h
+// file : serial.hpp
 //
 // This file is part of Tupai.
 //
@@ -17,26 +17,27 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_UTIL_STR_H
-#define TUPAI_UTIL_STR_H
+#ifndef TUPAI_DEV_SERIAL_HPP
+#define TUPAI_DEV_SERIAL_HPP
 
 // Standard
 #include <stddef.h>
 #include <stdint.h>
 
-static inline size_t str_len(const char* str)
+namespace tupai
 {
-	size_t i;
-	for (i = 0; str[i] != '\0'; i ++);
-	return i;
-}
+	namespace dev
+	{
+		void serial_init();
 
-static inline void str_cpy(const char* src, char* dest)
-{
-	size_t i;
-	for (i = 0; src[i] != '\0'; i ++)
-		dest[i] = src[i];
-	dest[i] = '\0';
+		size_t       serial_count_ports();
+		const char** serial_list_ports();
+
+		int serial_open_port(const char* port);
+
+		void    serial_write(int port_id, uint8_t val);
+		uint8_t serial_read(int port_id);
+	}
 }
 
 #endif

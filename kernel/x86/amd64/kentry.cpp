@@ -37,7 +37,7 @@ namespace tupai
 		debug_init();
 
 		// Enter the kernel main with a stable environment
-		debug_print("Finished amd64 initiation\n");
+		debug_print("[DBG] Finished amd64 initiation\n");
 		kmain();
 	}
 }

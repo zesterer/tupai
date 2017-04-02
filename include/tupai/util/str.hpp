@@ -1,5 +1,5 @@
 //
-// file : serial.hpp
+// file : str.hpp
 //
 // This file is part of Tupai.
 //
@@ -17,8 +17,8 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_ARM_RPI2_SERIAL_HPP
-#define TUPAI_ARM_RPI2_SERIAL_HPP
+#ifndef TUPAI_UTIL_STR_HPP
+#define TUPAI_UTIL_STR_HPP
 
 // Standard
 #include <stddef.h>
@@ -26,19 +26,28 @@
 
 namespace tupai
 {
-	namespace arm
+	namespace util
 	{
-		namespace rpi2
+		static inline size_t str_len(const char* str)
 		{
-			void serial_init();
+			size_t i;
+			for (i = 0; str[i] != '\0'; i ++);
+			return i;
+		}
 
-			size_t       serial_count_ports();
-			const char** serial_list_ports();
+		static inline void str_cpy(const char* src, char* dest)
+		{
+			size_t i;
+			for (i = 0; src[i] != '\0'; i ++)
+				dest[i] = src[i];
+			dest[i] = '\0';
+		}
 
-			void serial_open_port(int port_id);
-
-			void    serial_write(int port_id, uint8_t b);
-			uint8_t serial_read(int port_id);
+		static inline size_t str_cmp(const char* str0, const char* str1)
+		{
+			while ((*str0 && *str1) && (*str0 == *str1))
+				str0++,str1++;
+			return *str0 - *str1;
 		}
 	}
 }

@@ -33,7 +33,7 @@ CC_FLAGS=$(CC_FLAGS) -DP_NAME=\"$(P_NAME)\" -DP_NAME_DECORATIVE=\"$(P_NAME_DECOR
 CC_FLAGS=$(CC_FLAGS) -DARCH_FAMILY_$(TARGET_FAMILY)
 CC_FLAGS=$(CC_FLAGS) -std=c++14 -Wall -Wextra -pedantic -O3 -fpic -ffreestanding -fno-exceptions -fno-rtti -nostdlib -g
 
-OBJECTS=$(OBJECTS) *.o
+OBJECTS=$(OBJECTS) *.o dev/*.o
 
 LINK_FLAGS=$(LINK_FLAGS) -lgcc
 

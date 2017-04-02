@@ -71,8 +71,28 @@ namespace tupai
 				UART0_TDR    = (UART0_BASE + 0x8C),
 			};
 
+			const char* port_names[1] = {"UART0"};
+
 			void serial_init()
 			{
+				// Do nothing
+			}
+
+			size_t serial_count_ports()
+			{
+				return 1; // We only have one port, UART0
+			}
+
+			const char** serial_list_ports()
+			{
+				return port_names;
+			}
+
+			void serial_open_port(int port_id)
+			{
+				if (port_id != 0) // We only have one serial port: UART0
+					return;
+
 				// Disable UART0
 				mmio_write(UART0_CR, 0x00000000);
 				// Setup GPIO pins 14 & 15
@@ -111,14 +131,20 @@ namespace tupai
 				mmio_write(UART0_CR, (1 << 0) | (1 << 8) | (1 << 9));
 			}
 
-			void serial_write(uint8_t b)
+			void serial_write(int port_id, uint8_t b)
 			{
+				if (port_id != 0) // We only have one serial port: UART0
+					return;
+
 				while (mmio_read(UART0_FR) & (1 << 5));
 				mmio_write(UART0_DR, b);
 			}
 
-			uint8_t serial_read()
+			uint8_t serial_read(int port_id)
 			{
+				if (port_id != 0) // We only have one serial port: UART0
+					return 0; // Return null data
+
 				while (mmio_read(UART0_FR) & (1 << 4));
 				return mmio_read(UART0_DR);
 			}
