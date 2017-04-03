@@ -18,7 +18,7 @@
 //
 
 // Tupai
-#include <tupai/kmain.hpp>
+#include <tupai/main.hpp>
 #include <tupai/debug.hpp>
 #include <tupai/arm/mmio.hpp>
 #include <tupai/arm/delay.hpp>
@@ -48,11 +48,11 @@ namespace tupai
 		for (int i = 1; i < CORE_COUNT; i ++)
 			arm::mmio_write(CORE_OFFSET * 0x10 * i, (size_t)&core_hang);
 		arm::delay(500); // Wait for the cores to wake up
-		debug_print("[DBG] Made cores [2, 3, 4] idle\n");
+		debug_print("[DBG] Set cores [2, 3, 4] into idle state\n");
 
 		// Enter the kernel main with a stable environment
 		debug_print("[DBG] Finished rpi2 initiation\n");
-		kmain();
+		main();
 	}
 
 	void core_hang()

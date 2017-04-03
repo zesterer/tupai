@@ -43,11 +43,17 @@ namespace tupai
 			dest[i] = '\0';
 		}
 
-		static inline size_t str_cmp(const char* str0, const char* str1)
+		static inline bool str_equal(const char* str0, const char* str1)
 		{
-			while ((*str0 && *str1) && (*str0 == *str1))
-				str0++,str1++;
-			return *str0 - *str1;
+			size_t i = 0;
+			do
+			{
+				if (str0[i] != str1[i])
+					return false;
+				i ++;
+			} while (str0[i] != '\0');
+
+			return true;
 		}
 	}
 }

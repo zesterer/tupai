@@ -33,6 +33,7 @@ namespace tupai
 
 		dev::serial_init();
 
+		// Find the names of available serial ports
 		const char** serial_port_names = dev::serial_list_ports();
 		// Search the serial port list, trying to open a debugging port
 		for (size_t i = 0; i < dev::serial_count_ports() && debug_serial_port_id == -1; i ++)

@@ -46,18 +46,19 @@ namespace tupai
 		#endif
 	}
 
+	void tty_write(char c)
+	{
+		// Mirror TTY output with the debugging interface
+		debug_write(c);
+
+		#if defined(ARCH_FAMILY_x86)
+			x86::textmode_write(x);
+		#endif
+	}
+
 	void tty_print(const char* str)
 	{
 		for (size_t i = 0; str[i] != '\0'; i ++)
-		{
-			// Mirror TTY output with the debugging interface
-			debug_write(str[i]);
-
-			#if defined(ARCH_FAMILY_x86)
-			{
-				x86::textmode_write(str[i]);
-			}
-			#endif
-		}
+			tty_write(str[i]);
 	}
 }

@@ -1,5 +1,5 @@
 //
-// file : kmain.hpp
+// file : main.hpp
 //
 // This file is part of Tupai.
 //
@@ -17,12 +17,12 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_KMAIN_HPP
-#define TUPAI_KMAIN_HPP
+#ifndef TUPAI_MAIN_HPP
+#define TUPAI_MAIN_HPP
 
 namespace tupai
 {
-	int kmain();
+	int main();
 }
 
 #endif

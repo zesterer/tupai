@@ -1,5 +1,5 @@
 //
-// file : kmain.cpp
+// file : main.cpp
 //
 // This file is part of Tupai.
 //
@@ -18,14 +18,17 @@
 //
 
 // Tupai
-#include <tupai/kmain.hpp>
+#include <tupai/main.hpp>
 #include <tupai/tupai.hpp>
 #include <tupai/arch.hpp>
 #include <tupai/tty.hpp>
 
+#include <tupai/util/fmt.hpp>
+#include <tupai/util/out.hpp>
+
 namespace tupai
 {
-	void kwelcome()
+	void motd()
 	{
 		tty_print(tupai_get_name_decorative());
 		tty_print(" ");
@@ -38,7 +41,7 @@ namespace tupai
 		tty_print("\n");
 	}
 
-	int kmain()
+	int main()
 	{
 		// At this point, we should have a stable environment with memory
 		// protection, a heap, a page frame allocator, etc. all configured.
@@ -49,8 +52,13 @@ namespace tupai
 		// Initiate the TTY
 		tty_init();
 
-		kwelcome();
-		tty_print("Welcome to the kernel. It doesn't do much yet.\n");
+		motd();
+		util::print("Welcome to the kernel. It doesn't do much yet.\n");
+
+		// Test formatting!
+		char mytest[50];
+		util::fmt(mytest, "Hello, ", "there", "!", '\n');
+		util::print(mytest, "And ", "another test!", '\n', "Haha!\n");
 
 		return 0;
 	}

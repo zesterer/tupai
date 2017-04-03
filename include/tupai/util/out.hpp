@@ -1,5 +1,5 @@
 //
-// file : conv.h
+// file : out.hpp
 //
 // This file is part of Tupai.
 //
@@ -17,17 +17,36 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_UTIL_CONV_H
-#define TUPAI_UTIL_CONV_H
+#ifndef TUPAI_UTIL_OUT_HPP
+#define TUPAI_UTIL_OUT_HPP
 
 // Tupai
-#include <tupai/util/str.h>
-#include <tupai/util/char.h>
+#include <tupai/tty.hpp>
+#include <tupai/util/fmt.hpp>
 
 // Standard
 #include <stddef.h>
 #include <stdint.h>
 
+namespace tupai
+{
+	namespace util
+	{
+		struct __print_funct
+		{
+			void operator()(char c)
+			{
+				tty_write(c);
+			}
+		};
 
+		template <typename... Args>
+		void print(Args&&... args)
+		{
+			__print_funct funct;
+			__pass_funct{(__fmt_arg(funct, args), 1)...};
+		}
+	}
+}
 
 #endif

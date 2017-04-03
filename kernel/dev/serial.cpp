@@ -75,8 +75,13 @@ namespace tupai
 
 			// Search for the correct port name
 			for (size_t i = 0; i < port_count; i ++)
-				if (util::str_cmp(port_names[i], port) == 0)
+			{
+				if (util::str_equal(port_names[i], port))
+				{
 					port_id = i;
+					break;
+				}
+			}
 
 			if (port_id == -1) // The port name was not found
 				return port_id;

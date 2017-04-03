@@ -23,6 +23,7 @@
 namespace tupai
 {
 	void tty_init();
+	void tty_write(char c);
 	void tty_print(const char* str);
 }
 

@@ -18,7 +18,7 @@
 //
 
 // Tupai
-#include <tupai/kmain.hpp>
+#include <tupai/main.hpp>
 #include <tupai/debug.hpp>
 
 // Standard
@@ -38,6 +38,6 @@ namespace tupai
 
 		// Enter the kernel main with a stable environment
 		debug_print("[DBG] Finished amd64 initiation\n");
-		kmain();
+		main();
 	}
 }
