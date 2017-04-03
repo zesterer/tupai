@@ -41,12 +41,14 @@ namespace tupai
 
 		if (debug_serial_port_id != -1)
 		{
-			debug_print("[DBG] Started serial debug output on ");
-			debug_print(serial_port_names[debug_serial_port_id]);
-			debug_print(".\n");
+			debug_print_fmt(
+				"Started serial debug output on ",
+				serial_port_names[debug_serial_port_id],
+				".\n"
+			);
 		}
 		else
-			debug_print("[DBG] Could not find port for serial debug output!\n");
+			debug_print("Could not find port for serial debug output!\n");
 
 		debug_initiated = true;
 	}
@@ -60,6 +62,11 @@ namespace tupai
 
 	void debug_print(const char* str)
 	{
+		// Debug prefix
+		const char* prefix = "[DEBUG] ";
+		for (size_t i = 0; prefix[i] != '\0'; i ++)
+			debug_write(prefix[i]);
+
 		for (size_t i = 0; str[i] != '\0'; i ++)
 			debug_write(str[i]);
 	}

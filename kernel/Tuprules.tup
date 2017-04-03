@@ -33,7 +33,7 @@ CC_FLAGS=$(CC_FLAGS) -DP_NAME=\"$(P_NAME)\" -DP_NAME_DECORATIVE=\"$(P_NAME_DECOR
 CC_FLAGS=$(CC_FLAGS) -DARCH_FAMILY_$(TARGET_FAMILY)
 CC_FLAGS=$(CC_FLAGS) -std=c++14 -Wall -Wextra -pedantic -O3 -fpic -ffreestanding -fno-exceptions -fno-rtti -nostdlib -g
 
-OBJECTS=$(OBJECTS) *.o dev/*.o
+OBJECTS=$(OBJECTS) *.o dev/*.o util/*.o
 
 LINK_FLAGS=$(LINK_FLAGS) -lgcc
 
@@ -71,6 +71,6 @@ endif
 !ASM      = |> $(ASM_EXEC) $(CC_FLAGS) -o %o -c %f                            |> %B.o
 !CC       = |> $(CC_EXEC) $(CC_FLAGS) $(INCLUDES) -o %o -c %f                 |> %B.o
 !CPP      = |> $(CPP_EXEC) $(CC_FLAGS) $(INCLUDES) -o %o -c %f                |> %B.o
-!LINKER   = |> $(LINKER) $(CC_FLAGS) -T $(LINK_SCRIPT) $(LINK_FLAGS) -o %o %f |> %B
+!LINKER   = |> $(LINKER) $(CC_FLAGS) -T $(LINK_SCRIPT) -o %o %f $(LINK_FLAGS) |> %B
 !ARCHIVER = |> $(ARCHIVER) rcs %o %f                                          |> %B.a
 !OBJCOPY  = |> $(OBJCOPY) $(OBJCOPY_FLAGS) %f %o                              |> %B.o

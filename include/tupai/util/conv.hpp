@@ -1,5 +1,5 @@
 //
-// file : kentry.cpp
+// file : conv.hpp
 //
 // This file is part of Tupai.
 //
@@ -17,9 +17,8 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-// Tupai
-#include <tupai/main.hpp>
-#include <tupai/debug.hpp>
+#ifndef TUPAI_UTIL_CONV_HPP
+#define TUPAI_UTIL_CONV_HPP
 
 // Standard
 #include <stddef.h>
@@ -27,17 +26,20 @@
 
 namespace tupai
 {
-	extern "C" void kentry(size_t mb_header, size_t stack)
+	namespace util
 	{
-		// Declare as unused
-		(void) mb_header;
-		(void) stack;
+		bool compose(int val, char* buff, size_t n, int base = 10, int pad = 0);
+		bool compose(unsigned int val, char* buff, size_t n, int base = 10, int pad = 0);
 
-		// Initiate debugging
-		debug_init();
+		bool compose(long val, char* buff, size_t n, int base = 10, int pad = 0);
+		bool compose(unsigned long val, char* buff, size_t n, int base = 10, int pad = 0);
 
-		// Enter the kernel main with a stable environment
-		debug_print("Finished amd64 initiation\n");
-		main();
+		bool compose(long long val, char* buff, size_t n, int base = 10, int pad = 0);
+		bool compose(unsigned long long val, char* buff, size_t n, int base = 10, int pad = 0);
+
+		bool compose(void* val, char* buff, size_t n);
+		bool compose(bool val, char* buff, size_t n);
 	}
 }
+
+#endif

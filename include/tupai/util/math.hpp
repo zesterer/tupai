@@ -1,5 +1,5 @@
 //
-// file : kentry.cpp
+// file : math.hpp
 //
 // This file is part of Tupai.
 //
@@ -17,9 +17,8 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-// Tupai
-#include <tupai/main.hpp>
-#include <tupai/debug.hpp>
+#ifndef TUPAI_UTIL_MATH_HPP
+#define TUPAI_UTIL_MATH_HPP
 
 // Standard
 #include <stddef.h>
@@ -27,17 +26,17 @@
 
 namespace tupai
 {
-	extern "C" void kentry(size_t mb_header, size_t stack)
+	namespace util
 	{
-		// Declare as unused
-		(void) mb_header;
-		(void) stack;
+		template <typename T, typename U>
+		T max(T a, U b) { return (a > b) ? a : b; }
 
-		// Initiate debugging
-		debug_init();
+		template <typename T, typename U>
+		T min(T a, U b) { return (a < b) ? a : b; }
 
-		// Enter the kernel main with a stable environment
-		debug_print("Finished amd64 initiation\n");
-		main();
+		template <typename T>
+		T abs(T x) { return (x < 0) ? -x : x; }
 	}
 }
+
+#endif

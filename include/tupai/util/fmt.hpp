@@ -21,7 +21,7 @@
 #define TUPAI_UTIL_FMT_HPP
 
 // Tupai
-#include <tupai/tty.hpp>
+#include <tupai/util/conv.hpp>
 
 // Standard
 #include <stddef.h>
@@ -31,20 +31,21 @@ namespace tupai
 {
 	namespace util
 	{
-		struct __fmt_funct
+		// Default format ostream, for writing to character buffers
+		struct __fmt_ostream
 		{
 			char* buff;
 			size_t pos;
 			size_t size;
 
-			__fmt_funct(char* buff, size_t size)
+			__fmt_ostream(char* buff, size_t size)
 			{
-				this->pos = 0;
 				this->buff = buff;
+				this->pos = 0;
 				this->size = size;
 			}
 
-			void operator()(char c)
+			void write(char c)
 			{
 				if (this->pos + 1 >= this->size)
 					return;
@@ -54,17 +55,125 @@ namespace tupai
 			}
 		};
 
-		template <typename F>
-		void __fmt_arg(F& functor, const char* str)
+		// String formatter
+		template <typename T>
+		void __fmt_arg(T& ostream, const char* str)
 		{
 			for (size_t i = 0; str[i] != '\0'; i ++)
-				functor(str[i]);
+				ostream.write(str[i]);
 		}
 
-		template <typename F>
-		void __fmt_arg(F& functor, char c)
+		// Character formatter
+		template <typename T>
+		void __fmt_arg(T& ostream, char c)
 		{
-			functor(c);
+			ostream.write(c);
+		}
+
+		/*
+		// Generic integer composition formatter
+		template <typename T, typename U>
+		void __fmt_arg(T& ostream, U i)
+		{
+			char buff[sizeof(U) * 8 + 4];
+			compose(i, buff, sizeof(buff) / sizeof(char));
+			__fmt_arg(ostream, buff);
+		}
+		*/
+
+		// Int formatter
+		template <typename T>
+		void __fmt_arg(T& ostream, int i, int base = 10, int pad = 0)
+		{
+			char buff[sizeof(int) * 8 + 4];
+			compose(i, buff, sizeof(buff) / sizeof(char), base, pad);
+			__fmt_arg(ostream, buff);
+		}
+
+		// Unsigned int formatter
+		template <typename T>
+		void __fmt_arg(T& ostream, unsigned int i, int base = 10, int pad = 0)
+		{
+			char buff[sizeof(unsigned int) * 8 + 4];
+			compose(i, buff, sizeof(buff) / sizeof(char), base, pad);
+			__fmt_arg(ostream, buff);
+		}
+
+		// Long formatter
+		template <typename T>
+		void __fmt_arg(T& ostream, long i, int base = 10, int pad = 0)
+		{
+			char buff[sizeof(long) * 8 + 4];
+			compose(i, buff, sizeof(buff) / sizeof(char), base, pad);
+			__fmt_arg(ostream, buff);
+		}
+
+		// Unsigned long formatter
+		template <typename T>
+		void __fmt_arg(T& ostream, unsigned long i, int base = 10, int pad = 0)
+		{
+			char buff[sizeof(unsigned long) * 8 + 4];
+			compose(i, buff, sizeof(buff) / sizeof(char), base, pad);
+			__fmt_arg(ostream, buff);
+		}
+
+		// Long long formatter
+		template <typename T>
+		void __fmt_arg(T& ostream, long long i, int base = 10, int pad = 0)
+		{
+			char buff[sizeof(long long) * 8 + 4];
+			compose(i, buff, sizeof(buff) / sizeof(char), base, pad);
+			__fmt_arg(ostream, buff);
+		}
+
+		// Unsigned long long formatter
+		template <typename T>
+		void __fmt_arg(T& ostream, unsigned long long i, int base = 10, int pad = 0)
+		{
+			char buff[sizeof(unsigned long long) * 8 + 4];
+			compose(i, buff, sizeof(buff) / sizeof(char), base, pad);
+			__fmt_arg(ostream, buff);
+		}
+
+		// Int format wrapper
+		template <typename T>
+		struct fmt_int
+		{
+			T val;
+			int base;
+			int pad;
+
+			fmt_int(T val, int base = 10, int pad = 0)
+			{
+				this->val = val;
+				this->base = base;
+				this->pad = pad;
+			}
+		};
+
+		// Int format formatter
+		template <typename T, typename U>
+		void __fmt_arg(T& ostream, fmt_int<U> fmt)
+		{
+			__fmt_arg(ostream, fmt.val, fmt.base, fmt.pad);
+		}
+
+		// Boolean formatter
+		template <typename T>
+		void __fmt_arg(T& ostream, bool val)
+		{
+			char buff[6];
+			compose(val, buff, sizeof(buff) / sizeof(char));
+			__fmt_arg(ostream, buff);
+		}
+
+		// Pointer formatter
+		template <typename T>
+		void __fmt_arg(T& ostream, void* val)
+		{
+			char buff[sizeof(void*) * 8 + 4];
+			compose(val, buff, sizeof(buff) / sizeof(char));
+			__fmt_arg(ostream, buff);
 		}
 
 		struct __pass_funct
@@ -80,8 +189,8 @@ namespace tupai
 			for (size_t i = 0; i < SIZE; i ++)
 				buff[i] = '\0';
 
-			__fmt_funct funct(buff, SIZE);
-			__pass_funct{(__fmt_arg(funct, args), 1)...};
+			__fmt_ostream ostream(buff, SIZE);
+			__pass_funct{(__fmt_arg(ostream, args), 1)...};
 		}
 	}
 }

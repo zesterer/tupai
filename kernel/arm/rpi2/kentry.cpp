@@ -36,22 +36,25 @@ namespace tupai
 
 	extern "C" void kentry(uint32_t r0, uint32_t r1, uint32_t atags)
 	{
-		// Declare as unused
-		(void) r0;
-		(void) r1;
-		(void) atags;
-
 		// Initiate debugging
 		debug_init();
+
+		// Passed information
+		debug_print_fmt(
+			"kentry called with:\n",
+			"  r0    -> ", (void*)r0, '\n',
+			"  r1    -> ", (void*)r1, '\n',
+			"  atags -> ", (void*)atags, '\n'
+		);
 
 		// Wake up other cores and hang them to prevent slowdown
 		for (int i = 1; i < CORE_COUNT; i ++)
 			arm::mmio_write(CORE_OFFSET * 0x10 * i, (size_t)&core_hang);
 		arm::delay(500); // Wait for the cores to wake up
-		debug_print("[DBG] Set cores [2, 3, 4] into idle state\n");
+		debug_print("Set cores [2, 3, 4] into idle state\n");
 
 		// Enter the kernel main with a stable environment
-		debug_print("[DBG] Finished rpi2 initiation\n");
+		debug_print("Finished rpi2 initiation\n");
 		main();
 	}
 

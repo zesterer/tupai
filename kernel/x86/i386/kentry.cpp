@@ -37,7 +37,7 @@ namespace tupai
 		debug_init();
 
 		// Enter the kernel main with a stable environment
-		debug_print("[DBG] Finished i386 initiation\n");
+		debug_print("Finished i386 initiation\n");
 		main();
 	}
 }

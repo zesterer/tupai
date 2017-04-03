@@ -52,7 +52,7 @@ namespace tupai
 		debug_write(c);
 
 		#if defined(ARCH_FAMILY_x86)
-			x86::textmode_write(x);
+			x86::textmode_write(c);
 		#endif
 	}
 

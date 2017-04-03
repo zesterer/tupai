@@ -33,11 +33,13 @@
 		mov sp, #0x8000
 
 		// Enable the FPU (in coprocessor enable register)
+		push {r0, r1, r2}
 		ldr r0, =(0xF << 20)
 		mcr p15, 0, r0, c1, c0, 2
 		mov r3, #0x40000000 // Enable FPU in FP exception reg
 		//vmsr FPEXC, r3
 		.long 0xEEE83A10 // Assembler bug, replace with above line when binutils is fixed!
+		pop {r0, r1, r2}
 
 		// Clear the BSS
 		ldr r4, =__bss_start

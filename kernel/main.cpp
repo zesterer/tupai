@@ -53,12 +53,7 @@ namespace tupai
 		tty_init();
 
 		motd();
-		util::print("Welcome to the kernel. It doesn't do much yet.\n");
-
-		// Test formatting!
-		char mytest[50];
-		util::fmt(mytest, "Hello, ", "there", "!", '\n');
-		util::print(mytest, "And ", "another test!", '\n', "Haha!\n");
+		util::print_fmt("Welcome to the kernel. It doesn't do much yet.\n");
 
 		return 0;
 	}

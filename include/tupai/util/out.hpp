@@ -32,19 +32,26 @@ namespace tupai
 {
 	namespace util
 	{
-		struct __print_funct
+		struct __print_ostream
 		{
-			void operator()(char c)
+			void write(char c)
 			{
 				tty_write(c);
 			}
 		};
 
-		template <typename... Args>
-		void print(Args&&... args)
+		void print(const char* str)
 		{
-			__print_funct funct;
-			__pass_funct{(__fmt_arg(funct, args), 1)...};
+			__print_ostream o;
+			for (size_t i = 0; str[i] != '\0'; i ++)
+				o.write(str[i]);
+		}
+
+		template <typename... Args>
+		void print_fmt(Args&&... args)
+		{
+			__print_ostream ostream;
+			__pass_funct{(__fmt_arg(ostream, args), 1)...};
 		}
 	}
 }
