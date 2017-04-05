@@ -72,6 +72,8 @@ namespace tupai
 			};
 
 			const char* port_names[1] = {"UART0"};
+			const uint8_t  parity_values[5] = { 0b000, 0b010, 0b110 };
+			const uint32_t UART_CLOCK_RATE = 3000000;
 
 			void serial_init()
 			{
@@ -88,10 +90,19 @@ namespace tupai
 				return port_names;
 			}
 
-			void serial_open_port(int port_id)
+			bool serial_open_port(int port_id, uint32_t baudrate, uint8_t databits, uint8_t stopbits, dev::serial_parity parity)
 			{
 				if (port_id != 0) // We only have one serial port: UART0
-					return;
+					return false;
+
+				if (databits < 5 || databits > 8)
+					return false; // Invalid number of data bits
+
+				if (stopbits < 1 || stopbits > 2)
+					return false; // Invalid number of stop bits
+
+				if ((int)parity < 0 || (int)parity > 2)
+					return false; // Invalid parity
 
 				// Disable UART0
 				mmio_write(UART0_CR, 0x00000000);
@@ -101,7 +112,7 @@ namespace tupai
 				mmio_write(GPPUD, 0x00000000);
 				delay(150);
 
-				// Disable pull up/down for pins 14, 15
+				// Enable pull up/down for pins 14, 15
 				mmio_write(GPPUDCLK0, (1 << 14) | (1 << 15));
 				delay(150);
 
@@ -116,19 +127,28 @@ namespace tupai
 				// Fractional_part_register = (Fractional_part * 64) + 0.5
 				// UART_CLOCK = 3000000; Baud = 115200
 
-				// Divider = 3000000 / (16 * 115200) = 1.627 = ~1
-				mmio_write(UART0_IBRD, 1);
-				// Fractional_part_register = (0.627 * 64) + 0.5 = 40.6 = ~40
-				mmio_write(UART0_FBRD, 40);
+				// Divider = 3000000 / (16 * baudrate)
+				uint32_t dividerx100 = (100 * UART_CLOCK_RATE) / (16 * baudrate);
+				uint32_t divider = dividerx100 / 100;
+				mmio_write(UART0_IBRD, divider);
+				// Fractional_part_register = (frac(divider) * 64) + 0.5
+				uint32_t fractional = (((dividerx100 % 100) * 64) + 50) / 100;
+				mmio_write(UART0_FBRD, fractional);
 
 				// Enable FIFO & 8-bit data transmission (1 stop bit, no parity)
-				mmio_write(UART0_LCRH, (1 << 4) | (1 << 5) | (1 << 6));
+				uint32_t databits_val = (databits - 5) << 5;
+				uint32_t stopbits_val = (stopbits - 1) << 3;
+				uint32_t parity_val   = parity_values[(int)parity];
+				uint32_t fifo_val     = (1 << 4);
+				mmio_write(UART0_LCRH, databits_val | stopbits_val | parity_val | fifo_val);
 
 				// Mask all interrupts
 				mmio_write(UART0_IMSC, (1 << 1) | (1 << 4) | (1 << 5) | (1 << 6) | (1 << 7) | (1 << 8) | (1 << 9) | (1 << 10));
 
 				// Enable UART0, receive & transfer part of UART
 				mmio_write(UART0_CR, (1 << 0) | (1 << 8) | (1 << 9));
+
+				return true;
 			}
 
 			void serial_write(int port_id, uint8_t b)

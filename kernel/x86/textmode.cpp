@@ -20,6 +20,9 @@
 // Tupai
 #include <tupai/x86/textmode.hpp>
 #include <tupai/x86/port.hpp>
+#include <tupai/arch.hpp>
+
+#include <tupai/debug.hpp>
 
 // Standard
 #include <stddef.h>
@@ -38,6 +41,9 @@ namespace tupai
 
 		void textmode_init()
 		{
+			// Add the virtual kernel offset
+			buffer = (uint16_t*)((size_t)buffer + arch_get_offset());
+
 			col = 0;
 			row = 0;
 		}

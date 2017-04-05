@@ -20,6 +20,8 @@
 .extern _init
 .extern kentry
 .extern run_checks
+.extern setup_paging
+.extern enable_paging
 
 .global start
 
@@ -27,13 +29,35 @@
 	// Kernel entry
 	start:
 		// Set the stack pointer
-		mov $stack_top, %esp
+		mov $boot_stack_top, %esp
+
+		// Preserve Multiboot things
+		mov %eax, (mb_header_magic)
+		mov %ebx, (mb_header_ptr)
 
 		// Run initial checks
 		call run_checks
 
+		// Paging
+		call setup_paging
+		call enable_paging
+
+		jmp start_higher
+
+.section .text
+	start_higher:
+		// Set the stack pointer
+		mov $stack_top, %esp
+
 		// Call global constructor code
 		call _init
+
+		// Set up kentry arguments
+		push %esp // Stack
+		mov (mb_header_ptr), %eax
+		push %eax // Multiboot info
+		mov (mb_header_magic), %eax
+		push %eax // Multiboot magic
 
 		// Call the kernel's entry point
 		call kentry
@@ -44,8 +68,20 @@
 			jmp hang
 
 .section .bss.boot
-	// Stack
+	// Multiboot things
+	mb_header_magic:
+		.long 0
+	mb_header_ptr:
+		.long 0
+
+	// Boot stack
 	.align 64
+	boot_stack_bottom:
+		.skip 256 // A 256-byte boot stack
+	boot_stack_top:
+
+.section .bss
+	// Stack
 	stack_bottom:
-		.skip 256 // Reserve a 256-byte stack
+		.skip 4096 // A 4K stack
 	stack_top:

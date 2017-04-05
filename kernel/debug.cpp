@@ -19,7 +19,7 @@
 
 // Tupai
 #include <tupai/debug.hpp>
-#include <tupai/dev/serial.hpp>
+#include <tupai/tty.hpp>
 
 namespace tupai
 {
@@ -28,46 +28,32 @@ namespace tupai
 
 	void debug_init()
 	{
-		if (debug_initiated)
-			return;
-
-		dev::serial_init();
-
-		// Find the names of available serial ports
-		const char** serial_port_names = dev::serial_list_ports();
-		// Search the serial port list, trying to open a debugging port
-		for (size_t i = 0; i < dev::serial_count_ports() && debug_serial_port_id == -1; i ++)
-			debug_serial_port_id = dev::serial_open_port(serial_port_names[i]);
-
-		if (debug_serial_port_id != -1)
+		#if defined(DEBUG_ENABLED)
 		{
-			debug_print_fmt(
-				"Started serial debug output on ",
-				serial_port_names[debug_serial_port_id],
-				".\n"
-			);
+			if (debug_initiated)
+				return;
+
+			tty_init();
+
+			debug_initiated = true;
 		}
-		else
-			debug_print("Could not find port for serial debug output!\n");
-
-		debug_initiated = true;
+		#endif
 	}
 
-	void debug_write(char c)
+	void debug_write(char c __attribute__((unused)))
 	{
-		dev::serial_write(debug_serial_port_id, c);
-		if (c == '\n') // Serial debugging interfaces regard a carriage return as a newline
-			dev::serial_write(debug_serial_port_id, '\r');
+		#if defined(DEBUG_ENABLED)
+			tty_write(c);
+		#endif
 	}
 
-	void debug_print(const char* str)
+	void debug_print(const char* str __attribute__((unused)))
 	{
-		// Debug prefix
-		const char* prefix = "[DEBUG] ";
-		for (size_t i = 0; prefix[i] != '\0'; i ++)
-			debug_write(prefix[i]);
-
-		for (size_t i = 0; str[i] != '\0'; i ++)
-			debug_write(str[i]);
+		#if defined(DEBUG_ENABLED)
+		{
+			tty_print("[DEBUG] "); // Debug prefix
+			tty_print(str);
+		}
+		#endif
 	}
 }

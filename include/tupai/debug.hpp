@@ -31,18 +31,33 @@ namespace tupai
 
 	struct __debug_ostream
 	{
-		void write(char c)
+		inline void write(char c)
 		{
 			debug_write(c);
 		}
 	};
 
 	template <typename... Args>
-	void debug_print_fmt(Args&&... args)
+	inline void debug_print(Args&&... args __attribute__((unused)))
 	{
-		debug_print(""); // For the debug prefix
-		__debug_ostream ostream;
-		util::__pass_funct{(util::__fmt_arg(ostream, args), 1)...};
+		#if defined(DEBUG_ENABLED)
+		{
+			debug_print(""); // For the debug prefix
+			__debug_ostream ostream;
+			util::__pass_funct{(util::__fmt_arg(ostream, args), 1)...};
+		}
+		#endif
+	}
+
+	template <typename... Args>
+	inline void debug_println(Args&&... args __attribute__((unused)))
+	{
+		#if defined(DEBUG_ENABLED)
+		{
+			debug_print(args...);
+			debug_write('\n');
+		}
+		#endif
 	}
 }
 

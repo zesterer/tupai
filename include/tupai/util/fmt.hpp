@@ -45,7 +45,7 @@ namespace tupai
 				this->size = size;
 			}
 
-			void write(char c)
+			inline void write(char c)
 			{
 				if (this->pos + 1 >= this->size)
 					return;
@@ -179,11 +179,11 @@ namespace tupai
 		struct __pass_funct
 		{
 			template <typename ...T>
-			__pass_funct(T...) {}
+			inline __pass_funct(T...) {}
 		};
 
 		template <size_t SIZE, typename... Args>
-		void fmt(char(&buff)[SIZE], Args&&... args)
+		inline void fmt(char(&buff)[SIZE], Args&&... args)
 		{
 			// Clear the buffer
 			for (size_t i = 0; i < SIZE; i ++)

@@ -26,4 +26,9 @@ namespace tupai
 	{
 		return "rpi2";
 	}
+
+	size_t arch_get_offset()
+	{
+		return 0x0;
+	}
 }

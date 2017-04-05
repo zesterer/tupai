@@ -25,20 +25,17 @@
 
 #include <tupai/util/fmt.hpp>
 #include <tupai/util/out.hpp>
+#include <tupai/util/str.hpp>
 
 namespace tupai
 {
 	void motd()
 	{
-		tty_print(tupai_get_name_decorative());
-		tty_print(" ");
-		tty_print(tupai_get_version());
-		tty_print(" on ");
-		tty_print(arch_get_family());
-		tty_print("/");
-		tty_print(arch_get_target());
-		tty_print("\nCopyright 2017, Joshua Barretto\n");
-		tty_print("\n");
+		util::print('\n', tupai_get_name_decorative(), " ",
+			tupai_get_version(), " on ",
+			arch_get_family(), "/", arch_get_target(), '\n',
+			"Copyright 2017, Joshua Barretto\n", '\n'
+		);
 	}
 
 	int main()
@@ -52,8 +49,37 @@ namespace tupai
 		// Initiate the TTY
 		tty_init();
 
+		// Show the MOTD
 		motd();
-		util::print_fmt("Welcome to the kernel. It doesn't do much yet.\n");
+
+		// Display a very simple shell
+		bool halted = false;
+		util::println("Type 'help' for more info.");
+		while (!halted)
+		{
+			util::print("$ ");
+
+			char buff[64];
+			tty_input(buff, 64);
+			tty_write('\n');
+
+			if (util::str_equal(buff, "help"))
+			{
+				util::print(
+					"Available commands:\n",
+					"  help -> Show this help text\n",
+					"  info -> Show system info\n",
+					"  halt -> Halt the kernel\n"
+				);
+			}
+			else if (util::str_equal(buff, "info"))
+				motd();
+			else if (util::str_equal(buff, "halt"))
+				halted = true;
+			else
+				util::println("Command '", buff, "' not found!");
+		}
+		util::println("Halting...");
 
 		return 0;
 	}

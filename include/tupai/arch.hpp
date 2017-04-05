@@ -20,10 +20,15 @@
 #ifndef TUPAI_ARCH_HPP
 #define TUPAI_ARCH_HPP
 
+// Standard
+#include <stddef.h>
+#include <stdint.h>
+
 namespace tupai
 {
 	const char* arch_get_target();
 	const char* arch_get_family();
+	size_t arch_get_offset();
 }
 
 #endif

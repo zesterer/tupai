@@ -20,6 +20,7 @@
 // Tupai
 #include <tupai/main.hpp>
 #include <tupai/debug.hpp>
+#include <tupai/arch.hpp>
 
 // Standard
 #include <stddef.h>
@@ -27,17 +28,23 @@
 
 namespace tupai
 {
-	extern "C" void kentry(size_t mb_header, size_t stack)
+	extern "C" void kentry(uint32_t mb_magic, void* mb_header, void* stack)
 	{
-		// Declare as unused
-		(void) mb_header;
-		(void) stack;
-
 		// Initiate debugging
 		debug_init();
 
+		// Passed information
+		debug_print("Kernel virtual base is located at offset ", (void*)arch_get_offset(), '\n');
+		debug_print( // Display kentry info
+			"kentry at ", (void*)&kentry, " called with:\n",
+			"  mb_magic  -> ", util::fmt_int<uint32_t>(mb_magic, 16), '\n',
+			"  mb_header -> ", mb_header, '\n',
+			"  stack     -> ", stack, '\n'
+		);
+
 		// Enter the kernel main with a stable environment
 		debug_print("Finished i386 initiation\n");
+
 		main();
 	}
 }

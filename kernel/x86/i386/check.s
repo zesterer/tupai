@@ -23,7 +23,7 @@
 	.code32
 
 	run_checks: // Run a set of initial checks on the system
-		call check_multiboot
+		// No checks yet
 		ret
 
 	panic: // Display an ASCII error string
@@ -60,15 +60,5 @@
 		strend:
 		ret
 
-	check_multiboot:
-		cmp $0x36D76289, %eax
-		jne error_no_multiboot
-		ret
-
-	error_no_multiboot:
-		mov $error_no_multiboot_str, %eax
-		jmp panic
-
 .section .rodata.boot
-	error_no_multiboot_str:
-		.ascii "Panic: Kernel not booted by a multiboot bootloader"
+	// Error messages here

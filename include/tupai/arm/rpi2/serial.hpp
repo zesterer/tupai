@@ -20,6 +20,9 @@
 #ifndef TUPAI_ARM_RPI2_SERIAL_HPP
 #define TUPAI_ARM_RPI2_SERIAL_HPP
 
+// Tupai
+#include <tupai/dev/serial.hpp>
+
 // Standard
 #include <stddef.h>
 #include <stdint.h>
@@ -35,7 +38,7 @@ namespace tupai
 			size_t       serial_count_ports();
 			const char** serial_list_ports();
 
-			void serial_open_port(int port_id);
+			bool serial_open_port(int port_id, uint32_t baudrate = 57600, uint8_t databits = 8, uint8_t stopbits = 1, dev::serial_parity parity = dev::serial_parity::NONE);
 
 			void    serial_write(int port_id, uint8_t b);
 			uint8_t serial_read(int port_id);

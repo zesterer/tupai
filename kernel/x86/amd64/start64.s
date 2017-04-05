@@ -19,13 +19,15 @@
 
 .extern _init
 .extern kentry
+.extern mb_header_magic
+.extern mb_header_ptr
 
 .global start64
 
 .section .text.boot
 	.code64
 
-	// Kernel entry
+	// 64-bit kernel entry
 	start64:
 		// Clear the data segment registers to the null segment descriptor
 		mov $0, %ax
@@ -35,8 +37,28 @@
 		mov %ax, %fs
 		mov %ax, %gs
 
+		xchg %bx, %bx
+
+		// Jump to the higher-half entry
+		//jmp start64_higher
+		movabs $start64_higher, %rax
+		jmp *%rax
+
+.section .text
+	.code64
+
+	// 64-bit higher-half kernel entry
+	start64_higher:
+		// Set the stack pointer
+		movabs $stack_top, %rsp
+
 		// Call global constructor code
 		call _init
+
+		// Set up kentry arguments
+		mov %rsp, %rdx // Stack
+		mov (mb_header_ptr), %esi // Multiboot info
+		mov (mb_header_magic), %edi // Multiboot magic
 
 		// Call the kernel's entry point
 		call kentry
@@ -45,3 +67,10 @@
 	hang:
 		hlt
 		jmp hang
+
+.section .bss
+	// Stack
+	.align 64
+	stack_bottom:
+		.skip 4096 // Reserve a 4K stack
+	stack_top:

@@ -59,6 +59,11 @@
 			cmp r4, r9
 			blo 1b
 
+		// Entry arguments
+		ldr r0, =#0x00000000
+		ldr r1, =#0x00000C42
+		ldr r2, =#0x00000100
+
 		// Enter kernel main
 		ldr r3, =kentry
 		blx r3

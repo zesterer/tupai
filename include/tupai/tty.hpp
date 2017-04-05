@@ -20,11 +20,19 @@
 #ifndef TUPAI_TTY_HPP
 #define TUPAI_TTY_HPP
 
+// Standard
+#include <stddef.h>
+#include <stdint.h>
+
 namespace tupai
 {
 	void tty_init();
+
 	void tty_write(char c);
 	void tty_print(const char* str);
+
+	char tty_read();
+	void tty_input(char* buff, size_t n);
 }
 
 #endif

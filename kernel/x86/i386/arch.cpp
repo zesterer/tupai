@@ -26,4 +26,9 @@ namespace tupai
 	{
 		return "i386";
 	}
+
+	size_t arch_get_offset()
+	{
+		return 0xC0000000;
+	}
 }

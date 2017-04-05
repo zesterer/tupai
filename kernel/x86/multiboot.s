@@ -17,6 +17,7 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+// Multiboot 2 constants
 .set MB_MAGIC, 0xE85250D6
 .set MB_ARCH,  0
 .set MB_SIZE,  (mb_end - mb_start)

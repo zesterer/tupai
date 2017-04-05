@@ -1,15 +1,21 @@
 ENTRY(start)
-OUTPUT_FORMAT(arm-none-eabi)
+OUTPUT_FORMAT(elf64-x86-64)
 
 SECTIONS
 {
-	/* Start at LOADER_ADDR */
-	. = 0x8000;
-	KERNEL_VIRTUAL = 0x0;
+	. = 1M;
+	/* KERNEL_VIRTUAL = 0xFFFF800000000000; */
+	KERNEL_VIRTUAL = 0xFFFF800000000000; /* Temporary while fixing relocation issue */
+
+	/* Place the Multiboot header at the beginning */
+	.rodata.multiboot BLOCK(4K) : ALIGN(4K)
+	{
+		*(.rodata.multiboot)
+	}
 
 	.text.boot BLOCK(4K) : ALIGN(4K)
 	{
-		KEEP(*(.text.boot))
+		*(.text.boot)
 	}
 
 	.data.boot BLOCK(4K) : ALIGN(4K)
@@ -45,9 +51,6 @@ SECTIONS
 	.bss ALIGN(4K) : AT(ADDR(.bss) - KERNEL_VIRTUAL)
 	{
 		*(COMMON)
-		__bss_start = .;
-		bss = .;
 		*(.bss)
-		__bss_end = .;
 	}
 }

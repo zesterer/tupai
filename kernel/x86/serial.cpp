@@ -31,6 +31,7 @@ namespace tupai
 	{
 		const char*    port_names[4] = {"COM1", "COM2", "COM3", "COM4"};
 		const uint16_t port_offsets[4] = { 0x03F8, 0x02F8, 0x03E8, 0x02E8 };
+		const uint8_t  parity_values[5] = { 0b000000, 0b001000, 0b011000, 0b101000, 0b111000 };
 		const uint32_t UART_CLOCK_RATE = 115200;
 
 		bool serial_initiated = false;
@@ -51,22 +52,22 @@ namespace tupai
 			return port_names;
 		}
 
-		void serial_open_port(int port_id, uint32_t baudrate, uint8_t databits, uint8_t stopbits, serial_parity parity)
+		bool serial_open_port(int port_id, uint32_t baudrate, uint8_t databits, uint8_t stopbits, dev::serial_parity parity)
 		{
 			if (port_id == -1) // Make sure the port id is valid
-				return;
+				return false;
 
 			if (serial_port_open[port_id])
-				return; // It's already open
+				return false; // It's already open
 
 			// Find the serial port's I/O port
 			uint16_t port_offset = port_offsets[port_id];
 
 			if (databits < 5 || databits > 8)
-				return; // Invalid number of data bits
+				return false; // Invalid number of data bits
 
 			if (stopbits < 1 || stopbits > 2)
-				return; // Invalid number of stop bits
+				return false; // Invalid number of stop bits
 
 			outb(port_offset + 1, 0x00); // Disable serial interrupts
 
@@ -79,7 +80,7 @@ namespace tupai
 			// Calculate serial configuration
 			uint8_t databits_val = databits - 5;
 			uint8_t stopbits_val = (stopbits - 1) << 2;
-			uint8_t parity_val = (uint8_t)parity;
+			uint8_t parity_val = parity_values[(int)parity];
 			uint8_t serial_cfg = databits_val | stopbits_val | parity_val;
 			outb(port_offset + 3, serial_cfg); // Set serial configuration
 			outb(port_offset + 2, 0xC7); // Enable FIFO and clear (with a 14-byte buffer)
@@ -87,6 +88,8 @@ namespace tupai
 
 			// Flag the port as open
 			serial_port_open[port_id] = true;
+
+			return true;
 		}
 
 		void serial_write(int port_id, uint8_t c)

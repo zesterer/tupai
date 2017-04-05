@@ -22,6 +22,7 @@
 #include <tupai/debug.hpp>
 #include <tupai/arm/mmio.hpp>
 #include <tupai/arm/delay.hpp>
+#include <tupai/arch.hpp>
 
 // Standard
 #include <stddef.h>
@@ -40,8 +41,9 @@ namespace tupai
 		debug_init();
 
 		// Passed information
-		debug_print_fmt(
-			"kentry called with:\n",
+		debug_print("Kernel virtual base is located at offset ", (void*)arch_get_offset(), '\n');
+		debug_print( // Display kentry info
+			"kentry at ", (void*)&kentry, " called with:\n",
 			"  r0    -> ", (void*)r0, '\n',
 			"  r1    -> ", (void*)r1, '\n',
 			"  atags -> ", (void*)atags, '\n'

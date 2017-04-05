@@ -67,7 +67,7 @@ namespace tupai
 			#endif
 		}
 
-		int serial_open_port(const char* port)
+		int serial_open_port(const char* port, uint32_t baudrate, uint8_t databits, uint8_t stopbits, serial_parity parity)
 		{
 			const char** port_names = serial_list_ports();
 			size_t port_count = serial_count_ports();
@@ -86,12 +86,16 @@ namespace tupai
 			if (port_id == -1) // The port name was not found
 				return port_id;
 
-			// It's valid, so open a port
+			// It's valid, so attempt to open a port
+			bool success;
 			#if defined(ARCH_FAMILY_x86)
-				x86::serial_open_port(port_id);
+				success = x86::serial_open_port(port_id, baudrate, databits, stopbits, parity);
 			#elif defined(ARCH_rpi2)
-				arm::rpi2::serial_open_port(port_id);
+				success = arm::rpi2::serial_open_port(port_id, baudrate, databits, stopbits, parity);
 			#endif
+
+			if (!success)
+				return -1;
 
 			return port_id;
 		}

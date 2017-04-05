@@ -34,13 +34,13 @@ namespace tupai
 	{
 		struct __print_ostream
 		{
-			void write(char c)
+			static inline void write(char c)
 			{
 				tty_write(c);
 			}
 		};
 
-		void print(const char* str)
+		inline void print(const char* str)
 		{
 			__print_ostream o;
 			for (size_t i = 0; str[i] != '\0'; i ++)
@@ -48,10 +48,17 @@ namespace tupai
 		}
 
 		template <typename... Args>
-		void print_fmt(Args&&... args)
+		inline void print(Args&&... args)
 		{
 			__print_ostream ostream;
 			__pass_funct{(__fmt_arg(ostream, args), 1)...};
+		}
+
+		template <typename... Args>
+		inline void println(Args&&... args)
+		{
+			print(args...);
+			__print_ostream::write('\n');
 		}
 	}
 }

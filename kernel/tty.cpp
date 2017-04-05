@@ -19,13 +19,8 @@
 
 // Tupai
 #include <tupai/tty.hpp>
+#include <tupai/dev/serial.hpp>
 #include <tupai/debug.hpp>
-
-#if defined(ARCH_FAMILY_x86)
-	#include <tupai/x86/textmode.hpp>
-#else
-	#warning "Architecture provides no TTY interface!"
-#endif
 
 // Standard
 #include <stddef.h>
@@ -33,32 +28,71 @@
 
 namespace tupai
 {
+	bool tty_initiated = false;
+	int tty_serial_port = -1;
+
 	void tty_init()
 	{
-		// Mirror with debugging interface
-		debug_init();
+		if (tty_initiated)
+			return;
 
-		#if defined(ARCH_FAMILY_x86)
+		// Find the names of available serial ports
+		const char** serial_port_names = dev::serial_list_ports();
+		// Search the serial port list, trying to open a debugging port
+		for (size_t i = 0; i < dev::serial_count_ports() && tty_serial_port == -1; i ++)
+			tty_serial_port = dev::serial_open_port(serial_port_names[i], 57600, 8, 1, dev::serial_parity::NONE);
+
+		if (tty_serial_port != -1)
 		{
-			x86::textmode_init();
-			x86::textmode_clear();
+			debug_print(
+				"Started serial tty output on ", serial_port_names[tty_serial_port], '\n',
+				"  baudrate -> ", 57600, '\n',
+				"  databits -> ", 8, '\n',
+				"  stopbits -> ", 1, '\n',
+				"  parity   -> ", "NONE", '\n'
+			);
 		}
-		#endif
+		else
+			debug_print("Could not find port for serial tty output!\n");
+
+		tty_initiated = true;
 	}
 
 	void tty_write(char c)
 	{
-		// Mirror TTY output with the debugging interface
-		debug_write(c);
-
-		#if defined(ARCH_FAMILY_x86)
-			x86::textmode_write(c);
-		#endif
+		dev::serial_write(tty_serial_port, c);
+		if (c == '\n') // Serial interfaces regard a carriage return as a newline
+			dev::serial_write(tty_serial_port, '\r');
 	}
 
 	void tty_print(const char* str)
 	{
 		for (size_t i = 0; str[i] != '\0'; i ++)
 			tty_write(str[i]);
+	}
+
+	char tty_read()
+	{
+		return dev::serial_read(tty_serial_port);
+	}
+
+	void tty_input(char* buff, size_t n)
+	{
+		size_t i = 0;
+		while (i + 1 < n)
+		{
+			char c = tty_read();
+			tty_write(c);
+
+			if (c == '\r')
+				break;
+
+			if (c != '\0')
+			{
+				buff[i] = c;
+				i ++;
+			}
+		}
+		buff[i] = '\0';
 	}
 }
