@@ -68,12 +68,22 @@ namespace tupai
 				util::print(
 					"Available commands:\n",
 					"  help -> Show this help text\n",
+					"  motd -> Show MOTD\n",
 					"  info -> Show system info\n",
 					"  halt -> Halt the kernel\n"
 				);
 			}
-			else if (util::str_equal(buff, "info"))
+			else if (util::str_equal(buff, "motd"))
+			{
 				motd();
+			}
+			else if (util::str_equal(buff, "info"))
+			{
+				util::print(
+					"System Info:\n",
+					"  address_size -> ", sizeof(void*) * 8, " bits\n"
+				);
+			}
 			else if (util::str_equal(buff, "halt"))
 				halted = true;
 			else

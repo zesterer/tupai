@@ -26,8 +26,6 @@
 	// Setup paging
 	setup_paging:
 
-		// Identity mapping first
-
 		// Map 1st P4 entry to P3 table
 		mov $p3_lo_table, %eax
 		or $0b11, %eax // Present and writable
@@ -38,10 +36,25 @@
 		or $0b11, %eax // Present and writable
 		mov %eax, (p3_lo_table)
 
-		// Map 1st P2 entry to P1 table
-		mov $p1_lo_table, %eax
-		or $0b11, %eax // Present and writable
-		mov %eax, (p2_lo_table)
+		// Map P2 table entries
+		mov $0, %ecx
+		map_p2_lo_loop:
+			// Map the ECX-th P1 entry to a page at address 4K * ecx
+			mov $(512 * 8), %eax    // For each P1 table (size = 512 * 8)
+			imul %ecx, %eax         // Calculate 4K * ecx
+			or $0b11, %eax          // Present and writable
+			add $p1_lo_tables, %eax // Present, writable
+
+			mov $8, %edx
+			imul %ecx, %edx     // Calculate (p2_table + ecx * 8)...
+			add $p2_lo_table, %edx
+
+			mov %eax, (%edx)    // Map ECX-th entry (each entry is 8 bytes)...
+
+			// Iterate the loop
+			inc %ecx
+			cmp $(128), %ecx
+			jne map_p2_lo_loop
 
 		// Map P1 table entries
 		mov $0, %ecx
@@ -50,49 +63,17 @@
 			mov $4096, %eax     // 4K
 			imul %ecx, %eax     // Calculate 4K * ecx
 			or $0b11, %eax      // Present, writable
+
 			mov $8, %edx
 			imul %ecx, %edx     // Calculate (p1_table + ecx * 8)...
-			add $p1_lo_table, %edx
+			add $p1_lo_tables, %edx
+
 			mov %eax, (%edx)    // Map ECX-th entry (each entry is 8 bytes)...
 
 			// Iterate the loop
 			inc %ecx
-			cmp $512, %ecx
+			cmp $(512 * 128), %ecx
 			jne map_p1_lo_loop
-
-		// Now virtual mapping
-
-		// Map 128th P4 entry to P3 table
-		mov $p3_hi_table, %eax
-		or $0b11, %eax // Present and writable
-		mov %eax, (p4_table + 128 * 8) // At 1G offset
-
-		// Map 1st P3 entry to P2 table
-		mov $p2_hi_table, %eax
-		or $0b11, %eax // Present and writable
-		mov %eax, (p3_hi_table)
-
-		// Map 1st P2 entry to P1 table
-		mov $p1_hi_table, %eax
-		or $0b11, %eax // Present and writable
-		mov %eax, (p2_hi_table)
-
-		// Map P1 table entries
-		mov $0, %ecx
-		map_p1_hi_loop:
-			// Map the ECX-th P1 entry to a page at address 4K * ecx
-			mov $4096, %eax     // 4K
-			imul %ecx, %eax     // Calculate 4K * ecx
-			or $0b11, %eax      // Present, writable
-			mov $8, %edx
-			imul %ecx, %edx     // Calculate (p1_table + ecx * 8)...
-			add $p1_hi_table, %edx
-			mov %eax, (%edx)    // Map ECX-th entry (each entry is 8 bytes)...
-
-			// Iterate the loop
-			inc %ecx
-			cmp $512, %ecx
-			jne map_p1_hi_loop
 
 		ret
 
@@ -130,11 +111,5 @@
 		.skip 512 * 8
 	p2_lo_table:
 		.skip 512 * 8
-	p1_lo_table:
-		.skip 512 * 8
-	p3_hi_table:
-		.skip 512 * 8
-	p2_hi_table:
-		.skip 512 * 8
-	p1_hi_table:
-		.skip 512 * 8
+	p1_lo_tables:
+		.skip 512 * 8 * 128 // Enough to cover 4K * 512 * 128 = 256M of memory

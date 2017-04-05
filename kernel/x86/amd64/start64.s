@@ -21,6 +21,8 @@
 .extern kentry
 .extern mb_header_magic
 .extern mb_header_ptr
+.extern setup_paging64
+.extern enable_paging64
 
 .global start64
 
@@ -37,7 +39,9 @@
 		mov %ax, %fs
 		mov %ax, %gs
 
-		xchg %bx, %bx
+		// Setup 64-bit paging
+		call setup_paging64
+		call enable_paging64
 
 		// Jump to the higher-half entry
 		//jmp start64_higher
