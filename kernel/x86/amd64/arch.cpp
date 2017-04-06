@@ -29,7 +29,6 @@ namespace tupai
 
 	size_t arch_get_offset()
 	{
-		//return 0xFFFF800000000000;
-		return 0xFFFF800000000000; // Temporary while fixing relocation issue
+		return 0xFFFF800000000000;
 	}
 }

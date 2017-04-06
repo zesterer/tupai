@@ -44,7 +44,6 @@
 		call enable_paging64
 
 		// Jump to the higher-half entry
-		//jmp start64_higher
 		movabs $start64_higher, %rax
 		jmp *%rax
 

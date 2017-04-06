@@ -24,15 +24,33 @@
 	.code32
 
 	setup_paging:
-		// Map 1st P2 entry to P1 table (lower)
-		mov $p1_table, %eax
-		or $0b11, %eax // Present and writable
-		mov %eax, (p2_table)
+		// Map P2 table entries
+		mov $0, %ecx
+		map_p2_loop:
 
-		// Map 768th P2 entry to P1 table (higher) (i.e: virtual address offset)
-		mov $p1_table, %eax
-		or $0b11, %eax // Present and writable
-		mov %eax, (p2_table + 768 * 4)
+			// Map the ECX-th P1 entry to a page at address 4K * ecx
+			mov $(1024 * 4), %eax    // For each P1 table (size = 1024 * 4)
+			imul %ecx, %eax         // Calculate 4K * ecx
+			or $0b11, %eax          // Present and writable
+			add $p1_table, %eax // Present, writable
+
+			// Lower identity
+			mov $4, %edx
+			imul %ecx, %edx     // Calculate (p2_table + ecx * 8)...
+			add $p2_table, %edx
+			mov %eax, (%edx)    // Map ECX-th entry (each entry is 8 bytes)...
+
+			// Higher virtual
+			mov $4, %edx
+			imul %ecx, %edx     // Calculate (p2_table + ecx * 8)...
+			add $p2_table, %edx
+			add $(768 * 4), %edx
+			mov %eax, (%edx)    // Map ECX-th entry (each entry is 8 bytes)...
+
+			// Iterate the loop
+			inc %ecx
+			cmp $128, %ecx
+			jne map_p2_loop
 
 		// Map P1 table entries
 		mov $0, %ecx
@@ -41,6 +59,7 @@
 			mov $4096, %eax     // 4K
 			imul %ecx, %eax     // Calculate 4K * ecx
 			or $0b11, %eax      // Present, writable
+
 			mov $4, %edx
 			imul %ecx, %edx     // Calculate (p1_table + ecx * 8)...
 			add $p1_table, %edx
@@ -48,7 +67,7 @@
 
 			// Iterate the loop
 			inc %ecx
-			cmp $512, %ecx
+			cmp $512 * 128, %ecx
 			jne map_p1_loop
 
 		ret
@@ -80,4 +99,4 @@
 	p2_table:
 		.skip 1024 * 4
 	p1_table:
-		.skip 1024 * 4
+		.skip 1024 * 4 * 128
