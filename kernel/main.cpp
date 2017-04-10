@@ -22,10 +22,8 @@
 #include <tupai/tupai.hpp>
 #include <tupai/arch.hpp>
 #include <tupai/tty.hpp>
-
-#include <tupai/util/fmt.hpp>
+#include <tupai/shell.hpp>
 #include <tupai/util/out.hpp>
-#include <tupai/util/str.hpp>
 
 namespace tupai
 {
@@ -49,47 +47,9 @@ namespace tupai
 		// Initiate the TTY
 		tty_init();
 
-		// Show the MOTD
+		// Show the MOTD and a kernel shell
 		motd();
-
-		// Display a very simple shell
-		bool halted = false;
-		util::println("Type 'help' for more info.");
-		while (!halted)
-		{
-			util::print("$ ");
-
-			char buff[64];
-			tty_input(buff, 64);
-			tty_write('\n');
-
-			if (util::str_equal(buff, "help"))
-			{
-				util::print(
-					"Available commands:\n",
-					"  help -> Show this help text\n",
-					"  motd -> Show MOTD\n",
-					"  info -> Show system info\n",
-					"  halt -> Halt the kernel\n"
-				);
-			}
-			else if (util::str_equal(buff, "motd"))
-			{
-				motd();
-			}
-			else if (util::str_equal(buff, "info"))
-			{
-				util::print(
-					"System Info:\n",
-					"  address_size -> ", sizeof(void*) * 8, " bits\n"
-				);
-			}
-			else if (util::str_equal(buff, "halt"))
-				halted = true;
-			else
-				util::println("Command '", buff, "' not found!");
-		}
-		util::println("Halting...");
+		shell_main();
 
 		return 0;
 	}

@@ -29,6 +29,8 @@ namespace tupai
 	const char* arch_get_target();
 	const char* arch_get_family();
 	size_t arch_get_offset();
+
+	const size_t ARCH_PAGE_SIZE = 4096;
 }
 
 #endif

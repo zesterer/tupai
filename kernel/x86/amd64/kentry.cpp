@@ -28,22 +28,28 @@
 
 namespace tupai
 {
-	extern "C" void kentry(uint64_t mb_magic, void* mb_header, void* stack)
+	namespace x86
 	{
-		// Initiate debugging
-		debug_init();
+		namespace i386
+		{
+			extern "C" void kentry(uint64_t mb_magic, void* mb_header, void* stack)
+			{
+				// Initiate debugging
+				debug_init();
 
-		// Passed information
-		debug_print("Kernel virtual base is located at offset ", (void*)arch_get_offset(), '\n');
-		debug_print( // Display kentry info
-			"kentry at ", (void*)&kentry, " called with:\n",
-			"  mb_magic  -> ", util::fmt_int<uint64_t>(mb_magic, 16), '\n',
-			"  mb_header -> ", mb_header, '\n',
-			"  stack     -> ", stack, '\n'
-		);
+				// Passed information
+				debug_print("Kernel virtual base is located at offset ", (void*)arch_get_offset(), '\n');
+				debug_print( // Display kentry info
+					"kentry at ", (void*)&kentry, " called with:\n",
+					"  mb_magic  -> ", util::fmt_int<uint64_t>(mb_magic, 16), '\n',
+					"  mb_header -> ", mb_header, '\n',
+					"  stack     -> ", stack, '\n'
+				);
 
-		// Enter the kernel main with a stable environment
-		debug_print("Finished amd64 initiation\n");
-		main();
+				// Enter the kernel main with a stable environment
+				debug_print("Finished amd64 initiation\n");
+				main();
+			}
+		}
 	}
 }

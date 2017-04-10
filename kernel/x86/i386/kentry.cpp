@@ -21,6 +21,10 @@
 #include <tupai/main.hpp>
 #include <tupai/debug.hpp>
 #include <tupai/arch.hpp>
+#include <tupai/interrupt.hpp>
+#include <tupai/x86/i386/gdt.hpp>
+#include <tupai/x86/i386/idt.hpp>
+#include <tupai/x86/pic.hpp>
 
 // Standard
 #include <stddef.h>
@@ -28,23 +32,43 @@
 
 namespace tupai
 {
-	extern "C" void kentry(uint32_t mb_magic, void* mb_header, void* stack)
+	namespace x86
 	{
-		// Initiate debugging
-		debug_init();
+		namespace i386
+		{
+			extern "C" void kentry(uint32_t mb_magic, void* mb_header, void* stack)
+			{
+				// Initiate debugging
+				debug_init();
 
-		// Passed information
-		debug_print("Kernel virtual base is located at offset ", (void*)arch_get_offset(), '\n');
-		debug_print( // Display kentry info
-			"kentry at ", (void*)&kentry, " called with:\n",
-			"  mb_magic  -> ", util::fmt_int<uint32_t>(mb_magic, 16), '\n',
-			"  mb_header -> ", mb_header, '\n',
-			"  stack     -> ", stack, '\n'
-		);
+				// Passed information
+				debug_print("Kernel virtual base is located at offset ", (void*)arch_get_offset(), '\n');
+				debug_print( // Display kentry info
+					"kentry at ", (void*)&kentry, " called with:\n",
+					"  mb_magic  -> ", util::fmt_int<uint32_t>(mb_magic, 16), '\n',
+					"  mb_header -> ", mb_header, '\n',
+					"  stack     -> ", stack, '\n'
+				);
 
-		// Enter the kernel main with a stable environment
-		debug_print("Finished i386 initiation\n");
+				// Initiate and install the GDT
+				gdt_init();
+				gdt_install();
 
-		main();
+				// Initiate the PIC
+				pic_init();
+
+				// Initiate and install the IDT
+				idt_init();
+				idt_install();
+
+				// Enable interrupts
+				interrupt_enable();
+
+				// Enter the kernel main with a stable environment
+				debug_print("Finished i386 initiation\n");
+
+				main();
+			}
+		}
 	}
 }

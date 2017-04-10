@@ -76,7 +76,7 @@ namespace tupai
 		return dev::serial_read(tty_serial_port);
 	}
 
-	void tty_input(char* buff, size_t n)
+	void tty_readline(char* buff, size_t n)
 	{
 		size_t i = 0;
 		while (i + 1 < n)

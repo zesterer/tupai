@@ -1,5 +1,5 @@
 //
-// file : tty.hpp
+// file : panic.cpp
 //
 // This file is part of Tupai.
 //
@@ -17,28 +17,15 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_TTY_HPP
-#define TUPAI_TTY_HPP
-
-// Standard
-#include <stddef.h>
-#include <stdint.h>
+// Tupai
+#include <tupai/panic.hpp>
+#include <tupai/util/out.hpp>
 
 namespace tupai
 {
-	void tty_init();
-
-	void tty_write(char c);
-	void tty_print(const char* str);
-
-	char tty_read();
-	void tty_readline(char* buff, size_t n);
-
-	template <size_t SIZE>
-	void tty_readline(char(&buff)[SIZE])
+	void panic(const char* msg)
 	{
-		tty_readline(buff, SIZE);
+		util::println("[PANIC] ", msg);
+		hang();
 	}
 }
-
-#endif

@@ -1,5 +1,5 @@
 //
-// file : tty.hpp
+// file : pic.hpp
 //
 // This file is part of Tupai.
 //
@@ -17,8 +17,8 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_TTY_HPP
-#define TUPAI_TTY_HPP
+#ifndef TUPAI_X86_SERIAL_HPP
+#define TUPAI_X86_SERIAL_HPP
 
 // Standard
 #include <stddef.h>
@@ -26,18 +26,13 @@
 
 namespace tupai
 {
-	void tty_init();
-
-	void tty_write(char c);
-	void tty_print(const char* str);
-
-	char tty_read();
-	void tty_readline(char* buff, size_t n);
-
-	template <size_t SIZE>
-	void tty_readline(char(&buff)[SIZE])
+	namespace x86
 	{
-		tty_readline(buff, SIZE);
+		const uint8_t PIC_REMAP_OFFSET = 32;
+
+		void pic_init();
+		void pic_ack(uint8_t irq);
+		void pic_mask(uint8_t irq, bool enabled);
 	}
 }
 

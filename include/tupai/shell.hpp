@@ -1,5 +1,5 @@
 //
-// file : tty.hpp
+// file : shell.hpp
 //
 // This file is part of Tupai.
 //
@@ -17,8 +17,8 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_TTY_HPP
-#define TUPAI_TTY_HPP
+#ifndef TUPAI_SHELL_HPP
+#define TUPAI_SHELL_HPP
 
 // Standard
 #include <stddef.h>
@@ -26,19 +26,7 @@
 
 namespace tupai
 {
-	void tty_init();
-
-	void tty_write(char c);
-	void tty_print(const char* str);
-
-	char tty_read();
-	void tty_readline(char* buff, size_t n);
-
-	template <size_t SIZE>
-	void tty_readline(char(&buff)[SIZE])
-	{
-		tty_readline(buff, SIZE);
-	}
+	void shell_main();
 }
 
 #endif

@@ -51,7 +51,7 @@ namespace tupai
 				if (str0[i] != str1[i])
 					return false;
 				i ++;
-			} while (str0[i] != '\0');
+			} while (str0[i] != '\0' || str1[i] != '\0');
 
 			return true;
 		}

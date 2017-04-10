@@ -1,5 +1,5 @@
 //
-// file : tty.hpp
+// file : hang.cpp
 //
 // This file is part of Tupai.
 //
@@ -17,28 +17,14 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_TTY_HPP
-#define TUPAI_TTY_HPP
-
-// Standard
-#include <stddef.h>
-#include <stdint.h>
+// Tupai
+#include <tupai/panic.hpp>
 
 namespace tupai
 {
-	void tty_init();
-
-	void tty_write(char c);
-	void tty_print(const char* str);
-
-	char tty_read();
-	void tty_readline(char* buff, size_t n);
-
-	template <size_t SIZE>
-	void tty_readline(char(&buff)[SIZE])
+	void hang()
 	{
-		tty_readline(buff, SIZE);
+		while (1) // Hang forever
+			asm volatile ("wfe");
 	}
 }
-
-#endif
