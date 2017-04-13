@@ -18,7 +18,7 @@
 //
 
 // Tupai
-#include <tupai/x86/i386/gdt.hpp>
+#include <tupai/x86/amd64/gdt.hpp>
 #include <tupai/arch.hpp>
 #include <tupai/debug.hpp>
 #include <tupai/panic.hpp>
@@ -31,23 +31,25 @@ namespace tupai
 {
 	namespace x86
 	{
-		namespace i386
+		namespace amd64
 		{
 			struct gdt_desc_t
 			{
 				enum class access : uint8_t
 				{
-					READABLE = 0b0000001'0,
-					WRITABLE = 0b0000001'0,
-					EXECUTE  = 0b00001'000,
-					PRESENT  = 0b1'0000000,
-					ONE      = 0b0001'0000,
+					READABLE   = 0b0000001'0,
+					WRITABLE   = 0b0000001'0,
+					EXECUTE    = 0b00001'000,
+					PRESENT    = 0b1'0000000,
+					ONE        = 0b0001'0000,
+					CONFORMING = 0b000001'00,
 				};
 
 				enum class granularity : uint8_t
 				{
 					PAGE         = 0b1'000,
 					PROTECTED_32 = 0b01'00,
+					LONG_64      = 0b001'0,
 				};
 
 				uint16_t size_lo;
@@ -61,7 +63,7 @@ namespace tupai
 			struct gdt_ptr_t
 			{
 				uint16_t size;
-				uint32_t offset;
+				uint64_t offset;
 			} __attribute__((packed));
 
 			// The GDT
@@ -81,6 +83,7 @@ namespace tupai
 					(uint8_t)gdt_desc_t::access::READABLE |
 					(uint8_t)gdt_desc_t::access::EXECUTE |
 					(uint8_t)gdt_desc_t::access::ONE |
+					(uint8_t)gdt_desc_t::access::CONFORMING |
 					(uint8_t)gdt_desc_t::access::PRESENT;
 				uint8_t data_access_flags =
 					(uint8_t)gdt_desc_t::access::WRITABLE |
@@ -88,7 +91,7 @@ namespace tupai
 					(uint8_t)gdt_desc_t::access::PRESENT;
 				uint8_t granularity_flags =
 					(uint8_t)gdt_desc_t::granularity::PAGE |
-					(uint8_t)gdt_desc_t::granularity::PROTECTED_32;
+					(uint8_t)gdt_desc_t::granularity::LONG_64;
 
 				gdt_set_entry(0, 0x0, 0x0, 0, 0); // Null segment entry
 				gdt_set_entry(1, 0x0, 0xFFFFF, code_access_flags, granularity_flags); // Code segment entry
@@ -100,13 +103,14 @@ namespace tupai
 			void gdt_install()
 			{
 				gdt_ptr.size = sizeof(gdt_desc_t) * GDT_LENGTH - 1;
-				gdt_ptr.offset = (uint32_t)&gdt;
+				gdt_ptr.offset = (uint64_t)&gdt;
 
 				debug_println("GDT_PTR is at ", &gdt_ptr);
 
 				asm volatile
 				(
-					"lgdt (gdt_ptr)\n"
+					"movabs $gdt_ptr, %rax\n"
+						"lgdt (%rax)\n"
 
 					// Reload segment registers
 					"mov $0x10, %ax\n"
@@ -142,7 +146,7 @@ namespace tupai
 
 				debug_print(
 					"Set GDT entry ", n, " to:\n",
-					"  offset      -> ", (void*)offset, '\n',
+					"  offset      -> ", util::fmt_int<uint32_t>(offset, 16, 8), '\n',
 					"  size        -> ", util::fmt_int<uint32_t>(size, 16), '\n',
 					"  access      -> ", util::fmt_int<uint8_t>(access_flags, 16), '\n',
 					"  granularity -> ", util::fmt_int<uint8_t>(granularity_flags, 16), '\n'

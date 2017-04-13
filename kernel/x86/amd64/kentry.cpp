@@ -21,6 +21,9 @@
 #include <tupai/main.hpp>
 #include <tupai/debug.hpp>
 #include <tupai/arch.hpp>
+#include <tupai/x86/amd64/gdt.hpp>
+#include <tupai/x86/amd64/idt.hpp>
+#include <tupai/x86/pic.hpp>
 
 // Standard
 #include <stddef.h>
@@ -30,7 +33,7 @@ namespace tupai
 {
 	namespace x86
 	{
-		namespace i386
+		namespace amd64
 		{
 			extern "C" void kentry(uint64_t mb_magic, void* mb_header, void* stack)
 			{
@@ -45,6 +48,17 @@ namespace tupai
 					"  mb_header -> ", mb_header, '\n',
 					"  stack     -> ", stack, '\n'
 				);
+
+				// Initiate and install the GDT
+				gdt_init();
+				gdt_install();
+
+				// Initiate the PIC
+				pic_init();
+
+				// Initiate and install the IDT
+				idt_init();
+				idt_install();
 
 				// Enter the kernel main with a stable environment
 				debug_print("Finished amd64 initiation\n");

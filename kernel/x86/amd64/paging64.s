@@ -26,8 +26,6 @@
 	// Setup paging
 	setup_paging64:
 
-		xchg %bx, %bx
-
 		// Map 1st P4 entry to P3 table
 		mov $p3_lo_table, %rax
 		or $0b11, %rax // Present and writable
@@ -82,7 +80,6 @@
 			cmp $(512 * 128), %rcx
 			jne map_p1_lo_loop
 
-		xchg %bx, %bx
 		ret
 
 	// Enable paging

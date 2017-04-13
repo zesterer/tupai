@@ -74,7 +74,7 @@
 	gdt64:
 		gdt64_start:
 			.quad 0 // Zero entry
-			.quad (1 << 43) | (1 << 44) | (1 << 47) | (1 << 53) // 64-bit Code segment (executable, code descriptor, present, 64-bit)
+			.quad (1 << 43) | (1 << 44) | (1 << 47) | (1 << 53) // 64-bit Code segment (readable, code descriptor, present, 64-bit)
 		gdt64_end:
 		gdt64_ptr:
 			.word (gdt64_end - gdt64_start - 1)

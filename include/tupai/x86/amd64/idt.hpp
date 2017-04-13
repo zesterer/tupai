@@ -1,5 +1,5 @@
 //
-// file : main.cpp
+// file : idt.hpp
 //
 // This file is part of Tupai.
 //
@@ -17,30 +17,24 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-// Tupai
-#include <tupai/main.hpp>
-#include <tupai/tty.hpp>
-#include <tupai/shell.hpp>
+#ifndef TUPAI_X86_AMD64_IDT_HPP
+#define TUPAI_X86_AMD64_IDT_HPP
+
+// Standard
+#include <stddef.h>
+#include <stdint.h>
 
 namespace tupai
 {
-	int main()
+	namespace x86
 	{
-		// At this point, we should have a stable environment with memory
-		// protection, a heap, a page frame allocator, etc. all configured.
-		// The methods through which this is done are platform-dependent.
-		// Now, however, it's relatively safe to run generic code on the
-		// assumption that everything 'works'.
-
-		//volatile int i = 0;
-		//i = 5 / i;
-
-		// Initiate the TTY
-		tty_init();
-
-		// Run the kernel shell
-		shell_main();
-
-		return 0;
+		namespace amd64
+		{
+			void idt_init();
+			void idt_install();
+			void idt_set_entry(size_t irq, void* address, uint16_t selector_id = 1);
+		}
 	}
 }
+
+#endif

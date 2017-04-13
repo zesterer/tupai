@@ -18,7 +18,7 @@
 //
 
 // Tupai
-#include <tupai/x86/i386/idt.hpp>
+#include <tupai/x86/amd64/idt.hpp>
 #include <tupai/x86/pic.hpp>
 #include <tupai/arch.hpp>
 #include <tupai/debug.hpp>
@@ -32,7 +32,7 @@ namespace tupai
 {
 	namespace x86
 	{
-		namespace i386
+		namespace amd64
 		{
 			extern "C" void isr_0();
 			extern "C" void isr_1();
@@ -74,15 +74,17 @@ namespace tupai
 
 				uint16_t offset_lo;
 				uint16_t selector;
-				uint8_t  zero;
+				uint8_t  ist;
 				uint8_t  type_attr;
-				uint16_t offset_hi;
+				uint16_t offset_mid;
+				uint32_t offset_hi;
+				uint32_t zero;
 			} __attribute__((packed));
 
 			struct idt_ptr_t
 			{
 				uint16_t size;
-				uint32_t offset;
+				uint64_t offset;
 			} __attribute__((packed));
 
 			// The IDT
@@ -100,9 +102,9 @@ namespace tupai
 				".section .text\n"
 				"	.align 4\n"
 				"	isr_handler_stub:\n"
-				"		pushal\n"
+				//"		pushal\n"
 				"		call isr_handler_stub_main\n"
-				"		popal\n"
+				//"		popal\n"
 				"		iret\n"
 			);
 
@@ -145,7 +147,7 @@ namespace tupai
 			void idt_install()
 			{
 				idt_ptr.size = sizeof(idt_desc_t) * IDT_LENGTH - 1;
-				idt_ptr.offset = (uint32_t)&idt;
+				idt_ptr.offset = (uint64_t)&idt;
 
 				debug_print(
 					"IDT has the following properties:\n",
@@ -155,7 +157,8 @@ namespace tupai
 
 				asm volatile
 				(
-					"lidt (idt_ptr)\n"
+					"movabs $idt_ptr, %rax\n"
+					"lidt (%rax)\n"
 					//"ljmp $8, $idt_install_ljmp\n"
 					//"idt_install_ljmp:\n"
 				);
@@ -164,8 +167,9 @@ namespace tupai
 			void idt_set_entry(size_t irq, void* address, uint16_t selector_id)
 			{
 				// Set address (lo and hi parts)
-				idt[irq].offset_lo = ((uint32_t)address >>  0) & 0xFFFF;
-				idt[irq].offset_hi = ((uint32_t)address >> 16) & 0xFFFF;
+				idt[irq].offset_lo  = ((uint64_t)address >>  0) & 0xFFFF;
+				idt[irq].offset_mid = ((uint64_t)address >> 16) & 0xFFFF;
+				idt[irq].offset_hi  = ((uint64_t)address >> 32) & 0xFFFFFFFF;
 
 				// Set the code selector from the GDT. It's measured in bytes, so x8 (since GDT entries are 8 bytes big)
 				idt[irq].selector = selector_id * 8;

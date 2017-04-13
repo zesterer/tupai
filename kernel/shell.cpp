@@ -19,6 +19,8 @@
 
 // Tuapi
 #include <tupai/shell.hpp>
+#include <tupai/tupai.hpp>
+#include <tupai/arch.hpp>
 #include <tupai/panic.hpp>
 #include <tupai/util/in.hpp>
 #include <tupai/util/out.hpp>
@@ -26,9 +28,20 @@
 
 namespace tupai
 {
+	void shell_motd()
+	{
+		util::print('\n', tupai_get_name_decorative(), " ",
+			tupai_get_version(), " on ",
+			arch_get_family(), "/", arch_get_target(), '\n',
+			"Copyright 2017, Joshua Barretto\n", '\n'
+		);
+	}
+
 	void shell_main()
 	{
-		// Display a very simple shell
+		// Display the MOTD
+		shell_motd();
+
 		bool halted = false;
 		util::println("Type 'help' for more info.");
 		while (!halted)
@@ -44,10 +57,15 @@ namespace tupai
 				util::print(
 					"Available commands:\n",
 					"  help  -> Show this help text\n",
+					"  motd  -> Show the MOTD\n",
 					"  panic -> Trigger a kernel panic\n",
 					"  info  -> Show system info\n",
 					"  halt  -> Halt the kernel\n"
 				);
+			}
+			else if (util::str_equal(buff, "motd"))
+			{
+				shell_motd();
 			}
 			else if (util::str_equal(buff, "panic"))
 			{

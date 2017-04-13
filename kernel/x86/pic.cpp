@@ -98,7 +98,10 @@ namespace tupai
 			for (int i = 0; i < 16; i ++)
 				pic_mask(i, false);
 
-			debug_println("PIC initiated");
+			debug_print(
+				"PIC initiated with properties:", '\n',
+				"  IRQ offset -> ", offset, '\n'
+			);
 		}
 
 		void pic_ack(uint8_t irq)
@@ -120,6 +123,7 @@ namespace tupai
 			}
 
 			uint8_t val = inb(port);
+			wait(150);
 
 			if (enable)
 				value = val & ~(1 << irq);
@@ -127,6 +131,7 @@ namespace tupai
 				value = val | (1 << irq);
 
 			outb(port, value);
+			wait(150);
 		}
 	}
 }
