@@ -24,6 +24,8 @@
 #include <tupai/x86/amd64/gdt.hpp>
 #include <tupai/x86/amd64/idt.hpp>
 #include <tupai/x86/pic.hpp>
+#include <tupai/x86/pit.hpp>
+#include <tupai/interrupt.hpp>
 
 // Standard
 #include <stddef.h>
@@ -53,12 +55,20 @@ namespace tupai
 				gdt_init();
 				gdt_install();
 
+				// Initiate the IDT
+				idt_init();
+
 				// Initiate the PIC
 				pic_init();
 
-				// Initiate and install the IDT
-				idt_init();
+				// Initiate the PIT
+				pit_init();
+
+				// Install the IDT
 				idt_install();
+
+				// Enable interrupts
+				interrupt_enable();
 
 				// Enter the kernel main with a stable environment
 				debug_print("Finished amd64 initiation\n");

@@ -107,6 +107,8 @@ namespace tupai
 				asm volatile
 				(
 					"lgdt (gdt_ptr)\n"
+					"ljmp $8, $gdt_ljmp\n"
+					"gdt_ljmp:\n"
 
 					// Reload segment registers
 					"mov $0x10, %ax\n"

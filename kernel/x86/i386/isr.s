@@ -205,8 +205,8 @@
 
 		//pushl 0x52(%esp) // Push ISR error as second parameter
 		//pushl 0x44(%esp) // Push ISR identifer as first parameter
-		push $exception_error
-		call panic
+		//push $exception_error
+		call exception_panic
 
 		//pop %gs
 		//pop %fs

@@ -100,6 +100,10 @@ namespace tupai
 				debug_println("GDT initiated");
 			}
 
+			//struct gdt_ljmp_ptr_t { uint64_t ptr; uint16_t cs; } __attribute__((packed));
+			//extern "C" gdt_ljmp_ptr_t gdt_ljmp_ptr;
+			//gdt_ljmp_ptr_t gdt_ljmp_ptr;
+			//extern "C" void gdt_ljmp();
 			void gdt_install()
 			{
 				gdt_ptr.size = sizeof(gdt_desc_t) * GDT_LENGTH - 1;
@@ -107,10 +111,26 @@ namespace tupai
 
 				debug_println("GDT_PTR is at ", &gdt_ptr);
 
+				//gdt_ljmp_ptr.ptr = (uint64_t)gdt_ljmp;
+				//gdt_ljmp_ptr.cs = 0x0008;
+
 				asm volatile
 				(
 					"movabs $gdt_ptr, %rax\n"
-						"lgdt (%rax)\n"
+					"lgdt (%rax)\n"
+
+					// Far call
+					//"xchg %bx, %bx\n"
+					/*
+					"movabs $gdt_ljmp, %rax\n"
+					"ljmp *(%rax)\n"
+					"push $0x8\n"
+					"push $0f\n"
+					"ljmp *(%rsp)\n"
+					"0:\n"
+					"add $16, %rsp\n"
+					*/
+					"gdt_ljmp:\n"
 
 					// Reload segment registers
 					"mov $0x10, %ax\n"
@@ -146,8 +166,8 @@ namespace tupai
 
 				debug_print(
 					"Set GDT entry ", n, " to:\n",
-					"  offset      -> ", util::fmt_int<uint32_t>(offset, 16, 8), '\n',
-					"  size        -> ", util::fmt_int<uint32_t>(size, 16), '\n',
+					//"  offset      -> ", util::fmt_int<uint32_t>(offset, 16, 8), '\n',
+					//"  size        -> ", util::fmt_int<uint32_t>(size, 16), '\n',
 					"  access      -> ", util::fmt_int<uint8_t>(access_flags, 16), '\n',
 					"  granularity -> ", util::fmt_int<uint8_t>(granularity_flags, 16), '\n'
 				);

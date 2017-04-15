@@ -25,6 +25,8 @@
 #include <tupai/x86/i386/gdt.hpp>
 #include <tupai/x86/i386/idt.hpp>
 #include <tupai/x86/pic.hpp>
+#include <tupai/x86/pit.hpp>
+#include <tupai/interrupt.hpp>
 
 // Standard
 #include <stddef.h>
@@ -54,11 +56,16 @@ namespace tupai
 				gdt_init();
 				gdt_install();
 
+				// Initiate the IDT
+				idt_init();
+
 				// Initiate the PIC
 				pic_init();
 
-				// Initiate and install the IDT
-				idt_init();
+				// Initiate the PIT
+				pit_init();
+
+				// Install the IDT
 				idt_install();
 
 				// Enable interrupts

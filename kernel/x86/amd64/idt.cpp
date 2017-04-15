@@ -100,17 +100,16 @@ namespace tupai
 			asm volatile
 			(
 				".section .text\n"
-				"	.align 4\n"
+				"	.align 8\n"
 				"	isr_handler_stub:\n"
 				//"		pushal\n"
 				"		call isr_handler_stub_main\n"
 				//"		popal\n"
-				"		iret\n"
+				"		iretq\n"
 			);
 
 			extern "C" void isr_handler_stub_main()
 			{
-				debug_println("Interrupt occured!");
 				panic("Undefined interrupt occured");
 			}
 

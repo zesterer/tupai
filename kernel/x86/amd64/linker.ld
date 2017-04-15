@@ -4,8 +4,7 @@ OUTPUT_FORMAT(elf64-x86-64)
 SECTIONS
 {
 	. = 1M;
-	/* KERNEL_VIRTUAL = 0xFFFF800000000000; */
-	KERNEL_VIRTUAL = 0xFFFF800000000000; /* Temporary while fixing relocation issue */
+	KERNEL_VIRTUAL = 0xFFFFFFFF80000000;
 
 	/* Place the Multiboot header at the beginning */
 	.rodata.multiboot BLOCK(4K) : ALIGN(4K)

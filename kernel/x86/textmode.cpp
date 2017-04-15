@@ -104,6 +104,9 @@ namespace tupai
 			for (int row = n; row < row_max; row ++)
 				for (int col = 0; col < col_max; col ++)
 					buffer[col_max * (row - n) + col] = buffer[col_max * row + col];
+
+			for (int col = 0; col < col_max; col ++)
+				buffer[col_max * (row_max - 1) + col] = (color << 8) | ' ';
 		}
 	}
 }

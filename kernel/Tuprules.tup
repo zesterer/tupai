@@ -45,7 +45,7 @@ LINK_FLAGS=$(LINK_FLAGS) -lgcc
 
 ifeq (@(TARGET_ARCH),amd64)
 	CC_FLAGS=$(CC_FLAGS) -DARCH_amd64
-	CC_FLAGS=$(CC_FLAGS) -mcmodel=large -mno-red-zone -mno-mmx -mno-sse -mno-sse2
+	CC_FLAGS=$(CC_FLAGS) -mcmodel=kernel -mno-red-zone -mno-mmx -mno-sse -mno-sse2
 
 	OBJECTS=$(OBJECTS) x86/*.o x86/amd64/*.o
 

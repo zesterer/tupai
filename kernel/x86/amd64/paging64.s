@@ -34,12 +34,17 @@
 		// Map 256th P4 entry to P3 table (virtual higher mapping)
 		mov $p3_lo_table, %rax
 		or $0b11, %rax // Present and writable
-		mov %rax, (p4_table + 256 * 8)
+		mov %rax, (p4_table + 511 * 8)
 
 		// Map 1st P3 entry to P2 table
 		mov $p2_lo_table, %rax
 		or $0b11, %rax // Present and writable
 		mov %rax, (p3_lo_table)
+
+		// Map 511th P3 entry to P2 table (virtual higher mapping)
+		mov $p2_lo_table, %rax
+		or $0b11, %rax // Present and writable
+		mov %rax, (p3_lo_table + 510 * 8)
 
 		// Map P2 table entries
 		mov $0, %rcx

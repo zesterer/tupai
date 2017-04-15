@@ -1,5 +1,5 @@
 //
-// file : pic.hpp
+// file : pic.cpp
 //
 // This file is part of Tupai.
 //
@@ -51,16 +51,13 @@ namespace tupai
 		const uint8_t ICW4_BUFF_MASTER = 0x0C; // Buffered mode / master
 		const uint8_t ICW4_SFNM        = 0x10; // Special fully nested (not)
 
+		const uint8_t PIC_EOI = 0x20; // PIC EOI byte
+
 		void pic_init()
 		{
 			uint8_t offset = PIC_REMAP_OFFSET;
 
 			// 8259 PIC initiation code
-
-			// Preserve masks
-			uint8_t masks[2];
-			masks[0] = inb(PORT_PIC1_DATA);
-			masks[1] = inb(PORT_PIC1_DATA);
 
 			// Start initiation (in cascade mode)
 			outb(PORT_PIC1_CMD, ICW1_INIT | ICW1_ICW4);
@@ -76,7 +73,7 @@ namespace tupai
 
 			outb(PORT_PIC1_DATA, offset); // ICW2 - Master PIC vector offset
 			wait(150);
-			outb(PORT_PIC2_DATA, offset); // ICW2 - Slave PIC vector offset
+			outb(PORT_PIC2_DATA, offset + 0x8); // ICW2 - Slave PIC vector offset
 			wait(150);
 
 			outb(PORT_PIC1_DATA, 0x4); // ICW3 - Master PIC needs to know it has a slave PIC at IRQ2 (0x00000100)
@@ -89,14 +86,9 @@ namespace tupai
 			outb(PORT_PIC2_DATA, ICW4_8086); // ICW4 - Tell the PIC to operate in 8086 mode
 			wait(150);
 
-			// Restore masks
-			outb(PORT_PIC1_DATA, masks[0]);
-			outb(PORT_PIC2_DATA, masks[1]);
-
-			// Mask all IRQs to prevent them randomly occuring
-			// Individual hardware drivers can re-enable them later
-			for (int i = 0; i < 16; i ++)
-				pic_mask(i, false);
+			// Mask all interrupts
+			outb(PORT_PIC1_DATA, 0xFF);
+			outb(PORT_PIC2_DATA, 0xFF);
 
 			debug_print(
 				"PIC initiated with properties:", '\n',
@@ -106,7 +98,18 @@ namespace tupai
 
 		void pic_ack(uint8_t irq)
 		{
-			debug_println("PIC acknowledged IRQ ", irq, " (UNIMPLEMENTED!)");
+			/* write EOI */
+
+			if (irq < PIC_REMAP_OFFSET || irq >= PIC_REMAP_OFFSET + 8 + 8) // It's not a valid irq
+				return;
+
+			if (irq >= PIC_REMAP_OFFSET + 8) // It's a PIC2
+				outb(PORT_PIC2_CMD, PIC_EOI);
+
+			// PIC1 EOI must be called anyway
+			outb(PORT_PIC1_CMD, PIC_EOI);
+
+			//debug_println("PIC acknowledged IRQ ", irq);
 		}
 
 		void pic_mask(uint8_t irq, bool enable)

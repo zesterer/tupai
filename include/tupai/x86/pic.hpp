@@ -17,8 +17,8 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_X86_SERIAL_HPP
-#define TUPAI_X86_SERIAL_HPP
+#ifndef TUPAI_X86_PIC_HPP
+#define TUPAI_X86_PIC_HPP
 
 // Standard
 #include <stddef.h>

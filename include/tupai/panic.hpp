@@ -20,9 +20,14 @@
 #ifndef TUPAI_PANIC_HPP
 #define TUPAI_PANIC_HPP
 
+// Standard
+#include <stddef.h>
+#include <stdint.h>
+
 namespace tupai
 {
 	extern "C" void hang() __attribute__((__noreturn__));
+	extern "C" void exception_panic(uint32_t id);
 	extern "C" void panic(const char* msg = "[NO ERROR MESSAGE]") __attribute__((__noreturn__));
 }
 

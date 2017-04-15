@@ -40,21 +40,12 @@ namespace tupai
 		debug_println("Interrupts ", enable ? "enabled" : "disabled");
 	}
 
-	void interrupt_ack(uint8_t irq)
-	{
-		x86::pic_ack(irq);
-	}
-
 	void interrupt_bind(uint8_t irq, void* address)
 	{
 		#if defined(ARCH_amd64)
-		{
 			x86::amd64::idt_set_entry(x86::PIC_REMAP_OFFSET + irq, address);
-		}
 		#elif defined(ARCH_i386)
-		{
 			x86::i386::idt_set_entry(x86::PIC_REMAP_OFFSET + irq, address);
-		}
 		#endif
 	}
 }

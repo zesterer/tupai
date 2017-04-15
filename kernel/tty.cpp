@@ -22,6 +22,10 @@
 #include <tupai/dev/serial.hpp>
 #include <tupai/debug.hpp>
 
+#if defined(ARCH_FAMILY_x86)
+	#include <tupai/x86/textmode.hpp>
+#endif
+
 // Standard
 #include <stddef.h>
 #include <stdint.h>
@@ -35,6 +39,8 @@ namespace tupai
 	{
 		if (tty_initiated)
 			return;
+
+		x86::textmode_init();
 
 		// Find the names of available serial ports
 		const char** serial_port_names = dev::serial_list_ports();
@@ -60,6 +66,8 @@ namespace tupai
 
 	void tty_write(char c)
 	{
+		x86::textmode_write(c);
+
 		dev::serial_write(tty_serial_port, c);
 		if (c == '\n') // Serial interfaces regard a carriage return as a newline
 			dev::serial_write(tty_serial_port, '\r');

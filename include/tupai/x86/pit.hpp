@@ -1,5 +1,5 @@
 //
-// file : interrupt.hpp
+// file : pit.hpp
 //
 // This file is part of Tupai.
 //
@@ -17,8 +17,8 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_INTERRUPT_HPP
-#define TUPAI_INTERRUPT_HPP
+#ifndef TUPAI_X86_PIT_HPP
+#define TUPAI_X86_PIT_HPP
 
 // Standard
 #include <stddef.h>
@@ -26,8 +26,10 @@
 
 namespace tupai
 {
-	void interrupt_enable(bool enable = true);
-	void interrupt_bind(uint8_t irq, void* address);
+	namespace x86
+	{
+		void pit_init();
+	}
 }
 
 #endif
