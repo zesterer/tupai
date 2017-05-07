@@ -107,6 +107,8 @@ namespace tupai
 				asm volatile
 				(
 					"lgdt (gdt_ptr)\n"
+
+					// Far call
 					"ljmp $8, $gdt_ljmp\n"
 					"gdt_ljmp:\n"
 

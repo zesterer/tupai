@@ -22,6 +22,9 @@
 #include <tupai/tupai.hpp>
 #include <tupai/arch.hpp>
 #include <tupai/panic.hpp>
+
+#include <tupai/dev/clock.hpp>
+
 #include <tupai/util/in.hpp>
 #include <tupai/util/out.hpp>
 #include <tupai/util/str.hpp>
@@ -60,6 +63,7 @@ namespace tupai
 					"  motd  -> Show the MOTD\n",
 					"  panic -> Trigger a kernel panic\n",
 					"  info  -> Show system info\n",
+					"  time  -> Show the system time\n",
 					"  halt  -> Halt the kernel\n"
 				);
 			}
@@ -74,9 +78,19 @@ namespace tupai
 			}
 			else if (util::str_equal(buff, "info"))
 			{
-				util::print(
+				util::println(
 					"System Info:\n",
-					"  address_size -> ", sizeof(void*) * 8, " bits\n"
+					"  address_size -> ", sizeof(void*) * 8, " bits"
+				);
+			}
+			else if (util::str_equal(buff, "time"))
+			{
+				datetime_t time = dev::clock_read();
+
+				util::println(
+					"The system time is ",
+					util::fmt_int<short        >(time.year, 10, 4), '-', util::fmt_int<unsigned char>(time.month, 10, 2), '-', util::fmt_int<unsigned char>(time.day, 10, 2), ' ',
+					util::fmt_int<unsigned char>(time.hour, 10, 2), ':', util::fmt_int<unsigned char>(time.min  , 10, 2), ':', util::fmt_int<unsigned char>(time.sec, 10, 2)
 				);
 			}
 			else if (util::str_equal(buff, "halt"))

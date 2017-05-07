@@ -40,20 +40,12 @@ namespace tupai
 
 		const uint32_t PIT_MAX_RATE = 1193180; // 1,193,180 Hz (1.13 MHz)
 
-		volatile long pit_time = 0;
+		volatile long pit_time = 0; // Nanoseconds
 		volatile int  pit_rate = 0;
 
 		void pit_set_rate(int rate);
-		extern "C" void pit_irq_handler();
-		extern "C" void pit_irq_handler_main();
-
-		asm volatile (
-			".section .text\n"
-			"	.align 4\n"
-			"	pit_irq_handler:\n"
-			"		call pit_irq_handler_main\n"
-			"		iretq\n"
-		);
+		extern "C" void isr_pit();
+		extern "C" void pit_isr_main();
 
 		void pit_init()
 		{
@@ -61,7 +53,7 @@ namespace tupai
 			pit_set_rate(1000);
 
 			// Bind the interrupt
-			interrupt_bind(0, (void*)pit_irq_handler);
+			interrupt_bind(0, (void*)isr_pit);
 
 			// Unmask the interrupt
 			pic_mask(0, true);
@@ -87,12 +79,15 @@ namespace tupai
 			debug_println("PIT rate set to ", pit_rate);
 		}
 
-		void pit_irq_handler_main()
+		void pit_isr_main()
 		{
 			// ACK the interrupt
 			pic_ack(PIC_REMAP_OFFSET + 0);
 
-			debug_println("PIT Interrupt!");
+			pit_time += 1000000 / pit_rate; // Nanoseconds / rate
+
+			//if (pit_time % 1000000 == 0)
+			//	debug_println("PIT time is ", pit_time / 1000000, " seconds!");
 		}
 	}
 }

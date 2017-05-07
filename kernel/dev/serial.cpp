@@ -26,7 +26,7 @@
 #elif defined(ARCH_rpi2)
 	#include <tupai/arm/rpi2/serial.hpp>
 #else
-	#warning "Architecture provides no debugging interface!"
+	#warning "Architecture provides no serial device!"
 #endif
 
 namespace tupai

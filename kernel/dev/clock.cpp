@@ -1,5 +1,5 @@
 //
-// file : main.cpp
+// file : clock.cpp
 //
 // This file is part of Tupai.
 //
@@ -18,26 +18,37 @@
 //
 
 // Tupai
-#include <tupai/main.hpp>
-#include <tupai/tty.hpp>
-#include <tupai/shell.hpp>
+#include <tupai/dev/clock.hpp>
+
+#if defined(ARCH_FAMILY_x86)
+	#include <tupai/x86/cmos.hpp>
+#else
+	#warning "Architecture provides no clock device!"
+#endif
 
 namespace tupai
 {
-	int main()
+	namespace dev
 	{
-		// At this point, we should have a stable environment with memory
-		// protection, a heap, a page frame allocator, etc. all configured.
-		// The methods through which this is done are platform-dependent.
-		// Now, however, it's relatively safe to run generic code on the
-		// assumption that everything 'works'.
+		bool clock_initiated = false;
 
-		// Initiate the TTY
-		tty_init();
+		void clock_init()
+		{
+			if (clock_initiated)
+				return;
 
-		// Run the kernel shell
-		shell_main();
+			#if defined(ARCH_FAMILY_x86)
+				x86::cmos_init();
+			#endif
 
-		return 0;
+			clock_initiated = true;
+		}
+
+		datetime_t clock_read()
+		{
+			#if defined(ARCH_FAMILY_x86)
+				return x86::cmos_read();
+			#endif
+		}
 	}
 }

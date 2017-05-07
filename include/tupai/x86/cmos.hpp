@@ -1,5 +1,5 @@
 //
-// file : main.cpp
+// file : cmos.hpp
 //
 // This file is part of Tupai.
 //
@@ -17,27 +17,19 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+#ifndef TUPAI_X86_CMOS_HPP
+#define TUPAI_X86_CMOS_HPP
+
 // Tupai
-#include <tupai/main.hpp>
-#include <tupai/tty.hpp>
-#include <tupai/shell.hpp>
+#include <tupai/dev/clock.hpp>
 
 namespace tupai
 {
-	int main()
+	namespace x86
 	{
-		// At this point, we should have a stable environment with memory
-		// protection, a heap, a page frame allocator, etc. all configured.
-		// The methods through which this is done are platform-dependent.
-		// Now, however, it's relatively safe to run generic code on the
-		// assumption that everything 'works'.
-
-		// Initiate the TTY
-		tty_init();
-
-		// Run the kernel shell
-		shell_main();
-
-		return 0;
+		void       cmos_init();
+		datetime_t cmos_read();
 	}
 }
+
+#endif

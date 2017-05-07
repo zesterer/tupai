@@ -1,5 +1,5 @@
 //
-// file : main.cpp
+// file : clock.hpp
 //
 // This file is part of Tupai.
 //
@@ -17,27 +17,45 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-// Tupai
-#include <tupai/main.hpp>
-#include <tupai/tty.hpp>
-#include <tupai/shell.hpp>
+#ifndef TUPAI_DEV_CLOCK_HPP
+#define TUPAI_DEV_CLOCK_HPP
 
 namespace tupai
 {
-	int main()
+	struct datetime_t
 	{
-		// At this point, we should have a stable environment with memory
-		// protection, a heap, a page frame allocator, etc. all configured.
-		// The methods through which this is done are platform-dependent.
-		// Now, however, it's relatively safe to run generic code on the
-		// assumption that everything 'works'.
+		// Date
+		short         year  = 1970;
+		unsigned char month = 1;
+		unsigned char day   = 1;
 
-		// Initiate the TTY
-		tty_init();
+		// Time
+		unsigned char hour  = 0;
+		unsigned char min   = 0;
+		unsigned char sec   = 0;
 
-		// Run the kernel shell
-		shell_main();
+		bool operator==(const datetime_t& other)
+		{
+			return
+				this->year == other.year &&
+				this->month == other.month &&
+				this->day == other.day &&
+				this->hour == other.hour &&
+				this->min == other.min &&
+				this->sec == other.sec;
+		}
 
-		return 0;
+		bool operator!=(const datetime_t& other)
+		{
+			return !(*this == other);
+		}
+	};
+
+	namespace dev
+	{
+		void       clock_init();
+		datetime_t clock_read();
 	}
 }
+
+#endif

@@ -119,19 +119,6 @@ namespace tupai
 					"movabs $gdt_ptr, %rax\n"
 					"lgdt (%rax)\n"
 
-					// Far call
-					//"xchg %bx, %bx\n"
-					/*
-					"movabs $gdt_ljmp, %rax\n"
-					"ljmp *(%rax)\n"
-					"push $0x8\n"
-					"push $0f\n"
-					"ljmp *(%rsp)\n"
-					"0:\n"
-					"add $16, %rsp\n"
-					*/
-					"gdt_ljmp:\n"
-
 					// Reload segment registers
 					"mov $0x10, %ax\n"
 					"mov %ax, %ds\n"
