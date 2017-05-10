@@ -33,7 +33,7 @@ namespace tupai
 {
 	void shell_motd()
 	{
-		util::print('\n', tupai_get_name_decorative(), " ",
+		util::print(tupai_get_name_decorative(), " ",
 			tupai_get_version(), " on ",
 			arch_get_family(), "/", arch_get_target(), '\n',
 			"Copyright 2017, Joshua Barretto\n", '\n'
@@ -53,7 +53,7 @@ namespace tupai
 
 			char buff[64];
 			util::readline(buff);
-			tty_write('\n');
+			util::print('\n');
 
 			if (util::str_equal(buff, "help"))
 			{

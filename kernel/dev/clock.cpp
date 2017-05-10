@@ -48,6 +48,20 @@ namespace tupai
 		{
 			#if defined(ARCH_FAMILY_x86)
 				return x86::cmos_read();
+			#else
+			{
+				datetime_t time;
+
+				time.sec  = 0;
+				time.min  = 0;
+				time.hour = 0;
+
+				time.day   = 1;
+				time.month = 1;
+				time.year  = 2017;
+
+				return time;
+			}
 			#endif
 		}
 	}

@@ -19,7 +19,12 @@
 
 // Tupai
 #include <tupai/main.hpp>
-#include <tupai/tty.hpp>
+
+// Virtual devices
+#include <tupai/dev/serial.hpp>
+#include <tupai/dev/tty.hpp>
+
+// Initial software
 #include <tupai/shell.hpp>
 
 namespace tupai
@@ -29,11 +34,11 @@ namespace tupai
 		// At this point, we should have a stable environment with memory
 		// protection, a heap, a page frame allocator, etc. all configured.
 		// The methods through which this is done are platform-dependent.
-		// Now, however, it's relatively safe to run generic code on the
-		// assumption that everything 'works'.
+		// Now, however, it's relatively safe to run most code.
 
-		// Initiate the TTY
-		tty_init();
+		// Initiate virtual devices
+		dev::serial_init();
+		dev::tty_init();
 
 		// Run the kernel shell
 		shell_main();

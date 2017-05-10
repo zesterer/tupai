@@ -26,18 +26,21 @@
 
 namespace tupai
 {
-	void tty_init();
-
-	void tty_write(char c);
-	void tty_print(const char* str);
-
-	char tty_read();
-	void tty_readline(char* buff, size_t n);
-
-	template <size_t SIZE>
-	void tty_readline(char(&buff)[SIZE])
+	namespace dev
 	{
-		tty_readline(buff, SIZE);
+		void tty_init();
+
+		void tty_write(char c);
+		void tty_print(const char* str);
+
+		char tty_read();
+		void tty_readline(char* buff, size_t n);
+
+		template <size_t SIZE>
+		void tty_readline(char(&buff)[SIZE])
+		{
+			tty_readline(buff, SIZE);
+		}
 	}
 }
 

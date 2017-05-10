@@ -21,7 +21,7 @@
 #define TUPAI_UTIL_OUT_HPP
 
 // Tupai
-#include <tupai/tty.hpp>
+#include <tupai/dev/tty.hpp>
 #include <tupai/util/fmt.hpp>
 
 // Standard
@@ -36,7 +36,7 @@ namespace tupai
 		{
 			static inline void write(char c)
 			{
-				tty_write(c);
+				dev::tty_write(c);
 			}
 		};
 

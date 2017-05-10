@@ -18,6 +18,7 @@
 //
 
 .extern kentry
+.extern enable_paging
 
 .global start
 
@@ -40,6 +41,9 @@
 		//vmsr FPEXC, r3
 		.long 0xEEE83A10 // Assembler bug, replace with above line when binutils is fixed!
 		pop {r0, r1, r2}
+
+		// Set up identity paging
+		bl enable_paging
 
 		// Clear the BSS
 		ldr r4, =__bss_start

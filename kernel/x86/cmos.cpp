@@ -26,15 +26,15 @@ namespace tupai
 {
 	namespace x86
 	{
-		const uint16_t CMOS_CMD  = 0x70;
-		const uint16_t CMOS_DATA = 0x71;
+		static const uint16_t CMOS_CMD  = 0x70;
+		static const uint16_t CMOS_DATA = 0x71;
 
-		const uint16_t CURRENT_YEAR = 2017;
+		static const uint16_t CURRENT_YEAR = 2017;
 
-		int cent_reg = 0x00;
+		static int cent_reg = 0x00;
 
-		bool    cmos_updating();
-		uint8_t cmos_get_reg(uint8_t reg);
+		static bool    cmos_updating();
+		static uint8_t cmos_get_reg(uint8_t reg);
 
 		void cmos_init()
 		{
@@ -43,24 +43,15 @@ namespace tupai
 
 		datetime_t cmos_read()
 		{
-			datetime_t time;
-
-			// Date
-			time.year  = 2017;
-			time.month = 4;
-			time.day   = 17;
-
-			// Time
-			time.hour = 11;
-			time.min  = 51;
-			time.sec  = 16;
-
 			// Read from CMOS RTC
+			datetime_t time;
 			uint8_t cent = 0;
+
+			// Previously read values
 			datetime_t l_time;
 			uint8_t l_cent = 0;
 
-			// Repeat until consistent values are read
+			// Repeatedly read until consistent values are read
 			int i = 0;
 			do
 			{

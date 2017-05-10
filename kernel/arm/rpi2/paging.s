@@ -1,5 +1,5 @@
 //
-// file : in.hpp
+// file : paging.s
 //
 // This file is part of Tupai.
 //
@@ -17,26 +17,24 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_UTIL_IN_HPP
-#define TUPAI_UTIL_IN_HPP
+.global enable_paging
 
-// Tupai
-#include <tupai/dev/tty.hpp>
+.section .text.boot
 
-// Standard
-#include <stddef.h>
-#include <stdint.h>
+	enable_paging:
+		// Save return address
+		push {lr}
 
-namespace tupai
-{
-	namespace util
-	{
-		template <size_t SIZE>
-		void readline(char(&buff)[SIZE])
-		{
-			dev::tty_readline(buff);
-		}
-	}
-}
+		// Restore return address
+		pop {lr}
+		bx lr
 
-#endif
+.section .bss.boot:
+
+	.align 12 // 2 ^ 12 = 4096
+	// L1 page table
+	p1_table:
+		.skip 4096 * 4
+	// L2 page table
+	p2_table:
+		.skip 1024 * 4

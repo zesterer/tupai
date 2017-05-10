@@ -1,5 +1,5 @@
 //
-// file : in.hpp
+// file : ps2.hpp
 //
 // This file is part of Tupai.
 //
@@ -17,11 +17,8 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_UTIL_IN_HPP
-#define TUPAI_UTIL_IN_HPP
-
-// Tupai
-#include <tupai/dev/tty.hpp>
+#ifndef TUPAI_DEV_PS2_HPP
+#define TUPAI_DEV_PS2_HPP
 
 // Standard
 #include <stddef.h>
@@ -29,13 +26,17 @@
 
 namespace tupai
 {
-	namespace util
+	namespace dev
 	{
-		template <size_t SIZE>
-		void readline(char(&buff)[SIZE])
-		{
-			dev::tty_readline(buff);
-		}
+		void ps2_init();
+
+		size_t       ps2_count_ports();
+		const char** ps2_list_ports();
+
+		int ps2_open_port(const char* port);
+
+		void    ps2_write(int port_id, uint8_t val);
+		uint8_t ps2_read(int port_id);
 	}
 }
 

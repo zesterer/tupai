@@ -32,12 +32,12 @@ namespace tupai
 {
 	namespace x86
 	{
-		volatile uint16_t* buffer = (uint16_t*)0xB8000;
-		const int col_max = 80;
-		const int row_max = 25;
-		const unsigned char color = 0x0F;
+		static volatile uint16_t* buffer = (uint16_t*)0xB8000;
+		static const int col_max = 80;
+		static const int row_max = 25;
+		static const unsigned char color = 0x0F;
 
-		int col, row;
+		static int col, row;
 
 		void textmode_init()
 		{

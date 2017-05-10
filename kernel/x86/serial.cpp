@@ -29,13 +29,13 @@ namespace tupai
 {
 	namespace x86
 	{
-		const char*    port_names[4] = {"COM1", "COM2", "COM3", "COM4"};
-		const uint16_t port_offsets[4] = { 0x03F8, 0x02F8, 0x03E8, 0x02E8 };
-		const uint8_t  parity_values[5] = { 0b000000, 0b001000, 0b011000, 0b101000, 0b111000 };
-		const uint32_t UART_CLOCK_RATE = 115200;
+		static const char*    port_names[4] = {"COM1", "COM2", "COM3", "COM4"};
+		static const uint16_t port_offsets[4] = { 0x03F8, 0x02F8, 0x03E8, 0x02E8 };
+		static const uint8_t  parity_values[5] = { 0b000000, 0b001000, 0b011000, 0b101000, 0b111000 };
+		static const uint32_t UART_CLOCK_RATE = 115200;
 
-		bool serial_initiated = false;
-		bool serial_port_open[4] = { false, };
+		static bool serial_initiated = false;
+		static bool serial_port_open[4] = { false, };
 
 		void serial_init()
 		{

@@ -1,5 +1,5 @@
 //
-// file : in.hpp
+// file : ps2_8042.cpp
 //
 // This file is part of Tupai.
 //
@@ -17,26 +17,33 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_UTIL_IN_HPP
-#define TUPAI_UTIL_IN_HPP
-
 // Tupai
-#include <tupai/dev/tty.hpp>
-
-// Standard
-#include <stddef.h>
-#include <stdint.h>
+#include <tupai/x86/ps2_8042.hpp>
 
 namespace tupai
 {
-	namespace util
+	namespace x86
 	{
-		template <size_t SIZE>
-		void readline(char(&buff)[SIZE])
+		static const char* port_names[4] = {"PS20", "PS21"};
+
+		void ps2_8042_init()
 		{
-			dev::tty_readline(buff);
+			// Do nothing
 		}
+
+		size_t ps2_8042_count_ports()
+		{
+			return 2;
+		}
+
+		const char** ps2_8042_list_ports()
+		{
+			return port_names;
+		}
+
+		bool ps2_8042_open_port(int port_id);
+
+		void    ps2_8042_write(int port_id, uint8_t c);
+		uint8_t ps2_8042_read(int port_id);
 	}
 }
-
-#endif

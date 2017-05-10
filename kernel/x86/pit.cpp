@@ -32,18 +32,18 @@ namespace tupai
 {
 	namespace x86
 	{
-		const uint16_t PORT_PIT_CMD = 0x0043; // I/O offset address for PIT commands
+		static const uint16_t PORT_PIT_CMD = 0x0043; // I/O offset address for PIT commands
 
-		const uint16_t PORT_PIT_DATA_CH0 = 0x0040; // I/O offset address for PIT data (CH0)
-		const uint16_t PORT_PIT_DATA_CH1 = 0x0041; // I/O offset address for PIT data (CH1)
-		const uint16_t PORT_PIT_DATA_CH2 = 0x0042; // I/O offset address for PIT data (CH2)
+		static const uint16_t PORT_PIT_DATA_CH0 = 0x0040; // I/O offset address for PIT data (CH0)
+		static const uint16_t PORT_PIT_DATA_CH1 = 0x0041; // I/O offset address for PIT data (CH1)
+		static const uint16_t PORT_PIT_DATA_CH2 = 0x0042; // I/O offset address for PIT data (CH2)
 
-		const uint32_t PIT_MAX_RATE = 1193180; // 1,193,180 Hz (1.13 MHz)
+		static const uint32_t PIT_MAX_RATE = 1193180; // 1,193,180 Hz (1.13 MHz)
 
-		volatile long pit_time = 0; // Nanoseconds
-		volatile int  pit_rate = 0;
+		static volatile long pit_time = 0; // Nanoseconds
+		static volatile int  pit_rate = 0;
 
-		void pit_set_rate(int rate);
+		static void pit_set_rate(int rate);
 		extern "C" void isr_pit();
 		extern "C" void pit_isr_main();
 

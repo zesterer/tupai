@@ -19,7 +19,7 @@
 
 // Tupai
 #include <tupai/debug.hpp>
-#include <tupai/tty.hpp>
+#include <tupai/dev/tty.hpp>
 
 namespace tupai
 {
@@ -33,7 +33,7 @@ namespace tupai
 			if (debug_initiated)
 				return;
 
-			tty_init();
+			dev::tty_init();
 
 			debug_initiated = true;
 		}
@@ -43,7 +43,7 @@ namespace tupai
 	void debug_write(char c __attribute__((unused)))
 	{
 		#if defined(DEBUG_ENABLED)
-			tty_write(c);
+			dev::tty_write(c);
 		#endif
 	}
 
@@ -51,8 +51,8 @@ namespace tupai
 	{
 		#if defined(DEBUG_ENABLED)
 		{
-			tty_print("[DEBUG] "); // Debug prefix
-			tty_print(str);
+			dev::tty_print("[DEBUG] "); // Debug prefix
+			dev::tty_print(str);
 		}
 		#endif
 	}

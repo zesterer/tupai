@@ -30,28 +30,28 @@ namespace tupai
 {
 	namespace x86
 	{
-		const uint16_t PORT_PIC1 = 0x20; // I/O offset address for master PIC
-		const uint16_t PORT_PIC2 = 0xA0; // I/O offset address for slave PIC
+		static const uint16_t PORT_PIC1 = 0x20; // I/O offset address for master PIC
+		static const uint16_t PORT_PIC2 = 0xA0; // I/O offset address for slave PIC
 
-		const uint16_t PORT_PIC1_CMD = PORT_PIC1; // I/O offset address for master PIC commands
-		const uint16_t PORT_PIC2_CMD = PORT_PIC2; // I/O offset address for slave PIC commands
+		static const uint16_t PORT_PIC1_CMD = PORT_PIC1; // I/O offset address for master PIC commands
+		static const uint16_t PORT_PIC2_CMD = PORT_PIC2; // I/O offset address for slave PIC commands
 
-		const uint16_t PORT_PIC1_DATA = PORT_PIC1 + 1; // I/O offset address for master PIC data
-		const uint16_t PORT_PIC2_DATA = PORT_PIC2 + 1; // I/O offset address for slave PIC data
+		static const uint16_t PORT_PIC1_DATA = PORT_PIC1 + 1; // I/O offset address for master PIC data
+		static const uint16_t PORT_PIC2_DATA = PORT_PIC2 + 1; // I/O offset address for slave PIC data
 
-		const uint8_t ICW1_ICW4      = 0x01; // ICW4 (Interrupt Command Word)
-		const uint8_t ICW1_SINGLE    = 0x02; // Single (cascade) mode
-		const uint8_t ICW1_INTERVAL4 = 0x04; // Call address interval 4 (8)
-		const uint8_t ICW1_LEVEL     = 0x08; // Level triggered (edge) mode
-		const uint8_t ICW1_INIT      = 0x10; // Initialization - required!
+		static const uint8_t ICW1_ICW4      = 0x01; // ICW4 (Interrupt Command Word)
+		static const uint8_t ICW1_SINGLE    = 0x02; // Single (cascade) mode
+		static const uint8_t ICW1_INTERVAL4 = 0x04; // Call address interval 4 (8)
+		static const uint8_t ICW1_LEVEL     = 0x08; // Level triggered (edge) mode
+		static const uint8_t ICW1_INIT      = 0x10; // Initialization - required!
 
-		const uint8_t ICW4_8086        = 0x01; // 8086/88 (MCS-80/85) mode
-		const uint8_t ICW4_AUTO        = 0x02; // Auto (normal) EOI
-		const uint8_t ICW4_BUFF_SLAVE  = 0x08; // Buffered mode / slave
-		const uint8_t ICW4_BUFF_MASTER = 0x0C; // Buffered mode / master
-		const uint8_t ICW4_SFNM        = 0x10; // Special fully nested (not)
+		static const uint8_t ICW4_8086        = 0x01; // 8086/88 (MCS-80/85) mode
+		static const uint8_t ICW4_AUTO        = 0x02; // Auto (normal) EOI
+		static const uint8_t ICW4_BUFF_SLAVE  = 0x08; // Buffered mode / slave
+		static const uint8_t ICW4_BUFF_MASTER = 0x0C; // Buffered mode / master
+		static const uint8_t ICW4_SFNM        = 0x10; // Special fully nested (not)
 
-		const uint8_t PIC_EOI = 0x20; // PIC EOI byte
+		static const uint8_t PIC_EOI = 0x20; // PIC EOI byte
 
 		void pic_init()
 		{
