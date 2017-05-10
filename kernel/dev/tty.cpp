@@ -34,8 +34,8 @@ namespace tupai
 {
 	namespace dev
 	{
-		bool tty_initiated = false;
-		int tty_serial_port = -1;
+		static bool tty_initiated = false;
+		static int tty_serial_port = -1;
 
 		void tty_init()
 		{

@@ -53,6 +53,7 @@ namespace tupai
 			switch (c)
 			{
 			case '\n':
+			case '\r':
 				{
 					col = 0;
 					row ++;

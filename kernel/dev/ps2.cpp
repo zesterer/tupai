@@ -1,5 +1,5 @@
 //
-// file : serial.cpp
+// file : ps2.cpp
 //
 // This file is part of Tupai.
 //
@@ -18,59 +18,51 @@
 //
 
 // Tupai
-#include <tupai/dev/serial.hpp>
+#include <tupai/dev/ps2.hpp>
 #include <tupai/util/str.hpp>
 
 #if defined(ARCH_FAMILY_x86)
-	#include <tupai/x86/serial.hpp>
-#elif defined(ARCH_rpi2)
-	#include <tupai/arm/rpi2/serial.hpp>
+	#include <tupai/x86/ps2_8042.hpp>
 #else
-	#warning "Architecture provides no serial device!"
+	#warning "Architecture provides no PS/2 device!"
 #endif
 
 namespace tupai
 {
 	namespace dev
 	{
-		static bool serial_initiated = false;
+		static bool ps2_initiated = false;
 
-		void serial_init()
+		void ps2_init()
 		{
-			if (serial_initiated)
+			if (ps2_initiated)
 				return;
 
 			#if defined(ARCH_FAMILY_x86)
-				x86::serial_init();
-			#elif defined(ARCH_rpi2)
-				arm::rpi2::serial_init();
+				x86::ps2_8042_init();
 			#endif
 
-			serial_initiated = true;
+			ps2_initiated = true;
 		}
 
-		size_t serial_count_ports()
+		size_t ps2_count_ports()
 		{
 			#if defined(ARCH_FAMILY_x86)
-				return x86::serial_count_ports();
-			#elif defined(ARCH_rpi2)
-				return arm::rpi2::serial_count_ports();
+				return x86::ps2_8042_count_ports();
 			#endif
 		}
 
-		const char** serial_list_ports()
+		const char** ps2_list_ports()
 		{
 			#if defined(ARCH_FAMILY_x86)
-				return x86::serial_list_ports();
-			#elif defined(ARCH_rpi2)
-				return arm::rpi2::serial_list_ports();
+				return x86::ps2_8042_list_ports();
 			#endif
 		}
 
-		int serial_open_port(const char* port, uint32_t baudrate, uint8_t databits, uint8_t stopbits, serial_parity parity)
+		int ps2_open_port(const char* port)
 		{
-			const char** port_names = serial_list_ports();
-			size_t port_count = serial_count_ports();
+			const char** port_names = ps2_list_ports();
+			size_t port_count = ps2_count_ports();
 			int port_id = -1;
 
 			// Search for the correct port name
@@ -89,9 +81,7 @@ namespace tupai
 			// It's valid, so attempt to open a port
 			bool success = false;
 			#if defined(ARCH_FAMILY_x86)
-				success = x86::serial_open_port(port_id, baudrate, databits, stopbits, parity);
-			#elif defined(ARCH_rpi2)
-				success = arm::rpi2::serial_open_port(port_id, baudrate, databits, stopbits, parity);
+				success = x86::ps2_8042_open_port(port_id);
 			#endif
 
 			if (!success)
@@ -100,27 +90,23 @@ namespace tupai
 			return port_id;
 		}
 
-		void serial_write(int port_id, uint8_t val)
+		void ps2_write(int port_id, uint8_t val)
 		{
 			if (port_id == -1) // Invalid port
 				return;
 
 			#if defined(ARCH_FAMILY_x86)
-				x86::serial_write(port_id, val);
-			#elif defined(ARCH_rpi2)
-				arm::rpi2::serial_write(port_id, val);
+				x86::ps2_8042_write(port_id, val);
 			#endif
 		}
 
-		uint8_t serial_read(int port_id)
+		uint8_t ps2_read(int port_id)
 		{
 			if (port_id == -1) // Invalid port, just return null data
 				return 0;
 
 			#if defined(ARCH_FAMILY_x86)
-				return x86::serial_read(port_id);
-			#elif defined(ARCH_rpi2)
-				return arm::rpi2::serial_read(port_id);
+				return x86::ps2_8042_read(port_id);
 			#endif
 		}
 	}

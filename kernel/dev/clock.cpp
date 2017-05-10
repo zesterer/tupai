@@ -30,7 +30,7 @@ namespace tupai
 {
 	namespace dev
 	{
-		bool clock_initiated = false;
+		static bool clock_initiated = false;
 
 		void clock_init()
 		{
