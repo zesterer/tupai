@@ -19,11 +19,30 @@
 
 // Globally define the ISRs
 .global isr_pit
+.global isr_syscall
 
 .section .text
+
 	.align 4
 	isr_pit: // PIT ISR (irq 0)
 		pushal
+		cld
+
+		push %esp // Pass the current stack pointer
 		call pit_isr_main
+		pop %esp // Restore the thread stack pointer
+
+		popal
+		iret
+
+	.align 4
+	isr_syscall: // SYSCALL ISR (irq 0x80)
+		pushal
+		cld
+
+		push %esp // Pass the current stack pointer
+		call syscall_isr_main
+		pop %esp // Restore the thread stack pointer
+
 		popal
 		iret

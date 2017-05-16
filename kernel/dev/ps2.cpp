@@ -33,6 +33,11 @@ namespace tupai
 	{
 		static bool ps2_initiated = false;
 
+		static const uint8_t PS2_CMD_DISABLE_SCANNING = 0xF5;
+		static const uint8_t PS2_CMD_IDENTIFY = 0xF2;
+
+		static const uint8_t PS2_ACK = 0xFA;
+
 		void ps2_init()
 		{
 			if (ps2_initiated)
@@ -108,6 +113,47 @@ namespace tupai
 			#if defined(ARCH_FAMILY_x86)
 				return x86::ps2_8042_read(port_id);
 			#endif
+		}
+
+		ps2_device_type ps2_get_device_type(int port_id)
+		{
+			uint8_t response;
+
+			// Disable scanning
+			ps2_write(port_id, PS2_CMD_DISABLE_SCANNING);
+			response = ps2_read(port_id);
+			if (response != PS2_ACK)
+				return ps2_device_type::UNKNOWN;
+
+			// Identify device
+			ps2_write(port_id, PS2_CMD_IDENTIFY);
+			response = ps2_read(port_id);
+			if (response != PS2_ACK)
+				return ps2_device_type::UNKNOWN;
+
+			// Retrieve ID bytes
+			uint8_t id_bytes[2];
+			id_bytes[0] = ps2_read(port_id);
+			id_bytes[1] = ps2_read(port_id);
+
+			// Determine device
+			if (id_bytes[0] == 0x00)
+				return ps2_device_type::MOUSE_NOSCROLL;
+			else if (id_bytes[0] == 0x03)
+				return ps2_device_type::MOUSE_SCROLL;
+			else if (id_bytes[0] == 0x04)
+				return ps2_device_type::MOUSE_5BUTTON;
+			else if (id_bytes[0] == 0xAB)
+			{
+				if (id_bytes[1] == 0x41 || id_bytes[1] == 0xC1)
+					return ps2_device_type::KEYBOARD_MF2_TRANSLATION;
+				else if (id_bytes[1] == 0x83)
+					return ps2_device_type::KEYBOARD_MF2;
+				else
+					return ps2_device_type::UNKNOWN;
+			}
+			else
+				return ps2_device_type::UNKNOWN;
 		}
 	}
 }

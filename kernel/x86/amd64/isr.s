@@ -19,12 +19,11 @@
 
 // Globally define the ISRs
 .global isr_pit
+.global isr_syscall
 
 .section .text
-	.align 4
-	isr_pit: // PIT ISR (irq 0)
 
-		// Save register states
+	.macro PUSH_REGS // Preserve register states
 		push %rax
 		push %rbx
 		push %rcx
@@ -40,10 +39,9 @@
 		push %r13
 		push %r14
 		push %r15
+	.endm
 
-		call pit_isr_main
-
-		// Restore register states
+	.macro POP_REGS // Restore register states
 		pop %r15
 		pop %r14
 		pop %r13
@@ -60,4 +58,28 @@
 		pop %rbx
 		pop %rax
 
+	.endm
+
+	.align 4
+	isr_pit: // PIT ISR (irq 0)
+		PUSH_REGS
+		cld
+
+		mov %rsp, %rdi // Pass the current stack pointer
+		call pit_isr_main
+		mov %rax, %rsp // Restore the thread stack pointer
+
+		POP_REGS
+		iretq
+
+	.align 4
+	isr_syscall: // SYSCALL ISR (irq 0x80)
+		PUSH_REGS
+		cld
+
+		mov %rsp, %rdi // Pass the current stack pointer
+		call syscall_isr_main
+		mov %rax, %rsp // Restore the thread stack pointer
+
+		POP_REGS
 		iretq

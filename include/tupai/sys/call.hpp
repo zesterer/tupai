@@ -1,5 +1,5 @@
 //
-// file : interrupt.cpp
+// file : call.hpp
 //
 // This file is part of Tupai.
 //
@@ -17,35 +17,21 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-// Tupai
-#include <tupai/interrupt.hpp>
-#include <tupai/debug.hpp>
-#include <tupai/x86/pic.hpp>
+#ifndef TUPAI_SYS_CALL_HPP
+#define TUPAI_SYS_CALL_HPP
 
-#if defined(ARCH_amd64)
-	#include <tupai/x86/amd64/idt.hpp>
-#elif defined(ARCH_i386)
-	#include <tupai/x86/i386/idt.hpp>
-#endif
+// Standard
+#include <stddef.h>
+#include <stdint.h>
 
 namespace tupai
 {
-	void interrupt_enable(bool enable)
+	namespace sys
 	{
-		if (enable)
-			asm volatile ("sti");
-		else
-			asm volatile ("cli");
+		const uint8_t CALL_IRQ = 0x80;
 
-		debug_println("Interrupts ", enable ? "enabled" : "disabled");
-	}
-
-	void interrupt_bind(uint8_t irq, void* address)
-	{
-		#if defined(ARCH_amd64)
-			x86::amd64::idt_set_entry(irq, address);
-		#elif defined(ARCH_i386)
-			x86::i386::idt_set_entry(irq, address);
-		#endif
+		void call_init();
 	}
 }
+
+#endif

@@ -28,6 +28,17 @@ namespace tupai
 {
 	namespace dev
 	{
+		enum class ps2_device_type
+		{
+			UNKNOWN,
+			KEYBOARD_AT,
+			MOUSE_NOSCROLL,
+			MOUSE_SCROLL,
+			MOUSE_5BUTTON,
+			KEYBOARD_MF2,
+			KEYBOARD_MF2_TRANSLATION,
+		};
+
 		void ps2_init();
 
 		size_t       ps2_count_ports();
@@ -37,6 +48,8 @@ namespace tupai
 
 		void    ps2_write(int port_id, uint8_t val);
 		uint8_t ps2_read(int port_id);
+
+		ps2_device_type ps2_get_device_type(int port_id);
 	}
 }
 

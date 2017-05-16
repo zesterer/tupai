@@ -27,6 +27,7 @@
 #include <tupai/x86/pic.hpp>
 #include <tupai/x86/pit.hpp>
 #include <tupai/interrupt.hpp>
+#include <tupai/sys/call.hpp>
 
 // Standard
 #include <stddef.h>
@@ -64,6 +65,9 @@ namespace tupai
 
 				// Initiate the PIT
 				pit_init();
+
+				// Initiate the syscall routine
+				sys::call_init();
 
 				// Install the IDT
 				idt_install();

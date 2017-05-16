@@ -1,5 +1,5 @@
 //
-// file : interrupt.cpp
+// file : call.cpp
 //
 // This file is part of Tupai.
 //
@@ -18,34 +18,28 @@
 //
 
 // Tupai
+#include <tupai/sys/call.hpp>
 #include <tupai/interrupt.hpp>
-#include <tupai/debug.hpp>
-#include <tupai/x86/pic.hpp>
-
-#if defined(ARCH_amd64)
-	#include <tupai/x86/amd64/idt.hpp>
-#elif defined(ARCH_i386)
-	#include <tupai/x86/i386/idt.hpp>
-#endif
+#include <tupai/util/out.hpp>
 
 namespace tupai
 {
-	void interrupt_enable(bool enable)
+	namespace sys
 	{
-		if (enable)
-			asm volatile ("sti");
-		else
-			asm volatile ("cli");
+		extern "C" void isr_syscall();
+		extern "C" void* syscall_isr_main(void* stack_ptr);
 
-		debug_println("Interrupts ", enable ? "enabled" : "disabled");
-	}
+		void call_init()
+		{
+			// Bind the interrupt
+			interrupt_bind(CALL_IRQ, (void*)isr_syscall);
+		}
 
-	void interrupt_bind(uint8_t irq, void* address)
-	{
-		#if defined(ARCH_amd64)
-			x86::amd64::idt_set_entry(irq, address);
-		#elif defined(ARCH_i386)
-			x86::i386::idt_set_entry(irq, address);
-		#endif
+		void* syscall_isr_main(void* stack_ptr)
+		{
+			util::println("Syscall occured!");
+
+			return stack_ptr;
+		}
 	}
 }

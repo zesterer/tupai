@@ -24,6 +24,7 @@
 #include <tupai/arm/mmio.hpp>
 #include <tupai/arm/delay.hpp>
 #include <tupai/arch.hpp>
+#include <tupai/sys/call.hpp>
 
 // Standard
 #include <stddef.h>
@@ -59,6 +60,9 @@ namespace tupai
 					arm::mmio_write(CORE_OFFSET * 0x10 * i, (size_t)&core_hang);
 				arm::delay(500); // Wait for the cores to wake up
 				debug_print("Set cores [2, 3, 4] into idle state\n");
+
+				// Initiate the syscall routine
+				sys::call_init();
 
 				// Enter the kernel main with a stable environment
 				debug_print("Finished rpi2 initiation\n");

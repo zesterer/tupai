@@ -52,15 +52,17 @@ namespace tupai
 		{
 			switch (c)
 			{
-			case '\n':
-			case '\r':
+			case '\n': // Newline
 				{
 					col = 0;
 					row ++;
 				}
 				break;
 
-			default:
+			case '\r': // Do nothing
+				break;
+
+			default: // Printable character
 				buffer[col_max * row + col] = (color << 8) | c;
 				col ++;
 				break;

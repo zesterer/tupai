@@ -25,11 +25,28 @@
 #include <tupai/dev/ps2.hpp>
 #include <tupai/dev/tty.hpp>
 
+// Concurrency
+#include <tupai/sys/thread.hpp>
+
 // Initial software
 #include <tupai/shell.hpp>
 
+// I/O
+#include <tupai/util/out.hpp>
+#include <tupai/util/in.hpp>
+
 namespace tupai
 {
+	void test_thread()
+	{
+		while (true)
+		{
+			volatile int c = 0;
+			while (c < 100000000) c ++;
+			util::println("Hello! Current thread is ", sys::thread_get_id());
+		}
+	}
+
 	int main()
 	{
 		// At this point, we should have a stable environment with memory
@@ -39,8 +56,18 @@ namespace tupai
 
 		// Initiate virtual devices
 		dev::serial_init();
-		dev::ps2_init();
+		//dev::ps2_init();
 		dev::tty_init();
+
+		// List PS/2 devices
+		for (unsigned int i = 0; i < dev::ps2_count_ports(); i ++)
+			util::println("PS/2 port: ", dev::ps2_list_ports()[i], "");
+
+		sys::threading_init();
+		util::println("Current thread ID is ", sys::thread_get_id());
+
+		// Create a test thread
+		sys::thread_create(test_thread);
 
 		// Run the kernel shell
 		shell_main();

@@ -24,6 +24,9 @@
 #include <tupai/interrupt.hpp>
 #include <tupai/debug.hpp>
 
+// Multithreading
+#include <tupai/sys/thread.hpp>
+
 // Standard
 #include <stddef.h>
 #include <stdint.h>
@@ -45,7 +48,7 @@ namespace tupai
 
 		static void pit_set_rate(int rate);
 		extern "C" void isr_pit();
-		extern "C" void pit_isr_main();
+		extern "C" void* pit_isr_main(void* stack_ptr);
 
 		void pit_init()
 		{
@@ -53,7 +56,7 @@ namespace tupai
 			pit_set_rate(1000);
 
 			// Bind the interrupt
-			interrupt_bind(0, (void*)isr_pit);
+			interrupt_bind(PIC_REMAP_OFFSET + 0, (void*)isr_pit);
 
 			// Unmask the interrupt
 			pic_mask(0, true);
@@ -79,15 +82,20 @@ namespace tupai
 			debug_println("PIT rate set to ", pit_rate);
 		}
 
-		void pit_isr_main()
+		void* pit_isr_main(void* stack_ptr)
 		{
 			// ACK the interrupt
-			pic_ack(PIC_REMAP_OFFSET + 0);
+			pic_ack(0);
 
 			pit_time += 1000000 / pit_rate; // Nanoseconds / rate
 
-			//if (pit_time % 1000000 == 0)
-			//	debug_println("PIT time is ", pit_time / 1000000, " seconds!");
+			// Switch threads
+
+			sys::thread_update(sys::thread_get_id(), stack_ptr);// First, reset the current thread's stack
+
+			if (sys::threading_enabled())
+				stack_ptr = sys::thread_next_stack();
+			return stack_ptr;
 		}
 	}
 }

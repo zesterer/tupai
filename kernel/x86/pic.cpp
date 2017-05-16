@@ -100,16 +100,14 @@ namespace tupai
 		{
 			/* write EOI */
 
-			if (irq < PIC_REMAP_OFFSET || irq >= PIC_REMAP_OFFSET + 8 + 8) // It's not a valid irq
+			if (irq < 0 || irq >= 16) // It's not a valid irq
 				return;
 
-			if (irq >= PIC_REMAP_OFFSET + 8) // It's a PIC2
+			if (irq >= 8) // It's a PIC2
 				outb(PORT_PIC2_CMD, PIC_EOI);
 
 			// PIC1 EOI must be called anyway
 			outb(PORT_PIC1_CMD, PIC_EOI);
-
-			//debug_println("PIC acknowledged IRQ ", irq);
 		}
 
 		void pic_mask(uint8_t irq, bool enable)

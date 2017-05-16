@@ -24,7 +24,7 @@
 namespace tupai
 {
 	bool debug_initiated = false;
-	int debug_serial_port_id;
+	int  debug_serial_port_id;
 
 	void debug_init()
 	{

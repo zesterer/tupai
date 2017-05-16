@@ -71,6 +71,10 @@ namespace tupai
 			{
 				shell_motd();
 			}
+			else if (util::str_equal(buff, "isr"))
+			{
+				asm volatile ("int $0x80");
+			}
 			else if (util::str_equal(buff, "panic"))
 			{
 				util::println("Panicing...");
