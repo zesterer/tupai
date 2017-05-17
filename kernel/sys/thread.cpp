@@ -22,6 +22,7 @@
 #include <tupai/interrupt.hpp>
 #include <tupai/util/out.hpp>
 #include <tupai/util/mutex.hpp>
+#include <tupai/panic.hpp>
 
 namespace tupai
 {
@@ -67,7 +68,7 @@ namespace tupai
 			return threads_enabled;
 		}
 
-		id_t thread_create(void(*addr)(), bool create_stack)
+		id_t thread_create(void(*entry)(), bool create_stack)
 		{
 			id_t nid = thread_gen_id();
 
@@ -82,7 +83,7 @@ namespace tupai
 					// Create a stack
 					if (create_stack)
 					{
-						threads[i].entry = (size_t)addr;
+						threads[i].entry = (size_t)&thread_spawner<void, entry>;
 						threads[i].stack = (size_t)(&stacks[0][0]) + i * STACKSIZE + STACKSIZE;
 					}
 
@@ -98,6 +99,20 @@ namespace tupai
 			return cthread;
 		}
 
+		void thread_kill(id_t id)
+		{
+			for (size_t i = 0; i < MAXTHREADS; i ++)
+			{
+				if (threads[i].id == id)
+				{
+					// Set current thread to dead
+					threads[i].id = -1;
+					threads[i].cstate = thread_t::state::DEAD;
+					break;
+				}
+			}
+		}
+
 		int c = 0;
 		size_t thread_next_stack(size_t ostack)
 		{
@@ -105,7 +120,7 @@ namespace tupai
 
 			for (size_t i = 0; i < MAXTHREADS; i ++)
 			{
-				if (threads[i].id == cthread)
+				if (threads[i].id == cthread && threads[i].cstate == thread_t::state::ACTIVE)
 				{
 					found_index = i;
 					// Set current thread to waiting
@@ -161,6 +176,8 @@ namespace tupai
 					#endif
 				}
 			}
+
+			panic("Could not determine active thread");
 		}
 	}
 }

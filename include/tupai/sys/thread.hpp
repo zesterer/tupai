@@ -50,9 +50,17 @@ namespace tupai
 		void threading_init();
 		bool threading_enabled();
 
-		id_t   thread_create(void(*addr)(), bool create_stack = true);
+		id_t   thread_create(void(*entry)(), bool create_stack = true);
 		id_t   thread_get_id();
+		void   thread_kill(id_t id);
 		size_t thread_next_stack(size_t ostack);
+
+		template <typename R=void, R(*F)()>
+		void thread_spawner()
+		{
+			return F();
+			//thread_kill(thread_get_id());
+		}
 	}
 }
 
