@@ -18,14 +18,26 @@
 //
 
 // Globally define the ISRs
+.global isr_stub
 .global isr_pit
 .global isr_syscall
 
 .section .text
 
 	.align 4
+	isr_stub: // STUB IRQ (all)
+		pushal
+		cld
+
+		push %esp // Pass the current stack pointer
+		call stub_isr_main
+		mov %eax, %esp // Restore the thread stack pointer
+
+		popal
+		iret
+
+	.align 4
 	isr_pit: // PIT ISR (irq 0)
-		cli
 		pushal
 		cld
 
@@ -34,12 +46,10 @@
 		mov %eax, %esp // Restore the thread stack pointer
 
 		popal
-		sti
 		iret
 
 	.align 4
 	isr_syscall: // SYSCALL ISR (irq 0x80)
-		cli
 		pushal
 		cld
 
@@ -48,5 +58,4 @@
 		mov %eax, %esp // Restore the thread stack pointer
 
 		popal
-		sti
 		iret

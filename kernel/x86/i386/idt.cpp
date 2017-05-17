@@ -94,22 +94,10 @@ namespace tupai
 			idt_ptr_t idt_ptr;
 
 			// IDT default handler
-			extern "C" void isr_handler_stub();
-			asm volatile
-			(
-				".section .text\n"
-				"	.align 4\n"
-				"	isr_handler_stub:\n"
-				"		pushal\n"
-				"		call isr_handler_stub_main\n"
-				"		popal\n"
-				"		iret\n"
-			);
-
-			extern "C" void isr_handler_stub_main()
+			extern "C" void isr_stub();
+			extern "C" void stub_isr_main()
 			{
-				debug_println("Interrupt occured!");
-				panic("Undefined interrupt occured");
+				debug_println("Undefined interrupt occured");
 			}
 
 			void idt_init()
@@ -137,7 +125,7 @@ namespace tupai
 
 				// Assign IDT entries to the stub handler for now
 				for (size_t i = PIC_REMAP_OFFSET; i < IDT_LENGTH; i ++)
-					idt_set_entry(i, (void*)&isr_handler_stub);
+					idt_set_entry(i, (void*)&isr_stub);
 
 				debug_println("IDT initiated");
 			}

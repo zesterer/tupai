@@ -18,6 +18,7 @@
 //
 
 // Globally define the ISRs
+.global isr_stub
 .global isr_pit
 .global isr_syscall
 
@@ -59,6 +60,18 @@
 		pop %rax
 
 	.endm
+
+	.align 4
+	isr_stub: // STUB IRQ (all)
+		PUSH_REGS
+		cld
+
+		mov %rsp, %rdi // Pass the current stack pointer
+		call stub_isr_main
+		mov %rax, %rsp // Restore the thread stack pointer
+
+		POP_REGS
+		iretq
 
 	.align 4
 	isr_pit: // PIT ISR (irq 0)
