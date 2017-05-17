@@ -40,21 +40,19 @@ namespace tupai
 				DEAD,
 			};
 
-			id_t id;
-			state cstate = state::DEAD;
+			volatile id_t id = -1;
+			volatile state cstate = state::DEAD;
 
-			void* entry = 0x0;
-			void* stack = 0x0;
+			volatile size_t entry = 0x0;
+			volatile size_t stack = 0x0;
 		};
 
 		void threading_init();
 		bool threading_enabled();
 
-		id_t  thread_create(void(*addr)(), bool create_stack = true);
-		id_t  thread_get_id();
-		void  thread_assign(id_t id);
-		void  thread_update(id_t id, void* stack);
-		void* thread_next_stack();
+		id_t   thread_create(void(*addr)(), bool create_stack = true);
+		id_t   thread_get_id();
+		size_t thread_next_stack(size_t ostack);
 	}
 }
 

@@ -1,5 +1,5 @@
 //
-// file : call.cpp
+// file : mutex.cpp
 //
 // This file is part of Tupai.
 //
@@ -18,28 +18,29 @@
 //
 
 // Tupai
-#include <tupai/sys/call.hpp>
-#include <tupai/interrupt.hpp>
+#include <tupai/util/mutex.hpp>
 #include <tupai/util/out.hpp>
 
 namespace tupai
 {
-	namespace sys
+	namespace util
 	{
-		extern "C" void isr_syscall();
-		extern "C" size_t syscall_isr_main(size_t stack_ptr);
+		extern "C" void mutex_lock_impl(volatile size_t* val);
+		extern "C" void mutex_unlock_impl(volatile size_t* val);
 
-		void call_init()
+		bool mutex::is_locked()
 		{
-			// Bind the interrupt
-			interrupt_bind(CALL_IRQ, (void*)isr_syscall);
+			return this->val > 0;
 		}
 
-		size_t syscall_isr_main(size_t stack_ptr)
+		void mutex::lock()
 		{
-			util::println("Syscall occured!");
+			mutex_lock_impl(&this->val);
+		}
 
-			return stack_ptr;
+		void mutex::unlock()
+		{
+			mutex_unlock_impl(&this->val);
 		}
 	}
 }

@@ -25,24 +25,28 @@
 
 	.align 4
 	isr_pit: // PIT ISR (irq 0)
+		cli
 		pushal
 		cld
 
 		push %esp // Pass the current stack pointer
 		call pit_isr_main
-		pop %esp // Restore the thread stack pointer
+		mov %eax, %esp // Restore the thread stack pointer
 
 		popal
+		sti
 		iret
 
 	.align 4
 	isr_syscall: // SYSCALL ISR (irq 0x80)
+		cli
 		pushal
 		cld
 
 		push %esp // Pass the current stack pointer
 		call syscall_isr_main
-		pop %esp // Restore the thread stack pointer
+		mov %eax, %esp // Restore the thread stack pointer
 
 		popal
+		sti
 		iret

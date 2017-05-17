@@ -20,6 +20,7 @@
 // Tupai
 #include <tupai/dev/tty.hpp>
 #include <tupai/dev/serial.hpp>
+#include <tupai/util/mutex.hpp>
 #include <tupai/debug.hpp>
 
 #if defined(ARCH_FAMILY_x86)
@@ -37,10 +38,16 @@ namespace tupai
 		static bool tty_initiated = false;
 		static int tty_serial_port = -1;
 
+		util::mutex tty_init_mutex;
+		util::mutex tty_write_mutex;
+		util::mutex tty_read_mutex;
+
 		void tty_init()
 		{
 			if (tty_initiated)
 				return;
+
+			tty_init_mutex.lock(); // Begin critical section
 
 			#if defined(ARCH_FAMILY_x86)
 				x86::textmode_init();
@@ -66,10 +73,14 @@ namespace tupai
 				debug_print("Could not find port for serial tty output!\n");
 
 			tty_initiated = true;
+
+			tty_init_mutex.unlock(); // End critical section
 		}
 
 		void tty_write(char c)
 		{
+			tty_write_mutex.lock(); // Begin critical section
+
 			#if defined(ARCH_FAMILY_x86)
 				x86::textmode_write(c);
 			#endif
@@ -77,6 +88,8 @@ namespace tupai
 			dev::serial_write(tty_serial_port, c);
 			if (c == '\n') // Serial interfaces regard a carriage return as a newline
 				dev::serial_write(tty_serial_port, '\r');
+
+			tty_write_mutex.unlock(); // End critical section
 		}
 
 		void tty_print(const char* str)
@@ -87,7 +100,10 @@ namespace tupai
 
 		char tty_read()
 		{
-			return dev::serial_read(tty_serial_port);
+			tty_read_mutex.lock(); // Begin critical section
+			char val = dev::serial_read(tty_serial_port);
+			tty_read_mutex.unlock(); // Begin critical section
+			return val;
 		}
 
 		void tty_readline(char* buff, size_t n)

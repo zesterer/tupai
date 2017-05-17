@@ -37,15 +37,33 @@
 
 namespace tupai
 {
-	void test_thread()
+	void test_thread_a()
 	{
 		while (true)
 		{
-			volatile int c = 0;
-			while (c < 100000000) c ++;
-			util::println("Hello! Current thread is ", sys::thread_get_id());
+			volatile int a = 0; while (a < 37587) a ++;
+			util::print('A');
 		}
 	}
+
+	void test_thread_b()
+	{
+		while (true)
+		{
+			volatile int a = 0; while (a < 38775) a ++;
+			util::print('B');
+		}
+	}
+
+	void test_thread_c()
+	{
+		while (true)
+		{
+			volatile int a = 0; while (a < 27825) a ++;
+			util::print('C');
+		}
+	}
+
 
 	int main()
 	{
@@ -67,7 +85,11 @@ namespace tupai
 		util::println("Current thread ID is ", sys::thread_get_id());
 
 		// Create a test thread
-		sys::thread_create(test_thread);
+		sys::thread_create(test_thread_a);
+		sys::thread_create(test_thread_b);
+		sys::thread_create(test_thread_c);
+
+		while (true);
 
 		// Run the kernel shell
 		shell_main();

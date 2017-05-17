@@ -47,7 +47,7 @@ ifeq (@(TARGET_ARCH),amd64)
 	CC_FLAGS=$(CC_FLAGS) -DARCH_amd64 -DARCH_ADDRESS_64
 	CC_FLAGS=$(CC_FLAGS) -mcmodel=kernel -mno-red-zone -mno-mmx -mno-sse -mno-sse2
 
-	OBJECTS=$(OBJECTS) x86/*.o x86/amd64/*.o
+	OBJECTS=$(OBJECTS) x86/*.o x86/amd64/*.o x86/amd64/util/*.o
 
 	LINK_FLAGS=$(LINK_FLAGS) -z max-page-size=4096
 	LINK_SCRIPT=x86/amd64/linker.ld
@@ -55,7 +55,7 @@ else
 ifeq (@(TARGET_ARCH),i386)
 	CC_FLAGS=$(CC_FLAGS) -DARCH_i386 -DARCH_ADDRESS_32
 
-	OBJECTS=$(OBJECTS) x86/*.o x86/i386/*.o
+	OBJECTS=$(OBJECTS) x86/*.o x86/i386/*.o x86/i386/util/*.o
 
 	LINK_FLAGS=$(LINK_FLAGS)
 	LINK_SCRIPT=x86/i386/linker.ld

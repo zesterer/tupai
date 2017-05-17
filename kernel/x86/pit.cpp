@@ -48,11 +48,11 @@ namespace tupai
 
 		static void pit_set_rate(int rate);
 		extern "C" void isr_pit();
-		extern "C" void* pit_isr_main(void* stack_ptr);
+		extern "C" size_t pit_isr_main(size_t stack_ptr);
 
 		void pit_init()
 		{
-			// Every millisecond
+			// Every 1000 nanoseconds
 			pit_set_rate(1000);
 
 			// Bind the interrupt
@@ -82,7 +82,7 @@ namespace tupai
 			debug_println("PIT rate set to ", pit_rate);
 		}
 
-		void* pit_isr_main(void* stack_ptr)
+		size_t pit_isr_main(size_t stack_ptr)
 		{
 			// ACK the interrupt
 			pic_ack(0);
@@ -91,10 +91,8 @@ namespace tupai
 
 			// Switch threads
 
-			sys::thread_update(sys::thread_get_id(), stack_ptr);// First, reset the current thread's stack
-
 			if (sys::threading_enabled())
-				stack_ptr = sys::thread_next_stack();
+				stack_ptr = sys::thread_next_stack(stack_ptr);
 			return stack_ptr;
 		}
 	}

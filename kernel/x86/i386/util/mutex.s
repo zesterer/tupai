@@ -1,5 +1,5 @@
 //
-// file : call.cpp
+// file : mutex.s
 //
 // This file is part of Tupai.
 //
@@ -17,29 +17,28 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-// Tupai
-#include <tupai/sys/call.hpp>
-#include <tupai/interrupt.hpp>
-#include <tupai/util/out.hpp>
+.global mutex_lock_impl
+.global mutex_unlock_impl
 
-namespace tupai
-{
-	namespace sys
-	{
-		extern "C" void isr_syscall();
-		extern "C" size_t syscall_isr_main(size_t stack_ptr);
+.section .text.boot
 
-		void call_init()
-		{
-			// Bind the interrupt
-			interrupt_bind(CALL_IRQ, (void*)isr_syscall);
-		}
+	mutex_lock_impl:
+		mov 4(%esp), %edx // Get byte location from stack
 
-		size_t syscall_isr_main(size_t stack_ptr)
-		{
-			util::println("Syscall occured!");
+		mov $1, %eax
 
-			return stack_ptr;
-		}
-	}
-}
+		_lock:
+			xchg (%edx), %eax // Perform exchange
+
+			test %eax, %eax
+			jnz _lock // If the mutex was not 0 (i.e: already locked) jump back to the lock procedure (TODO: pre-empt instead)
+
+		ret
+
+	mutex_unlock_impl:
+		mov 4(%esp), %edx // Get byte location from stack
+
+		mov $0, %eax
+		xchg (%edx), %eax // Perform exchange
+
+		ret

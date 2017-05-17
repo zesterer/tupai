@@ -21,25 +21,26 @@
 #include <tupai/sys/thread.hpp>
 #include <tupai/interrupt.hpp>
 #include <tupai/util/out.hpp>
+#include <tupai/util/mutex.hpp>
 
 namespace tupai
 {
 	namespace sys
 	{
-		const size_t MAXTHREADS = 32;
+		const size_t MAXTHREADS = 64;
 		const size_t STACKSIZE  = 1024;
 
-		thread_t threads[MAXTHREADS];
+		volatile thread_t threads[MAXTHREADS];
 		#if defined(ARCH_ADDRESS_64)
-			uint64_t stacks[STACKSIZE / 8][MAXTHREADS] __attribute__((aligned(16)));
+			volatile uint64_t stacks[STACKSIZE / 8][MAXTHREADS] __attribute__((aligned(16)));
 		#elif defined(ARCH_ADDRESS_32)
-			uint32_t stacks[STACKSIZE / 4][MAXTHREADS] __attribute__((aligned(16)));
+			volatile uint32_t stacks[STACKSIZE / 4][MAXTHREADS] __attribute__((aligned(16)));
 		#endif
 
-		bool threads_enabled = false;
-		id_t cthread = -1;
+		volatile bool threads_enabled = false;
+		volatile id_t cthread = -1;
 
-		id_t thread_id_counter = 0;
+		volatile id_t thread_id_counter = 0;
 		static id_t thread_gen_id() { return thread_id_counter++; }
 
 		void threading_init()
@@ -81,8 +82,8 @@ namespace tupai
 					// Create a stack
 					if (create_stack)
 					{
-						threads[i].entry = (void*)addr;
-						threads[i].stack = &stacks[STACKSIZE / 8][i];
+						threads[i].entry = (size_t)addr;
+						threads[i].stack = (size_t)(&stacks[0][0]) + i * STACKSIZE + STACKSIZE;
 					}
 
 					break;
@@ -97,25 +98,8 @@ namespace tupai
 			return cthread;
 		}
 
-		void thread_assign(id_t id)
-		{
-			cthread = id;
-		}
-
-		void thread_update(id_t id, void* stack)
-		{
-			// Search for thread
-			for (size_t i = 0; i < MAXTHREADS; i ++)
-			{
-				if (threads[i].id == id)
-				{
-					threads[i].stack = stack;
-					break;
-				}
-			}
-		}
-
-		void* thread_next_stack()
+		int c = 0;
+		size_t thread_next_stack(size_t ostack)
 		{
 			size_t found_index = 0;
 
@@ -126,6 +110,7 @@ namespace tupai
 					found_index = i;
 					// Set current thread to waiting
 					threads[found_index].cstate = thread_t::state::WAITING;
+					threads[found_index].stack = ostack;
 					break;
 				}
 			}
@@ -134,47 +119,46 @@ namespace tupai
 			{
 				size_t cindex = (found_index + i + 1) % MAXTHREADS;
 
-				if (threads[cindex].cstate != thread_t::state::DEAD)
+				if (threads[cindex].cstate == thread_t::state::WAITING)
 				{
-					// Set the current thread
-					cthread = threads[cindex].id;
-
-					// Find the new stack
-					void* nstack = threads[cindex].stack;
-
-					// If it's a new thread, just jump to the location
-					if (threads[cindex].cstate == thread_t::state::UNSPAWNED)
-					{
-						void* nentry = threads[cindex].entry;
-
-						// Make it the active thread
-						threads[cindex].cstate = thread_t::state::ACTIVE;
-
-						#if defined(ARCH_i386)
-						{
-							asm volatile (
-								"mov %0, %%esp \n\
-								 jmp *%1\n"
-								 : : "r" (nstack), "r" (nentry)
-							);
-						}
-						#elif defined(ARCH_amd64)
-						{
-							asm volatile ("xchg %bx, %bx");
-							asm volatile (
-								"mov %0, %%rsp \n \
-								sti \n \
-								jmp *%1\n"
-								 : : "r" (nstack), "r" (nentry)
-							);
-						}
-						#endif
-					}
-
 					// Make it the active thread
+					cthread = threads[cindex].id;
 					threads[cindex].cstate = thread_t::state::ACTIVE;
 
+					// Find the new stack
+					size_t nstack = threads[cindex].stack;
+
 					return nstack;
+				}
+				else if (threads[cindex].cstate == thread_t::state::UNSPAWNED) // If it's a new thread, just jump to the location
+				{
+					// Find the new entry and stack
+					size_t nentry = threads[cindex].entry;
+					size_t nstack = threads[cindex].stack;
+
+					// Make it the active thread
+					cthread = threads[cindex].id;
+					threads[cindex].cstate = thread_t::state::WAITING;
+
+					#if defined(ARCH_i386)
+					{
+						asm volatile (
+							"mov %0, %%esp \n\
+							 sti \n \
+							 jmp *%1\n"
+							 : : "r" (nstack), "r" (nentry)
+						);
+					}
+					#elif defined(ARCH_amd64)
+					{
+						asm volatile (
+							"mov %0, %%rsp \n \
+							 sti \n \
+							 jmp *%1\n"
+							 : : "r" (nstack), "r" (nentry)
+						);
+					}
+					#endif
 				}
 			}
 		}

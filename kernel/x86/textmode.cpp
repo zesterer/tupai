@@ -21,6 +21,7 @@
 #include <tupai/x86/textmode.hpp>
 #include <tupai/x86/port.hpp>
 #include <tupai/arch.hpp>
+#include <tupai/util/mutex.hpp>
 
 #include <tupai/debug.hpp>
 

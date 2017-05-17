@@ -1,5 +1,5 @@
 //
-// file : call.cpp
+// file : mutex.hpp
 //
 // This file is part of Tupai.
 //
@@ -17,29 +17,27 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-// Tupai
-#include <tupai/sys/call.hpp>
-#include <tupai/interrupt.hpp>
-#include <tupai/util/out.hpp>
+#ifndef TUPAI_UTIL_MUTEX_HPP
+#define TUPAI_UTIL_MUTEX_HPP
+
+// Standard
+#include <stddef.h>
+#include <stdint.h>
 
 namespace tupai
 {
-	namespace sys
+	namespace util
 	{
-		extern "C" void isr_syscall();
-		extern "C" size_t syscall_isr_main(size_t stack_ptr);
-
-		void call_init()
+		struct mutex
 		{
-			// Bind the interrupt
-			interrupt_bind(CALL_IRQ, (void*)isr_syscall);
-		}
+			volatile size_t val = 0;
 
-		size_t syscall_isr_main(size_t stack_ptr)
-		{
-			util::println("Syscall occured!");
+			bool is_locked();
 
-			return stack_ptr;
-		}
+			void lock();
+			void unlock();
+		};
 	}
 }
+
+#endif
