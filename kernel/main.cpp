@@ -39,7 +39,7 @@ namespace tupai
 {
 	void test_thread_a()
 	{
-		while (true)
+		for (int i = 0; i < 100; i ++)
 		{
 			volatile int a = 0; while (a < 37587) a ++;
 			util::print('A');
@@ -48,7 +48,7 @@ namespace tupai
 
 	void test_thread_b()
 	{
-		while (true)
+		for (int i = 0; i < 100; i ++)
 		{
 			volatile int a = 0; while (a < 38775) a ++;
 			util::print('B');
@@ -57,7 +57,7 @@ namespace tupai
 
 	void test_thread_c()
 	{
-		while (true)
+		for (int i = 0; i < 100; i ++)
 		{
 			volatile int a = 0; while (a < 27825) a ++;
 			util::print('C');
@@ -88,8 +88,6 @@ namespace tupai
 		sys::thread_create(test_thread_a);
 		sys::thread_create(test_thread_b);
 		sys::thread_create(test_thread_c);
-
-		while (true);
 
 		// Run the kernel shell
 		shell_main();

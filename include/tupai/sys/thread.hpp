@@ -40,7 +40,7 @@ namespace tupai
 				DEAD,
 			};
 
-			volatile id_t id = -1;
+			volatile id_t  id = -1;
 			volatile state cstate = state::DEAD;
 
 			volatile size_t entry = 0x0;
@@ -54,13 +54,6 @@ namespace tupai
 		id_t   thread_get_id();
 		void   thread_kill(id_t id);
 		size_t thread_next_stack(size_t ostack);
-
-		template <typename R=void, R(*F)()>
-		void thread_spawner()
-		{
-			return F();
-			//thread_kill(thread_get_id());
-		}
 	}
 }
 
