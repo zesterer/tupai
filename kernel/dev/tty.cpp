@@ -44,7 +44,7 @@ namespace tupai
 		static volatile util::mutex tty_mutex;
 
 		// The I/O pipe. 256 character buffer
-		static volatile sys::pipe<2048> iopipe;
+		static volatile sys::pipe_t<2048> iopipe;
 
 		static void tty_in_thread();
 		static void tty_out_thread();
@@ -88,8 +88,8 @@ namespace tupai
 			// Create the TTY I/O threads
 			if (sys::threading_enabled())
 			{
-				sys::thread_create(tty_in_thread);
-				sys::thread_create(tty_out_thread);
+				sys::thread_create(tty_in_thread, "tty-in");
+				sys::thread_create(tty_out_thread, "tty-out");
 			}
 			else
 			{

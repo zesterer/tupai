@@ -40,19 +40,25 @@ namespace tupai
 				DEAD,
 			};
 
-			volatile id_t  id = -1;
-			volatile state cstate = state::DEAD;
+			const static size_t NAME_MAX_LEN = 64;
 
-			volatile size_t entry = 0x0;
-			volatile size_t stack = 0x0;
+			id_t  id = -1;
+			char name[NAME_MAX_LEN + 1];
+			state cstate = state::DEAD;
+
+			size_t entry = 0x0;
+			size_t stack = 0x0;
 		};
 
 		void threading_init();
 		bool threading_enabled();
 
-		id_t   thread_create(void(*entry)(), bool create_stack = true);
+		id_t   thread_create(void(*entry)(), const char* name = "null", bool create_stack = true);
 		id_t   thread_get_id();
 		void   thread_kill(id_t id);
+		size_t threads_count();
+		id_t   thread_get_id(size_t i);
+		void   thread_get_name(size_t i, char* str);
 		size_t thread_next_stack(size_t ostack);
 	}
 }

@@ -43,6 +43,14 @@ namespace tupai
 			dest[i] = '\0';
 		}
 
+		static inline void str_cpy_n(const char* src, char* dest, size_t n)
+		{
+			size_t i;
+			for (i = 0; src[i] != '\0' && i + 1 < n; i ++)
+				dest[i] = src[i];
+			dest[i] = '\0';
+		}
+
 		static inline bool str_equal(const char* str0, const char* str1)
 		{
 			size_t i = 0;

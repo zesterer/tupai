@@ -25,6 +25,8 @@
 
 #include <tupai/dev/clock.hpp>
 
+#include <tupai/sys/thread.hpp>
+
 #include <tupai/util/in.hpp>
 #include <tupai/util/out.hpp>
 #include <tupai/util/str.hpp>
@@ -59,13 +61,24 @@ namespace tupai
 			{
 				util::print(
 					"Available commands:\n",
-					"  help  -> Show this help text\n",
-					"  motd  -> Show the MOTD\n",
-					"  panic -> Trigger a kernel panic\n",
-					"  info  -> Show system info\n",
-					"  time  -> Show the system time\n",
-					"  halt  -> Halt the kernel\n"
+					"  help    -> Show this help text\n",
+					"  threads -> Show running threads\n",
+					"  motd    -> Show the MOTD\n",
+					"  panic   -> Trigger a kernel panic\n",
+					"  info    -> Show system info\n",
+					"  time    -> Show the system time\n",
+					"  halt    -> Halt the kernel\n"
 				);
+			}
+			else if (util::str_equal(buff, "threads"))
+			{
+				size_t n = sys::threads_count();
+				for (size_t i = 0; i < n; i ++)
+				{
+					char name[64];
+					sys::thread_get_name(i, name);
+					util::println(i, ' ', sys::thread_get_id(i), ' ', name);
+				}
 			}
 			else if (util::str_equal(buff, "motd"))
 			{

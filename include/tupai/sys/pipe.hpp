@@ -32,11 +32,11 @@ namespace tupai
 	namespace sys
 	{
 		template <size_t SIZE>
-		struct pipe
+		struct pipe_t
 		{
 		public:
-			volatile fifobuff<SIZE> in;
-			volatile fifobuff<SIZE> out;
+			volatile fifobuff_t<SIZE> in;
+			volatile fifobuff_t<SIZE> out;
 
 		public:
 			void    write(uint8_t c) volatile { return this->out.write(c); }

@@ -32,14 +32,14 @@ namespace tupai
 	namespace sys
 	{
 		template <size_t SIZE>
-		struct fifobuff;
+		struct fifobuff_t;
 
-		template <size_t SIZE> void    __fifo_write(volatile fifobuff<SIZE>& buff, uint8_t c);
-		template <size_t SIZE> uint8_t __fifo_read (volatile fifobuff<SIZE>& buff);
-		template <size_t SIZE> size_t  __fifo_len  (volatile fifobuff<SIZE>& buff);
+		template <size_t SIZE> void    __fifo_write(volatile fifobuff_t<SIZE>& buff, uint8_t c);
+		template <size_t SIZE> uint8_t __fifo_read (volatile fifobuff_t<SIZE>& buff);
+		template <size_t SIZE> size_t  __fifo_len  (volatile fifobuff_t<SIZE>& buff);
 
 		template <size_t SIZE>
-		struct fifobuff
+		struct fifobuff_t
 		{
 		public:
 			volatile uint8_t arr[SIZE] = { 0, };
@@ -56,7 +56,7 @@ namespace tupai
 		};
 
 		template <size_t SIZE>
-		void __fifo_write(volatile fifobuff<SIZE>& buff, uint8_t c)
+		void __fifo_write(volatile fifobuff_t<SIZE>& buff, uint8_t c)
 		{
 			buff.mutex.lock(); // Begin critical section
 
@@ -76,7 +76,7 @@ namespace tupai
 		}
 
 		template <size_t SIZE>
-		uint8_t __fifo_read (volatile fifobuff<SIZE>& buff)
+		uint8_t __fifo_read (volatile fifobuff_t<SIZE>& buff)
 		{
 			// Wait loop
 			while (true)
@@ -107,7 +107,7 @@ namespace tupai
 		}
 
 		template <size_t SIZE>
-		size_t __fifo_len (volatile fifobuff<SIZE>& buff)
+		size_t __fifo_len (volatile fifobuff_t<SIZE>& buff)
 		{
 			buff.mutex.lock(); // Begin critical section
 

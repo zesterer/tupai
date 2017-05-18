@@ -22,6 +22,7 @@
 #include <tupai/interrupt.hpp>
 #include <tupai/util/out.hpp>
 #include <tupai/util/mutex.hpp>
+#include <tupai/util/str.hpp>
 #include <tupai/panic.hpp>
 
 namespace tupai
@@ -38,8 +39,9 @@ namespace tupai
 			volatile uint32_t stacks[STACKSIZE / 4][MAXTHREADS] __attribute__((aligned(16)));
 		#endif
 
-		volatile bool threads_enabled = false;
-		volatile id_t cthread = -1;
+		volatile bool   threads_enabled = false;
+		volatile id_t   cthread = -1;
+		volatile size_t cindex = -1;
 
 		volatile id_t thread_id_counter = 0;
 		static id_t thread_gen_id() { return thread_id_counter++; }
@@ -59,8 +61,10 @@ namespace tupai
 
 			// Create the the main thread
 			id_t nid = thread_gen_id();
-			threads[0].id = nid;
-			threads[0].cstate = thread_t::state::WAITING;
+			cindex = 0;
+			threads[cindex].id = nid;
+			threads[cindex].cstate = thread_t::state::WAITING;
+			//threads[cindex].name = "main";
 			cthread = nid;
 
 			// Set threading to enabled
@@ -74,7 +78,7 @@ namespace tupai
 			return threads_enabled;
 		}
 
-		id_t thread_create(void(*addr)(), bool create_stack)
+		id_t thread_create(void(*addr)(), const char* name, bool create_stack)
 		{
 			interrupt_enable(false); // Begin critical section
 
@@ -87,6 +91,12 @@ namespace tupai
 				{
 					threads[i].id = nid;
 					threads[i].cstate = thread_t::state::UNSPAWNED;
+
+					// Copy the thread name
+					size_t j;
+					for (j = 0; name[j] != '\0' && j + 1 < thread_t::NAME_MAX_LEN; j ++)
+						threads[i].name[j] = name[j];
+					threads[i].name[j] = '\0';
 
 					// Create a stack
 					if (create_stack)
@@ -134,44 +144,36 @@ namespace tupai
 
 		size_t thread_next_stack(size_t ostack)
 		{
-			size_t found_index = 0;
+			// Set current thread to waiting
+			threads[cindex].cstate = thread_t::state::WAITING;
+			threads[cindex].stack = ostack;
 
 			for (size_t i = 0; i < MAXTHREADS; i ++)
 			{
-				if (threads[i].id == cthread)
-				{
-					found_index = i;
-					// Set current thread to waiting
-					threads[found_index].cstate = thread_t::state::WAITING;
-					threads[found_index].stack = ostack;
-					break;
-				}
-			}
+				size_t index = (cindex + i + 1) % MAXTHREADS;
 
-			for (size_t i = 0; i < MAXTHREADS; i ++)
-			{
-				size_t cindex = (found_index + i + 1) % MAXTHREADS;
-
-				if (threads[cindex].cstate == thread_t::state::WAITING)
+				if (threads[index].cstate == thread_t::state::WAITING)
 				{
 					// Make it the active thread
-					cthread = threads[cindex].id;
-					threads[cindex].cstate = thread_t::state::ACTIVE;
+					cthread = threads[index].id;
+					cindex = index;
+					threads[index].cstate = thread_t::state::ACTIVE;
 
 					// Find the new stack
-					size_t nstack = threads[cindex].stack;
+					size_t nstack = threads[index].stack;
 
 					return nstack;
 				}
-				else if (threads[cindex].cstate == thread_t::state::UNSPAWNED) // If it's a new thread, just jump to the location
+				else if (threads[index].cstate == thread_t::state::UNSPAWNED) // If it's a new thread, just jump to the location
 				{
 					// Find the new entry and stack
-					size_t nentry = threads[cindex].entry;
-					size_t nstack = threads[cindex].stack;
+					size_t nentry = threads[index].entry;
+					size_t nstack = threads[index].stack;
 
 					// Make it the active thread
-					cthread = threads[cindex].id;
-					threads[cindex].cstate = thread_t::state::WAITING;
+					cthread = threads[index].id;
+					cindex = index;
+					threads[index].cstate = thread_t::state::WAITING;
 
 					#if defined(ARCH_i386)
 					{
@@ -198,6 +200,69 @@ namespace tupai
 			}
 
 			panic("Cannot determine active thread");
+		}
+
+		size_t threads_count()
+		{
+			size_t n = 0;
+
+			interrupt_enable(false); // Begin critical section
+
+			for (size_t i = 0; i < MAXTHREADS; i ++)
+			{
+				if (threads[i].cstate != thread_t::state::DEAD)
+					n ++;
+			}
+
+			interrupt_enable(true); // End critical section
+
+			return n;
+		}
+
+		id_t thread_get_id(size_t index)
+		{
+			interrupt_enable(false); // Begin critical section
+
+			size_t c = 0;
+			for (size_t i = 0; i < MAXTHREADS; i ++)
+			{
+				if (threads[i].cstate != thread_t::state::DEAD)
+				{
+					if (c == index)
+					{
+						interrupt_enable(true); // End critical section
+						return threads[i].id;
+					}
+
+					c ++;
+				}
+			}
+
+			interrupt_enable(true); // End critical section
+			return 0;
+		}
+
+		void thread_get_name(size_t index, char* str)
+		{
+			interrupt_enable(false); // Begin critical section
+
+			size_t c = 0;
+			for (size_t i = 0; i < MAXTHREADS; i ++)
+			{
+				if (threads[i].cstate != thread_t::state::DEAD)
+				{
+					if (c == index)
+					{
+						util::str_cpy((const char*)threads[i].name, str);
+						interrupt_enable(true); // End critical section
+						return;
+					}
+
+					c ++;
+				}
+			}
+
+			interrupt_enable(true); // End critical section
 		}
 	}
 }
