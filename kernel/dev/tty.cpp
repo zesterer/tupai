@@ -21,7 +21,10 @@
 #include <tupai/dev/tty.hpp>
 #include <tupai/dev/serial.hpp>
 #include <tupai/util/mutex.hpp>
+#include <tupai/sys/thread.hpp>
+#include <tupai/sys/pipe.hpp>
 #include <tupai/debug.hpp>
+#include <tupai/util/out.hpp>
 
 #if defined(ARCH_FAMILY_x86)
 	#include <tupai/x86/textmode.hpp>
@@ -35,61 +38,75 @@ namespace tupai
 {
 	namespace dev
 	{
-		static bool tty_initiated = false;
-		static int tty_serial_port = -1;
+		static volatile bool tty_initiated = false;
+		static volatile int tty_serial_port = -1;
 
-		util::mutex tty_init_mutex;
-		util::mutex tty_write_mutex;
-		util::mutex tty_read_mutex;
+		static volatile util::mutex tty_mutex;
+
+		// The I/O pipe. 256 character buffer
+		static volatile sys::pipe<2048> iopipe;
+
+		static void tty_in_thread();
+		static void tty_out_thread();
 
 		void tty_init()
 		{
-			if (tty_initiated)
-				return;
+			tty_mutex.lock(); // Begin critical section
 
-			tty_init_mutex.lock(); // Begin critical section
+			if (tty_initiated)
+			{
+				tty_mutex.unlock(); // End critical section
+				return;
+			}
 
 			#if defined(ARCH_FAMILY_x86)
 				x86::textmode_init();
 			#endif
 
-			// Find the names of available serial ports
-			const char** serial_port_names = dev::serial_list_ports();
-			// Search the serial port list, trying to open a debugging port
-			for (size_t i = 0; i < dev::serial_count_ports() && tty_serial_port == -1; i ++)
-				tty_serial_port = dev::serial_open_port(serial_port_names[i], 57600, 8, 1, dev::serial_parity::NONE);
-
-			if (tty_serial_port != -1)
+			// Open a serial port
 			{
-				debug_print(
-					"Started serial tty output on ", serial_port_names[tty_serial_port], '\n',
-					"  baudrate -> ", 57600, '\n',
-					"  databits -> ", 8, '\n',
-					"  stopbits -> ", 1, '\n',
-					"  parity   -> ", "NONE", '\n'
-				);
+				// Find the names of available serial ports
+				const char** serial_port_names = dev::serial_list_ports();
+				// Search the serial port list, trying to open a debugging port
+				for (size_t i = 0; i < dev::serial_count_ports() && tty_serial_port == -1; i ++)
+					tty_serial_port = dev::serial_open_port(serial_port_names[i], 57600, 8, 1, dev::serial_parity::NONE);
+
+				if (tty_serial_port != -1)
+				{
+					debug_print(
+						"Started serial tty output on ", serial_port_names[tty_serial_port], '\n',
+						"  baudrate -> ", 57600, '\n',
+						"  databits -> ", 8, '\n',
+						"  stopbits -> ", 1, '\n',
+						"  parity   -> ", "NONE", '\n'
+					);
+				}
+				else
+					debug_print("Could not find port for serial tty output!\n");
+			}
+
+			// Create the TTY I/O threads
+			if (sys::threading_enabled())
+			{
+				sys::thread_create(tty_in_thread);
+				sys::thread_create(tty_out_thread);
 			}
 			else
-				debug_print("Could not find port for serial tty output!\n");
+			{
+				tty_mutex.unlock(); // End critical section
+				return;
+			}
 
 			tty_initiated = true;
 
-			tty_init_mutex.unlock(); // End critical section
+			tty_mutex.unlock(); // End critical section
 		}
 
 		void tty_write(char c)
 		{
-			tty_write_mutex.lock(); // Begin critical section
-
-			#if defined(ARCH_FAMILY_x86)
-				x86::textmode_write(c);
-			#endif
-
-			dev::serial_write(tty_serial_port, c);
-			if (c == '\n') // Serial interfaces regard a carriage return as a newline
-				dev::serial_write(tty_serial_port, '\r');
-
-			tty_write_mutex.unlock(); // End critical section
+			if (tty_initiated) tty_mutex.lock(); // Begin critical section
+			iopipe.write(c);
+			if (tty_initiated) tty_mutex.unlock(); // End critical section
 		}
 
 		void tty_print(const char* str)
@@ -100,30 +117,38 @@ namespace tupai
 
 		char tty_read()
 		{
-			tty_read_mutex.lock(); // Begin critical section
-			char val = dev::serial_read(tty_serial_port);
-			tty_read_mutex.unlock(); // Begin critical section
+			if (tty_initiated) tty_mutex.lock(); // Begin critical section
+			char val = iopipe.read();
+			if (tty_initiated) tty_mutex.unlock(); // End critical section
 			return val;
 		}
 
-		void tty_readline(char* buff, size_t n)
+		void tty_in_thread()
 		{
-			size_t i = 0;
-			while (i + 1 < n)
+			while (true)
 			{
-				char c = tty_read();
-				tty_write(c);
-
-				if (c == '\r')
-					break;
-
-				if (c != '\0')
-				{
-					buff[i] = c;
-					i ++;
-				}
+				unsigned char c = dev::serial_read(tty_serial_port);
+				iopipe.write_in(c);
 			}
-			buff[i] = '\0';
+		}
+
+		void tty_out_thread()
+		{
+			while (true)
+			{
+				unsigned char c = iopipe.read_out();
+
+				#if defined(ARCH_FAMILY_x86)
+					x86::textmode_write(c);
+				#endif
+
+				dev::serial_write(tty_serial_port, c);
+
+				if (c == '\n')
+					dev::serial_write(tty_serial_port, '\r');
+				//else if (c == '\r')
+				//	dev::serial_write(tty_serial_port, '\n');
+			}
 		}
 	}
 }

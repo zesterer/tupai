@@ -25,12 +25,17 @@
 	mutex_lock_impl:
 
 		mov $1, %rax
-		xchg (%rdi), %rax // Perform exchange
 
-		test %rax, %rax
-		jnz mutex_lock_impl // If the mutex was not 0 (i.e: already locked) jump back to the lock procedure (TODO: pre-empt instead)
+	_lock:
+			xchg (%rdi), %rax // Perform exchange
+
+			test %rax, %rax
+			jnz preempt // If the mutex was not 0 (i.e: already locked) jump back to the lock procedure (TODO: pre-empt instead)
 
 		ret
+
+	preempt:
+		int $0x80
 
 	mutex_unlock_impl:
 

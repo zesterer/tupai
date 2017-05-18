@@ -1,5 +1,5 @@
 //
-// file : tty.hpp
+// file : call.cpp
 //
 // This file is part of Tupai.
 //
@@ -17,24 +17,13 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_TTY_HPP
-#define TUPAI_TTY_HPP
-
-// Standard
-#include <stddef.h>
-#include <stdint.h>
+// Tupai
+#include <tupai/sys/fifobuff.hpp>
 
 namespace tupai
 {
-	namespace dev
+	namespace sys
 	{
-		void tty_init();
-
-		void tty_write(char c);
-		void tty_print(const char* str);
-
-		char tty_read();
+		// Nothing yet
 	}
 }
-
-#endif

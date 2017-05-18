@@ -37,7 +37,7 @@ namespace tupai
 		else
 			asm volatile ("cli");
 
-		debug_println("Interrupts ", enable ? "enabled" : "disabled");
+		//debug_println("Interrupts ", enable ? "enabled" : "disabled");
 	}
 
 	void interrupt_bind(uint8_t irq, void* address)

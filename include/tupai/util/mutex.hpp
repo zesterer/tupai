@@ -32,10 +32,10 @@ namespace tupai
 		{
 			volatile size_t val = 0;
 
-			bool is_locked();
+			bool is_locked() volatile;
 
-			void lock();
-			void unlock();
+			void lock() volatile;
+			void unlock() volatile;
 		};
 	}
 }

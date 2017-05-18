@@ -28,17 +28,17 @@ namespace tupai
 		extern "C" void mutex_lock_impl(volatile size_t* val);
 		extern "C" void mutex_unlock_impl(volatile size_t* val);
 
-		bool mutex::is_locked()
+		bool mutex::is_locked() volatile
 		{
 			return this->val > 0;
 		}
 
-		void mutex::lock()
+		void mutex::lock() volatile
 		{
 			mutex_lock_impl(&this->val);
 		}
 
-		void mutex::unlock()
+		void mutex::unlock() volatile
 		{
 			mutex_unlock_impl(&this->val);
 		}

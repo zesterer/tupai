@@ -1,5 +1,5 @@
 //
-// file : tty.hpp
+// file : pipe.hpp
 //
 // This file is part of Tupai.
 //
@@ -17,8 +17,11 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_TTY_HPP
-#define TUPAI_TTY_HPP
+#ifndef TUPAI_SYS_PIPE_HPP
+#define TUPAI_SYS_PIPE_HPP
+
+// Tupai
+#include <tupai/sys/fifobuff.hpp>
 
 // Standard
 #include <stddef.h>
@@ -26,14 +29,22 @@
 
 namespace tupai
 {
-	namespace dev
+	namespace sys
 	{
-		void tty_init();
+		template <size_t SIZE>
+		struct pipe
+		{
+		public:
+			volatile fifobuff<SIZE> in;
+			volatile fifobuff<SIZE> out;
 
-		void tty_write(char c);
-		void tty_print(const char* str);
+		public:
+			void    write(uint8_t c) volatile { return this->out.write(c); }
+			uint8_t read()           volatile { return this->in.read(); }
 
-		char tty_read();
+			void    write_in(uint8_t c) volatile { return this->in.write(c); }
+			uint8_t read_out()          volatile { return this->out.read(); }
+		};
 	}
 }
 

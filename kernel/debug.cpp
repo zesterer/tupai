@@ -33,8 +33,6 @@ namespace tupai
 			if (debug_initiated)
 				return;
 
-			dev::tty_init();
-
 			debug_initiated = true;
 		}
 		#endif

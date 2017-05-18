@@ -31,11 +31,10 @@ namespace tupai
 {
 	namespace util
 	{
+		void __readline(char* buff, size_t n);
+
 		template <size_t SIZE>
-		void readline(char(&buff)[SIZE])
-		{
-			dev::tty_readline(buff);
-		}
+		void readline(char(&buff)[SIZE]) { __readline(buff, SIZE); }
 	}
 }
 

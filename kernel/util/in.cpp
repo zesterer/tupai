@@ -1,5 +1,5 @@
 //
-// file : tty.hpp
+// file : mutex.cpp
 //
 // This file is part of Tupai.
 //
@@ -17,24 +17,33 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_TTY_HPP
-#define TUPAI_TTY_HPP
-
-// Standard
-#include <stddef.h>
-#include <stdint.h>
+// Tupai
+#include <tupai/util/in.hpp>
+#include <tupai/dev/tty.hpp>
 
 namespace tupai
 {
-	namespace dev
+	namespace util
 	{
-		void tty_init();
+		void __readline(char* buff, size_t n)
+		{
+			size_t i = 0;
+			while (i + 1 < n)
+			{
+				char c = dev::tty_read();
+				dev::tty_write(c);
 
-		void tty_write(char c);
-		void tty_print(const char* str);
+				if (c == '\r' || c == '\n')
+					break;
 
-		char tty_read();
+				if (c != '\0')
+				{
+					buff[i] = c;
+					i ++;
+				}
+			}
+			buff[i] = '\0';
+		}
+
 	}
 }
-
-#endif

@@ -22,6 +22,7 @@
 #include <tupai/interrupt.hpp>
 #include <tupai/util/out.hpp>
 #include <tupai/util/mutex.hpp>
+#include <tupai/panic.hpp>
 
 namespace tupai
 {
@@ -47,6 +48,8 @@ namespace tupai
 
 		void threading_init()
 		{
+			interrupt_enable(false); // Begin critical section
+
 			// Clear threads
 			for (size_t i = 0; i < MAXTHREADS; i ++)
 			{
@@ -62,6 +65,8 @@ namespace tupai
 
 			// Set threading to enabled
 			threads_enabled = true;
+
+			interrupt_enable(true); // End critical section
 		}
 
 		bool threading_enabled()
@@ -71,6 +76,8 @@ namespace tupai
 
 		id_t thread_create(void(*addr)(), bool create_stack)
 		{
+			interrupt_enable(false); // Begin critical section
+
 			id_t nid = thread_gen_id();
 
 			// Search for a free thread space
@@ -92,6 +99,8 @@ namespace tupai
 				}
 			}
 
+			interrupt_enable(true); // End critical section
+
 			return nid;
 		}
 
@@ -102,6 +111,8 @@ namespace tupai
 
 		void thread_kill(id_t id)
 		{
+			interrupt_enable(false); // Begin critical section
+
 			for (size_t i = 0; i < MAXTHREADS; i ++)
 			{
 				if (threads[i].id == id)
@@ -111,6 +122,8 @@ namespace tupai
 					break;
 				}
 			}
+
+			interrupt_enable(true); // End critical section
 		}
 
 		void thread_finish()
@@ -119,7 +132,6 @@ namespace tupai
 			while (1);
 		}
 
-		int c = 0;
 		size_t thread_next_stack(size_t ostack)
 		{
 			size_t found_index = 0;
@@ -184,6 +196,8 @@ namespace tupai
 					#endif
 				}
 			}
+
+			panic("Cannot determine active thread");
 		}
 	}
 }

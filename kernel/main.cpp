@@ -39,7 +39,7 @@ namespace tupai
 {
 	void test_thread_a()
 	{
-		for (int i = 0; i < 100; i ++)
+		for (int i = 0; true; i ++)
 		{
 			volatile int a = 0; while (a < 37587) a ++;
 			util::print('A');
@@ -48,7 +48,7 @@ namespace tupai
 
 	void test_thread_b()
 	{
-		for (int i = 0; i < 100; i ++)
+		for (int i = 0; true; i ++)
 		{
 			volatile int a = 0; while (a < 38775) a ++;
 			util::print('B');
@@ -57,7 +57,7 @@ namespace tupai
 
 	void test_thread_c()
 	{
-		for (int i = 0; i < 100; i ++)
+		for (int i = 0; true; i ++)
 		{
 			volatile int a = 0; while (a < 27825) a ++;
 			util::print('C');
@@ -72,22 +72,24 @@ namespace tupai
 		// The methods through which this is done are platform-dependent.
 		// Now, however, it's relatively safe to run most code.
 
+		// Initiate multi-threading
+		sys::threading_init();
+
 		// Initiate virtual devices
 		dev::serial_init();
-		//dev::ps2_init();
+		dev::ps2_init();
 		dev::tty_init();
 
 		// List PS/2 devices
 		for (unsigned int i = 0; i < dev::ps2_count_ports(); i ++)
 			util::println("PS/2 port: ", dev::ps2_list_ports()[i], "");
 
-		sys::threading_init();
 		util::println("Current thread ID is ", sys::thread_get_id());
 
 		// Create a test thread
-		sys::thread_create(test_thread_a);
-		sys::thread_create(test_thread_b);
-		sys::thread_create(test_thread_c);
+		//sys::thread_create(test_thread_a);
+		//sys::thread_create(test_thread_b);
+		//sys::thread_create(test_thread_c);
 
 		// Run the kernel shell
 		shell_main();

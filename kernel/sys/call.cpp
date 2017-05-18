@@ -20,7 +20,7 @@
 // Tupai
 #include <tupai/sys/call.hpp>
 #include <tupai/interrupt.hpp>
-#include <tupai/util/out.hpp>
+#include <tupai/sys/thread.hpp>
 
 namespace tupai
 {
@@ -37,8 +37,8 @@ namespace tupai
 
 		size_t syscall_isr_main(size_t stack_ptr)
 		{
-			util::println("Syscall occured!");
-
+			if (sys::threading_enabled())
+				stack_ptr = sys::thread_next_stack(stack_ptr);
 			return stack_ptr;
 		}
 	}

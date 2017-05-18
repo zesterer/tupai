@@ -20,6 +20,7 @@
 // Tupai
 #include <tupai/dev/serial.hpp>
 #include <tupai/util/str.hpp>
+#include <tupai/util/mutex.hpp>
 
 #if defined(ARCH_FAMILY_x86)
 	#include <tupai/x86/serial.hpp>
@@ -33,12 +34,18 @@ namespace tupai
 {
 	namespace dev
 	{
-		static bool serial_initiated = false;
+		static volatile bool serial_initiated = false;
+		static volatile util::mutex serial_mutex;
 
 		void serial_init()
 		{
+			//serial_mutex.lock(); // Begin critical section
+
 			if (serial_initiated)
+			{
+				serial_mutex.unlock(); // End critical section
 				return;
+			}
 
 			#if defined(ARCH_FAMILY_x86)
 				x86::serial_init();
@@ -47,28 +54,38 @@ namespace tupai
 			#endif
 
 			serial_initiated = true;
+
+			serial_mutex.unlock(); // End critical section
 		}
 
 		size_t serial_count_ports()
 		{
+			//serial_mutex.lock(); // Begin critical section
 			#if defined(ARCH_FAMILY_x86)
-				return x86::serial_count_ports();
+				size_t val = x86::serial_count_ports();
 			#elif defined(ARCH_rpi2)
-				return arm::rpi2::serial_count_ports();
+				size_t val = arm::rpi2::serial_count_ports();
 			#endif
+			serial_mutex.unlock(); // End critical section
+			return val;
 		}
 
 		const char** serial_list_ports()
 		{
+			//serial_mutex.lock(); // Begin critical section
 			#if defined(ARCH_FAMILY_x86)
-				return x86::serial_list_ports();
+				const char** val = x86::serial_list_ports();
 			#elif defined(ARCH_rpi2)
-				return arm::rpi2::serial_list_ports();
+				const char** val = arm::rpi2::serial_list_ports();
 			#endif
+			serial_mutex.unlock(); // End critical section
+			return val;
 		}
 
 		int serial_open_port(const char* port, uint32_t baudrate, uint8_t databits, uint8_t stopbits, serial_parity parity)
 		{
+			//serial_mutex.lock(); // Begin critical section
+
 			const char** port_names = serial_list_ports();
 			size_t port_count = serial_count_ports();
 			int port_id = -1;
@@ -84,7 +101,10 @@ namespace tupai
 			}
 
 			if (port_id == -1) // The port name was not found
+			{
+				serial_mutex.unlock(); // End critical section
 				return port_id;
+			}
 
 			// It's valid, so attempt to open a port
 			bool success = false;
@@ -95,8 +115,12 @@ namespace tupai
 			#endif
 
 			if (!success)
+			{
+				serial_mutex.unlock(); // End critical section
 				return -1;
+			}
 
+			serial_mutex.unlock(); // End critical section
 			return port_id;
 		}
 
@@ -105,11 +129,13 @@ namespace tupai
 			if (port_id == -1) // Invalid port
 				return;
 
+			//serial_mutex.lock(); // Begin critical section
 			#if defined(ARCH_FAMILY_x86)
 				x86::serial_write(port_id, val);
 			#elif defined(ARCH_rpi2)
 				arm::rpi2::serial_write(port_id, val);
 			#endif
+			serial_mutex.unlock(); // End critical section
 		}
 
 		uint8_t serial_read(int port_id)
@@ -117,11 +143,14 @@ namespace tupai
 			if (port_id == -1) // Invalid port, just return null data
 				return 0;
 
+			//serial_mutex.lock(); // Begin critical section
 			#if defined(ARCH_FAMILY_x86)
-				return x86::serial_read(port_id);
+				uint8_t val = x86::serial_read(port_id);
 			#elif defined(ARCH_rpi2)
-				return arm::rpi2::serial_read(port_id);
+				uint8_t val = arm::rpi2::serial_read(port_id);
 			#endif
+			serial_mutex.unlock(); // End critical section
+			return val;
 		}
 	}
 }

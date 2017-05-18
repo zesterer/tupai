@@ -1,5 +1,5 @@
 //
-// file : tty.hpp
+// file : cpp.cpp
 //
 // This file is part of Tupai.
 //
@@ -17,24 +17,13 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_TTY_HPP
-#define TUPAI_TTY_HPP
-
 // Standard
 #include <stddef.h>
 #include <stdint.h>
 
-namespace tupai
+extern "C" void* memset(void* ptr, int value, size_t num)
 {
-	namespace dev
-	{
-		void tty_init();
-
-		void tty_write(char c);
-		void tty_print(const char* str);
-
-		char tty_read();
-	}
+	for (size_t i = 0; i < num; i ++)
+		((uint8_t*)ptr)[i] = (uint8_t)value;
+	return ptr;
 }
-
-#endif
