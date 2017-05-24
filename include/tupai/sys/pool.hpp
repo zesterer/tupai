@@ -1,5 +1,5 @@
 //
-// file : arch.hpp
+// file : pool.hpp
 //
 // This file is part of Tupai.
 //
@@ -17,8 +17,8 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_ARCH_HPP
-#define TUPAI_ARCH_HPP
+#ifndef TUPAI_SYS_POOL_HPP
+#define TUPAI_SYS_POOL_HPP
 
 // Standard
 #include <stddef.h>
@@ -26,19 +26,16 @@
 
 namespace tupai
 {
-	const size_t ARCH_PAGE_SIZE = 4096;
-
-	extern "C" char kernel_start;
-	extern "C" char kernel_end;
-
-	const char* arch_get_target();
-	const char* arch_get_family();
-	size_t arch_get_offset();
-
-	size_t arch_get_kernel_start();
-	size_t arch_get_kernel_end();
-
-	void* arch_kernel_alloc(size_t bytes);
+	namespace sys
+	{
+		struct pool
+		{
+			size_t map;
+			size_t body;
+			size_t block_size;
+			size_t block_count;
+		};
+	}
 }
 
 #endif

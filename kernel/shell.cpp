@@ -47,6 +47,8 @@ namespace tupai
 		// Display the MOTD
 		shell_motd();
 
+		arch_kernel_alloc(1);
+
 		bool halted = false;
 		util::println("Type 'help' for more info.");
 		while (!halted)
@@ -98,8 +100,8 @@ namespace tupai
 				util::print(
 					"System Info:\n",
 					"  address_size -> ", sizeof(void*) * 8, " bits\n",
-					"  kernel_start -> ", (void*)&kernel_start, '\n',
-					"  kernel_end   -> ", (void*)&kernel_end, '\n'
+					"  kernel_start -> ", (void*)arch_get_kernel_start(), '\n',
+					"  kernel_end   -> ", (void*)arch_get_kernel_end(), '\n'
 				);
 			}
 			else if (util::str_equal(buff, "time"))
