@@ -21,6 +21,7 @@
 #include <tupai/main.hpp>
 #include <tupai/debug.hpp>
 #include <tupai/arch.hpp>
+#include <tupai/x86/multiboot.hpp>
 #include <tupai/x86/amd64/gdt.hpp>
 #include <tupai/x86/amd64/idt.hpp>
 #include <tupai/x86/pic.hpp>
@@ -51,6 +52,9 @@ namespace tupai
 					"  mb_header -> ", mb_header, '\n',
 					"  stack     -> ", stack, '\n'
 				);
+
+				// Load multiboot information
+				multiboot_set_header(mb_magic, mb_header);
 
 				// Initiate and install the GDT
 				gdt_init();

@@ -128,6 +128,7 @@ namespace tupai
 				if (threads[i].id == id)
 				{
 					// Set current thread to dead
+					threads[i].id     = -1;
 					threads[i].cstate = thread_t::state::DEAD;
 					break;
 				}

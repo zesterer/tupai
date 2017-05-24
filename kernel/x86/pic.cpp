@@ -100,7 +100,7 @@ namespace tupai
 		{
 			/* write EOI */
 
-			if (irq < 0 || irq >= 16) // It's not a valid irq
+			if (irq >= 16) // It's not a valid irq
 				return;
 
 			if (irq >= 8) // It's a PIC2

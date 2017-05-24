@@ -1,5 +1,5 @@
 //
-// file : multiboot.s
+// file : multiboot.cpp
 //
 // This file is part of Tupai.
 //
@@ -17,24 +17,23 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-// Multiboot 2 constants
-.set MB_MAGIC, 0xE85250D6
-.set MB_ARCH,  0
-.set MB_SIZE,  (mb_end - mb_start)
-.set MB_CHECKSUM, (0 - (MB_MAGIC + MB_ARCH + MB_SIZE))
+// Tupai
+#include <tupai/x86/multiboot.hpp>
+#include <tupai/debug.hpp>
 
-.section .rodata.multiboot
-	.align 4
-	mb_start:
-		.long MB_MAGIC
-		.long MB_ARCH
-		.long MB_SIZE
-		.long MB_CHECKSUM
+namespace tupai
+{
+	namespace x86
+	{
+		static const uint64_t MULTIBOOT_EAX_MAGIC = 0x36d76289;
 
-		// Optional Multiboot tags [none yet]
-		.long
-
-		.word 0 // Type
-		.word 0 // Flags
-		.long 8 // Size
-	mb_end:
+		void multiboot_set_header(uint64_t magic, void* header)
+		{
+			if (magic != MULTIBOOT_EAX_MAGIC)
+			{
+				debug_println("Warning: Multiboot magic constant is not correct!");
+				return;
+			}
+		}
+	}
+}
