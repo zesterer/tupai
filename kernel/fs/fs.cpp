@@ -19,14 +19,56 @@
 
 // Tupai
 #include <tupai/fs/fs.hpp>
+#include <tupai/fs/node.hpp>
+#include <tupai/util/out.hpp>
 
 namespace tupai
 {
 	namespace fs
 	{
+		node_t root(nullptr);
+
+		static void fs_display_node(node_t* node, size_t depth = 0);
+
 		void fs_init()
 		{
-			// Do nothing yet
+			// Root
+			auto bin = new node_t(&root, "bin");
+			root.add_child(bin);
+			auto dev = new node_t(&root, "dev");
+			root.add_child(dev);
+			auto etc = new node_t(&root, "etc");
+			root.add_child(etc);
+			auto proc = new node_t(&root, "proc");
+			root.add_child(proc);
+
+			// Dev
+			auto tty0 = new node_t(dev, "tty0");
+			dev->add_child(tty0);
+			auto com1 = new node_t(dev, "com1");
+			dev->add_child(com1);
+		}
+
+		void fs_display()
+		{
+			util::println("Filesystem:");
+			fs_display_node(&root, 1);
+		}
+
+		void fs_display_node(node_t* node, size_t depth)
+		{
+			// Indentation
+			for (size_t i = 0; i < depth; i ++)
+				util::print("  ");
+			// Name
+			util::print("", node->get_name(), "/\n");
+
+			node_t* cnode = node->child;
+			while (cnode != nullptr)
+			{
+				fs_display_node(cnode, depth + 1);
+				cnode = cnode->next;
+			}
 		}
 	}
 }

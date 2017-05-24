@@ -42,6 +42,7 @@ CC_FLAGS=$(CC_FLAGS) -ffreestanding -fno-exceptions -fno-rtti -fno-common -fno-b
 OBJECTS=$(OBJECTS) *.o dev/*.o util/*.o sys/*.o fs/*.o
 
 LINK_FLAGS=$(LINK_FLAGS) -lgcc
+#`$(LINKER) $(CC_FLAGS) $(LINK_FLAGS) -T $(LINK_SCRIPT) -print-file-name=crtbegin.o`
 
 ifeq (@(TARGET_ARCH),amd64)
 	CC_FLAGS=$(CC_FLAGS) -DARCH_amd64 -DARCH_ADDRESS_64

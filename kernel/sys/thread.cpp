@@ -19,6 +19,7 @@
 
 // Tupai
 #include <tupai/sys/thread.hpp>
+#include <tupai/sys/kmem.hpp>
 #include <tupai/interrupt.hpp>
 #include <tupai/util/out.hpp>
 #include <tupai/util/mutex.hpp>
@@ -29,15 +30,15 @@ namespace tupai
 {
 	namespace sys
 	{
-		const size_t MAXTHREADS = 64;
-		const size_t STACKSIZE  = 1024;
+		const size_t MAX_THREADS = 64;
+		const size_t STACK_SIZE  = 1024;
 
-		volatile thread_t threads[MAXTHREADS];
-		#if defined(ARCH_ADDRESS_64)
+		volatile thread_t threads[MAX_THREADS];
+		/*#if defined(ARCH_ADDRESS_64)
 			volatile uint64_t stacks[STACKSIZE / 8][MAXTHREADS] __attribute__((aligned(16)));
 		#elif defined(ARCH_ADDRESS_32)
 			volatile uint32_t stacks[STACKSIZE / 4][MAXTHREADS] __attribute__((aligned(16)));
-		#endif
+		#endif*/
 
 		volatile bool   threads_enabled = false;
 		volatile id_t   cthread = -1;
@@ -53,7 +54,7 @@ namespace tupai
 			interrupt_enable(false); // Begin critical section
 
 			// Clear threads
-			for (size_t i = 0; i < MAXTHREADS; i ++)
+			for (size_t i = 0; i < MAX_THREADS; i ++)
 			{
 				threads[i].id     = -1;
 				threads[i].cstate = thread_t::state::DEAD;
@@ -64,6 +65,7 @@ namespace tupai
 			cindex = 0;
 			threads[cindex].id = nid;
 			threads[cindex].cstate = thread_t::state::WAITING;
+			threads[cindex].native = false;
 			//threads[cindex].name = "main";
 			cthread = nid;
 
@@ -85,12 +87,13 @@ namespace tupai
 			id_t nid = thread_gen_id();
 
 			// Search for a free thread space
-			for (size_t i = 0; i < MAXTHREADS; i ++)
+			for (size_t i = 0; i < MAX_THREADS; i ++)
 			{
 				if (threads[i].cstate == thread_t::state::DEAD)
 				{
 					threads[i].id = nid;
 					threads[i].cstate = thread_t::state::UNSPAWNED;
+					threads[i].native = true;
 
 					// Copy the thread name
 					size_t j;
@@ -102,7 +105,7 @@ namespace tupai
 					if (create_stack)
 					{
 						threads[i].entry = (size_t)addr;
-						threads[i].stack = (size_t)(&stacks[0][0]) + i * STACKSIZE + STACKSIZE;
+						threads[i].stack = (size_t)kmem_alloc(STACK_SIZE) + STACK_SIZE;
 					}
 
 					break;
@@ -121,15 +124,21 @@ namespace tupai
 
 		void thread_kill(id_t id)
 		{
+			if (id < 0)
+				return;
+
 			interrupt_enable(false); // Begin critical section
 
-			for (size_t i = 0; i < MAXTHREADS; i ++)
+			for (size_t i = 0; i < MAX_THREADS; i ++)
 			{
 				if (threads[i].id == id)
 				{
 					// Set current thread to dead
 					threads[i].id     = -1;
 					threads[i].cstate = thread_t::state::DEAD;
+
+					if (threads[i].native)
+						kmem_dealloc((void*)threads[i].stack); // Deallocate the stack
 					break;
 				}
 			}
@@ -149,9 +158,9 @@ namespace tupai
 			threads[cindex].cstate = thread_t::state::WAITING;
 			threads[cindex].stack = ostack;
 
-			for (size_t i = 0; i < MAXTHREADS; i ++)
+			for (size_t i = 0; i < MAX_THREADS; i ++)
 			{
-				size_t index = (cindex + i + 1) % MAXTHREADS;
+				size_t index = (cindex + i + 1) % MAX_THREADS;
 
 				if (threads[index].cstate == thread_t::state::WAITING)
 				{
@@ -209,7 +218,7 @@ namespace tupai
 
 			interrupt_enable(false); // Begin critical section
 
-			for (size_t i = 0; i < MAXTHREADS; i ++)
+			for (size_t i = 0; i < MAX_THREADS; i ++)
 			{
 				if (threads[i].cstate != thread_t::state::DEAD)
 					n ++;
@@ -225,7 +234,7 @@ namespace tupai
 			interrupt_enable(false); // Begin critical section
 
 			size_t c = 0;
-			for (size_t i = 0; i < MAXTHREADS; i ++)
+			for (size_t i = 0; i < MAX_THREADS; i ++)
 			{
 				if (threads[i].cstate != thread_t::state::DEAD)
 				{
@@ -248,7 +257,7 @@ namespace tupai
 			interrupt_enable(false); // Begin critical section
 
 			size_t c = 0;
-			for (size_t i = 0; i < MAXTHREADS; i ++)
+			for (size_t i = 0; i < MAX_THREADS; i ++)
 			{
 				if (threads[i].cstate != thread_t::state::DEAD)
 				{

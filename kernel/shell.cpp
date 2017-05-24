@@ -25,13 +25,14 @@
 
 #include <tupai/dev/clock.hpp>
 
+#include <tupai/sys/kmem.hpp>
 #include <tupai/sys/thread.hpp>
 
 #include <tupai/util/in.hpp>
 #include <tupai/util/out.hpp>
 #include <tupai/util/str.hpp>
 
-#include <tupai/sys/kmem.hpp>
+#include <tupai/fs/fs.hpp>
 
 namespace tupai
 {
@@ -65,6 +66,7 @@ namespace tupai
 					"Available commands:\n",
 					"  help    -> Show this help text\n",
 					"  threads -> Show running threads\n",
+					"  fs      -> Show filesystem tree\n",
 					"  motd    -> Show the MOTD\n",
 					"  panic   -> Trigger a kernel panic\n",
 					"  info    -> Show system info\n",
@@ -81,6 +83,10 @@ namespace tupai
 					sys::thread_get_name(i, name);
 					util::println(i, ' ', sys::thread_get_id(i), ' ', name);
 				}
+			}
+			else if (util::str_equal(buff, "fs"))
+			{
+				fs::fs_display();
 			}
 			else if (util::str_equal(buff, "motd"))
 			{

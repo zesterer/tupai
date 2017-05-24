@@ -47,6 +47,6 @@ namespace tupai
 		size_t old_end = (size_t)&kernel_end + kernel_end_offset;
 		kernel_end_offset += bytes; // Increment kernel end by allocated byte count
 
-		return (void*)old_end;
+		return (void*)(old_end + arch_get_offset());
 	}
 }

@@ -45,6 +45,7 @@ namespace tupai
 			id_t  id = -1;
 			char name[NAME_MAX_LEN + 1];
 			state cstate = state::DEAD;
+			bool native = true; // Are thread components such as the stack native to this system?
 
 			size_t entry = 0x0;
 			size_t stack = 0x0;

@@ -170,33 +170,8 @@
 	/* Please note: ISRs 19-31 are reserved and will be implemented later! */
 
 	isr_common: // Common ISR routine (must be jumped to by an ISR defined above)
-		//pushal
-
-		//push %ds
-		//push %es
-		//push %fs
-		//push %gs
-
-		// Load the kernel data segment GDT descriptor
-		//mov $0x10, %ax
-		//mov %ax, %ds
-		//mov %ax, %es
-		//mov %ax, %fs
-		//mov %ax, %gs
-
-		//pushl 0x52(%esp) // Push ISR error as second parameter
-		//pushl 0x44(%esp) // Push ISR identifer as first parameter
-		//push $exception_error
 		call exception_panic
-
-		//pop %gs
-		//pop %fs
-		//pop %es
-		//pop %ds
-
-		//popal
-		//add $8, %esp
-		iret // Standard interrupt return
+		iret
 
 .section .rodata
 	exception_error:

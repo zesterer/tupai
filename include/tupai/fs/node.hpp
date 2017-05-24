@@ -1,5 +1,5 @@
 //
-// file : fs.hpp
+// file : node.hpp
 //
 // This file is part of Tupai.
 //
@@ -17,8 +17,8 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_FS_FS_HPP
-#define TUPAI_FS_FS_HPP
+#ifndef TUPAI_FS_NODE_HPP
+#define TUPAI_FS_NODE_HPP
 
 // Standard
 #include <stddef.h>
@@ -28,8 +28,24 @@ namespace tupai
 {
 	namespace fs
 	{
-		void fs_init();
-		void fs_display();
+		typedef long long inode_id;
+
+		struct node_t
+		{
+			inode_id id;
+			char* name;
+
+			node_t* parent;
+			node_t* next;
+			node_t* child;
+
+			node_t(node_t* parent, const char* name = nullptr);
+			~node_t();
+
+			void set_name(const char* name);
+			const char* get_name();
+			void add_child(node_t* child);
+		};
 	}
 }
 
