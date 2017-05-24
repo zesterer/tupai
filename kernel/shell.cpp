@@ -31,6 +31,8 @@
 #include <tupai/util/out.hpp>
 #include <tupai/util/str.hpp>
 
+#include <tupai/sys/kmem.hpp>
+
 namespace tupai
 {
 	void shell_motd()
@@ -46,8 +48,6 @@ namespace tupai
 	{
 		// Display the MOTD
 		shell_motd();
-
-		arch_kernel_alloc(1);
 
 		bool halted = false;
 		util::println("Type 'help' for more info.");
@@ -103,6 +103,8 @@ namespace tupai
 					"  kernel_start -> ", (void*)arch_get_kernel_start(), '\n',
 					"  kernel_end   -> ", (void*)arch_get_kernel_end(), '\n'
 				);
+				sys::kmem_info();
+				sys::kmem_display();
 			}
 			else if (util::str_equal(buff, "time"))
 			{

@@ -21,6 +21,7 @@
 #include <tupai/main.hpp>
 
 // Core system environment
+#include <tupai/sys/kmem.hpp>
 #include <tupai/sys/mmap.hpp>
 #include <tupai/sys/thread.hpp>
 #include <tupai/fs/fs.hpp>
@@ -42,7 +43,8 @@ namespace tupai
 	void early()
 	{
 		// Core system environment
-		sys::mmap_init();      // Initiate memory map & allocator
+		sys::kmem_init();      // Initiate kernel memory allocation
+		sys::mmap_init();      // Initiate page map & frame allocation
 		sys::threading_init(); // Initiate multi-threading
 		fs::fs_init();         // Initiate filesystem
 	}
