@@ -6,6 +6,8 @@ SECTIONS
 	. = 1M;
 	KERNEL_VIRTUAL = 0xC0000000;
 
+	kernel_start = .;
+
 	/* Place the Multiboot header at the beginning */
 	.rodata.multiboot BLOCK(4K) : ALIGN(4K)
 	{
@@ -52,4 +54,7 @@ SECTIONS
 		*(COMMON)
 		*(.bss)
 	}
+
+	. -= KERNEL_VIRTUAL;
+	kernel_end = .;
 }

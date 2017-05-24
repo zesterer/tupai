@@ -1,5 +1,5 @@
 //
-// file : main.hpp
+// file : fs.cpp
 //
 // This file is part of Tupai.
 //
@@ -17,13 +17,16 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_MAIN_HPP
-#define TUPAI_MAIN_HPP
+// Tupai
+#include <tupai/fs/fs.hpp>
 
 namespace tupai
 {
-	void early();
-	void main();
+	namespace fs
+	{
+		void fs_init()
+		{
+			// Do nothing yet
+		}
+	}
 }
-
-#endif

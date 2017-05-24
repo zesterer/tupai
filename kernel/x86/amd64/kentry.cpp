@@ -74,9 +74,10 @@ namespace tupai
 				// Enable interrupts
 				interrupt_enable();
 
-				// Enter the kernel main with a stable environment
 				debug_print("Finished amd64 initiation\n");
-				main();
+
+				early(); // Core system setup
+				main();  // Kernel main
 			}
 		}
 	}

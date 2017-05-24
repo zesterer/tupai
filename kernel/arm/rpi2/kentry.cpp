@@ -64,9 +64,10 @@ namespace tupai
 				// Initiate the syscall routine
 				sys::call_init();
 
-				// Enter the kernel main with a stable environment
 				debug_print("Finished rpi2 initiation\n");
-				main();
+
+				early(); // Core system setup
+				main();  // Kernel main
 			}
 
 			void core_hang()

@@ -95,9 +95,11 @@ namespace tupai
 			}
 			else if (util::str_equal(buff, "info"))
 			{
-				util::println(
+				util::print(
 					"System Info:\n",
-					"  address_size -> ", sizeof(void*) * 8, " bits"
+					"  address_size -> ", sizeof(void*) * 8, " bits\n",
+					"  kernel_start -> ", (void*)&kernel_start, '\n',
+					"  kernel_end   -> ", (void*)&kernel_end, '\n'
 				);
 			}
 			else if (util::str_equal(buff, "time"))

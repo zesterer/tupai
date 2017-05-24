@@ -39,7 +39,7 @@ endif
 CC_FLAGS=$(CC_FLAGS) -std=c++14 -Wall -Wextra -pedantic -O3 -g -nostdlib
 CC_FLAGS=$(CC_FLAGS) -ffreestanding -fno-exceptions -fno-rtti -fno-common -fno-builtin -fno-omit-frame-pointer
 
-OBJECTS=$(OBJECTS) *.o dev/*.o util/*.o sys/*.o
+OBJECTS=$(OBJECTS) *.o dev/*.o util/*.o sys/*.o fs/*.o
 
 LINK_FLAGS=$(LINK_FLAGS) -lgcc
 

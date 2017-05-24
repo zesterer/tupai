@@ -75,10 +75,10 @@ namespace tupai
 				// Enable interrupts
 				interrupt_enable();
 
-				// Enter the kernel main with a stable environment
 				debug_print("Finished i386 initiation\n");
 
-				main();
+				early(); // Core system setup
+				main();  // Kernel main
 			}
 		}
 	}

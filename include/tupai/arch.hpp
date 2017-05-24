@@ -31,6 +31,9 @@ namespace tupai
 	size_t arch_get_offset();
 
 	const size_t ARCH_PAGE_SIZE = 4096;
+
+	extern "C" char kernel_start;
+	extern "C" char kernel_end;
 }
 
 #endif

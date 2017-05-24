@@ -53,7 +53,7 @@ namespace tupai
 		void pit_init()
 		{
 			// Every 10,000 nanoseconds
-			pit_set_rate(100);
+			pit_set_rate(1000);
 
 			// Bind the interrupt
 			interrupt_bind(PIC_REMAP_OFFSET + 0, (void*)isr_pit);

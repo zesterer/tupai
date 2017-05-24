@@ -1,5 +1,5 @@
 //
-// file : main.hpp
+// file : mmap.cpp
 //
 // This file is part of Tupai.
 //
@@ -17,13 +17,22 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_MAIN_HPP
-#define TUPAI_MAIN_HPP
+// Tupai
+#include <tupai/sys/mmap.hpp>
 
 namespace tupai
 {
-	void early();
-	void main();
-}
+	namespace sys
+	{
+		static const size_t BLOCK_SIZE  = 32;
+		static const size_t BLOCK_COUNT = 4096;
 
-#endif
+		volatile uint8_t head[BLOCK_COUNT] __attribute__((aligned(1024)));
+		volatile uint8_t pool[BLOCK_COUNT * BLOCK_SIZE] __attribute__((aligned(1024)));
+
+		void mmap_init()
+		{
+			// Do nothing yet
+		}
+	}
+}

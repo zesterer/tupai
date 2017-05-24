@@ -20,13 +20,15 @@
 // Tupai
 #include <tupai/main.hpp>
 
+// Core system environment
+#include <tupai/sys/mmap.hpp>
+#include <tupai/sys/thread.hpp>
+#include <tupai/fs/fs.hpp>
+
 // Virtual devices
 #include <tupai/dev/serial.hpp>
 #include <tupai/dev/ps2.hpp>
 #include <tupai/dev/tty.hpp>
-
-// Concurrency
-#include <tupai/sys/thread.hpp>
 
 // Initial software
 #include <tupai/shell.hpp>
@@ -37,63 +39,28 @@
 
 namespace tupai
 {
-	void test_thread_a()
+	void early()
 	{
-		for (int i = 0; true; i ++)
-		{
-			volatile int a = 0; while (a < 37587) a ++;
-			util::print('A');
-		}
+		// Core system environment
+		sys::mmap_init();      // Initiate memory map & allocator
+		sys::threading_init(); // Initiate multi-threading
+		fs::fs_init();         // Initiate filesystem
 	}
 
-	void test_thread_b()
-	{
-		for (int i = 0; true; i ++)
-		{
-			volatile int a = 0; while (a < 38775) a ++;
-			util::print('B');
-		}
-	}
-
-	void test_thread_c()
-	{
-		for (int i = 0; true; i ++)
-		{
-			volatile int a = 0; while (a < 27825) a ++;
-			util::print('C');
-		}
-	}
-
-
-	int main()
+	void main()
 	{
 		// At this point, we should have a stable environment with memory
 		// protection, a heap, a page frame allocator, etc. all configured.
 		// The methods through which this is done are platform-dependent.
 		// Now, however, it's relatively safe to run most code.
 
-		// Initiate multi-threading
-		sys::threading_init();
-
 		// Initiate virtual devices
 		dev::serial_init();
 		dev::ps2_init();
 		dev::tty_init();
 
-		// List PS/2 devices
-		for (unsigned int i = 0; i < dev::ps2_count_ports(); i ++)
-			util::println("PS/2 port: ", dev::ps2_list_ports()[i], "");
-
-		util::println("Current thread ID is ", sys::thread_get_id());
-
-		// Create a test thread
-		//sys::thread_create(test_thread_a);
-		//sys::thread_create(test_thread_b);
-		//sys::thread_create(test_thread_c);
-
 		// Run the kernel shell
-		shell_main();
-
-		return 0;
+		sys::thread_create(shell_main, "shell");
+		sys::thread_kill(sys::thread_get_id());
 	}
 }

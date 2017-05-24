@@ -7,6 +7,8 @@ SECTIONS
 	. = 0x8000;
 	KERNEL_VIRTUAL = 0x0;
 
+	kernel_start = .;
+
 	.text.boot BLOCK(4K) : ALIGN(4K)
 	{
 		KEEP(*(.text.boot))
@@ -50,4 +52,7 @@ SECTIONS
 		*(.bss)
 		__bss_end = .;
 	}
+
+	. -= KERNEL_VIRTUAL;
+	kernel_end = .;
 }
