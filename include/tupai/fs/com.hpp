@@ -1,5 +1,5 @@
 //
-// file : fs.hpp
+// file : com.hpp
 //
 // This file is part of Tupai.
 //
@@ -17,11 +17,8 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_FS_FS_HPP
-#define TUPAI_FS_FS_HPP
-
-// Tupai
-#include <tupai/fs/com.hpp>
+#ifndef TUPAI_FS_COM_HPP
+#define TUPAI_FS_COM_HPP
 
 // Standard
 #include <stddef.h>
@@ -31,17 +28,7 @@ namespace tupai
 {
 	namespace fs
 	{
-		// Forward declaration
-		struct inode_t;
-
-		struct fs_dev_t
-		{
-			id_t id;
-
-			id_t inode_counter;
-
-			inode_t* mount;
-		};
+		typedef long long id_t;
 	}
 }
 

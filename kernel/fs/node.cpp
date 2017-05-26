@@ -29,14 +29,15 @@ namespace tupai
 	{
 		static const size_t NODE_NAME_MAX_LEN = 255;
 
-		inode_id inode_id_counter = 0;
-		static inode_id node_gen_inode_id();
+		id_t id_counter = 0;
+		static id_t node_gen_inode_id();
 
-		node_t::node_t(node_t* parent, const char* name)
+		node_t::node_t(node_t* parent, node_type type, const char* name)
 		{
 			this->id = node_gen_inode_id();
 			this->name = nullptr;
 			this->set_name(name);
+			this->type = type;
 
 			this->parent = parent;
 			this->next   = nullptr;
@@ -95,9 +96,9 @@ namespace tupai
 			}
 		}
 
-		inode_id node_gen_inode_id()
+		id_t node_gen_inode_id()
 		{
-			return inode_id_counter++;
+			return id_counter++;
 		}
 	}
 }

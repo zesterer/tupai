@@ -20,6 +20,9 @@
 #ifndef TUPAI_FS_NODE_HPP
 #define TUPAI_FS_NODE_HPP
 
+// Tupai
+#include <tupai/fs/com.hpp>
+
 // Standard
 #include <stddef.h>
 #include <stdint.h>
@@ -28,18 +31,23 @@ namespace tupai
 {
 	namespace fs
 	{
-		typedef long long inode_id;
+		enum class node_type : uint8_t
+		{
+			FILE,
+			DIRECTORY,
+		};
 
 		struct node_t
 		{
-			inode_id id;
-			char* name;
+			id_t      id;
+			char*     name;
+			node_type type;
 
 			node_t* parent;
 			node_t* next;
 			node_t* child;
 
-			node_t(node_t* parent, const char* name = nullptr);
+			node_t(node_t* parent, node_type type, const char* name = nullptr);
 			~node_t();
 
 			void set_name(const char* name);

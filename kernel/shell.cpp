@@ -31,8 +31,9 @@
 #include <tupai/util/in.hpp>
 #include <tupai/util/out.hpp>
 #include <tupai/util/str.hpp>
+#include <tupai/util/vector.hpp>
 
-#include <tupai/fs/fs.hpp>
+#include <tupai/fs/vfs.hpp>
 
 namespace tupai
 {
@@ -67,6 +68,7 @@ namespace tupai
 					"  help    -> Show this help text\n",
 					"  threads -> Show running threads\n",
 					"  fs      -> Show filesystem tree\n",
+					"  pool    -> Show kernel memory pool\n",
 					"  motd    -> Show the MOTD\n",
 					"  panic   -> Trigger a kernel panic\n",
 					"  info    -> Show system info\n",
@@ -86,7 +88,11 @@ namespace tupai
 			}
 			else if (util::str_equal(buff, "fs"))
 			{
-				fs::fs_display();
+				fs::vfs_display();
+			}
+			else if (util::str_equal(buff, "pool"))
+			{
+				sys::kmem_display();
 			}
 			else if (util::str_equal(buff, "motd"))
 			{
@@ -110,7 +116,6 @@ namespace tupai
 					"  kernel_end   -> ", (void*)arch_get_kernel_end(), '\n'
 				);
 				sys::kmem_info();
-				sys::kmem_display();
 			}
 			else if (util::str_equal(buff, "time"))
 			{

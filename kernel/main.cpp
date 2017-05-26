@@ -24,7 +24,7 @@
 #include <tupai/sys/kmem.hpp>
 #include <tupai/sys/mmap.hpp>
 #include <tupai/sys/thread.hpp>
-#include <tupai/fs/fs.hpp>
+#include <tupai/fs/vfs.hpp>
 
 // Virtual devices
 #include <tupai/dev/serial.hpp>
@@ -46,7 +46,7 @@ namespace tupai
 		sys::kmem_init();      // Initiate kernel memory allocation
 		sys::mmap_init();      // Initiate page map & frame allocation
 		sys::threading_init(); // Initiate multi-threading
-		fs::fs_init();         // Initiate filesystem
+		fs::vfs_init();        // Initiate filesystem
 	}
 
 	void main()
