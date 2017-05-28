@@ -35,7 +35,7 @@ namespace tupai
 
 		static __attribute__ ((unused)) size_t align_ceiling(size_t n, size_t align)
 		{
-			return (n + align) - n % align;
+			return (n == 0) ? align : (align + align * ((n - 1) / align));
 		}
 	}
 }
