@@ -24,6 +24,9 @@
 #include <tupai/sys/kmem.hpp>
 #include <tupai/sys/mmap.hpp>
 #include <tupai/sys/thread.hpp>
+#include <tupai/sys/initrd.hpp>
+
+// Filesystem
 #include <tupai/fs/vfs.hpp>
 
 // Virtual devices
@@ -47,6 +50,7 @@ namespace tupai
 		sys::mmap_init();      // Initiate page map & frame allocation
 		sys::threading_init(); // Initiate multi-threading
 		fs::vfs_init();        // Initiate filesystem
+		sys::initrd_init();    // Initiate initrd filesystems
 	}
 
 	void main()

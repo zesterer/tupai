@@ -1,5 +1,5 @@
 //
-// file : multiboot.hpp
+// file : initrd.hpp
 //
 // This file is part of Tupai.
 //
@@ -17,8 +17,8 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_X86_MULTIBOOT_HPP
-#define TUPAI_X86_MULTIBOOT_HPP
+#ifndef TUPAI_SYS_INITRD_HPP
+#define TUPAI_SYS_INITRD_HPP
 
 // Standard
 #include <stddef.h>
@@ -26,21 +26,10 @@
 
 namespace tupai
 {
-	namespace x86
+	namespace sys
 	{
-		struct mb_start_tag_t
-		{
-			uint32_t total_size;
-			uint32_t reserved;
-		} __attribute__((packed));
-
-		struct mb_tag_header_t
-		{
-			uint32_t type;
-			uint32_t size;
-		} __attribute__((packed));
-
-		void multiboot_set_header(uint64_t magic, void* header);
+		void initrd_cache_add(void* start, size_t size, const char* args);
+		void initrd_init();
 	}
 }
 

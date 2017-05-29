@@ -1,5 +1,5 @@
 //
-// file : multiboot.hpp
+// file : tar.hpp
 //
 // This file is part of Tupai.
 //
@@ -17,8 +17,8 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_X86_MULTIBOOT_HPP
-#define TUPAI_X86_MULTIBOOT_HPP
+#ifndef TUPAI_UTIL_TAR_HPP
+#define TUPAI_UTIL_TAR_HPP
 
 // Standard
 #include <stddef.h>
@@ -26,21 +26,24 @@
 
 namespace tupai
 {
-	namespace x86
+	namespace util
 	{
-		struct mb_start_tag_t
+		struct tar_header_t
 		{
-			uint32_t total_size;
-			uint32_t reserved;
+			char    filename[100];
+			char    mode[8];
+			char    uid[8];
+			char    gid[8];
+			char    size[12];
+			char    mtime[12];
+			uint8_t checksum[8];
+			uint8_t typeflag;
 		} __attribute__((packed));
 
-		struct mb_tag_header_t
-		{
-			uint32_t type;
-			uint32_t size;
-		} __attribute__((packed));
-
-		void multiboot_set_header(uint64_t magic, void* header);
+		void tar_print_all(tar_header_t* header);
+		void tar_print(tar_header_t* header);
+		tar_header_t* tar_next(tar_header_t* header);
+		size_t tar_size(tar_header_t* header);
 	}
 }
 

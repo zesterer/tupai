@@ -1,16 +1,16 @@
 include_rules
 
 # Generate Initial Ramdisk
-: |> cd initrd && $(TAR) -cf ../%o ** --format=ustar |> initrd.tar
+	: sysroot/conf/test.txt |> cd sysroot && $(TAR) cvf ../%o --format=ustar * |> initrd.tar
 
 # Move everything into the right place
 : kernel/$(P_EXEC)-kernel.elf |> cp %f %o |> grub/isodir/boot/%B.elf
-: initrd.tar                  |> cp %f %o |> grub/isodir/boot/%b
+: initrd.tar                  |> cp %f %o |> grub/isodir/mod/%b
 : grub/grub.cfg               |> cp %f %o |> grub/isodir/boot/grub/grub.cfg
 
 # Create ISO
 ifeq ($(TARGET_FAMILY),x86)
-	: grub/isodir/boot/$(P_EXEC)-kernel.elf grub/isodir/boot/initrd.tar grub/isodir/boot/grub/grub.cfg |> sh create-iso.sh |> tupai.iso
+	: grub/isodir/boot/$(P_EXEC)-kernel.elf grub/isodir/mod/initrd.tar grub/isodir/boot/grub/grub.cfg |> sh create-iso.sh |> tupai.iso
 endif
 
 # Generate symbols
