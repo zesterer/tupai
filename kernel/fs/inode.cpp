@@ -1,5 +1,5 @@
 //
-// file : fs.hpp
+// file : inode.cpp
 //
 // This file is part of Tupai.
 //
@@ -17,35 +17,32 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_FS_FS_HPP
-#define TUPAI_FS_FS_HPP
-
 // Tupai
-#include <tupai/fs/com.hpp>
-
-// Standard
-#include <stddef.h>
-#include <stdint.h>
+#include <tupai/fs/inode.hpp>
+#include <tupai/sys/kmem.hpp>
+#include <tupai/util/str.hpp>
+#include <tupai/util/out.hpp>
 
 namespace tupai
 {
 	namespace fs
 	{
-		// Forward declaration
-		struct inode_t;
-		enum class inode_type;
-
-		struct fs_t
+		void inode_child_t::set_name(const char* name)
 		{
-			id_t id;
+			util::str_cpy_n(name, this->name, INODE_NAME_MAX_LEN);
+		}
 
-			id_t inode_id_counter = 0;
+		const char* inode_child_t::get_name()
+		{
+			return this->name;
+		}
 
-			inode_t* root = nullptr;
-		};
-
-		inode_t* fs_create_inode(fs_t* fs, inode_type type);
+		void inode_add_child(inode_t* parent, inode_t* child, const char* name)
+		{
+			inode_child_t child_obj;
+			child_obj.inode = child;
+			child_obj.set_name(name);
+			parent->dir_table.push(child_obj);
+		}
 	}
 }
-
-#endif

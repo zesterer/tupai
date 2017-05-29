@@ -22,6 +22,7 @@
 #include <tupai/util/out.hpp>
 #include <tupai/util/tar.hpp>
 #include <tupai/sys/thread.hpp>
+#include <tupai/fs/vfs.hpp>
 
 namespace tupai
 {
@@ -72,7 +73,26 @@ namespace tupai
 		{
 			const initrd_cache_t* initrd = (const initrd_cache_t*)argv;
 
-			util::println("INITRD ARGS = ", initrd->args);
+			fs::fs_t* fs = fs::vfs_create_fs();
+			fs::vfs_set_root(fs->root);
+
+			fs::inode_t* inode0 = fs::fs_create_inode(fs, fs::inode_type::DIRECTORY);
+			fs::inode_add_child(fs->root, inode0, "bin");
+			fs::inode_t* inode1 = fs::fs_create_inode(fs, fs::inode_type::DIRECTORY);
+			fs::inode_add_child(fs->root, inode1, "dev");
+			fs::inode_t* inode2 = fs::fs_create_inode(fs, fs::inode_type::DIRECTORY);
+			fs::inode_add_child(fs->root, inode2, "conf");
+
+			fs::inode_t* inode3 = fs::fs_create_inode(fs, fs::inode_type::BLOCK_FILE);
+			fs::inode_add_child(inode1, inode3, "tty");
+			fs::inode_t* inode4 = fs::fs_create_inode(fs, fs::inode_type::BLOCK_FILE);
+			fs::inode_add_child(inode1, inode4, "com1");
+
+			fs::inode_t* inode5 = fs::fs_create_inode(fs, fs::inode_type::FIFO_BUFFER);
+			fs::inode_add_child(inode2, inode5, "test.txt");
+			fs::inode_t* inode6 = fs::fs_create_inode(fs, fs::inode_type::FIFO_BUFFER);
+			fs::inode_add_child(inode2, inode6, "myfile.txt");
+
 			while(1);
 		}
 	}

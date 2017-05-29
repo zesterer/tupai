@@ -41,8 +41,11 @@ namespace tupai
 
 			~vector_t()
 			{
+				for (size_t i = 0; i < this->csize; i ++)
+					this->arr[i].~T();
+
 				if (arr != nullptr)
-					delete arr;
+					delete this->arr;
 			}
 
 			size_t size() const
@@ -58,8 +61,8 @@ namespace tupai
 			void resize(size_t size)
 			{
 				T* old = this->arr;
-				this->ccapacity = size * sizeof(T);
-				this->arr = (T*)(new uint8_t[this->ccapacity]);
+				this->ccapacity = size;
+				this->arr = (T*)(new uint8_t[this->ccapacity * sizeof(T)]);
 
 				for (size_t i = 0; i < this->csize; i ++)
 					this->arr[i] = old[i];
@@ -69,6 +72,11 @@ namespace tupai
 			}
 
 			T& get(size_t i)
+			{
+				return this->arr[i];
+			}
+
+			T& operator[](size_t i)
 			{
 				return this->arr[i];
 			}

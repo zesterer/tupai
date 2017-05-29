@@ -22,6 +22,7 @@
 
 // Tupai
 #include <tupai/fs/com.hpp>
+#include <tupai/fs/fs.hpp>
 #include <tupai/util/vector.hpp>
 
 // Standard
@@ -39,13 +40,24 @@ namespace tupai
 			BLOCK_FILE,
 		};
 
+		static const size_t INODE_NAME_MAX_LEN = 256;
+
+		struct inode_child_t
+		{
+			inode_t* inode = nullptr;
+			char name[INODE_NAME_MAX_LEN] = "\0";
+
+			void set_name(const char* name);
+			const char* get_name();
+		};
+
 		struct inode_t
 		{
-			id_t id;
-			id_t dev;
+			id_t  id = 0;
+			fs_t* fs = nullptr;
 
 			inode_type type;
-			util::vector_t<id_t> dir_table;
+			util::vector_t<inode_child_t> dir_table;
 
 			id_t     owner;
 			id_t     group;
@@ -56,6 +68,8 @@ namespace tupai
 			uint64_t last_access;
 			uint64_t last_modify;
 		};
+
+		void inode_add_child(inode_t* parent, inode_t* child, const char* name);
 	}
 }
 

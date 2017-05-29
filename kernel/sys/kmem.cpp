@@ -29,7 +29,7 @@ namespace tupai
 	namespace sys
 	{
 		const size_t KMEM_SIZE = 4096 * 4096; // 4096 4K pages (16M)
-		const size_t KMEM_BLOCK_SIZE = 256;   // 16th of a 4K page (256B)
+		const size_t KMEM_BLOCK_SIZE = 64;   // 16th of a 4K page (256B)
 
 		pool_t kmem_pool;
 

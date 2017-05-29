@@ -25,10 +25,11 @@ namespace tupai
 {
 	namespace fs
 	{
-		inode_t* fs_create_inode(fs_dev_t* fs)
+		inode_t* fs_create_inode(fs_t* fs, inode_type type)
 		{
 			fs->inode_id_counter ++; // Increment id counter
 			inode_t* ninode = vfs_create_inode(fs->inode_id_counter);
+			ninode->type = type;
 			return ninode;
 		}
 	}
