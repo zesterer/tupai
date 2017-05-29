@@ -21,6 +21,7 @@
 #include <tupai/sys/initrd.hpp>
 #include <tupai/util/out.hpp>
 #include <tupai/util/tar.hpp>
+#include <tupai/sys/thread.hpp>
 
 namespace tupai
 {
@@ -35,6 +36,8 @@ namespace tupai
 
 		static const size_t INITRD_MAX = 32;
 		initrd_cache_t initrd_cache[INITRD_MAX];
+
+		static void initrd_thread(int argc, char* argv[]);
 
 		void initrd_cache_add(void* start, size_t size, const char* args)
 		{
@@ -59,8 +62,18 @@ namespace tupai
 				{
 					util::println("Found initrd!");
 					util::tar_print_all((util::tar_header_t*)initrd_cache[i].start);
+
+					sys::thread_create(initrd_thread, 1, (char**)&initrd_cache[i], "initrd");
 				}
 			}
+		}
+
+		void initrd_thread(int argc, char* argv[])
+		{
+			const initrd_cache_t* initrd = (const initrd_cache_t*)argv;
+
+			util::println("INITRD ARGS = ", initrd->args);
+			while(1);
 		}
 	}
 }

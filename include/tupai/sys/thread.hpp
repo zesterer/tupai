@@ -46,6 +46,8 @@ namespace tupai
 			char name[NAME_MAX_LEN + 1];
 			state cstate = state::DEAD;
 			bool native = true; // Are thread components such as the stack native to this system?
+			int argc = 0;
+			char** argv = nullptr;
 
 			size_t entry = 0x0;
 			size_t stack = 0x0;
@@ -54,7 +56,7 @@ namespace tupai
 		void threading_init();
 		bool threading_enabled();
 
-		id_t   thread_create(void(*entry)(), const char* name = "null", bool create_stack = true);
+		id_t   thread_create(void(*entry)(int argc, char* argv[]), int argc = 0, char* argv[] = nullptr, const char* name = "null", bool create_stack = true);
 		id_t   thread_get_id();
 		void   thread_kill(id_t id);
 		size_t threads_count();

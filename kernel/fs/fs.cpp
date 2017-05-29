@@ -1,5 +1,5 @@
 //
-// file : shell.hpp
+// file : fs.cpp
 //
 // This file is part of Tupai.
 //
@@ -17,16 +17,19 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_SHELL_HPP
-#define TUPAI_SHELL_HPP
-
-// Standard
-#include <stddef.h>
-#include <stdint.h>
+// Tupai
+#include <tupai/fs/fs.hpp>
+#include <tupai/fs/vfs.hpp>
 
 namespace tupai
 {
-	void shell_main(int argc, char* argv[]);
+	namespace fs
+	{
+		inode_t* fs_create_inode(fs_dev_t* fs)
+		{
+			fs->inode_id_counter ++; // Increment id counter
+			inode_t* ninode = vfs_create_inode(fs->inode_id_counter);
+			return ninode;
+		}
+	}
 }
-
-#endif

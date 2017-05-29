@@ -22,6 +22,7 @@
 
 // Tupai
 #include <tupai/fs/com.hpp>
+#include <tupai/util/vector.hpp>
 
 // Standard
 #include <stddef.h>
@@ -31,9 +32,20 @@ namespace tupai
 {
 	namespace fs
 	{
+		enum class inode_type
+		{
+			DIRECTORY,
+			FIFO_BUFFER,
+			BLOCK_FILE,
+		};
+
 		struct inode_t
 		{
-			idt_t id;
+			id_t id;
+			id_t dev;
+
+			inode_type type;
+			util::vector_t<id_t> dir_table;
 
 			id_t     owner;
 			id_t     group;

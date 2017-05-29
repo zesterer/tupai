@@ -46,7 +46,7 @@ namespace tupai
 		);
 	}
 
-	void shell_main()
+	void shell_main(int argc, char* argv[])
 	{
 		// Display the MOTD
 		shell_motd();

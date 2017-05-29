@@ -22,6 +22,8 @@
 
 // Tupai
 #include <tupai/fs/com.hpp>
+#include <tupai/fs/inode.hpp>
+#include <tupai/fs/fs.hpp>
 
 // Standard
 #include <stddef.h>
@@ -31,8 +33,11 @@ namespace tupai
 {
 	namespace fs
 	{
-		void vfs_init();
-		void vfs_display();
+		void     vfs_init();
+		void     vfs_display();
+
+		fs_dev_t* vfs_create_fs();
+		inode_t*  vfs_create_inode(id_t id);
 	}
 }
 

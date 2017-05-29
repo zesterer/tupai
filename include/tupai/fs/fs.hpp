@@ -38,10 +38,12 @@ namespace tupai
 		{
 			id_t id;
 
-			id_t inode_counter;
+			id_t inode_id_counter = 0;
 
-			inode_t* mount;
+			inode_t* mount = nullptr;
 		};
+
+		inode_t* fs_create_inode(fs_dev_t* fs);
 	}
 }
 

@@ -66,7 +66,7 @@ namespace tupai
 		dev::tty_init();
 
 		// Run the kernel shell
-		sys::thread_create(shell_main, "shell");
+		sys::thread_create(shell_main, 0, nullptr, "shell");
 		sys::thread_kill(sys::thread_get_id());
 	}
 }

@@ -80,7 +80,7 @@ namespace tupai
 			return threads_enabled;
 		}
 
-		id_t thread_create(void(*addr)(), const char* name, bool create_stack)
+		id_t thread_create(void(*addr)(int argc, char* argv[]), int argc, char* argv[], const char* name, bool create_stack)
 		{
 			interrupt_enable(false); // Begin critical section
 
@@ -94,6 +94,8 @@ namespace tupai
 					threads[i].id = nid;
 					threads[i].cstate = thread_t::state::UNSPAWNED;
 					threads[i].native = true;
+					threads[i].argc = argc;
+					threads[i].argv = argv;
 
 					// Copy the thread name
 					size_t j;
@@ -185,14 +187,19 @@ namespace tupai
 					cindex = index;
 					threads[index].cstate = thread_t::state::WAITING;
 
+					uint64_t argc = (uint64_t)threads[index].argc;
+					uint64_t argv = (uint64_t)threads[index].argv;
+
 					#if defined(ARCH_i386)
 					{
 						asm volatile (
 							"mov %0, %%esp \n\
 							 sti \n \
-							 call *%1 \n \
+							 push %1 \n \
+							 push %2 \n \
+							 call *%3 \n \
 							 call thread_finish \n"
-							 : : "r" (nstack), "r" (nentry)
+							 : : "r" (nstack), "m" (argv), "m" (argc), "r" (nentry)
 						);
 					}
 					#elif defined(ARCH_amd64)
@@ -200,9 +207,12 @@ namespace tupai
 						asm volatile (
 							"mov %0, %%rsp \n \
 							 sti \n \
-							 call *%1 \n \
+							 mov %1, %%rdi \n \
+							 mov %2, %%rsi \n \
+							 call *%3 \n \
 							 call thread_finish \n"
-							 : : "r" (nstack), "r" (nentry)
+							 : : "r" (nstack), "m" (argc), "m" (argv), "r" (nentry)
+							 : "%rdi", "%rsi", "%rsp"
 						);
 					}
 					#endif

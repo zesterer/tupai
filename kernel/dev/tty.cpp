@@ -46,8 +46,8 @@ namespace tupai
 		// The I/O pipe. 256 character buffer
 		static volatile sys::pipe_t<2048> iopipe;
 
-		static void tty_in_thread();
-		static void tty_out_thread();
+		static void tty_in_thread(int argc, char* argv[]);
+		static void tty_out_thread(int argc, char* argv[]);
 
 		void tty_init()
 		{
@@ -88,8 +88,8 @@ namespace tupai
 			// Create the TTY I/O threads
 			if (sys::threading_enabled())
 			{
-				sys::thread_create(tty_in_thread, "tty-in");
-				sys::thread_create(tty_out_thread, "tty-out");
+				sys::thread_create(tty_in_thread, 0, nullptr, "tty-in");
+				sys::thread_create(tty_out_thread, 0, nullptr, "tty-out");
 			}
 			else
 			{
@@ -123,7 +123,7 @@ namespace tupai
 			return val;
 		}
 
-		void tty_in_thread()
+		void tty_in_thread(int argc, char* argv[])
 		{
 			while (true)
 			{
@@ -132,7 +132,7 @@ namespace tupai
 			}
 		}
 
-		void tty_out_thread()
+		void tty_out_thread(int argc, char* argv[])
 		{
 			while (true)
 			{

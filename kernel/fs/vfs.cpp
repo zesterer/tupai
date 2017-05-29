@@ -19,7 +19,6 @@
 
 // Tupai
 #include <tupai/fs/vfs.hpp>
-#include <tupai/fs/fs.hpp>
 #include <tupai/fs/node.hpp>
 #include <tupai/util/mutex.hpp>
 #include <tupai/util/vector.hpp>
@@ -30,8 +29,11 @@ namespace tupai
 	namespace fs
 	{
 		util::mutex fs_mutex;
+
 		node_t root(nullptr, node_type::DIRECTORY);
-		util::vector_t<fs_dev_t> active_fs_dev;
+
+		util::vector_t<fs_dev_t*> active_fs;
+		util::vector_t<inode_t*> active_inodes;
 
 		static void vfs_display_node(node_t* node, size_t depth = 0);
 
@@ -85,6 +87,25 @@ namespace tupai
 				vfs_display_node(cnode, depth + 1);
 				cnode = cnode->next;
 			}
+		}
+
+		fs_dev_t* vfs_create_fs()
+		{
+			fs_dev_t* nfs = new fs_dev_t();
+
+			active_fs.push(nfs);
+
+			return nfs;
+		}
+
+		inode_t* vfs_create_inode(id_t id)
+		{
+			inode_t* ninode = new inode_t();
+			ninode->id = id;
+
+			active_inodes.push(ninode);
+
+			return ninode;
 		}
 	}
 }
