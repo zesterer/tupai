@@ -29,7 +29,7 @@ namespace tupai
 	{
 		void inode_child_t::set_name(const char* name)
 		{
-			util::str_cpy_n(name, this->name, INODE_NAME_MAX_LEN);
+			util::str_cpy_n(name, this->name, FILENAME_SIZE);
 		}
 
 		const char* inode_child_t::get_name()
@@ -43,6 +43,19 @@ namespace tupai
 			child_obj.inode = child;
 			child_obj.set_name(name);
 			parent->dir_table.push(child_obj);
+		}
+
+		inode_t* inode_get_child(inode_t* parent, const char* name)
+		{
+			for (size_t i = 0; i < parent->dir_table.size(); i ++)
+			{
+				inode_child_t& cchild = parent->dir_table[i];
+
+				if (util::str_equal(cchild.get_name(), name) == true)
+					return cchild.inode;
+			}
+
+			return nullptr;
 		}
 	}
 }

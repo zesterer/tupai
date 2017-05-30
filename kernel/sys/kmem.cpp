@@ -73,7 +73,7 @@ namespace tupai
 
 		void kmem_display()
 		{
-			pool_display(&kmem_pool);
+			pool_display(&kmem_pool, 256);
 		}
 	}
 }

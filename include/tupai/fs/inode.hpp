@@ -35,17 +35,19 @@ namespace tupai
 	{
 		enum class inode_type
 		{
+			NORMAL_FILE,
+			HARD_LINK,
+			SYM_LINK,
+			CHAR_DEVICE,
+			BLOCK_DEVICE,
 			DIRECTORY,
-			FIFO_BUFFER,
-			BLOCK_FILE,
+			FIFO,
 		};
-
-		static const size_t INODE_NAME_MAX_LEN = 256;
 
 		struct inode_child_t
 		{
 			inode_t* inode = nullptr;
-			char name[INODE_NAME_MAX_LEN] = "\0";
+			char name[FILENAME_SIZE] = "\0";
 
 			void set_name(const char* name);
 			const char* get_name();
@@ -70,6 +72,7 @@ namespace tupai
 		};
 
 		void inode_add_child(inode_t* parent, inode_t* child, const char* name);
+		inode_t* inode_get_child(inode_t* parent, const char* name);
 	}
 }
 

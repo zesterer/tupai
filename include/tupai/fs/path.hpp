@@ -1,5 +1,5 @@
 //
-// file : com.hpp
+// file : path.hpp
 //
 // This file is part of Tupai.
 //
@@ -17,8 +17,11 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_FS_COM_HPP
-#define TUPAI_FS_COM_HPP
+#ifndef TUPAI_FS_PATH_HPP
+#define TUPAI_FS_PATH_HPP
+
+// Tupai
+#include <tupai/fs/com.hpp>
 
 // Standard
 #include <stddef.h>
@@ -28,9 +31,8 @@ namespace tupai
 {
 	namespace fs
 	{
-		typedef long long id_t;
-
-		static const size_t FILENAME_SIZE = 256;
+		size_t path_element_count(const char* path);
+		bool   path_element_get(const char* path, char(&buff)[FILENAME_SIZE], size_t index);
 	}
 }
 

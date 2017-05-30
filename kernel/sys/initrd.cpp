@@ -23,6 +23,7 @@
 #include <tupai/util/tar.hpp>
 #include <tupai/sys/thread.hpp>
 #include <tupai/fs/vfs.hpp>
+#include <tupai/fs/path.hpp>
 
 namespace tupai
 {
@@ -61,8 +62,8 @@ namespace tupai
 			{
 				if (initrd_cache[i].size != 0)
 				{
-					util::println("Found initrd!");
-					util::tar_print_all((util::tar_header_t*)initrd_cache[i].start);
+					//util::println("Found initrd!");
+					//util::tar_print_all((util::tar_header_t*)initrd_cache[i].start);
 
 					sys::thread_create(initrd_thread, 1, (char**)&initrd_cache[i], "initrd");
 				}
@@ -76,22 +77,30 @@ namespace tupai
 			fs::fs_t* fs = fs::vfs_create_fs();
 			fs::vfs_set_root(fs->root);
 
-			fs::inode_t* inode0 = fs::fs_create_inode(fs, fs::inode_type::DIRECTORY);
-			fs::inode_add_child(fs->root, inode0, "bin");
-			fs::inode_t* inode1 = fs::fs_create_inode(fs, fs::inode_type::DIRECTORY);
-			fs::inode_add_child(fs->root, inode1, "dev");
-			fs::inode_t* inode2 = fs::fs_create_inode(fs, fs::inode_type::DIRECTORY);
-			fs::inode_add_child(fs->root, inode2, "conf");
+			util::tar_header_t* cheader = (util::tar_header_t*)initrd->start;
+			while (cheader != nullptr)
+			{
+				const char* filename = cheader->filename;
 
-			fs::inode_t* inode3 = fs::fs_create_inode(fs, fs::inode_type::BLOCK_FILE);
-			fs::inode_add_child(inode1, inode3, "tty");
-			fs::inode_t* inode4 = fs::fs_create_inode(fs, fs::inode_type::BLOCK_FILE);
-			fs::inode_add_child(inode1, inode4, "com1");
+				size_t n = fs::path_element_count(filename);
+				fs::inode_t* cinode = fs->root;
+				for (size_t i = 0; i < n; i ++)
+				{
+					char buff[256];
+					fs::path_element_get(filename, buff, i);
+					fs::inode_t* tryinode = fs::inode_get_child(cinode, buff);
+					if (tryinode != nullptr)
+						cinode = tryinode;
+					else
+					{
+						fs::inode_t* ninode = fs::fs_create_inode(fs, fs::inode_type::DIRECTORY);
+						fs::inode_add_child(cinode, ninode, buff);
+						cinode = ninode;
+					}
+				}
 
-			fs::inode_t* inode5 = fs::fs_create_inode(fs, fs::inode_type::FIFO_BUFFER);
-			fs::inode_add_child(inode2, inode5, "test.txt");
-			fs::inode_t* inode6 = fs::fs_create_inode(fs, fs::inode_type::FIFO_BUFFER);
-			fs::inode_add_child(inode2, inode6, "myfile.txt");
+				cheader = tar_next(cheader);
+			}
 
 			while(1);
 		}

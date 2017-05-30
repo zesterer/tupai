@@ -38,7 +38,7 @@ namespace tupai
 
 		void tar_print(tar_header_t* header)
 		{
-			println("File: filename = ", header->filename, " size = ", tar_size(header));
+			println("File: filename = ", header->filename, " size = ", tar_size(header), " type = ", (char)header->typeflag);
 		}
 
 		tar_header_t* tar_next(tar_header_t* header)
