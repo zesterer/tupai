@@ -37,7 +37,7 @@ namespace tupai
 			char    size[12];
 			char    mtime[12];
 			uint8_t checksum[8];
-			uint8_t typeflag;
+			char    typeflag;
 		} __attribute__((packed));
 
 		void tar_print_all(tar_header_t* header);

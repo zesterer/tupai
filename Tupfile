@@ -1,7 +1,7 @@
 include_rules
 
 # Generate Initial Ramdisk
-	: sysroot/conf/test.txt |> cd sysroot && $(TAR) cvf ../%o --format=ustar * |> initrd.tar
+: |> cd sysroot && $(TAR) cvf ../%o --format=ustar * |> initrd.tar
 
 # Move everything into the right place
 : kernel/$(P_EXEC)-kernel.elf |> cp %f %o |> grub/isodir/boot/%B.elf

@@ -93,7 +93,36 @@ namespace tupai
 						cinode = tryinode;
 					else
 					{
-						fs::inode_t* ninode = fs::fs_create_inode(fs, fs::inode_type::DIRECTORY);
+						fs::inode_type type = fs::inode_type::DIRECTORY;
+						if (i + 1 == n)
+						{
+							switch (cheader->typeflag)
+							{
+							case '0':
+								type = fs::inode_type::NORMAL_FILE;
+								break;
+							case '1':
+								type = fs::inode_type::HARD_LINK;
+								break;
+							case '2':
+								type = fs::inode_type::SYM_LINK;
+								break;
+							case '3':
+								type = fs::inode_type::CHAR_DEVICE;
+								break;
+							case '4':
+								type = fs::inode_type::BLOCK_DEVICE;
+								break;
+							case '6':
+								type = fs::inode_type::FIFO;
+								break;
+							case '5':
+							default:
+								break;
+							}
+						}
+
+						fs::inode_t* ninode = fs::fs_create_inode(fs, type);
 						fs::inode_add_child(cinode, ninode, buff);
 						cinode = ninode;
 					}
