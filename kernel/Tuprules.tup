@@ -65,7 +65,7 @@ ifeq (@(TARGET_ARCH),rpi2)
 	CC_FLAGS=$(CC_FLAGS) -DARCH_rpi2 -DARCH_ADDRESS_32
 	CC_FLAGS=$(CC_FLAGS) -mcpu=arm1176jzf-s
 
-	OBJECTS=$(OBJECTS) arm/*.o arm/rpi2/*.o
+	OBJECTS=$(OBJECTS) arm/*.o arm/util/*.o arm/rpi2/*.o
 
 	LINK_FLAGS=$(LINK_FLAGS)
 	LINK_SCRIPT=arm/rpi2/linker.ld

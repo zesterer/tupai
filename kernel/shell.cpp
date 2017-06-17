@@ -100,7 +100,9 @@ namespace tupai
 			}
 			else if (util::str_equal(buff, "isr"))
 			{
-				asm volatile ("int $0x80");
+				#if defined(ARCH_FAMILY_X86)
+					asm volatile ("int $0x80");
+				#endif
 			}
 			else if (util::str_equal(buff, "panic"))
 			{
