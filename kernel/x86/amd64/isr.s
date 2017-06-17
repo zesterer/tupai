@@ -59,7 +59,6 @@
 		pop %rcx
 		pop %rbx
 		pop %rax
-
 	.endm
 
 	.align 4

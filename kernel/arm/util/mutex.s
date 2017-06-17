@@ -30,7 +30,7 @@
 			ldrex r2, [r0]
 
 			cmp r2, r1
-			beq _lock // Branch back to _lock if it's locked
+			beq _lock // Branch back to _lock if it's locked. TODO : Make this branch to 'preempt'.
 
 			strexne r2, r1, [r0] // Attempt to lock mutex
 

@@ -31,6 +31,13 @@ extern "C" void* memset(void* ptr, int value, size_t num)
 	return ptr;
 }
 
+extern "C" void* memcpy(void* dest, const void* src, size_t n)
+{
+	for (size_t i = 0; i < n; i ++)
+		((uint8_t*)dest)[i] = ((const uint8_t*)src)[i];
+	return dest;
+}
+
 void* operator new(size_t n)
 {
 	return tupai::sys::kmem_alloc(n);
@@ -63,5 +70,12 @@ void operator delete[](void* ptr, size_t size __attribute__ ((unused)))
 
 void* __dso_handle;
 
-extern "C" int  __cxa_atexit(void (*destructor) (void*), void* arg, void* dso) { return 0; }
-extern "C" void __cxa_finalize(void* f) { }
+#if defined(ARCH_FAMILY_x86)
+	extern "C" int  __cxa_atexit(void (*destructor) (void*) __attribute__ ((unused)), void* arg __attribute__ ((unused)), void* dso __attribute__ ((unused))) { return 0; }
+	extern "C" void __cxa_finalize(void* f __attribute__ ((unused))) { }
+#endif
+
+#if defined(ARCH_FAMILY_arm)
+	extern "C" int  __aeabi_atexit(void* obj __attribute__ ((unused)), void (*destructor) (void*) __attribute__ ((unused)), void* dso __attribute__ ((unused))) { return 0; }
+	extern "C" void __aeabi_finalize(void* f __attribute__ ((unused))) { }
+#endif
