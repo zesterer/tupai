@@ -1,5 +1,5 @@
 //
-// file : call.hpp
+// file : kbd.cpp
 //
 // This file is part of Tupai.
 //
@@ -17,22 +17,31 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_SYS_CALL_HPP
-#define TUPAI_SYS_CALL_HPP
+// Tupai
+#include <tupai/dev/kbd.hpp>
 
-// Standard
-#include <stddef.h>
-#include <stdint.h>
+#if defined(ARCH_FAMILY_x86)
+	#include <tupai/x86/kbd.hpp>
+#else
+	#warning "Architecture provides no keyboard device!"
+#endif
 
 namespace tupai
 {
-	namespace sys
+	namespace dev
 	{
-		const uint8_t CALL_IRQ = 0x80;
+		static bool kbd_initiated = false;
 
-		void call_bind();
-		void call_init();
+		void kbd_init()
+		{
+			if (kbd_initiated)
+				return;
+
+			#if defined(ARCH_FAMILY_x86)
+				x86::kbd_init();
+			#endif
+
+			kbd_initiated = true;
+		}
 	}
 }
-
-#endif

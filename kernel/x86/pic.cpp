@@ -113,23 +113,24 @@ namespace tupai
 		void pic_mask(uint8_t irq, bool enable)
 		{
 			uint16_t port;
-			uint8_t  value;
 
 			if (irq < 8)
 				port = PORT_PIC1_DATA;
-			else
+			else if (irq < 16)
 			{
 				port = PORT_PIC2_DATA;
 				irq -= 8;
 			}
+			else
+				return;
 
-			uint8_t val = inb(port);
+			uint8_t value = inb(port);
 			wait(150);
 
 			if (enable)
-				value = val & ~(1 << irq);
+				value = value & ~(1 << irq);
 			else
-				value = val | (1 << irq);
+				value = value | (1 << irq);
 
 			outb(port, value);
 			wait(150);

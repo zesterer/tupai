@@ -1,5 +1,5 @@
 //
-// file : call.hpp
+// file : kbd.hpp
 //
 // This file is part of Tupai.
 //
@@ -17,21 +17,15 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_SYS_CALL_HPP
-#define TUPAI_SYS_CALL_HPP
-
-// Standard
-#include <stddef.h>
-#include <stdint.h>
+#ifndef TUPAI_X86_KBD_HPP
+#define TUPAI_X86_KBD_HPP
 
 namespace tupai
 {
-	namespace sys
+	namespace x86
 	{
-		const uint8_t CALL_IRQ = 0x80;
-
-		void call_bind();
-		void call_init();
+		void kbd_bind();
+		void kbd_init();
 	}
 }
 

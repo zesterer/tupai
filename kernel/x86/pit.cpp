@@ -19,7 +19,6 @@
 
 // Tupai
 #include <tupai/x86/pit.hpp>
-#include <tupai/x86/pic.hpp>
 #include <tupai/x86/port.hpp>
 #include <tupai/interrupt.hpp>
 #include <tupai/debug.hpp>
@@ -50,16 +49,19 @@ namespace tupai
 		extern "C" void isr_pit();
 		extern "C" size_t pit_isr_main(size_t stack_ptr);
 
+		void pit_bind()
+		{
+			// Bind the interrupt
+			interrupt_bind(0, (void*)isr_pit, true);
+		}
+
 		void pit_init()
 		{
 			// Every 10,000 nanoseconds
 			pit_set_rate(1000);
 
-			// Bind the interrupt
-			interrupt_bind(PIC_REMAP_OFFSET + 0, (void*)isr_pit);
-
 			// Unmask the interrupt
-			pic_mask(0, true);
+			interrupt_mask(0, true);
 
 			debug_print(
 				"PIT initiated with properties:", '\n',
@@ -85,7 +87,7 @@ namespace tupai
 		size_t pit_isr_main(size_t stack_ptr)
 		{
 			// ACK the interrupt
-			pic_ack(0);
+			interrupt_ack(0);
 
 			pit_time += 1000000 / pit_rate; // Nanoseconds / rate
 

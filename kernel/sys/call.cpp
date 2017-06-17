@@ -29,10 +29,15 @@ namespace tupai
 		extern "C" void isr_syscall();
 		extern "C" size_t syscall_isr_main(size_t stack_ptr);
 
-		void call_init()
+		void call_bind()
 		{
 			// Bind the interrupt
 			interrupt_bind(CALL_IRQ, (void*)isr_syscall);
+		}
+
+		void call_init()
+		{
+			// Do nothing yet
 		}
 
 		size_t syscall_isr_main(size_t stack_ptr)

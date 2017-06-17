@@ -20,6 +20,7 @@
 // Globally define the ISRs
 .global isr_stub
 .global isr_pit
+.global isr_kbd
 .global isr_syscall
 
 .section .text
@@ -80,6 +81,18 @@
 
 		mov %rsp, %rdi // Pass the current stack pointer
 		call pit_isr_main
+		mov %rax, %rsp // Restore the thread stack pointer
+
+		POP_REGS
+		iretq
+
+	.align 4
+	isr_kbd: // KBD ISR (irq 0)
+		PUSH_REGS
+		cld
+
+		mov %rsp, %rdi // Pass the current stack pointer
+		call kbd_isr_main
 		mov %rax, %rsp // Restore the thread stack pointer
 
 		POP_REGS

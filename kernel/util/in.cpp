@@ -31,12 +31,24 @@ namespace tupai
 			while (i + 1 < n)
 			{
 				char c = dev::tty_read();
-				dev::tty_write(c);
+
+				if (c == '\b')
+				{
+					if (i > 0)
+					{
+						i --;
+						dev::tty_write('\b');
+						dev::tty_write(' ');
+						dev::tty_write('\b');
+					}
+					continue;
+				}
+				else
+					dev::tty_write(c);
 
 				if (c == '\r' || c == '\n')
 					break;
-
-				if (c != '\0')
+				else if (c != '\0')
 				{
 					buff[i] = c;
 					i ++;

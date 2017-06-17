@@ -94,7 +94,7 @@ namespace tupai
 
 			mb_meminfo_t* meminfo = (mb_meminfo_t*)tag;
 
-			debug_println("Found MemInfo tag! lower = ", (void*)meminfo->lower, ", upper = ", (void*)meminfo->upper);
+			debug_println("Found MemInfo tag! lower = ", (void*)(size_t)meminfo->lower, ", upper = ", (void*)(size_t)meminfo->upper);
 		}
 
 		void multiboot_parse_biosdev(mb_tag_header_t* tag)
@@ -137,11 +137,11 @@ namespace tupai
 
 			mb_module_t* module = (mb_module_t*)tag;
 
-			debug_println("Found Module tag! start = ", (void*)module->start, ", part = ", (void*)module->end, ", args = ", (const char*)&module->args_start);
+			debug_println("Found Module tag! start = ", (void*)(size_t)module->start, ", part = ", (void*)(size_t)module->end, ", args = ", (const char*)&module->args_start);
 
 			// If the module is an initrd, add it to the cache
 			if (util::str_equal((const char*)&module->args_start, "initrd"))
-				sys::initrd_cache_add((void*)module->start + arch_get_offset(), (size_t)(module->end - module->start + 1) + arch_get_offset(), (const char*)&module->args_start);
+				sys::initrd_cache_add((void*)((size_t)module->start + arch_get_offset()), (size_t)(module->end - module->start + 1) + arch_get_offset(), (const char*)&module->args_start);
 		}
 	}
 }

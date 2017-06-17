@@ -32,6 +32,7 @@
 // Virtual devices
 #include <tupai/dev/serial.hpp>
 #include <tupai/dev/ps2.hpp>
+#include <tupai/dev/kbd.hpp>
 #include <tupai/dev/tty.hpp>
 
 // Initial software
@@ -63,6 +64,7 @@ namespace tupai
 		// Initiate virtual devices
 		dev::serial_init();
 		dev::ps2_init();
+		dev::kbd_init();
 		dev::tty_init();
 
 		// Run the kernel shell

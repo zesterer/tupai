@@ -28,6 +28,7 @@ namespace tupai
 {
 	namespace x86
 	{
+		void pit_bind();
 		void pit_init();
 	}
 }
