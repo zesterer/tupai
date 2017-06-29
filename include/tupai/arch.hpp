@@ -27,6 +27,7 @@
 namespace tupai
 {
 	const size_t ARCH_PAGE_SIZE = 4096;
+	const size_t ARCH_PAGE_SIZE_P2 = 12;
 
 	extern "C" char kernel_start;
 	extern "C" char kernel_end;

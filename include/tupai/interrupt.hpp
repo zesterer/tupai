@@ -27,6 +27,7 @@
 namespace tupai
 {
 	void interrupt_enable(bool enable = true);
+	bool interrupt_enabled();
 	void interrupt_bind(uint8_t irq, void* address, bool hardware = false);
 	void interrupt_ack(uint8_t irq);
 	void interrupt_mask(uint8_t irq, bool enable);

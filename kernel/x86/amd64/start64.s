@@ -75,5 +75,5 @@
 	// Stack
 	.align 64
 	stack_bottom:
-		.skip 1024 * 16 // Reserve a 16K stack
+		.skip 1024 * 64 // Reserve a 64K stack
 	stack_top:

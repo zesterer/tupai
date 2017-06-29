@@ -63,9 +63,7 @@ namespace tupai
 		sys::initrd_init(); // Initiate initrd filesystems
 
 		// Map kernel memory
-		sys::mmap_reserve(0, arch_get_kernel_end(), sys::KERNEL_PROC_ID);
-
-		interrupt_enable(); // Enable interrupts
+		//sys::mmap_reserve(0, arch_get_kernel_end(), sys::KERNEL_PROC_ID);
 	}
 
 	void main()
@@ -77,12 +75,15 @@ namespace tupai
 
 		// Initiate virtual devices
 		dev::serial_init();
-		dev::ps2_init();
+		//dev::ps2_init();
 		dev::kbd_init();
 		dev::tty_init();
 
 		// Run the kernel shell
 		sys::thread_create(shell_main, 0, nullptr, "shell");
+
+		interrupt_enable(true); // Enable interrupts
+
 		sys::thread_kill(sys::thread_get_id());
 	}
 }

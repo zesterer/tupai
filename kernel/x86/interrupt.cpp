@@ -22,6 +22,8 @@
 #include <tupai/debug.hpp>
 #include <tupai/x86/pic.hpp>
 
+//#include <tupai/util/out.hpp>
+
 #if defined(ARCH_amd64)
 	#include <tupai/x86/amd64/idt.hpp>
 #elif defined(ARCH_i386)
@@ -36,6 +38,19 @@ namespace tupai
 			asm volatile ("sti");
 		else
 			asm volatile ("cli");
+	}
+
+	bool interrupt_enabled()
+	{
+		#if defined(ARCH_amd64)
+			uint64_t flags = 0;
+			asm volatile ("pushf; pop %%rax; mov %%rax, %0" : "=r" (flags) : : "%rax");
+		#elif defined(ARCH_i386)
+			uint32_t flags = 0;
+			asm volatile ("pushf; pop %%eax; mov %%eax, %0" : "=r" (flags) : : "%eax");
+		#endif
+		//util::println(util::fmt_int<uint64_t>(eflags, 2, 16));
+		return (flags & (1 << 9)) > 0;
 	}
 
 	void interrupt_bind(uint8_t irq, void* address, bool hardware)

@@ -28,10 +28,7 @@ namespace tupai
 {
 	namespace sys
 	{
-		static const int MMAP_BRANCH_P2 = 10;
-		static const int MMAP_BRANCHES = 1 << MMAP_BRANCH_P2;
-
-		static const int MMAP_BR_P2 = 10;
+		static const int MMAP_BR_P2 = 8;
 		static const int MMAP_BR    = 1 << MMAP_BR_P2;
 
 		struct mmap_br_t;
@@ -62,7 +59,7 @@ namespace tupai
 		void mmap_init()
 		{
 			root.br = new mmap_br_t();
-			root.br->depth = 1;
+			root.br->depth = util::align_ceiling(sizeof(size_t) * 8 - ARCH_PAGE_SIZE_P2, MMAP_BR_P2) / MMAP_BR_P2 - 1;
 		}
 
 		void __mmap_reserve(mmap_node_t* node, int depth, size_t addr, pid_t owner, size_t start, size_t size)
@@ -109,13 +106,13 @@ namespace tupai
 			__mmap_reserve(&root, root.br->depth + 1, 0, owner, pstart, psize);
 		}
 
-		pid_t __mmap_display(mmap_node_t* node, size_t addr, pid_t cowner)
+		pid_t __mmap_display(mmap_node_t* node, size_t addr, pid_t cowner, int depth = 0)
 		{
 			if (node->br != nullptr)
 			{
 				for (int i = 0; i < MMAP_BR; i ++)
 				{
-					cowner = __mmap_display(&node->br->nodes[i], addr, cowner);
+					cowner = __mmap_display(&node->br->nodes[i], addr, cowner, depth + 1);
 					addr += 1 << (node->br->depth * MMAP_BR_P2);
 				}
 

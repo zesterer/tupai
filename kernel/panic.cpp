@@ -20,6 +20,7 @@
 // Tupai
 #include <tupai/panic.hpp>
 #include <tupai/util/out.hpp>
+#include <tupai/x86/textmode.hpp>
 
 namespace tupai
 {
@@ -53,7 +54,13 @@ namespace tupai
 
 	void panic(const char* msg)
 	{
-		util::println("[PANIC] ", msg);
+		char str[1024];
+
+		util::fmt(str, "[PANIC] ", msg);
+
+		for (size_t i = 0; str[i] != '\0'; i ++)
+			x86::textmode_write(str[i]);
+
 		hang();
 	}
 }

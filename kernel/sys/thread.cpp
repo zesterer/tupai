@@ -51,7 +51,9 @@ namespace tupai
 
 		void threading_init()
 		{
-			interrupt_enable(false); // Begin critical section
+			bool int_enabled = interrupt_enabled();
+			if (int_enabled)
+				interrupt_enable(false); // Begin critical section
 
 			// Clear threads
 			for (size_t i = 0; i < MAX_THREADS; i ++)
@@ -72,7 +74,8 @@ namespace tupai
 			// Set threading to enabled
 			threads_enabled = true;
 
-			interrupt_enable(true); // End critical section
+			if (int_enabled)
+				interrupt_enable(true); // End critical section
 		}
 
 		bool threading_enabled()
@@ -82,7 +85,9 @@ namespace tupai
 
 		id_t thread_create(void(*addr)(int argc, char* argv[]), int argc, char* argv[], const char* name, bool create_stack)
 		{
-			interrupt_enable(false); // Begin critical section
+			bool int_enabled = interrupt_enabled();
+			if (int_enabled)
+				interrupt_enable(false); // Begin critical section
 
 			id_t nid = thread_gen_id();
 
@@ -114,7 +119,8 @@ namespace tupai
 				}
 			}
 
-			interrupt_enable(true); // End critical section
+			if (int_enabled)
+				interrupt_enable(true); // End critical section
 
 			return nid;
 		}
@@ -129,7 +135,9 @@ namespace tupai
 			if (id < 0)
 				return;
 
-			interrupt_enable(false); // Begin critical section
+			bool int_enabled = interrupt_enabled();
+			if (int_enabled)
+				interrupt_enable(false); // Begin critical section
 
 			for (size_t i = 0; i < MAX_THREADS; i ++)
 			{
@@ -145,7 +153,8 @@ namespace tupai
 				}
 			}
 
-			interrupt_enable(true); // End critical section
+			if (int_enabled)
+				interrupt_enable(true); // End critical section
 		}
 
 		void thread_finish()
@@ -226,7 +235,9 @@ namespace tupai
 		{
 			size_t n = 0;
 
-			interrupt_enable(false); // Begin critical section
+			bool int_enabled = interrupt_enabled();
+			if (int_enabled)
+				interrupt_enable(false); // Begin critical section
 
 			for (size_t i = 0; i < MAX_THREADS; i ++)
 			{
@@ -234,14 +245,17 @@ namespace tupai
 					n ++;
 			}
 
-			interrupt_enable(true); // End critical section
+			if (int_enabled)
+				interrupt_enable(true); // End critical section
 
 			return n;
 		}
 
 		id_t thread_get_id(size_t index)
 		{
-			interrupt_enable(false); // Begin critical section
+			bool int_enabled = interrupt_enabled();
+			if (int_enabled)
+				interrupt_enable(false); // Begin critical section
 
 			size_t c = 0;
 			for (size_t i = 0; i < MAX_THREADS; i ++)
@@ -250,7 +264,8 @@ namespace tupai
 				{
 					if (c == index)
 					{
-						interrupt_enable(true); // End critical section
+						if (int_enabled)
+							interrupt_enable(true); // End critical section
 						return threads[i].id;
 					}
 
@@ -258,13 +273,16 @@ namespace tupai
 				}
 			}
 
-			interrupt_enable(true); // End critical section
+			if (int_enabled)
+				interrupt_enable(true); // End critical section
 			return 0;
 		}
 
 		void thread_get_name(size_t index, char* str)
 		{
-			interrupt_enable(false); // Begin critical section
+			bool int_enabled = interrupt_enabled();
+			if (int_enabled)
+				interrupt_enable(false); // Begin critical section
 
 			size_t c = 0;
 			for (size_t i = 0; i < MAX_THREADS; i ++)
@@ -274,7 +292,9 @@ namespace tupai
 					if (c == index)
 					{
 						util::str_cpy((const char*)threads[i].name, str);
-						interrupt_enable(true); // End critical section
+
+						if (int_enabled)
+							interrupt_enable(true); // End critical section
 						return;
 					}
 
@@ -282,7 +302,8 @@ namespace tupai
 				}
 			}
 
-			interrupt_enable(true); // End critical section
+			if (int_enabled)
+				interrupt_enable(true); // End critical section
 		}
 	}
 }

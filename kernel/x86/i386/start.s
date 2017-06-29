@@ -83,5 +83,5 @@
 .section .bss
 	// Stack
 	stack_bottom:
-		.skip 1024 * 16 // A 16K stack
+		.skip 1024 * 64 // A 64K stack
 	stack_top:

@@ -40,11 +40,10 @@ namespace tupai
 {
 	void shell_motd()
 	{
-		util::print(tupai_get_name_decorative(), " ",
+		util::println(tupai_get_name_decorative(), " ",
 			tupai_get_version(), " on ",
 			arch_get_family(), "/", arch_get_target(), '\n',
-			"Copyright 2017, Joshua Barretto\n", '\n'
-		);
+			"Copyright 2017, Joshua Barretto");
 	}
 
 	void shell_main(int argc, char* argv[])
@@ -59,7 +58,7 @@ namespace tupai
 		util::println("Type 'help' for more info.");
 		while (!halted)
 		{
-			util::print("$ ");
+			util::print("\n$ ");
 
 			char buff[64];
 			util::readline(buff);
