@@ -113,6 +113,13 @@ namespace tupai
 
 			debug_println("Found Module tag! start = ", (void*)(size_t)module->start, ", part = ", (void*)(size_t)module->end, ", args = ", (const char*)&module->args_start);
 
+			// Relocate the module to avoid conflicts
+			size_t mod_size = module->end - module->start;
+			void* naddr = arch_kernel_alloc(mod_size);
+			util::mem_copy((void*)(size_t)module->start, naddr, mod_size);
+			module->start = (size_t)naddr - arch_get_offset();
+			module->end = module->start + mod_size;
+
 			// If the module is an initrd, add it to the cache
 			if (util::str_equal((const char*)&module->args_start, "initrd"))
 				sys::initrd_cache_add((void*)((size_t)module->start + arch_get_offset()), (size_t)(module->end - module->start + 1) + arch_get_offset(), (const char*)&module->args_start);

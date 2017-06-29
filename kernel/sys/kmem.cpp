@@ -23,6 +23,7 @@
 #include <tupai/arch.hpp>
 #include <tupai/panic.hpp>
 #include <tupai/util/out.hpp>
+#include <tupai/debug.hpp>
 
 namespace tupai
 {
@@ -36,6 +37,8 @@ namespace tupai
 		void kmem_init()
 		{
 			void* pool = arch_kernel_alloc(KMEM_SIZE);
+
+			debug_println("KMem Pool = ", pool, " : ", (void*)((size_t)pool + KMEM_SIZE));
 
 			if (pool == nullptr)
 				panic("Could not allocate kernel memory pool");
@@ -73,7 +76,7 @@ namespace tupai
 
 		void kmem_display()
 		{
-			pool_display(&kmem_pool, 256);
+			pool_display(&kmem_pool, KMEM_SIZE / KMEM_BLOCK_SIZE);
 		}
 	}
 }

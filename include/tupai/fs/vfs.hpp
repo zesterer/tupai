@@ -37,8 +37,9 @@ namespace tupai
 		void vfs_print();
 
 		void     vfs_set_root(inode_t* inode);
-		fs_t*    vfs_create_fs();
+		fs_t*    vfs_create_fs(const char* name);
 		inode_t* vfs_create_inode(id_t id);
+		inode_t* vfs_find_inode(id_t g_id);
 	}
 }
 

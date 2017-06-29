@@ -37,6 +37,12 @@ namespace tupai
 		{
 			return (n == 0) ? align : (align + align * ((n - 1) / align));
 		}
+
+		static __attribute__ ((unused)) void mem_copy(void* src, void* dest, size_t n)
+		{
+			for (size_t i = 0; i < n; i ++)
+				((uint8_t*)dest)[i] = ((uint8_t*)src)[i];
+		}
 	}
 }
 

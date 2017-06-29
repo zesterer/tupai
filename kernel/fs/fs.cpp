@@ -20,11 +20,18 @@
 // Tupai
 #include <tupai/fs/fs.hpp>
 #include <tupai/fs/vfs.hpp>
+#include <tupai/util/str.hpp>
 
 namespace tupai
 {
 	namespace fs
 	{
+		fs_t::fs_t(const char* name)
+		{
+			if (name != nullptr)
+				util::str_cpy_n(name, this->name, MAX_FS_NAME);
+		}
+
 		inode_t* fs_create_inode(fs_t* fs, inode_type type)
 		{
 			fs->inode_id_counter ++; // Increment id counter

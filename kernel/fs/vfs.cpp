@@ -27,11 +27,25 @@ namespace tupai
 {
 	namespace fs
 	{
+		struct inode_pair_t
+		{
+			inode_t* inode;
+			id_t     id;
+
+			inode_pair_t(inode_t* inode, id_t id)
+			{
+				this->inode = inode;
+				this->id = id;
+			}
+		};
+
 		util::mutex fs_mutex;
 
 		util::vector_t<fs_t*>    active_fs;
-		util::vector_t<inode_t*> active_inodes;
+		util::vector_t<inode_pair_t> active_inodes;
 		inode_t*                 root_inode = nullptr;
+
+		id_t g_inode_id = 0;
 
 		static void vfs_print_inode(inode_t* inode, const char* name, size_t depth = 0);
 
@@ -44,8 +58,12 @@ namespace tupai
 
 		void vfs_print()
 		{
-			util::println("--- VFS ---");
+			util::println("--- Virtual Filesystem ---");
 			vfs_print_inode(root_inode, "");
+
+			util::println("--- Filesystem Devices ---");
+			for (size_t i = 0; i < active_fs.size(); i ++)
+				util::println(active_fs[i]->id, " : ", active_fs[i]->name);
 		}
 
 		void vfs_print_inode(inode_t* inode, const char* name, size_t depth)
@@ -71,9 +89,9 @@ namespace tupai
 			root_inode = inode;
 		}
 
-		fs_t* vfs_create_fs()
+		fs_t* vfs_create_fs(const char* name)
 		{
-			fs_t* nfs = new fs_t();
+			fs_t* nfs = new fs_t(name);
 			inode_t* nroot = fs_create_inode(nfs, inode_type::DIRECTORY);
 			nfs->root = nroot;
 
@@ -87,9 +105,21 @@ namespace tupai
 			inode_t* ninode = new inode_t();
 			ninode->id = id;
 
-			active_inodes.push(ninode);
+			id_t g_id = ++g_inode_id;
+			active_inodes.push(inode_pair_t(ninode, g_id));
 
 			return ninode;
+		}
+
+		inode_t* vfs_find_inode(id_t g_id)
+		{
+			for (size_t i = 0; i < active_inodes.size(); i ++)
+			{
+				if (active_inodes[i].id == g_id)
+					return active_inodes[i].inode;
+			}
+
+			return nullptr;
 		}
 	}
 }

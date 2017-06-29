@@ -138,7 +138,7 @@ namespace tupai
 
 		void pool_display(pool_t* pool, size_t n)
 		{
-			util::println("Memory pool map:");
+			util::println("--- Memory pool map ---");
 			for (size_t i = 0; i < n; i ++)
 			{
 				switch(pool_get(pool, i))
@@ -150,7 +150,7 @@ namespace tupai
 					util::print('T');
 					break;
 				case block_status::UNUSED:
-					util::print('-');
+					util::print('.');
 					break;
 				default:
 					util::print('?');

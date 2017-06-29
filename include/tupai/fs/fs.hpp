@@ -31,6 +31,8 @@ namespace tupai
 {
 	namespace fs
 	{
+		const size_t MAX_FS_NAME = 256;
+
 		// Forward declaration
 		struct inode_t;
 		enum class inode_type;
@@ -41,7 +43,11 @@ namespace tupai
 
 			id_t inode_id_counter = 0;
 
+			char name[MAX_FS_NAME];
+
 			inode_t* root = nullptr;
+
+			fs_t(const char* name = nullptr);
 		};
 
 		inode_t* fs_create_inode(fs_t* fs, inode_type type);

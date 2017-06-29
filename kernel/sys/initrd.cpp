@@ -19,9 +19,10 @@
 
 // Tupai
 #include <tupai/sys/initrd.hpp>
+#include <tupai/sys/thread.hpp>
+#include <tupai/sys/mmap.hpp>
 #include <tupai/util/out.hpp>
 #include <tupai/util/tar.hpp>
-#include <tupai/sys/thread.hpp>
 #include <tupai/fs/vfs.hpp>
 #include <tupai/fs/path.hpp>
 
@@ -76,8 +77,10 @@ namespace tupai
 
 			const initrd_cache_t* initrd = (const initrd_cache_t*)argv;
 
-			fs::fs_t* fs = fs::vfs_create_fs();
+			fs::fs_t* fs = fs::vfs_create_fs("initrd");
 			fs::vfs_set_root(fs->root);
+
+			mmap_reserve((size_t)initrd->start, (size_t)initrd->size, KERNEL_PROC_ID); // Reserve the memory
 
 			util::tar_header_t* cheader = (util::tar_header_t*)initrd->start;
 			while (cheader != nullptr)
