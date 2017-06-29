@@ -9,7 +9,7 @@
 // (at your option) any later version.
 //
 // Tupai is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY// without even the implied warranty of
+// but WITHOUT ANY WARRANTY without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
@@ -19,12 +19,16 @@
 
 // Tupai
 #include <tupai/main.hpp>
+#include <tupai/arch.hpp>
+#include <tupai/interrupt.hpp>
 
 // Core system environment
 #include <tupai/sys/kmem.hpp>
 #include <tupai/sys/mmap.hpp>
 #include <tupai/sys/thread.hpp>
 #include <tupai/sys/initrd.hpp>
+#include <tupai/sys/call.hpp>
+#include <tupai/sys/proc.hpp>
 
 // Filesystem
 #include <tupai/fs/vfs.hpp>
@@ -47,11 +51,21 @@ namespace tupai
 	void early()
 	{
 		// Core system environment
-		sys::kmem_init();      // Initiate kernel memory allocation
-		sys::mmap_init();      // Initiate page map & frame allocation
+
+		sys::kmem_init(); // Initiate kernel memory allocation
+		sys::mmap_init(); // Initiate page map & frame allocation
+
 		sys::threading_init(); // Initiate multi-threading
-		fs::vfs_init();        // Initiate filesystem
-		sys::initrd_init();    // Initiate initrd filesystems
+		sys::proc_init();      // Initiate processes
+		sys::call_bind();      // Initiate SYSCALL routine
+
+		fs::vfs_init();     // Initiate filesystem
+		sys::initrd_init(); // Initiate initrd filesystems
+
+		// Map kernel memory
+		sys::mmap_reserve(0, arch_get_kernel_end(), sys::KERNEL_PROC_ID);
+
+		interrupt_enable(); // Enable interrupts
 	}
 
 	void main()

@@ -9,7 +9,7 @@
 // (at your option) any later version.
 //
 // Tupai is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY// without even the implied warranty of
+// but WITHOUT ANY WARRANTY without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
@@ -24,11 +24,6 @@
 #include <tupai/x86/multiboot.hpp>
 #include <tupai/x86/amd64/gdt.hpp>
 #include <tupai/x86/amd64/idt.hpp>
-#include <tupai/x86/pic.hpp>
-#include <tupai/x86/pit.hpp>
-#include <tupai/x86/kbd.hpp>
-#include <tupai/interrupt.hpp>
-#include <tupai/sys/call.hpp>
 
 // Standard
 #include <stddef.h>
@@ -61,28 +56,12 @@ namespace tupai
 				gdt_init();
 				gdt_install();
 
-				// Initiate the IDT
+				// Initiate and install the IDT
 				idt_init();
-
-				// Initiate the PIC
-				pic_init();
-
-				// Bind interrupts
-				pit_bind();
-				kbd_bind();
-				sys::call_bind();
-
-				// Install the IDT
 				idt_install();
 
-				// Enable interrupts
-				interrupt_enable();
-
-				// Initiate the PIT
-				pit_init();
-
-				// Initiate the Keyboard
-				kbd_init();
+				// x86 initiation
+				arch_init();
 
 				debug_print("Finished amd64 initiation\n");
 

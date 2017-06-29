@@ -9,7 +9,7 @@
 // (at your option) any later version.
 //
 // Tupai is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY// without even the implied warranty of
+// but WITHOUT ANY WARRANTY without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
@@ -52,6 +52,11 @@ namespace tupai
 		static const uint8_t ICW4_SFNM        = 0x10; // Special fully nested (not)
 
 		static const uint8_t PIC_EOI = 0x20; // PIC EOI byte
+
+		void pic_bind()
+		{
+			// Do nothing yet
+		}
 
 		void pic_init()
 		{

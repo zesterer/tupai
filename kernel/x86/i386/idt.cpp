@@ -9,7 +9,7 @@
 // (at your option) any later version.
 //
 // Tupai is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY// without even the implied warranty of
+// but WITHOUT ANY WARRANTY without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
@@ -144,8 +144,6 @@ namespace tupai
 				asm volatile
 				(
 					"lidt (idt_ptr)\n"
-					//"ljmp $8, $idt_install_ljmp\n"
-					//"idt_install_ljmp:\n"
 				);
 			}
 

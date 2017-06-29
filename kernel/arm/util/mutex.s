@@ -9,7 +9,7 @@
 // (at your option) any later version.
 //
 // Tupai is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY// without even the implied warranty of
+// but WITHOUT ANY WARRANTY without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
@@ -37,7 +37,10 @@
 			cmpne r2, #1 // Test mutex to check lock
 			beq _lock // Locking failed: retry
 
-			//dmb // Data memory barrier
+			// Data memory barrier
+			mov r0, #0
+			mcr p15, #0, r0, c7, c10, #5
+			
 			bx lr // Return
 
 	//preempt:
@@ -46,7 +49,11 @@
 	mutex_unlock_impl:
 
 		mov r1, #0
-		//dmb // Data memory barrier
+
+		// Data memory barrier
+		mov r0, #0
+		mcr p15, #0, r0, c7, c10, #5
+
 		str r1, [r0] // Unlock mutex
 
 		bx lr // Return

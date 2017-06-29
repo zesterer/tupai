@@ -9,7 +9,7 @@
 // (at your option) any later version.
 //
 // Tupai is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY// without even the implied warranty of
+// but WITHOUT ANY WARRANTY without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
@@ -44,7 +44,7 @@ namespace tupai
 		static volatile util::mutex tty_mutex;
 
 		// The I/O pipe. 256 character buffer
-		static volatile sys::pipe_t<2048> iopipe;
+		static volatile sys::pipe_t<8192> iopipe;
 
 		static void tty_in_thread(int argc, char* argv[]);
 		static void tty_out_thread(int argc, char* argv[]);
@@ -125,6 +125,9 @@ namespace tupai
 
 		void tty_in_thread(int argc, char* argv[])
 		{
+			(void)argc;
+			(void)argv;
+
 			while (true)
 			{
 				unsigned char c = dev::serial_read(tty_serial_port);
@@ -134,6 +137,9 @@ namespace tupai
 
 		void tty_out_thread(int argc, char* argv[])
 		{
+			(void)argc;
+			(void)argv;
+
 			while (true)
 			{
 				unsigned char c = iopipe.read_out();

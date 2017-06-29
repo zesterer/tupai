@@ -9,7 +9,7 @@
 // (at your option) any later version.
 //
 // Tupai is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY// without even the implied warranty of
+// but WITHOUT ANY WARRANTY without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
@@ -100,19 +100,12 @@ namespace tupai
 				debug_println("GDT initiated");
 			}
 
-			//struct gdt_ljmp_ptr_t { uint64_t ptr; uint16_t cs; } __attribute__((packed));
-			//extern "C" gdt_ljmp_ptr_t gdt_ljmp_ptr;
-			//gdt_ljmp_ptr_t gdt_ljmp_ptr;
-			//extern "C" void gdt_ljmp();
 			void gdt_install()
 			{
 				gdt_ptr.size = sizeof(gdt_desc_t) * GDT_LENGTH - 1;
 				gdt_ptr.offset = (uint64_t)&gdt;
 
 				debug_println("GDT_PTR is at ", &gdt_ptr);
-
-				//gdt_ljmp_ptr.ptr = (uint64_t)gdt_ljmp;
-				//gdt_ljmp_ptr.cs = 0x0008;
 
 				asm volatile
 				(

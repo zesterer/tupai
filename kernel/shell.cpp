@@ -9,7 +9,7 @@
 // (at your option) any later version.
 //
 // Tupai is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY// without even the implied warranty of
+// but WITHOUT ANY WARRANTY without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
@@ -27,6 +27,7 @@
 
 #include <tupai/sys/kmem.hpp>
 #include <tupai/sys/thread.hpp>
+#include <tupai/sys/mmap.hpp>
 
 #include <tupai/util/in.hpp>
 #include <tupai/util/out.hpp>
@@ -48,6 +49,9 @@ namespace tupai
 
 	void shell_main(int argc, char* argv[])
 	{
+		(void)argc;
+		(void)argv;
+
 		// Display the MOTD
 		shell_motd();
 
@@ -118,6 +122,7 @@ namespace tupai
 					"  kernel_end   -> ", (void*)arch_get_kernel_end(), '\n'
 				);
 				sys::kmem_info();
+				sys::mmap_display();
 			}
 			else if (util::str_equal(buff, "time"))
 			{

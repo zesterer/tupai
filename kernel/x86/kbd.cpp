@@ -9,7 +9,7 @@
 // (at your option) any later version.
 //
 // Tupai is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY// without even the implied warranty of
+// but WITHOUT ANY WARRANTY without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
@@ -50,10 +50,6 @@ namespace tupai
 		{
 			// Unmask the interrupt
 			interrupt_mask(1, true);
-
-			const char* str = "TESTING!";
-			for (int i = 0; str[i] != '\0'; i ++)
-				textmode_write(str[i]);
 		}
 
 		size_t kbd_isr_main(size_t stack_ptr)

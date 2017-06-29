@@ -9,7 +9,7 @@
 // (at your option) any later version.
 //
 // Tupai is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY// without even the implied warranty of
+// but WITHOUT ANY WARRANTY without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
@@ -40,7 +40,38 @@ namespace tupai
 			uint32_t size;
 		} __attribute__((packed));
 
+		struct mb_meminfo_t
+		{
+			mb_tag_header_t head;
+			uint32_t lower;
+			uint32_t upper;
+		} __attribute__((packed));
+
+		struct mb_biosdev_t
+		{
+			mb_tag_header_t head;
+			uint32_t biosdev;
+			uint32_t part;
+			uint32_t sub_part;
+		} __attribute__((packed));
+
+		struct mb_bootcmd_t
+		{
+			mb_tag_header_t head;
+			uint8_t  cmd_start;
+		} __attribute__((packed));
+
+		struct mb_module_t
+		{
+			mb_tag_header_t head;
+			uint32_t start;
+			uint32_t end;
+			uint8_t  args_start;
+		} __attribute__((packed));
+
 		void multiboot_set_header(uint64_t magic, void* header);
+
+		mb_meminfo_t multiboot_get_meminfo();
 	}
 }
 

@@ -9,7 +9,7 @@
 // (at your option) any later version.
 //
 // Tupai is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY// without even the implied warranty of
+// but WITHOUT ANY WARRANTY without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
@@ -37,6 +37,8 @@ namespace tupai
 		static void multiboot_parse_biosdev(mb_tag_header_t* tag);
 		static void multiboot_parse_bootcmd(mb_tag_header_t* tag);
 		static void multiboot_parse_module (mb_tag_header_t* tag);
+
+		static mb_meminfo_t mb_meminfo;
 
 		void multiboot_set_header(uint64_t magic, void* header)
 		{
@@ -85,28 +87,14 @@ namespace tupai
 
 		void multiboot_parse_meminfo(mb_tag_header_t* tag)
 		{
-			struct mb_meminfo_t
-			{
-				mb_tag_header_t head;
-				uint32_t lower;
-				uint32_t upper;
-			} __attribute__((packed));
-
 			mb_meminfo_t* meminfo = (mb_meminfo_t*)tag;
+			mb_meminfo = *meminfo;
 
 			debug_println("Found MemInfo tag! lower = ", (void*)(size_t)meminfo->lower, ", upper = ", (void*)(size_t)meminfo->upper);
 		}
 
 		void multiboot_parse_biosdev(mb_tag_header_t* tag)
 		{
-			struct mb_biosdev_t
-			{
-				mb_tag_header_t head;
-				uint32_t biosdev;
-				uint32_t part;
-				uint32_t sub_part;
-			} __attribute__((packed));
-
 			mb_biosdev_t* biosdev = (mb_biosdev_t*)tag;
 
 			debug_println("Found BIOSDev tag! biosdev = ", (uint32_t)biosdev->biosdev, ", part = ", (uint32_t)biosdev->part, ", sub_part = ", (uint32_t)biosdev->sub_part);
@@ -114,12 +102,6 @@ namespace tupai
 
 		void multiboot_parse_bootcmd(mb_tag_header_t* tag)
 		{
-			struct mb_bootcmd_t
-			{
-				mb_tag_header_t head;
-				uint8_t  cmd_start;
-			} __attribute__((packed));
-
 			mb_bootcmd_t* bootcmd = (mb_bootcmd_t*)tag;
 
 			debug_println("Found BootCMD tag! cmd = ", (const char*)&bootcmd->cmd_start);
@@ -127,14 +109,6 @@ namespace tupai
 
 		void multiboot_parse_module(mb_tag_header_t* tag)
 		{
-			struct mb_module_t
-			{
-				mb_tag_header_t head;
-				uint32_t start;
-				uint32_t end;
-				uint8_t  args_start;
-			} __attribute__((packed));
-
 			mb_module_t* module = (mb_module_t*)tag;
 
 			debug_println("Found Module tag! start = ", (void*)(size_t)module->start, ", part = ", (void*)(size_t)module->end, ", args = ", (const char*)&module->args_start);
@@ -142,6 +116,11 @@ namespace tupai
 			// If the module is an initrd, add it to the cache
 			if (util::str_equal((const char*)&module->args_start, "initrd"))
 				sys::initrd_cache_add((void*)((size_t)module->start + arch_get_offset()), (size_t)(module->end - module->start + 1) + arch_get_offset(), (const char*)&module->args_start);
+		}
+
+		mb_meminfo_t multiboot_get_meminfo()
+		{
+			return mb_meminfo;
 		}
 	}
 }

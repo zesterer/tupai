@@ -9,7 +9,7 @@
 // (at your option) any later version.
 //
 // Tupai is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY// without even the implied warranty of
+// but WITHOUT ANY WARRANTY without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
@@ -30,6 +30,7 @@ namespace tupai
 	{
 		const uint8_t PIC_REMAP_OFFSET = 32;
 
+		void pic_bind();
 		void pic_init();
 		void pic_ack(uint8_t irq);
 		void pic_mask(uint8_t irq, bool enabled);

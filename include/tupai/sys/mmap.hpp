@@ -9,7 +9,7 @@
 // (at your option) any later version.
 //
 // Tupai is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY// without even the implied warranty of
+// but WITHOUT ANY WARRANTY without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
@@ -20,6 +20,9 @@
 #ifndef TUPAI_SYS_MMAP_HPP
 #define TUPAI_SYS_MMAP_HPP
 
+// Tupai
+#include <tupai/sys/proc.hpp>
+
 // Standard
 #include <stddef.h>
 #include <stdint.h>
@@ -29,6 +32,9 @@ namespace tupai
 	namespace sys
 	{
 		void mmap_init();
+		void mmap_reserve(size_t start, size_t size, pid_t owner);
+
+		void mmap_display();
 	}
 }
 
