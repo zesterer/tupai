@@ -54,9 +54,9 @@
 		pushal
 		cld
 
-		push %esp // Pass the current stack pointer
+		//push %esp // Pass the current stack pointer
 		call kbd_isr_main
-		mov %eax, %esp // Restore the thread stack pointer
+		//mov %eax, %esp // Restore the thread stack pointer
 
 		popal
 		iret

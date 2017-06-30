@@ -19,17 +19,12 @@
 
 // Tupai
 #include <tupai/sys/proc.hpp>
-#include <tupai/fs/inode.hpp>
 
 namespace tupai
 {
 	namespace sys
 	{
-		struct proc_t
-		{
-			pid_t id;
-			fs::id_t cdir;
-		};
+		util::vector_t<proc_t> proc;
 
 		void proc_init()
 		{

@@ -21,6 +21,7 @@
 #include <tupai/arch.hpp>
 #include <tupai/x86/pic.hpp>
 #include <tupai/x86/pit.hpp>
+#include <tupai/x86/ps2_8042.hpp>
 #include <tupai/x86/pci.hpp>
 #include <tupai/x86/kbd.hpp>
 
@@ -40,6 +41,9 @@ namespace tupai
 		// Initiate the PIT
 		x86::pit_bind();
 		x86::pit_init();
+
+		// Initiate PS2
+		x86::ps2_8042_init();
 
 		// Initiate the PCI bus
 		x86::pci_init();

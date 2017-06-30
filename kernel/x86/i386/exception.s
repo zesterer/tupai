@@ -171,6 +171,7 @@
 
 	isr_common: // Common ISR routine (must be jumped to by an ISR defined above)
 		call exception_panic
+		add $8, %esp
 		iret
 
 .section .rodata

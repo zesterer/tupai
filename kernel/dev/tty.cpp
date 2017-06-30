@@ -123,6 +123,11 @@ namespace tupai
 			return val;
 		}
 
+		void tty_write_in(char c)
+		{
+			iopipe.write_in(c);
+		}
+
 		void tty_in_thread(int argc, char* argv[])
 		{
 			(void)argc;

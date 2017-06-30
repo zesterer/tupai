@@ -43,8 +43,8 @@ namespace tupai
 			pool->mutex.lock(); // Begin critical section
 
 			pool->block_size  = block_size;
-			pool->block_count = (4 * (uint64_t)size) / (4 * (uint64_t)pool->block_size + 1);
-			pool->body        = (size_t)start;
+			pool->body        = util::align_ceiling((size_t)start, 8); // Align to 8 bytes
+			pool->block_count = (4 * ((uint64_t)size + (size_t)start - pool->body)) / (4 * (uint64_t)pool->block_size + 1);
 			pool->map         = pool->body + pool->block_size * pool->block_count;
 
 			// Clear the map

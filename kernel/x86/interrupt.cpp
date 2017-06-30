@@ -57,8 +57,10 @@ namespace tupai
 	{
 		#if defined(ARCH_amd64)
 			x86::amd64::idt_set_entry(hardware ? x86::PIC_REMAP_OFFSET : 0 + irq, address);
+			x86::amd64::idt_install();
 		#elif defined(ARCH_i386)
 			x86::i386::idt_set_entry(hardware ? x86::PIC_REMAP_OFFSET : 0 + irq, address);
+			x86::i386::idt_install();
 		#endif
 	}
 

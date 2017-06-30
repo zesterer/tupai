@@ -1,5 +1,5 @@
 //
-// file : mmap.hpp
+// file : desc.hpp
 //
 // This file is part of Tupai.
 //
@@ -17,11 +17,12 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_SYS_MMAP_HPP
-#define TUPAI_SYS_MMAP_HPP
+#ifndef TUPAI_FS_DESC_HPP
+#define TUPAI_FS_DESC_HPP
 
 // Tupai
-#include <tupai/sys/proc.hpp>
+#include <tupai/fs/com.hpp>
+#include <tupai/fs/fs.hpp>
 
 // Standard
 #include <stddef.h>
@@ -29,34 +30,15 @@
 
 namespace tupai
 {
-	namespace sys
+	namespace fs
 	{
-		struct mmap_status_t
+		struct desc_t
 		{
-			pid_t owner = NO_PROC_ID;
-			bool  valid = false;
+			id_t id;
+			id_t inode;
 
-			mmap_status_t(pid_t owner, bool valid = true)
-			{
-				this->owner = owner;
-				this->valid = valid;
-			}
-
-			bool operator==(const mmap_status_t& other)
-			{
-				return this->owner == other.owner && this->valid == other.valid;
-			}
-
-			bool operator!=(const mmap_status_t& other)
-			{
-				return !(*this == other);
-			}
+			uint64_t offset;
 		};
-
-		void mmap_init();
-		void mmap_reserve(size_t start, size_t size, pid_t owner);
-
-		void mmap_display();
 	}
 }
 
