@@ -27,7 +27,7 @@ namespace tupai
 		while (1) // Hang forever
 		{
 			asm volatile (
-				"cli\n"
+				//"cli\n"
 				"hlt\n"
 			);
 		}

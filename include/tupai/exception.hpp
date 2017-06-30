@@ -1,5 +1,5 @@
 //
-// file : panic.hpp
+// file : exception.hpp
 //
 // This file is part of Tupai.
 //
@@ -17,8 +17,8 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_PANIC_HPP
-#define TUPAI_PANIC_HPP
+#ifndef TUPAI_EXCEPTION_HPP
+#define TUPAI_EXCEPTION_HPP
 
 // Standard
 #include <stddef.h>
@@ -26,8 +26,7 @@
 
 namespace tupai
 {
-	extern "C" void hang() __attribute__((__noreturn__));
-	extern "C" void panic(const char* msg = "[NO ERROR MESSAGE]") __attribute__((__noreturn__));
+	extern "C" size_t exception_handle(size_t stack, size_t id);
 }
 
 #endif

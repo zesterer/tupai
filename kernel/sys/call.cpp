@@ -46,5 +46,10 @@ namespace tupai
 				stack_ptr = sys::thread_next_stack(stack_ptr);
 			return stack_ptr;
 		}
+
+		void call(int call)
+		{
+			asm volatile ("int $0x80");
+		}
 	}
 }

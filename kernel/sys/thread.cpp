@@ -112,7 +112,10 @@ namespace tupai
 					if (create_stack)
 					{
 						threads[i].entry = (size_t)addr;
-						threads[i].stack = (size_t)kmem_alloc(STACK_SIZE) + STACK_SIZE;
+
+						size_t nstack = (size_t)kmem_alloc(STACK_SIZE);
+						threads[i].stackpos = nstack;
+						threads[i].stack = nstack + STACK_SIZE;
 					}
 
 					break;
@@ -143,12 +146,16 @@ namespace tupai
 			{
 				if (threads[i].id == id)
 				{
+					if (threads[i].cstate != thread_t::state::ACTIVE && threads[i].cstate != thread_t::state::UNSPAWNED)
+						break;
+
 					// Set current thread to dead
 					threads[i].id     = -1;
 					threads[i].cstate = thread_t::state::DEAD;
 
 					if (threads[i].native)
-						kmem_dealloc((void*)threads[i].stack); // Deallocate the stack
+						kmem_dealloc((void*)threads[i].stackpos); // Deallocate the stack
+
 					break;
 				}
 			}
@@ -278,7 +285,7 @@ namespace tupai
 			return 0;
 		}
 
-		void thread_get_name(size_t index, char* str)
+		bool __thread_get_name(id_t id, char* buff, size_t n)
 		{
 			bool int_enabled = interrupt_enabled();
 			if (int_enabled)
@@ -289,13 +296,13 @@ namespace tupai
 			{
 				if (threads[i].cstate != thread_t::state::DEAD)
 				{
-					if (c == index)
+					if (threads[i].id == id)
 					{
-						util::str_cpy((const char*)threads[i].name, str);
+						util::str_cpy_n((const char*)threads[i].name, buff, n);
 
 						if (int_enabled)
 							interrupt_enable(true); // End critical section
-						return;
+						return true;
 					}
 
 					c ++;
@@ -304,6 +311,7 @@ namespace tupai
 
 			if (int_enabled)
 				interrupt_enable(true); // End critical section
+			return false;
 		}
 	}
 }

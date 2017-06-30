@@ -36,7 +36,7 @@ ifeq (@(DEBUG_ENABLED),TRUE)
 	CC_FLAGS=$(CC_FLAGS) -DDEBUG_ENABLED
 endif
 
-CC_FLAGS=$(CC_FLAGS) -std=c++14 -Wall -Wextra -pedantic -O3 -nostdlib
+CC_FLAGS=$(CC_FLAGS) -std=c++14 -Wall -Wextra -pedantic -g -O3 -nostdlib
 CC_FLAGS=$(CC_FLAGS) -ffreestanding -fno-exceptions -fno-rtti -fno-common -fno-builtin -fno-omit-frame-pointer
 
 OBJECTS=$(OBJECTS) *.o dev/*.o util/*.o sys/*.o fs/*.o

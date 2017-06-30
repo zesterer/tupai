@@ -30,8 +30,12 @@ namespace tupai
 	{
 		const uint8_t CALL_IRQ = 0x80;
 
+		const int CALL_YIELD = 1;
+
 		void call_bind();
 		void call_init();
+
+		void call(int call);
 	}
 }
 

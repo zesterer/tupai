@@ -20,46 +20,23 @@
 // Tupai
 #include <tupai/panic.hpp>
 #include <tupai/util/out.hpp>
-#include <tupai/x86/textmode.hpp>
+
+#if defined(ARCH_FAMILY_x86)
+	#include <tupai/x86/textmode.hpp>
+#endif
 
 namespace tupai
 {
-	const char* exceptions[] =
-	{
-		"Division By Zero",            // 0
-		"Debug",                       // 1
-		"Non-Maskable Interrupt",      // 2
-		"Breakpoint",                  // 3
-		"Into Detected Overflow",      // 4
-		"Out of Bounds",               // 5
-		"Invalid Opcode",              // 6
-		"No Coprocessor",              // 7
-		"Double Fault",                // 8
-		"Coprocessor Segment Overrun", // 9
-		"Bad TSS",                    // 10
-		"Segment Not Present",        // 11
-		"Stack Fault",                // 12
-		"General Protection Fault",   // 13
-		"Page Fault",                 // 14
-		"Unknown Interrupt",          // 15
-		"x87 Floating-Point",         // 16
-		"Alignment Check",            // 17
-		"Machine Check",              // 18
-	};
-
-	void exception_panic(uint32_t id)
-	{
-		panic(exceptions[id]);
-	}
-
 	void panic(const char* msg)
 	{
 		char str[1024];
 
 		util::fmt(str, "[PANIC] ", msg);
 
-		for (size_t i = 0; str[i] != '\0'; i ++)
-			x86::textmode_write(str[i]);
+		#if defined(ARCH_FAMILY_x86)
+			for (size_t i = 0; str[i] != '\0'; i ++)
+				x86::textmode_write(str[i]);
+		#endif
 
 		hang();
 	}

@@ -87,8 +87,9 @@ namespace tupai
 
 			// TODO: Detect PS2 existence with ACPI
 
-			// BEGIN CRITICAL SECTION!
-			interrupt_enable(false);
+			bool int_enabled = interrupt_enabled();
+			if (int_enabled)
+				interrupt_enable(false); // Begin critical section
 
 			// First, disable both PS2 ports
 			ps2_8042_send_cmd(PS28042_CMD_DISABLE1);
@@ -168,8 +169,8 @@ namespace tupai
 			if (ps2_8042_channel & (1 << 0)) debug_println("Detected 8042 PS/2 channel 2 device.");
 			debug_println("Finished 8042 PS/2 controller initiation");
 
-			// END CRITICAL SECTION!
-			interrupt_enable(true);
+			if (int_enabled)
+				interrupt_enable(true); // End critical section
 
 			ps2_8042_initiated = true;
 		}

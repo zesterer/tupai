@@ -25,6 +25,9 @@
 #include <tupai/x86/pci.hpp>
 #include <tupai/x86/kbd.hpp>
 
+#include <tupai/util/out.hpp>
+#include <tupai/interrupt.hpp>
+
 namespace tupai
 {
 	const char* arch_get_family()

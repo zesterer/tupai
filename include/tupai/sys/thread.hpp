@@ -51,6 +51,7 @@ namespace tupai
 
 			size_t entry = 0x0;
 			size_t stack = 0x0;
+			size_t stackpos = 0x0;
 		};
 
 		void threading_init();
@@ -61,7 +62,9 @@ namespace tupai
 		void   thread_kill(id_t id);
 		size_t threads_count();
 		id_t   thread_get_id(size_t i);
-		void   thread_get_name(size_t i, char* str);
+		bool __thread_get_name(id_t id, char* buff, size_t n);
+		template <size_t SIZE>
+		bool thread_get_name(id_t id, char(&buff)[SIZE]) { return __thread_get_name(id, buff, SIZE); }
 		size_t thread_next_stack(size_t ostack);
 	}
 }

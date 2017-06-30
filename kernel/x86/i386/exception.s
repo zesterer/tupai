@@ -62,116 +62,136 @@
 	.align 4
 	isr_0: // Division By Zero Exception
 		push $ISR_DUMMY_ERROR // Dummy error
+		pushal
 		push $0 // ISR identifer
 		jmp isr_common
 
 	.align 4
 	isr_1: // Debug Exception
 		push $ISR_DUMMY_ERROR // Dummy error
+		pushal
 		push $1 // ISR identifer
 		jmp isr_common
 
 	.align 4
 	isr_2: // Non-Maskable Interrupt Exception
 		push $ISR_DUMMY_ERROR // Dummy error
+		pushal
 		push $2 // ISR identifer
 		jmp isr_common
 
 	.align 4
 	isr_3: // Breakpoint Exception
 		push $ISR_DUMMY_ERROR // Dummy error
+		pushal
 		push $3 // ISR identifer
 		jmp isr_common
 
 	.align 4
 	isr_4: // Into Detected Overflow Exception
 		push $ISR_DUMMY_ERROR // Dummy error
+		pushal
 		push $4 // ISR identifer
 		jmp isr_common
 
 	.align 4
 	isr_5: // Out Of Bounds Exception
 		push $ISR_DUMMY_ERROR // Dummy error
+		pushal
 		push $5 // ISR identifer
 		jmp isr_common
 
 	.align 4
 	isr_6: // Invalid Opcode Exception
 		push $ISR_DUMMY_ERROR // Dummy error
+		pushal
 		push $6 // ISR identifer
 		jmp isr_common
 
 	.align 4
 	isr_7: // No Coprocessor Exception
 		push $ISR_DUMMY_ERROR // Dummy error
+		pushal
 		push $7 // ISR identifer
 		jmp isr_common
 
 	.align 4
 	isr_8: // Double Fault Exception
+		pushal
 		push $8 // ISR identifer
 		jmp isr_common
 
 	.align 4
 	isr_9: // Coprocessor Segment Overrun Exception
 		push $ISR_DUMMY_ERROR // Dummy error
+		pushal
 		push $9 // ISR identifer
 		jmp isr_common
 
 	.align 4
 	isr_10: // Bad TSS Exception
+		pushal
 		push $10 // ISR identifer
 		jmp isr_common
 
 	.align 4
 	isr_11: // Segment Not Present Exception
+		pushal
 		push $11 // ISR identifer
 		jmp isr_common
 
 	.align 4
 	isr_12: // Stack Fault Exception
+		pushal
 		push $12 // ISR identifer
 		jmp isr_common
 
 	.align 4
 	isr_13: // General Protection Fault Exception
+		pushal
 		push $13 // ISR identifer
 		jmp isr_common
 
 	.align 4
 	isr_14: // Page Fault Exception
+		pushal
 		push $14 // ISR identifer
 		jmp isr_common
 
 	.align 4
 	isr_15: // Unknown Interrupt Exception
 		push $ISR_DUMMY_ERROR // Dummy error
+		pushal
 		push $15 // ISR identifer
 		jmp isr_common
 
 	.align 4
 	isr_16: // Coprocessor Fault Exception
 		push $ISR_DUMMY_ERROR // Dummy error
+		pushal
 		push $16 // ISR identifer
 		jmp isr_common
 
 	.align 4
 	isr_17: // Alignment Check Exception (486+)
 		push $ISR_DUMMY_ERROR // Dummy error
+		pushal
 		push $17 // ISR identifer
 		jmp isr_common
 
 	.align 4
 	isr_18: // Machine Check Exception (Pentium/586+)
 		push $ISR_DUMMY_ERROR // Dummy error
+		pushal
 		push $18 // ISR identifer
 		jmp isr_common
 
 	/* Please note: ISRs 19-31 are reserved and will be implemented later! */
 
 	isr_common: // Common ISR routine (must be jumped to by an ISR defined above)
-		call exception_panic
-		add $8, %esp
+		call exception_handle
+		popal
+		add $4, %esp
 		iret
 
 .section .rodata
