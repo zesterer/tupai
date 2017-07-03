@@ -90,7 +90,9 @@
 		PUSH_REGS
 		cld
 
+		mov %rsp, %rdi // Pass the current stack pointer
 		call kbd_isr_main
+		mov %rax, %rsp // Restore the thread stack pointer
 
 		POP_REGS
 		iretq

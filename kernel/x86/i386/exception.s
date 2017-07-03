@@ -179,12 +179,12 @@
 
 		add $8, %esp
 		pushal // Preserve registers
-		cld
 
 		mov %esp, %eax // Preserve ESP
 		push (tmp_exception_err) // Pass the exception error
 		push (tmp_exception_code) // Pass the exception code
 		push %eax // Pass the stack pointer (see above)
+		cld
 		call exception_handle
 		mov %eax, %esp // Restore the thread stack pointer
 
@@ -193,9 +193,9 @@
 
 .section .bss
 	tmp_exception_err:
-		.long
+		.long 0
 	tmp_exception_code:
-		.long
+		.long 0
 
 .section .rodata
 	exception_error:

@@ -131,7 +131,7 @@ namespace tupai
 					util::fmt_int<unsigned char>(time.hour, 10, 2), ':', util::fmt_int<unsigned char>(time.min  , 10, 2), ':', util::fmt_int<unsigned char>(time.sec, 10, 2)
 				);
 			}
-			else
+			else if (util::str_len(buff) > 0)
 				util::println("Command '", buff, "' not found!");
 		}
 	}

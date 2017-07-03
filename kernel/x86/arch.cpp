@@ -46,7 +46,7 @@ namespace tupai
 		x86::pit_init();
 
 		// Initiate PS2
-		x86::ps2_8042_init();
+		//x86::ps2_8042_init();
 
 		// Initiate the PCI bus
 		x86::pci_init();

@@ -46,6 +46,8 @@
 #include <tupai/util/out.hpp>
 #include <tupai/util/in.hpp>
 
+#include <tupai/x86/textmode.hpp>
+
 namespace tupai
 {
 	void early()

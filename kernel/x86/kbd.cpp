@@ -39,18 +39,18 @@ namespace tupai
 		const char* scancode_table = "!!1234567890-=\b\tqwertyuiop[]\n!asdfghjkl;'#!\\zxcvbnm,./!!! !FFFFFFFFFF!";
 
 		extern "C" void isr_kbd();
-		extern "C" void kbd_isr_main();
+		extern "C" size_t kbd_isr_main(size_t stack);
 
 		void kbd_bind()
 		{
 			// Bind the interrupt
-			//interrupt_bind(1, (void*)isr_kbd, true);
+			interrupt_bind(1, (void*)isr_kbd, true);
 		}
 
 		void kbd_init()
 		{
 			// Temporary
-			{
+			/*{
 				wait();
 				uint8_t val = inb(KBD_DATA_PORT);
 				wait();
@@ -58,32 +58,34 @@ namespace tupai
 				outb(KBD_STATUS_PORT, 0x60);
 				wait();
 				outb(KBD_CMD_PORT, val);
-			}
+			}*/
 
 			// Unmask the interrupt
 			interrupt_mask(1, true);
 		}
 
-		void kbd_isr_main()
+		size_t kbd_isr_main(size_t stack)
 		{
 			// Acknowledge the interrupt
 			interrupt_ack(1);
 
 			// TEMPORARY
-			/*{
+			{
 				// Lowest bit of status will be set if buffer is not empty
 				uint8_t status = inb(KBD_STATUS_PORT);
 				if ((status & 0x01) != 0x01) // If the buffer is empty, stop reading scancode bytes
-					return;
+					return stack;
 
 				char keycode = inb(KBD_DATA_PORT);
 				if (keycode < 0)
-					return;
-				char character = scancode_table[(size_t)keycode];
+					return stack;
 
-				dev::tty_write_in(character);
-				util::println("Hi!");
-			}*/
+				char c = scancode_table[(size_t)keycode];
+
+				dev::tty_write_in(c);
+			}
+
+			return stack;
 		}
 	}
 }

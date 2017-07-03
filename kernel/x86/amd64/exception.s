@@ -215,11 +215,11 @@
 
 		add $16, %rsp
 		PUSH_REGS // Preserve registers
-		cld
 
 		mov (tmp_exception_err), %rdx // Pass the exception error
 		mov (tmp_exception_code), %rsi // Pass the exception code
 		mov %rsp, %rdi // Pass the current stack pointer
+		cld
 		call exception_handle
 		mov %rax, %rsp // Restore the thread stack pointer
 
