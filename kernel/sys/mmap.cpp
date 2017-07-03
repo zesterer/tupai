@@ -42,18 +42,34 @@ namespace tupai
 
 		struct mmap_node_t
 		{
+			uint8_t depth;
 			mmap_status_t status = mmap_status_t(NO_PROC_ID, false);
 
 			mmap_br_t* br = nullptr;
 
+			mmap_node_t() {}
+			mmap_node_t(uint8_t depth, mmap_status_t status)
+			{
+				this->depth = depth;
+				this->status = status;
+				this->br = nullptr;
+			}
 			~mmap_node_t();
 		};
 
 		struct mmap_br_t
 		{
-			int depth = 0;
-
 			mmap_node_t nodes[MMAP_BR];
+
+			mmap_br_t(int depth, mmap_status_t status)
+			{
+				for (size_t i = 0; i < MMAP_BR; i ++)
+				{
+					this->nodes[i].depth = depth;
+					this->nodes[i].status = status;
+					this->nodes[i].br = nullptr;
+				}
+			}
 		};
 
 		mmap_node_t::~mmap_node_t()
@@ -61,16 +77,20 @@ namespace tupai
 			delete this->br;
 		}
 
-		mmap_node_t root;
+		mmap_node_t root(3, mmap_status_t(NO_PROC_ID, false));
 
 		void mmap_init()
 		{
 			mmap_mutex.lock(); // Begin critical section
 
-			root.br = new mmap_br_t();
-			root.br->depth = 2;//util::align_ceiling(sizeof(size_t) * 8 - ARCH_PAGE_SIZE_P2, MMAP_BR_P2) / MMAP_BR_P2 - 1;
+			root = mmap_node_t(3, mmap_status_t(NO_PROC_ID, false));
+
+			//root.br = new mmap_br_t();
+			//root.br->depth = 2;//util::align_ceiling(sizeof(size_t) * 8 - ARCH_PAGE_SIZE_P2, MMAP_BR_P2) / MMAP_BR_P2 - 1;
 
 			mmap_mutex.unlock(); // End critical section
+
+			//mmap_reserve(0, 8192, KERNEL_PROC_ID);
 
 			#if defined(ARCH_FAMILY_x86)
 				x86::mb_meminfo_t meminfo = x86::multiboot_get_meminfo();
@@ -78,8 +98,35 @@ namespace tupai
 			#endif
 		}
 
-		void __mmap_reserve(mmap_node_t* node, int depth, size_t addr, mmap_status_t status, size_t start, size_t size)
+		void __mmap_reserve(mmap_node_t* node, uint64_t addr, mmap_status_t status, uint64_t start, uint64_t size)
 		{
+			uint64_t nsize = 1 << (node->depth * MMAP_BR_P2);
+
+			if (
+				(start > addr && start < addr + nsize) ||
+				(start + size > addr && start + size < addr + nsize)
+			)
+			{
+				if (node->depth > 0 && node->br == nullptr)
+					node->br = new mmap_br_t(node->depth - 1, node->status);
+			}
+
+			if (node->br != nullptr)
+			{
+				node->status.owner = INVALID_PROC_ID;
+
+				for (size_t i = 0; i < MMAP_BR; i ++)
+				{
+					__mmap_reserve(&node->br->nodes[i], addr, status, start, size);
+					addr += 1 << ((node->depth - 1) * MMAP_BR_P2);
+				}
+			}
+			else if (start <= addr && start + size >= addr + nsize)
+			{
+				node->status = status;
+			}
+
+			/*
 			size_t node_size = (1 << (depth * MMAP_BR_P2));
 
 			if (addr >= start && addr < start + size)
@@ -99,12 +146,12 @@ namespace tupai
 			else
 			{
 				// TODO : Re-add this
-				/*if (addr >= start && addr + node_size <= start + size)
-				{
-					delete node->br;
-					node->br = nullptr;
-					return;
-				}*/
+				//if (addr >= start && addr + node_size <= start + size)
+				//{
+				//	delete node->br;
+				//	node->br = nullptr;
+				//	return;
+				//}
 			}
 
 			if (node->br != nullptr)
@@ -114,31 +161,29 @@ namespace tupai
 					__mmap_reserve(&node->br->nodes[i], depth - 1, addr, status, start, size);
 					addr += 1 << (node->br->depth * MMAP_BR_P2);
 				}
-			}
+			}*/
 		}
 
-		void mmap_reserve(size_t start, size_t size, pid_t owner)
+		void mmap_reserve(uint64_t start, uint64_t size, pid_t owner)
 		{
-			return;
-
 			mmap_mutex.lock(); // Begin critical section
 
-			size_t pstart = start / ARCH_PAGE_SIZE;
-			size_t psize = util::align_ceiling(start + size, ARCH_PAGE_SIZE) / ARCH_PAGE_SIZE - pstart;
+			uint64_t pstart = start / ARCH_PAGE_SIZE;
+			uint64_t psize = util::align_ceiling(start + size, ARCH_PAGE_SIZE) / ARCH_PAGE_SIZE - pstart;
 
-			__mmap_reserve(&root, root.br->depth + 1, 0, mmap_status_t(owner, true), pstart, psize);
+			__mmap_reserve(&root, 0, mmap_status_t(owner, true), pstart, psize);
 
 			mmap_mutex.unlock(); // End critical section
 		}
 
-		mmap_status_t __mmap_display(mmap_node_t* node, size_t addr, mmap_status_t cstatus, int depth = 0)
+		mmap_status_t __mmap_display(mmap_node_t* node, uint64_t addr, mmap_status_t cstatus)
 		{
 			if (node->br != nullptr)
 			{
 				for (int i = 0; i < MMAP_BR; i ++)
 				{
-					cstatus = __mmap_display(&node->br->nodes[i], addr, cstatus, depth + 1);
-					addr += 1 << (node->br->depth * MMAP_BR_P2);
+					cstatus = __mmap_display(&node->br->nodes[i], addr, cstatus);
+					addr += 1 << ((node->depth - 1) * MMAP_BR_P2);
 				}
 
 				return cstatus;
@@ -148,7 +193,7 @@ namespace tupai
 				if (node->status != cstatus)
 				{
 					cstatus = node->status;
-					util::println(util::fmt_int<size_t>(addr * ARCH_PAGE_SIZE, 16, sizeof(size_t) * 2), " : valid = ", cstatus.valid, ", owner = ", proc_get_name(cstatus.owner), " (", cstatus.owner, ')');
+					util::println((void*)(addr * ARCH_PAGE_SIZE), " : owner = ", proc_get_name(cstatus.owner), ", valid = ", cstatus.valid > 0);
 				}
 
 				return cstatus;
@@ -160,7 +205,7 @@ namespace tupai
 			mmap_mutex.lock(); // Begin critical section
 
 			util::println("--- Physical Memory Map (1 page = ", util::fmt_int<uint16_t>(ARCH_PAGE_SIZE, 16), ") ---");
-			__mmap_display(&root, 0, mmap_status_t(-2, false));
+			__mmap_display(&root, 0, mmap_status_t(INVALID_PROC_ID, false));
 
 			mmap_mutex.unlock(); // End critical section
 		}

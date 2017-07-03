@@ -36,8 +36,9 @@ namespace tupai
 		typedef long pid_t;
 		typedef long tid_t;
 
-		const pid_t NO_PROC_ID = -1;
-		const pid_t KERNEL_PROC_ID = 0;
+		const pid_t INVALID_PROC_ID = -2;
+		const pid_t NO_PROC_ID      = -1;
+		const pid_t KERNEL_PROC_ID  = 0;
 
 		enum class proc_state
 		{

@@ -54,7 +54,7 @@ namespace tupai
 		};
 
 		void mmap_init();
-		void mmap_reserve(size_t start, size_t size, pid_t owner);
+		void mmap_reserve(uint64_t start, uint64_t size, pid_t owner);
 
 		void mmap_display();
 	}

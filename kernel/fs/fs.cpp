@@ -26,8 +26,12 @@ namespace tupai
 {
 	namespace fs
 	{
+		id_t fs_counter = 0;
+
 		fs_t::fs_t(const char* name)
 		{
+			this->id = ++fs_counter;
+			
 			if (name != nullptr)
 				util::str_cpy_n(name, this->name, MAX_FS_NAME);
 		}

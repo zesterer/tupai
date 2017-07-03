@@ -65,7 +65,7 @@ namespace tupai
 		sys::initrd_init(); // Initiate initrd filesystems
 
 		// Map kernel memory
-		sys::mmap_reserve(0, arch_get_kernel_end(), sys::KERNEL_PROC_ID);
+		sys::mmap_reserve(0, arch_get_kernel_end() - arch_get_offset(), sys::KERNEL_PROC_ID);
 	}
 
 	void main()
