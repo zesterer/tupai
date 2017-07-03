@@ -1,3 +1,5 @@
 - Build Tupai cross-compiler
 - Fix physical memory allocator
 - Codebase clean-up
+- PCI driver
+- Advance Raspberry Pi port

@@ -25,6 +25,7 @@ namespace tupai
 	namespace x86
 	{
 		void textmode_init();
+		void textmode_move(int ncol, int nrow);
 		void textmode_write(char c);
 		void textmode_cursor(int col, int row);
 		void textmode_scroll(int n);

@@ -20,6 +20,7 @@
 // Tupai
 #include <tupai/x86/serial.hpp>
 #include <tupai/x86/port.hpp>
+#include <tupai/util/mutex.hpp>
 
 // Standard
 #include <stddef.h>
@@ -37,9 +38,15 @@ namespace tupai
 		static bool serial_initiated = false;
 		static bool serial_port_open[4] = { false, };
 
+		static util::mutex mutex;
+
 		void serial_init()
 		{
+			mutex.lock(); // Begin critical section
+
 			serial_initiated = true;
+
+			mutex.unlock(); // End critical section
 		}
 
 		size_t serial_count_ports()
@@ -54,20 +61,28 @@ namespace tupai
 
 		bool serial_open_port(int port_id, uint32_t baudrate, uint8_t databits, uint8_t stopbits, dev::serial_parity parity)
 		{
-			if (port_id == -1) // Make sure the port id is valid
-				return false;
+			mutex.lock(); // Begin critical section
 
-			if (serial_port_open[port_id])
-				return false; // It's already open
+			if (port_id == -1 || serial_port_open[port_id]) // Make sure the port id is valid and that it isn't already open
+			{
+				mutex.unlock(); // End critical section
+				return false;
+			}
 
 			// Find the serial port's I/O port
 			uint16_t port_offset = port_offsets[port_id];
 
 			if (databits < 5 || databits > 8)
+			{
+				mutex.unlock(); // End critical section
 				return false; // Invalid number of data bits
+			}
 
 			if (stopbits < 1 || stopbits > 2)
+			{
+				mutex.unlock(); // End critical section
 				return false; // Invalid number of stop bits
+			}
 
 			outb(port_offset + 1, 0x00); // Disable serial interrupts
 
@@ -89,6 +104,8 @@ namespace tupai
 			// Flag the port as open
 			serial_port_open[port_id] = true;
 
+			mutex.unlock(); // End critical section
+
 			return true;
 		}
 
@@ -97,10 +114,14 @@ namespace tupai
 			if (port_id == -1) // Make sure the port id is valid
 				return;
 
+			mutex.lock(); // Start critical section
+
 			uint16_t port_offset = port_offsets[port_id]; // Find the serial port's I/O port
 
 			while ((inb(port_offset + 5) & 0x20) == 0); // Wait until port is ready for writing
 			outb(port_offset, c);
+
+			mutex.unlock(); // End critical section
 		}
 
 		uint8_t serial_read(int port_id)
@@ -108,10 +129,16 @@ namespace tupai
 			if (port_id == -1) // Make sure the port id is valid
 				return 0; // Return null data
 
+			mutex.lock(); // Start critical section
+
 			uint16_t port_offset = port_offsets[port_id]; // Find the serial port's I/O port
 
 			while ((inb(port_offset + 5) & 0x1) == 0); // Wait until port is ready for reading
-			return inb(port_offset);
+			uint8_t val = inb(port_offset);
+
+			mutex.unlock(); // End critical section
+
+			return val;
 		}
 	}
 }

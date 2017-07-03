@@ -20,6 +20,7 @@
 // Tupai
 #include <tupai/util/mutex.hpp>
 #include <tupai/util/out.hpp>
+#include <tupai/interrupt.hpp>
 
 namespace tupai
 {
@@ -41,6 +42,33 @@ namespace tupai
 		void mutex::unlock() volatile
 		{
 			mutex_unlock_impl(&this->val);
+		}
+
+		bool hw_mutex::is_locked() volatile
+		{
+			return this->locked;
+		}
+
+		void hw_mutex::lock() volatile
+		{
+			if (this->locked)
+				return;
+
+			this->int_enabled = interrupt_enabled();
+
+			if (this->int_enabled)
+				interrupt_enable(false);
+		}
+
+		void hw_mutex::unlock() volatile
+		{
+			if (!this->locked)
+				return;
+
+			if (this->int_enabled)
+				interrupt_enable(true);
+
+			this->int_enabled = interrupt_enabled();
 		}
 	}
 }

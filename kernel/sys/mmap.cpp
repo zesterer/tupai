@@ -119,6 +119,8 @@ namespace tupai
 
 		void mmap_reserve(size_t start, size_t size, pid_t owner)
 		{
+			return;
+
 			mmap_mutex.lock(); // Begin critical section
 
 			size_t pstart = start / ARCH_PAGE_SIZE;

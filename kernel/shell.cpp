@@ -43,7 +43,7 @@ namespace tupai
 		util::println(tupai_get_name_decorative(), " ",
 			tupai_get_version(), " on ",
 			arch_get_family(), "/", arch_get_target(), '\n',
-			"Copyright 2017, Joshua Barretto");
+			"Copyright 2017, ", P_MAINTAINER_NAME);
 	}
 
 	void shell_main(int argc, char* argv[])

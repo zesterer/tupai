@@ -19,6 +19,7 @@
 
 // Tupai
 #include <tupai/panic.hpp>
+#include <tupai/interrupt.hpp>
 #include <tupai/util/out.hpp>
 
 #if defined(ARCH_FAMILY_x86)
@@ -29,11 +30,20 @@ namespace tupai
 {
 	void panic(const char* msg)
 	{
+		interrupt_enable(false);
+
 		char str[1024];
 
-		util::fmt(str, "[PANIC] ", msg);
+		util::fmt(str,
+		 	"Kernel Panic!\n\n",
+			"Something went badly wrong and the following error was produced.\n\n",
+			msg, "\n\n",
+			"Please send this error and all other relevant details concerning\nthis crash to ", P_MAINTAINER_EMAIL, '.'
+		);
 
 		#if defined(ARCH_FAMILY_x86)
+			x86::textmode_clear();
+			x86::textmode_move(0, 0);
 			for (size_t i = 0; str[i] != '\0'; i ++)
 				x86::textmode_write(str[i]);
 		#endif

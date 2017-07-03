@@ -20,7 +20,7 @@
 // Tupai
 #include <tupai/x86/ps2_8042.hpp>
 #include <tupai/x86/port.hpp>
-#include <tupai/interrupt.hpp>
+#include <tupai/util/mutex.hpp>
 #include <tupai/debug.hpp>
 
 namespace tupai
@@ -53,6 +53,8 @@ namespace tupai
 		static const uint8_t PS28042_CMD_TEST2    = 0xA9;
 
 		static const uint8_t PS2_RESET = 0xFF;
+
+		static util::hw_mutex mutex;
 
 		static void ps2_8042_send_cmd(uint8_t code)
 		{
@@ -87,9 +89,7 @@ namespace tupai
 
 			// TODO: Detect PS2 existence with ACPI
 
-			bool int_enabled = interrupt_enabled();
-			if (int_enabled)
-				interrupt_enable(false); // Begin critical section
+			mutex.lock(); // Begin critical section
 
 			// First, disable both PS2 ports
 			ps2_8042_send_cmd(PS28042_CMD_DISABLE1);
@@ -169,8 +169,7 @@ namespace tupai
 			if (ps2_8042_channel & (1 << 0)) debug_println("Detected 8042 PS/2 channel 2 device.");
 			debug_println("Finished 8042 PS/2 controller initiation");
 
-			if (int_enabled)
-				interrupt_enable(true); // End critical section
+			mutex.unlock(); // End critical section
 
 			ps2_8042_initiated = true;
 		}

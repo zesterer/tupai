@@ -37,7 +37,7 @@ namespace tupai
 		static const uint16_t KBD_STATUS_PORT = 0x64;
 		static const uint16_t KBD_DATA_PORT   = 0x60;
 
-		const char* scancode_table = "!!1234567890-=\b\tqwertyuiop[]\n!asdfghjkl;'#!\\zxcvbnm,./!!! !FFFFFFFFFF!";
+		const char scancode_table[] = "!!1234567890-=\b\tqwertyuiop[]\n!asdfghjkl;'#!\\zxcvbnm,./!!! !FFFFFFFFFF!";
 
 		extern "C" void isr_kbd();
 		extern "C" size_t kbd_isr_main(size_t stack);
@@ -73,15 +73,16 @@ namespace tupai
 			interrupt_ack(1);
 
 			// TEMPORARY
+			while (true)
 			{
 				// Lowest bit of status will be set if buffer is not empty
 				uint8_t status = inb(KBD_STATUS_PORT);
 				if ((status & 0x01) != 0x01) // If the buffer is empty, stop reading scancode bytes
-					return stack;
+					break;
 
-				char keycode = inb(KBD_DATA_PORT);
-				if (keycode < 0)
-					return stack;
+				uint8_t keycode = inb(KBD_DATA_PORT);
+				if (keycode >= sizeof(scancode_table) / sizeof(char))
+					break;
 
 				char c = scancode_table[(size_t)keycode];
 

@@ -51,6 +51,14 @@ namespace tupai
 			textmode_clear();
 		}
 
+		void textmode_move(int ncol, int nrow)
+		{
+			col = ncol;
+			row = nrow;
+
+			textmode_cursor(col, row);
+		}
+
 		void textmode_write(char c)
 		{
 			switch (c)
