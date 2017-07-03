@@ -98,142 +98,139 @@
 	.align 4
 	isr_0: // Division By Zero Exception
 		push $ISR_DUMMY_ERROR // Dummy error
-		PUSH_REGS
 		push $0 // ISR identifer
 		jmp isr_common
 
 	.align 4
 	isr_1: // Debug Exception
 		push $ISR_DUMMY_ERROR // Dummy error
-		PUSH_REGS
 		push $1 // ISR identifer
 		jmp isr_common
 
 	.align 4
 	isr_2: // Non-Maskable Interrupt Exception
 		push $ISR_DUMMY_ERROR // Dummy error
-		PUSH_REGS
 		push $2 // ISR identifer
 		jmp isr_common
 
 	.align 4
 	isr_3: // Breakpoint Exception
 		push $ISR_DUMMY_ERROR // Dummy error
-		PUSH_REGS
 		push $3 // ISR identifer
 		jmp isr_common
 
 	.align 4
 	isr_4: // Into Detected Overflow Exception
 		push $ISR_DUMMY_ERROR // Dummy error
-		PUSH_REGS
 		push $4 // ISR identifer
 		jmp isr_common
 
 	.align 4
 	isr_5: // Out Of Bounds Exception
 		push $ISR_DUMMY_ERROR // Dummy error
-		PUSH_REGS
 		push $5 // ISR identifer
 		jmp isr_common
 
 	.align 4
 	isr_6: // Invalid Opcode Exception
 		push $ISR_DUMMY_ERROR // Dummy error
-		PUSH_REGS
 		push $6 // ISR identifer
 		jmp isr_common
 
 	.align 4
 	isr_7: // No Coprocessor Exception
 		push $ISR_DUMMY_ERROR // Dummy error
-		PUSH_REGS
 		push $7 // ISR identifer
 		jmp isr_common
 
 	.align 4
 	isr_8: // Double Fault Exception
-		PUSH_REGS
 		push $8 // ISR identifer
 		jmp isr_common
 
 	.align 4
 	isr_9: // Coprocessor Segment Overrun Exception
 		push $ISR_DUMMY_ERROR // Dummy error
-		PUSH_REGS
 		push $9 // ISR identifer
 		jmp isr_common
 
 	.align 4
 	isr_10: // Bad TSS Exception
-		PUSH_REGS
 		push $10 // ISR identifer
 		jmp isr_common
 
 	.align 4
 	isr_11: // Segment Not Present Exception
-		PUSH_REGS
 		push $11 // ISR identifer
 		jmp isr_common
 
 	.align 4
 	isr_12: // Stack Fault Exception
-		PUSH_REGS
 		push $12 // ISR identifer
 		jmp isr_common
 
 	.align 4
 	isr_13: // General Protection Fault Exception
-		PUSH_REGS
 		push $13 // ISR identifer
 		jmp isr_common
 
 	.align 4
 	isr_14: // Page Fault Exception
-		PUSH_REGS
 		push $14 // ISR identifer
 		jmp isr_common
 
 	.align 4
 	isr_15: // Unknown Interrupt Exception
 		push $ISR_DUMMY_ERROR // Dummy error
-		PUSH_REGS
 		push $15 // ISR identifer
 		jmp isr_common
 
 	.align 4
 	isr_16: // Coprocessor Fault Exception
 		push $ISR_DUMMY_ERROR // Dummy error
-		PUSH_REGS
 		push $16 // ISR identifer
 		jmp isr_common
 
 	.align 4
 	isr_17: // Alignment Check Exception (486+)
 		push $ISR_DUMMY_ERROR // Dummy error
-		PUSH_REGS
 		push $17 // ISR identifer
 		jmp isr_common
 
 	.align 4
 	isr_18: // Machine Check Exception (Pentium/586+)
 		push $ISR_DUMMY_ERROR // Dummy error
-		PUSH_REGS
 		push $18 // ISR identifer
 		jmp isr_common
 
 	/* Please note: ISRs 19-31 are reserved and will be implemented later! */
 
 	isr_common: // Common ISR routine (must be jumped to by an ISR defined above)
-		pop %rsi
+		push %rax // Preserve RAX - we need it to move things around
+		mov 16(%rsp), %rax
+		mov %rax, (tmp_exception_err) // Preserve exception error
+		mov 8(%rsp), %rax
+		mov %rax, (tmp_exception_code) // Preserve exception code
+		pop %rax // Restore RAX
 
+		add $16, %rsp
+		PUSH_REGS // Preserve registers
+		cld
+
+		mov (tmp_exception_err), %rdx // Pass the exception error
+		mov (tmp_exception_code), %rsi // Pass the exception code
 		mov %rsp, %rdi // Pass the current stack pointer
 		call exception_handle
 		mov %rax, %rsp // Restore the thread stack pointer
 
-		POP_REGS
-		add $8, %rsp
+		POP_REGS // Restore registers
 		iretq
+
+.section .bss
+	tmp_exception_err:
+		.quad
+	tmp_exception_code:
+		.quad
 
 .section .rodata
 	exception_error:

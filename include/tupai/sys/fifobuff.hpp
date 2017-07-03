@@ -53,13 +53,15 @@ namespace tupai
 			void    write(uint8_t c) volatile { return __fifo_write(*this, c); }
 			uint8_t read()           volatile { return __fifo_read(*this); }
 			size_t  len()            volatile { return __fifo_len(*this); }
+
+			void    write_unsafe(uint8_t c) volatile { return __fifo_write_unsafe(*this, c); }
+			uint8_t read_unsafe()           volatile { return __fifo_read_unsafe(*this); }
+			size_t  len_unsafe()            volatile { return __fifo_len_unsafe(*this); }
 		};
 
 		template <size_t SIZE>
-		void __fifo_write(volatile fifobuff_t<SIZE>& buff, uint8_t c)
+		void __fifo_write_unsafe(volatile fifobuff_t<SIZE>& buff, uint8_t c)
 		{
-			buff.mutex.lock(); // Begin critical section
-
 			if (buff.length != 0)
 			{
 					buff.head = (buff.head + 1) % SIZE;
@@ -71,12 +73,44 @@ namespace tupai
 
 			if (buff.length < SIZE)
 				buff.length ++;
+		}
+
+		template <size_t SIZE>
+		void __fifo_write(volatile fifobuff_t<SIZE>& buff, uint8_t c)
+		{
+			buff.mutex.lock(); // Begin critical section
+
+			__fifo_write_unsafe(buff, c);
 
 			buff.mutex.unlock(); // End critical section
 		}
 
 		template <size_t SIZE>
-		uint8_t __fifo_read (volatile fifobuff_t<SIZE>& buff)
+		uint8_t __fifo_read_unsafe(volatile fifobuff_t<SIZE>& buff)
+		{
+			// Wait loop
+			while (true)
+			{
+				// Wait until data appears
+				while (__fifo_len_unsafe(buff) <= 0);
+
+				// Double-check to make sure there's STILL data
+				if (buff.length > 0)
+					break; // Exit to start reading data
+			}
+
+			buff.length --;
+
+			uint8_t val = buff.arr[buff.tail];
+
+			if (buff.length != 0)
+					buff.tail = (buff.tail + 1) % SIZE;
+
+			return val;
+		}
+
+		template <size_t SIZE>
+		uint8_t __fifo_read(volatile fifobuff_t<SIZE>& buff)
 		{
 			// Wait loop
 			while (true)
@@ -107,11 +141,18 @@ namespace tupai
 		}
 
 		template <size_t SIZE>
-		size_t __fifo_len (volatile fifobuff_t<SIZE>& buff)
+		size_t __fifo_len_unsafe(volatile fifobuff_t<SIZE>& buff)
+		{
+			size_t len = buff.length;
+
+			return len;
+		}
+		template <size_t SIZE>
+		size_t __fifo_len(volatile fifobuff_t<SIZE>& buff)
 		{
 			buff.mutex.lock(); // Begin critical section
 
-			size_t len = buff.length;
+			size_t len = __fifo_len_unsafe(buff);
 
 			buff.mutex.unlock(); // End critical section
 

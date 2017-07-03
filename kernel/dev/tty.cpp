@@ -136,7 +136,7 @@ namespace tupai
 			while (true)
 			{
 				unsigned char c = dev::serial_read(tty_serial_port);
-				iopipe.write_in(c);
+				iopipe.write_in_unsafe(c); // Unsafe call to avoid interrupt locking
 			}
 		}
 
@@ -147,7 +147,7 @@ namespace tupai
 
 			while (true)
 			{
-				unsigned char c = iopipe.read_out();
+				unsigned char c = iopipe.read_out_unsafe(); // Unsafe call to avoid exception locking
 
 				#if defined(ARCH_FAMILY_x86)
 					x86::textmode_write(c);

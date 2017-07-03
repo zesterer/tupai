@@ -73,10 +73,10 @@ namespace tupai
 					"  fs      -> Show filesystem tree\n",
 					"  pool    -> Show kernel memory pool\n",
 					"  motd    -> Show the MOTD\n",
+					"  div     -> Trigger a divided-by-zero exception\n",
 					"  panic   -> Trigger a kernel panic\n",
 					"  info    -> Show system info\n",
-					"  time    -> Show the system time\n",
-					"  halt    -> Halt the kernel\n"
+					"  time    -> Show the system time\n"
 				);
 			}
 			else if (util::str_equal(buff, "threads"))
@@ -85,8 +85,9 @@ namespace tupai
 				for (size_t i = 0; i < n; i ++)
 				{
 					char name[64];
-					sys::thread_get_name(i, name);
-					util::println(i, ' ', sys::thread_get_id(i), ' ', name);
+					sys::id_t id = sys::thread_get_id(i);
+					sys::thread_get_name(id, name);
+					util::println(i, ' ', id, ' ', name);
 				}
 			}
 			else if (util::str_equal(buff, "fs"))
@@ -101,15 +102,12 @@ namespace tupai
 			{
 				shell_motd();
 			}
-			else if (util::str_equal(buff, "isr"))
+			else if (util::str_equal(buff, "div"))
 			{
-				#if defined(ARCH_FAMILY_X86)
-					asm volatile ("int $0x80");
-				#endif
+				int volatile a = 5 / 0; //
 			}
 			else if (util::str_equal(buff, "panic"))
 			{
-				util::println("Panicing...");
 				panic("Panic triggered artificially");
 			}
 			else if (util::str_equal(buff, "info"))
@@ -133,11 +131,8 @@ namespace tupai
 					util::fmt_int<unsigned char>(time.hour, 10, 2), ':', util::fmt_int<unsigned char>(time.min  , 10, 2), ':', util::fmt_int<unsigned char>(time.sec, 10, 2)
 				);
 			}
-			else if (util::str_equal(buff, "halt"))
-				halted = true;
 			else
 				util::println("Command '", buff, "' not found!");
 		}
-		util::println("Halting...");
 	}
 }

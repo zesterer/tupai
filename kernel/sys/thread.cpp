@@ -20,6 +20,7 @@
 // Tupai
 #include <tupai/sys/thread.hpp>
 #include <tupai/sys/kmem.hpp>
+#include <tupai/sys/call.hpp>
 #include <tupai/interrupt.hpp>
 #include <tupai/util/out.hpp>
 #include <tupai/util/mutex.hpp>
@@ -150,11 +151,11 @@ namespace tupai
 						break;
 
 					// Set current thread to dead
-					threads[i].id     = -1;
+					//threads[i].id     = -1;
 					threads[i].cstate = thread_t::state::DEAD;
 
-					if (threads[i].native)
-						kmem_dealloc((void*)threads[i].stackpos); // Deallocate the stack
+					//if (threads[i].native)
+					//	kmem_dealloc((void*)threads[i].stackpos); // Deallocate the stack
 
 					break;
 				}
@@ -167,13 +168,16 @@ namespace tupai
 		void thread_finish()
 		{
 			thread_kill(thread_get_id());
+			sys::call(0);
 			while (1);
 		}
 
 		size_t thread_next_stack(size_t ostack)
 		{
 			// Set current thread to waiting
-			threads[cindex].cstate = thread_t::state::WAITING;
+			if (threads[cindex].cstate == thread_t::state::ACTIVE)
+				threads[cindex].cstate = thread_t::state::WAITING;
+
 			threads[cindex].stack = ostack;
 
 			for (size_t i = 0; i < MAX_THREADS; i ++)

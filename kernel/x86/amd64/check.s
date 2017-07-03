@@ -29,12 +29,12 @@
 		ret
 
 	panic: // Display an ASCII error string
-		call printstr
+		call printerr
 		hlt
 
-	printstr:
+	printerr:
 		mov $0, %ecx
-		strloop:
+		strloop0:
 			// Find current character, store in BL
 			mov %ecx, %ebx
 			imul $1, %ebx
@@ -43,7 +43,7 @@
 
 			// Should we exit the loop?
 			cmp $0, %bl
-			je strend
+			je strend0
 
 			// Find the VGA buffer position, store in EDX
 			mov %ecx, %edx
@@ -58,8 +58,38 @@
 
 			// Iterate the loop
 			add $1, %ecx
-			jmp strloop
-		strend:
+			jmp strloop0
+		strend0:
+		ret
+
+	printmsg:
+		mov $0, %ecx
+		strloop1:
+			// Find current character, store in BL
+			mov %ecx, %ebx
+			imul $1, %ebx
+			add %eax, %ebx
+			mov (%ebx), %bl
+
+			// Should we exit the loop?
+			cmp $0, %bl
+			je strend1
+
+			// Find the VGA buffer position, store in EDX
+			mov %ecx, %edx
+			imul $2, %edx
+			add $0xB8000, %edx
+
+			// Print the character
+			movb %bl, (%edx)
+			inc %edx
+			// Give it color
+			movb $0x3F, (%edx)
+
+			// Iterate the loop
+			add $1, %ecx
+			jmp strloop1
+		strend1:
 		ret
 
 	check_multiboot:
@@ -103,6 +133,9 @@
 		cmp %eax, %ecx
 		je error_no_cpuid
 
+		mov $info_booting_str, %eax
+		call printmsg
+
 		ret
 
 	error_no_cpuid:
@@ -135,3 +168,5 @@
 		.ascii "Panic: CPU does not support the CPUID instruction"
 	error_no_longmode_str:
 		.ascii "Panic: CPU is not 64-bit compatible"
+	info_booting_str:
+		.ascii "CPU meets OS requirements. Booting..."

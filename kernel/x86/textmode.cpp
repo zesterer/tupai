@@ -47,6 +47,8 @@ namespace tupai
 
 			col = 0;
 			row = 0;
+
+			textmode_clear();
 		}
 
 		void textmode_write(char c)

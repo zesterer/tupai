@@ -26,7 +26,7 @@
 
 namespace tupai
 {
-	extern "C" size_t exception_handle(size_t stack, size_t id);
+	extern "C" size_t exception_handle(size_t stack, size_t id, size_t error);
 }
 
 #endif

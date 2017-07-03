@@ -1,5 +1,5 @@
 //
-// file : arch.hpp
+// file : type.hpp
 //
 // This file is part of Tupai.
 //
@@ -17,8 +17,8 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_ARCH_HPP
-#define TUPAI_ARCH_HPP
+#ifndef TUPAI_TYPE_HPP
+#define TUPAI_TYPE_HPP
 
 // Standard
 #include <stddef.h>
@@ -26,25 +26,7 @@
 
 namespace tupai
 {
-	const size_t ARCH_PAGE_SIZE = 4096;
-	const size_t ARCH_PAGE_SIZE_P2 = 12;
-
-	extern "C" char kernel_start;
-	extern "C" char kernel_end;
-
-	struct arch_reg_state;
-	size_t arch_get_reg_state_size();
-
-	const char* arch_get_target();
-	const char* arch_get_family();
-	size_t arch_get_offset();
-
-	size_t arch_get_kernel_start();
-	size_t arch_get_kernel_end();
-
-	void  arch_init();
-	void* arch_kernel_alloc(size_t bytes);
-	void  arch_display_reg_state(arch_reg_state* state);
+	typedef long id_t;
 }
 
 #endif

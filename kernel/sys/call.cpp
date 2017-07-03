@@ -49,6 +49,7 @@ namespace tupai
 
 		void call(int call)
 		{
+			(void)call;
 			asm volatile ("int $0x80");
 		}
 	}
