@@ -62,6 +62,18 @@ namespace tupai
 				}
 				break;
 
+			case '\b': // Backspace
+				{
+					if (col != 0)
+						col --;
+					else if (row != 0)
+					{
+						row --;
+						col = col_max - 1;
+					}
+				}
+				break;
+
 			case '\r': // Do nothing
 				break;
 

@@ -217,9 +217,9 @@ namespace tupai
 		uint8_t ps2_8042_read(int port_id)
 		{
 			if (!ps2_8042_initiated || !(ps2_8042_channel | (1 << port_id)) || ps2_8042_disabled)
-				return false;
+				return 0x0;
 
-			while ((ps2_8042_read_status() & (1 << 0)) == 0);
+			while ((ps2_8042_read_status() & 0x01) == 0);
 			return ps2_8042_read_data();
 		}
 	}

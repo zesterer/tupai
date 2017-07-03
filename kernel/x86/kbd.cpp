@@ -21,6 +21,7 @@
 #include <tupai/x86/kbd.hpp>
 #include <tupai/x86/pic.hpp>
 #include <tupai/x86/port.hpp>
+#include <tupai/x86/ps2_8042.hpp>
 #include <tupai/interrupt.hpp>
 #include <tupai/util/out.hpp>
 #include <tupai/dev/tty.hpp>
@@ -49,6 +50,8 @@ namespace tupai
 
 		void kbd_init()
 		{
+			ps2_8042_open_port(0);
+
 			// Temporary
 			/*{
 				wait();
