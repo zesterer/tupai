@@ -28,14 +28,17 @@ namespace tupai
 {
 	namespace util
 	{
-		bool compose(int val, char* buff, size_t n, int base = 10, int pad = 0);
-		bool compose(unsigned int val, char* buff, size_t n, int base = 10, int pad = 0);
+		bool compose(int8_t val, char* buff, size_t n, int base = 10, int pad = 0);
+		bool compose(uint8_t val, char* buff, size_t n, int base = 10, int pad = 0);
 
-		bool compose(long val, char* buff, size_t n, int base = 10, int pad = 0);
-		bool compose(unsigned long val, char* buff, size_t n, int base = 10, int pad = 0);
+		bool compose(int16_t val, char* buff, size_t n, int base = 10, int pad = 0);
+		bool compose(uint16_t val, char* buff, size_t n, int base = 10, int pad = 0);
 
-		bool compose(long long val, char* buff, size_t n, int base = 10, int pad = 0);
-		bool compose(unsigned long long val, char* buff, size_t n, int base = 10, int pad = 0);
+		bool compose(int32_t val, char* buff, size_t n, int base = 10, int pad = 0);
+		bool compose(uint32_t val, char* buff, size_t n, int base = 10, int pad = 0);
+
+		bool compose(int64_t val, char* buff, size_t n, int base = 10, int pad = 0);
+		bool compose(uint64_t val, char* buff, size_t n, int base = 10, int pad = 0);
 
 		bool compose(void* val, char* buff, size_t n);
 		bool compose(bool val, char* buff, size_t n);

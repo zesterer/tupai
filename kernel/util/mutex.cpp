@@ -44,31 +44,47 @@ namespace tupai
 			mutex_unlock_impl(&this->val);
 		}
 
+		static volatile bool hw_int_enabled;
+		static volatile bool hw_locked = false;
+		static mutex hw_mutex_mutex;
+
 		bool hw_mutex::is_locked() volatile
 		{
-			return this->locked;
+			return hw_locked;
 		}
 
 		void hw_mutex::lock() volatile
 		{
-			if (this->locked)
-				return;
+			//hw_mutex_mutex.lock(); // Begin critical section
 
-			this->int_enabled = interrupt_enabled();
+			if (!hw_locked)
+			{
+				hw_int_enabled = interrupt_enabled();
 
-			if (this->int_enabled)
-				interrupt_enable(false);
+				if (hw_int_enabled)
+					interrupt_enable(false);
+
+				hw_locked = true;
+			}
+
+			//hw_mutex_mutex.unlock(); // End critical section
 		}
 
 		void hw_mutex::unlock() volatile
 		{
-			if (!this->locked)
-				return;
+			//hw_mutex_mutex.lock(); // Begin critical section
 
-			if (this->int_enabled)
-				interrupt_enable(true);
+			if (hw_locked)
+			{
+				if (hw_int_enabled)
+					interrupt_enable(true);
 
-			this->int_enabled = interrupt_enabled();
+				hw_int_enabled = interrupt_enabled();
+
+				hw_locked = false;
+			}
+
+			//hw_mutex_mutex.unlock(); // End critical section
 		}
 	}
 }

@@ -26,6 +26,10 @@
 		call check_multiboot
 		call check_cpuid
 		call check_longmode
+
+		mov $info_booting_str, %eax
+		call printmsg
+
 		ret
 
 	panic: // Display an ASCII error string
@@ -133,9 +137,6 @@
 		cmp %eax, %ecx
 		je error_no_cpuid
 
-		mov $info_booting_str, %eax
-		call printmsg
-
 		ret
 
 	error_no_cpuid:
@@ -163,10 +164,10 @@
 
 .section .rodata.boot
 	error_no_multiboot_str:
-		.ascii "Panic: Kernel not booted by a multiboot bootloader"
+		.ascii "Panic: Kernel not booted by a multiboot bootloader\0"
 	error_no_cpuid_str:
-		.ascii "Panic: CPU does not support the CPUID instruction"
+		.ascii "Panic: CPU does not support the CPUID instruction\0"
 	error_no_longmode_str:
-		.ascii "Panic: CPU is not 64-bit compatible"
+		.ascii "Panic: CPU is not 64-bit compatible\0"
 	info_booting_str:
-		.ascii "CPU meets OS requirements. Booting..."
+		.ascii "CPU meets OS requirements. Booting...\0"

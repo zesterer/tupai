@@ -33,8 +33,8 @@ namespace tupai
 {
 	namespace sys
 	{
-		static const int MMAP_BR_P2 = 8;
-		static const int MMAP_BR    = 1 << MMAP_BR_P2;
+		static const uint64_t MMAP_BR_P2 = 8;
+		static const uint64_t MMAP_BR    = 1 << MMAP_BR_P2;
 
 		util::mutex mmap_mutex;
 
@@ -90,17 +90,19 @@ namespace tupai
 
 			mmap_mutex.unlock(); // End critical section
 
-			//mmap_reserve(0, 8192, KERNEL_PROC_ID);
-
 			#if defined(ARCH_FAMILY_x86)
 				x86::mb_meminfo_t meminfo = x86::multiboot_get_meminfo();
-				mmap_reserve(1024 * 1024, meminfo.upper * 1024, NO_PROC_ID); // 1 MB to N KB
+				mmap_reserve(0, 1024 * 1024 + meminfo.upper * 1024, NO_PROC_ID); // 1 MB to N KB
 			#endif
 		}
 
 		void __mmap_reserve(mmap_node_t* node, uint64_t addr, mmap_status_t status, uint64_t start, uint64_t size)
 		{
-			uint64_t nsize = 1 << (node->depth * MMAP_BR_P2);
+			uint64_t nsize = 1;
+			nsize <<= ((uint64_t)(node->depth) * MMAP_BR_P2);
+
+			//if ((addr >> ((node->depth + 1) * MMAP_BR_P2)) << ((node->depth + 1) * MMAP_BR_P2) == addr)
+			//	util::println("addr = ", util::fmt_int<uint64_t>(addr, 16, 16), " depth = ", node->depth, " nsize = ", util::fmt_int<uint64_t>(nsize, 16));
 
 			if (
 				(start > addr && start < addr + nsize) ||
@@ -113,55 +115,25 @@ namespace tupai
 
 			if (node->br != nullptr)
 			{
-				node->status.owner = INVALID_PROC_ID;
-
-				for (size_t i = 0; i < MMAP_BR; i ++)
+				/*if (start <= addr && start + size >= addr + nsize)
 				{
-					__mmap_reserve(&node->br->nodes[i], addr, status, start, size);
-					addr += 1 << ((node->depth - 1) * MMAP_BR_P2);
+					node->status = status;
+					delete node->br;
 				}
-			}
-			else if (start <= addr && start + size >= addr + nsize)
-			{
-				node->status = status;
-			}
-
-			/*
-			size_t node_size = (1 << (depth * MMAP_BR_P2));
-
-			if (addr >= start && addr < start + size)
-				node->status = status;
-
-			if (node->br == nullptr)
-			{
-				if (depth <= 0)
-					return;
-
-				if (start < addr + node_size && start + size > addr)
+				else*/
 				{
-					node->br = new mmap_br_t();
-					node->br->depth = depth - 1;
+					node->status.owner = INVALID_PROC_ID;
+
+					uint64_t inc = 1 << ((node->depth - 1) * MMAP_BR_P2);
+					for (size_t i = 0; i < MMAP_BR; i ++)
+						__mmap_reserve(&node->br->nodes[i], addr + inc * i, status, start, size);
 				}
 			}
 			else
 			{
-				// TODO : Re-add this
-				//if (addr >= start && addr + node_size <= start + size)
-				//{
-				//	delete node->br;
-				//	node->br = nullptr;
-				//	return;
-				//}
+				if (start <= addr && start + size >= addr + nsize)
+					node->status = status;
 			}
-
-			if (node->br != nullptr)
-			{
-				for (int i = 0; i < MMAP_BR; i ++)
-				{
-					__mmap_reserve(&node->br->nodes[i], depth - 1, addr, status, start, size);
-					addr += 1 << (node->br->depth * MMAP_BR_P2);
-				}
-			}*/
 		}
 
 		void mmap_reserve(uint64_t start, uint64_t size, pid_t owner)
@@ -180,11 +152,9 @@ namespace tupai
 		{
 			if (node->br != nullptr)
 			{
-				for (int i = 0; i < MMAP_BR; i ++)
-				{
-					cstatus = __mmap_display(&node->br->nodes[i], addr, cstatus);
-					addr += 1 << ((node->depth - 1) * MMAP_BR_P2);
-				}
+				uint64_t inc = 1 << ((node->depth - 1) * MMAP_BR_P2);
+				for (uint64_t i = 0; i < MMAP_BR; i ++)
+					cstatus = __mmap_display(&node->br->nodes[i], addr + inc * i, cstatus);
 
 				return cstatus;
 			}
@@ -193,7 +163,7 @@ namespace tupai
 				if (node->status != cstatus)
 				{
 					cstatus = node->status;
-					util::println((void*)(addr * ARCH_PAGE_SIZE), " : owner = ", proc_get_name(cstatus.owner), ", valid = ", cstatus.valid > 0);
+					util::println((void*)(addr * ARCH_PAGE_SIZE), " : owner = ", proc_get_name(cstatus.owner), " (", (int32_t)cstatus.owner, "), valid = ", cstatus.valid > 0);
 				}
 
 				return cstatus;

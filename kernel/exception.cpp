@@ -89,7 +89,11 @@ namespace tupai
 		else
 		{
 			util::println("Exception in thread '", thread_name, "' (", thread_id, "): ", exceptions_msg[code], " [", util::fmt_int<size_t>(error, 16), ']');
-			arch_display_reg_state((arch_reg_state*)stack);
+
+			#if defined(DEBUG_ENABLED)
+				arch_display_reg_state((arch_reg_state*)stack);
+			#endif
+
 			sys::thread_kill(thread_id);
 		}
 

@@ -62,8 +62,8 @@ namespace tupai
 			vfs_print_inode(root_inode, "");
 
 			util::println("--- Filesystem Devices ---");
-			for (size_t i = 0; i < active_fs.size(); i ++)
-				util::println(active_fs[i]->id, " : ", active_fs[i]->name);
+			//for (size_t i = 0; i < active_fs.size(); i ++)
+			//	util::println(active_fs[i]->id, " : ", active_fs[i]->name);
 		}
 
 		void vfs_print_inode(inode_t* inode, const char* name, size_t depth)

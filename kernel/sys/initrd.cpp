@@ -80,7 +80,8 @@ namespace tupai
 			fs::fs_t* fs = fs::vfs_create_fs("initrd");
 			fs::vfs_set_root(fs->root);
 
-			mmap_reserve((size_t)initrd->start, (size_t)initrd->size, KERNEL_PROC_ID); // Reserve the memory
+			// TODO : re-add this
+			//mmap_reserve((size_t)initrd->start, (size_t)initrd->size, KERNEL_PROC_ID); // Reserve the memory
 
 			util::tar_header_t* cheader = (util::tar_header_t*)initrd->start;
 			while (cheader != nullptr)

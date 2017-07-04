@@ -139,7 +139,22 @@ namespace tupai
 		void pool_display(pool_t* pool, size_t n)
 		{
 			util::println("--- Memory pool map ---");
+
+			size_t max = 0;
 			for (size_t i = 0; i < n; i ++)
+			{
+				switch (pool_get(pool, i))
+				{
+				case block_status::HEAD:
+				case block_status::TAIL:
+					max = i;
+					break;
+				default:
+					break;
+				}
+			}
+
+			for (size_t i = 0; i < n && i < max; i ++)
 			{
 				switch(pool_get(pool, i))
 				{

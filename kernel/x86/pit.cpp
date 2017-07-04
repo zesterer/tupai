@@ -57,7 +57,7 @@ namespace tupai
 
 		void pit_init()
 		{
-			// Every 10,000 nanoseconds
+			// Every 1,000 nanoseconds
 			pit_set_rate(1000);
 
 			// Unmask the interrupt

@@ -28,7 +28,7 @@ namespace tupai
 {
 	namespace fs
 	{
-		typedef long long id_t;
+		typedef int32_t id_t;
 
 		static const size_t FILENAME_SIZE = 256;
 	}

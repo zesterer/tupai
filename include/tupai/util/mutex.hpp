@@ -40,9 +40,6 @@ namespace tupai
 
 		struct hw_mutex
 		{
-			bool int_enabled;
-			bool locked = false;
-
 			bool is_locked() volatile;
 
 			void lock() volatile;

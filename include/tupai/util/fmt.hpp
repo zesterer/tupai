@@ -81,56 +81,74 @@ namespace tupai
 		}
 		*/
 
-		// Int formatter
+		// int8_t formatter
 		template <typename T>
-		void __fmt_arg(T& ostream, int i, int base = 10, int pad = 0)
+		void __fmt_arg(T& ostream, int8_t i, int base = 10, int pad = 0)
 		{
-			char buff[sizeof(int) * 8 + 4];
+			char buff[sizeof(int8_t) * 8 + 4];
 			compose(i, buff, sizeof(buff) / sizeof(char), base, pad);
 			__fmt_arg(ostream, buff);
 		}
 
-		// Unsigned int formatter
+		// uint8_t formatter
 		template <typename T>
-		void __fmt_arg(T& ostream, unsigned int i, int base = 10, int pad = 0)
+		void __fmt_arg(T& ostream, uint8_t i, int base = 10, int pad = 0)
 		{
-			char buff[sizeof(unsigned int) * 8 + 4];
+			char buff[sizeof(uint8_t) * 8 + 4];
 			compose(i, buff, sizeof(buff) / sizeof(char), base, pad);
 			__fmt_arg(ostream, buff);
 		}
 
-		// Long formatter
+		// int16_t formatter
 		template <typename T>
-		void __fmt_arg(T& ostream, long i, int base = 10, int pad = 0)
+		void __fmt_arg(T& ostream, int16_t i, int base = 10, int pad = 0)
 		{
-			char buff[sizeof(long) * 8 + 4];
+			char buff[sizeof(int16_t) * 8 + 4];
 			compose(i, buff, sizeof(buff) / sizeof(char), base, pad);
 			__fmt_arg(ostream, buff);
 		}
 
-		// Unsigned long formatter
+		// uint16_t formatter
 		template <typename T>
-		void __fmt_arg(T& ostream, unsigned long i, int base = 10, int pad = 0)
+		void __fmt_arg(T& ostream, uint16_t i, int base = 10, int pad = 0)
 		{
-			char buff[sizeof(unsigned long) * 8 + 4];
+			char buff[sizeof(uint16_t) * 8 + 4];
 			compose(i, buff, sizeof(buff) / sizeof(char), base, pad);
 			__fmt_arg(ostream, buff);
 		}
 
-		// Long long formatter
+		// int32_t formatter
 		template <typename T>
-		void __fmt_arg(T& ostream, long long i, int base = 10, int pad = 0)
+		void __fmt_arg(T& ostream, int32_t i, int base = 10, int pad = 0)
 		{
-			char buff[sizeof(long long) * 8 + 4];
+			char buff[sizeof(int32_t) * 8 + 4];
 			compose(i, buff, sizeof(buff) / sizeof(char), base, pad);
 			__fmt_arg(ostream, buff);
 		}
 
-		// Unsigned long long formatter
+		// uint32_t formatter
 		template <typename T>
-		void __fmt_arg(T& ostream, unsigned long long i, int base = 10, int pad = 0)
+		void __fmt_arg(T& ostream, uint32_t i, int base = 10, int pad = 0)
 		{
-			char buff[sizeof(unsigned long long) * 8 + 4];
+			char buff[sizeof(uint32_t) * 8 + 4];
+			compose(i, buff, sizeof(buff) / sizeof(char), base, pad);
+			__fmt_arg(ostream, buff);
+		}
+
+		// int64_t formatter
+		template <typename T>
+		void __fmt_arg(T& ostream, int64_t i, int base = 10, int pad = 0)
+		{
+			char buff[sizeof(int64_t) * 8 + 4];
+			compose(i, buff, sizeof(buff) / sizeof(char), base, pad);
+			__fmt_arg(ostream, buff);
+		}
+
+		// uint64_t formatter
+		template <typename T>
+		void __fmt_arg(T& ostream, uint64_t i, int base = 10, int pad = 0)
+		{
+			char buff[sizeof(uint64_t) * 8 + 4];
 			compose(i, buff, sizeof(buff) / sizeof(char), base, pad);
 			__fmt_arg(ostream, buff);
 		}

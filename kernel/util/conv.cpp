@@ -146,12 +146,17 @@ namespace tupai
 			return true;
 		}
 
-		bool compose(int val, char* buff, size_t n, int base, int pad) { return compose_integer(val, buff, n, base, pad); }
-		bool compose(unsigned int val, char* buff, size_t n, int base, int pad) { return compose_integer(val, buff, n, base, pad); }
-		bool compose(long val, char* buff, size_t n, int base, int pad) { return compose_integer(val, buff, n, base, pad); }
-		bool compose(unsigned long val, char* buff, size_t n, int base, int pad) { return compose_integer(val, buff, n, base, pad); }
-		bool compose(long long val, char* buff, size_t n, int base, int pad) { return compose_integer(val, buff, n, base, pad); }
-		bool compose(unsigned long long val, char* buff, size_t n, int base, int pad) { return compose_integer(val, buff, n, base, pad); }
+		bool compose(int8_t val, char* buff, size_t n, int base, int pad) { return compose_integer(val, buff, n, base, pad); }
+		bool compose(uint8_t val, char* buff, size_t n, int base, int pad) { return compose_integer(val, buff, n, base, pad); }
+
+		bool compose(int16_t val, char* buff, size_t n, int base, int pad) { return compose_integer(val, buff, n, base, pad); }
+		bool compose(uint16_t val, char* buff, size_t n, int base, int pad) { return compose_integer(val, buff, n, base, pad); }
+
+		bool compose(int32_t val, char* buff, size_t n, int base, int pad) { return compose_integer(val, buff, n, base, pad); }
+		bool compose(uint32_t val, char* buff, size_t n, int base, int pad) { return compose_integer(val, buff, n, base, pad); }
+
+		bool compose(int64_t val, char* buff, size_t n, int base, int pad) { return compose_integer(val, buff, n, base, pad); }
+		bool compose(uint64_t val, char* buff, size_t n, int base, int pad) { return compose_integer(val, buff, n, base, pad); }
 
 		bool compose(void* val, char* buff, size_t n)
 		{

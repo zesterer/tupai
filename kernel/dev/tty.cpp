@@ -41,7 +41,8 @@ namespace tupai
 		static volatile bool tty_initiated = false;
 		static volatile int tty_serial_port = -1;
 
-		static volatile util::mutex tty_mutex;
+		static volatile util::mutex    tty_mutex;
+		static volatile util::hw_mutex tty_hw_mutex;
 
 		// The I/O pipe. 256 character buffer
 		static volatile sys::pipe_t<8192> iopipe;
@@ -125,7 +126,9 @@ namespace tupai
 
 		void tty_write_in(char c)
 		{
-			iopipe.write_in(c);
+			tty_hw_mutex.lock(); // Begin critical section
+			iopipe.write_in_unsafe(c);
+			tty_hw_mutex.unlock(); // End critical section
 		}
 
 		void tty_in_thread(int argc, char* argv[])
@@ -136,6 +139,7 @@ namespace tupai
 			while (true)
 			{
 				unsigned char c = dev::serial_read(tty_serial_port);
+
 				iopipe.write_in_unsafe(c); // Unsafe call to avoid interrupt locking
 			}
 		}
