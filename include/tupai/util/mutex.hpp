@@ -20,9 +20,6 @@
 #ifndef TUPAI_UTIL_MUTEX_HPP
 #define TUPAI_UTIL_MUTEX_HPP
 
-// Tupai
-#include <tupai/sys/signal.hpp>
-
 // Standard
 #include <stddef.h>
 #include <stdint.h>
@@ -31,6 +28,14 @@ namespace tupai
 {
 	namespace util
 	{
+		struct mutex_t
+		{
+			volatile bool locked;
+
+			void lock() volatile;
+			void unlock() volatile;
+		};
+
 		/*
 		struct mutex
 		{

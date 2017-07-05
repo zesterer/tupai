@@ -64,7 +64,6 @@ namespace tupai
 			threads[cindex].id = nid;
 			threads[cindex].cstate = thread_t::state::WAITING;
 			threads[cindex].native = false;
-			//threads[cindex].name = "main";
 			cthread = nid;
 
 			// Set threading to enabled
@@ -153,7 +152,7 @@ namespace tupai
 			hw_mutex.unlock(); // End critical section
 		}
 
-		void thread_wait_signal(id_t id, volatile signal_t* signal)
+		void thread_wait_mutex(id_t id, util::mutex_t* mutex)
 		{
 			hw_mutex.lock(); // Begin critical section
 
@@ -161,13 +160,35 @@ namespace tupai
 			{
 				if (threads[i].id == id)
 				{
-					if (threads[i].cstate != thread_t::state::ACTIVE && threads[i].cstate != thread_t::state::UNSPAWNED)
-						break;
+					threads[i].wait_mutex = mutex;
 
-					threads[i].cstate = thread_t::state::WAITING;
-					threads[i].wait_signal = signal;
+					if (mutex == nullptr)
+						continue;
 
-					break;
+					if (mutex->locked)
+						threads[i].cstate = thread_t::state::WAITING;
+					else
+						threads[i].cstate = thread_t::state::ACTIVE;
+				}
+			}
+
+			hw_mutex.unlock(); // End critical section
+
+			thread_update_mutex(mutex);
+		}
+
+		void thread_update_mutex(util::mutex_t* mutex)
+		{
+			hw_mutex.lock(); // Begin critical section
+
+			for (size_t i = 0; i < MAX_THREADS; i ++)
+			{
+				if (threads[i].wait_mutex == mutex)
+				{
+					if (mutex->locked)
+						threads[i].cstate = thread_t::state::WAITING;
+					else
+						threads[i].cstate = thread_t::state::ACTIVE;
 				}
 			}
 
@@ -182,9 +203,8 @@ namespace tupai
 
 		size_t thread_next_stack(size_t ostack)
 		{
-			// Set current thread to waiting
-			//if (threads[cindex].cstate == thread_t::state::ACTIVE)
-			//	threads[cindex].cstate = thread_t::state::WAITING;
+			if (!threading_enabled())
+				return ostack;
 
 			threads[cindex].stack = ostack;
 
@@ -192,17 +212,13 @@ namespace tupai
 			{
 				size_t index = (cindex + i + 1) % MAX_THREADS;
 
-				if (threads[index].cstate == thread_t::state::WAITING || threads[index].cstate == thread_t::state::ACTIVE)
+				if (threads[index].cstate == thread_t::state::ACTIVE)
 				{
-					if (threads[index].cstate == thread_t::state::WAITING)
+					if (threads[index].wait_mutex != nullptr)
 					{
-						if (threads[index].wait_signal != nullptr)
-						{
-							if (!threads[index].wait_signal->has_fired())
-								continue;
-							else
-								threads[index].wait_signal = nullptr;
-						}
+						threads[index].wait_mutex->locked = true;
+						threads[index].wait_mutex = nullptr;
+						thread_update_mutex(threads[index].wait_mutex);
 					}
 
 					// Make it the active thread
@@ -224,7 +240,7 @@ namespace tupai
 					// Make it the active thread
 					cthread = threads[index].id;
 					cindex = index;
-					threads[index].cstate = thread_t::state::WAITING;
+					threads[index].cstate = thread_t::state::ACTIVE;
 
 					uint64_t argc = (uint64_t)threads[index].argc;
 					uint64_t argv = (uint64_t)threads[index].argv;

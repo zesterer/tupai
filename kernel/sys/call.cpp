@@ -21,6 +21,7 @@
 #include <tupai/sys/call.hpp>
 #include <tupai/interrupt.hpp>
 #include <tupai/sys/thread.hpp>
+#include <tupai/util/mutex.hpp>
 #include <tupai/util/out.hpp>
 
 #include <tupai/x86/textmode.hpp>
@@ -45,13 +46,49 @@ namespace tupai
 
 		size_t syscall_isr_main(size_t stack_ptr, size_t arg0, size_t arg1, size_t arg2, size_t arg3)
 		{
-			char buff[1024];
-			util::fmt(buff, "SYSCALL (arg0 = ", arg0, ", arg1 = ", arg1, ", arg2 = ", arg2, ", arg3 = ", arg3, ")");
-			//for (size_t i = 0; buff[i] != '\0'; i ++)
-			//	x86::textmode_write(buff[i]);
+			(void)arg0;
+			(void)arg1;
+			(void)arg2;
+			(void)arg3;
 
-			if (sys::threading_enabled())
+			CALL call = (CALL)arg0;
+
+			switch (call)
+			{
+			case CALL::YIELD:
 				stack_ptr = sys::thread_next_stack(stack_ptr);
+				break;
+
+			case CALL::LMUTEX:
+				{
+					util::mutex_t* mutex = (util::mutex_t*)arg0;
+					if (mutex->locked) // The mutex is already locked
+					{
+						sys::thread_wait_mutex(sys::thread_get_id(), mutex);
+						sys::thread_update_mutex(mutex);
+						stack_ptr = sys::thread_next_stack(stack_ptr);
+					}
+					else // The mutex is available
+					{
+						mutex->locked = true;
+						sys::thread_wait_mutex(sys::thread_get_id(), nullptr);
+						sys::thread_update_mutex(mutex);
+					}
+				}
+				break;
+
+			case CALL::UMUTEX:
+				{
+					util::mutex_t* mutex = (util::mutex_t*)arg0;
+					mutex->locked = false;
+					sys::thread_update_mutex(mutex);
+				}
+				break;
+
+			default:
+				break;
+			}
+
 			return stack_ptr;
 		}
 	}

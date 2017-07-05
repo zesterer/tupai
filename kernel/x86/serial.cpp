@@ -116,7 +116,7 @@ namespace tupai
 
 			uint16_t port_offset = port_offsets[port_id]; // Find the serial port's I/O port
 
-			while ((inb(port_offset + 5) & 0x20) == 0) // Wait until port is ready for writing
+			if ((inb(port_offset + 5) & 0x20) == 0) // Wait if port is not ready for writing
 				wait(150);
 			outb(port_offset, c);
 

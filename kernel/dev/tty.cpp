@@ -73,9 +73,9 @@ namespace tupai
 					{
 						debug_print(
 							"Started serial tty output on ", serial_port_names[tty_serial_port], '\n',
-							"  baudrate -> ", 57600, '\n',
-							"  databits -> ", 8, '\n',
-							"  stopbits -> ", 1, '\n',
+							"  baudrate -> ", (uint16_t)57600, '\n',
+							"  databits -> ", (uint16_t)8, '\n',
+							"  stopbits -> ", (uint16_t)1, '\n',
 							"  parity   -> ", "NONE", '\n'
 						);
 					}

@@ -1,5 +1,5 @@
 //
-// file : signal.hpp
+// file : signal.cpp
 //
 // This file is part of Tupai.
 //
@@ -17,30 +17,30 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_SYS_SIGNAL_HPP
-#define TUPAI_SYS_SIGNAL_HPP
-
 // Tupai
-#include <tupai/fs/inode.hpp>
-
-// Standard
-#include <stddef.h>
-#include <stdint.h>
+#include <tupai/util/signal.hpp>
+#include <tupai/util/mutex.hpp>
 
 namespace tupai
 {
-	namespace sys
+	namespace util
 	{
-		struct signal_t
+		volatile sig_t sig_counter = 0;
+
+		signal_t::signal_t()
 		{
-			volatile bool fired = false;
+			this->sig = ++sig_counter;
+		}
 
-			bool has_fired() volatile { return this->fired; }
+		void signal_t::wait()
+		{
+			// Perform wait here
+		}
 
-			void reset() volatile;
-			void fire() volatile;
-		};
+		void signal_t::trigger()
+		{
+			// Perform fire here
+			this->sig = ++sig_counter;
+		}
 	}
 }
-
-#endif

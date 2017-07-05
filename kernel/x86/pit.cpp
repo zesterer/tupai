@@ -42,8 +42,8 @@ namespace tupai
 
 		static const uint32_t PIT_MAX_RATE = 1193180; // 1,193,180 Hz (1.13 MHz)
 
-		static volatile long pit_time = 0; // Nanoseconds
-		static volatile int  pit_rate = 0;
+		static volatile uint64_t pit_time = 0; // Nanoseconds
+		static volatile uint32_t pit_rate = 0;
 
 		static void pit_set_rate(int rate);
 		extern "C" void isr_pit();

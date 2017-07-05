@@ -21,12 +21,23 @@
 #include <tupai/util/mutex.hpp>
 #include <tupai/util/out.hpp>
 #include <tupai/sys/thread.hpp>
+#include <tupai/sys/call.hpp>
 #include <tupai/interrupt.hpp>
 
 namespace tupai
 {
 	namespace util
 	{
+		void mutex_t::lock() volatile
+		{
+			//sys::call(sys::CALL::LMUTEX, (size_t)this);
+		}
+
+		void mutex_t::unlock() volatile
+		{
+			sys::call(sys::CALL::UMUTEX, (size_t)this);
+		}
+
 		/*
 		extern "C" void mutex_lock_impl(volatile size_t* val);
 		extern "C" void mutex_unlock_impl(volatile size_t* val);

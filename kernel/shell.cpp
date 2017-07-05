@@ -28,6 +28,7 @@
 #include <tupai/sys/kmem.hpp>
 #include <tupai/sys/thread.hpp>
 #include <tupai/sys/mmap.hpp>
+#include <tupai/sys/call.hpp>
 
 #include <tupai/util/in.hpp>
 #include <tupai/util/out.hpp>
@@ -89,6 +90,10 @@ namespace tupai
 					sys::thread_get_name(id, name);
 					util::println(i, ' ', id, ' ', name);
 				}
+			}
+			else if (util::str_equal(buff, "sys"))
+			{
+				sys::call((sys::CALL)0, 1, 2, 3);
 			}
 			else if (util::str_equal(buff, "fs"))
 			{

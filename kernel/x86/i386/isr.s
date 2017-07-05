@@ -71,7 +71,11 @@
 		push %ebx // Arg 0
 		push %eax // Call ID
 
-		push %esp // Pass the current stack pointer
+		// Find old stack pointer
+		mov %esp, %eax
+		add $16, %eax
+
+		push %eax // Pass the old stack pointer
 		call syscall_isr_main
 		mov %eax, %esp // Restore the thread stack pointer
 

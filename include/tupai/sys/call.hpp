@@ -33,7 +33,9 @@ namespace tupai
 		enum class CALL
 		{
 			// Process control
-			YIELD = 0x100,
+			YIELD  = 0x100,
+			LMUTEX = 0x101, // temporary
+			UMUTEX = 0x102, // temporary
 			// and more...
 
 			// File descriptor creation
@@ -56,7 +58,7 @@ namespace tupai
 		void call_bind();
 		void call_init();
 
-		void call(CALL call, size_t arg0, size_t arg1, size_t arg2);
+		void call(CALL call, size_t arg0 = 0, size_t arg1 = 0, size_t arg2 = 0);
 	}
 }
 

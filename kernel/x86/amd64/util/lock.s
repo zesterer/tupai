@@ -44,5 +44,4 @@
 		xchg (%rdi), %rax // Perform exchange
 
 		//int $0x80
-
 		ret

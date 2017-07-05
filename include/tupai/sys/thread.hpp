@@ -21,7 +21,8 @@
 #define TUPAI_SYS_THREAD_HPP
 
 // Tupai
-#include <tupai/sys/signal.hpp>
+#include <tupai/util/mutex.hpp>
+#include <tupai/util/signal.hpp>
 
 // Standard
 #include <stddef.h>
@@ -48,8 +49,9 @@ namespace tupai
 			id_t  id = -1;
 			char name[NAME_MAX_LEN + 1];
 
-			state cstate = state::DEAD;
-			volatile signal_t* wait_signal = nullptr;
+			state       cstate = state::DEAD;
+
+			util::mutex_t* wait_mutex = nullptr;
 
 			bool native = true; // Are thread components such as the stack native to this system?
 
@@ -67,7 +69,10 @@ namespace tupai
 		id_t   thread_create(void(*entry)(int argc, char* argv[]), int argc = 0, char* argv[] = nullptr, const char* name = "null", bool create_stack = true);
 		id_t   thread_get_id();
 		void   thread_kill(id_t id);
-		void   thread_wait_signal(id_t id, volatile signal_t* signal);
+
+		void   thread_wait_mutex(id_t id, util::mutex_t* mutex);
+		void   thread_update_mutex(util::mutex_t* mutex);
+
 		size_t threads_count();
 		id_t   thread_get_id(size_t i);
 		bool __thread_get_name(id_t id, char* buff, size_t n);

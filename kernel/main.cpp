@@ -81,9 +81,5 @@ namespace tupai
 		sys::thread_create(shell_main, 0, nullptr, "shell");
 
 		interrupt_enable(true); // Enable interrupts
-
-		//asm volatile ("int $0x80");
-
-		sys::thread_kill(sys::thread_get_id());
 	}
 }

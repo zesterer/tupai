@@ -116,12 +116,12 @@ namespace tupai
 
 			if (node->br != nullptr)
 			{
-				/*if (start <= addr && start + size >= addr + nsize)
+				if (start <= addr && start + size >= addr + nsize)
 				{
 					node->status = status;
 					delete node->br;
 				}
-				else*/
+				else
 				{
 					node->status.owner = INVALID_PROC_ID;
 
@@ -164,7 +164,7 @@ namespace tupai
 				if (node->status != cstatus)
 				{
 					cstatus = node->status;
-					util::println((void*)(addr + 0 * ARCH_PAGE_SIZE), " : owner = ", proc_get_name(cstatus.owner), " (", (int32_t)cstatus.owner, "), valid = ", cstatus.valid > 0);
+					util::println((void*)(addr * ARCH_PAGE_SIZE), " : owner = ", proc_get_name(cstatus.owner), " (", (int32_t)cstatus.owner, "), valid = ", cstatus.valid > 0);
 				}
 
 				return cstatus;

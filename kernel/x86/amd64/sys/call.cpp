@@ -20,6 +20,7 @@
 // Tupai
 #include <tupai/sys/call.hpp>
 #include <tupai/util/out.hpp>
+#include <tupai/interrupt.hpp>
 
 namespace tupai
 {
@@ -27,16 +28,19 @@ namespace tupai
 	{
 		void call(CALL call, size_t arg0, size_t arg1, size_t arg2)
 		{
-			asm volatile (
-				"mov %0, %%rax \n\
-				 mov %1, %%rbx \n\
-				 mov %2, %%rcx \n\
-				 mov %3, %%rdx \n\
-				 int $0x80"
-				:
-				: "r"((size_t)call), "r"(arg0), "r"(arg1), "r"(arg2)
-				: "%rax", "%rbx", "%rcx", "%rcx"
-			);
+			if (interrupt_enabled())
+			{
+				asm volatile (
+					"mov %0, %%rax \n\
+					 mov %1, %%rbx \n\
+					 mov %2, %%rcx \n\
+					 mov %3, %%rdx \n\
+					 int $0x80"
+					:
+					: "r"((size_t)call), "r"(arg0), "r"(arg1), "r"(arg2)
+					: "%rax", "%rbx", "%rcx", "%rdx"
+				);
+			}
 		}
 	}
 }

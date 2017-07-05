@@ -48,7 +48,7 @@ namespace tupai
 			volatile size_t  tail   = 0;
 			volatile size_t  length = 0;
 
-			volatile util::spinlock_t spinlock;
+			util::mutex_t spinlock;
 
 		public:
 			void    write(uint8_t c) volatile { return __fifo_write(*this, c); }
