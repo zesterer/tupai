@@ -20,6 +20,9 @@
 #ifndef TUPAI_FS_COM_HPP
 #define TUPAI_FS_COM_HPP
 
+// Tupai
+#include <tupai/type.hpp>
+
 // Standard
 #include <stddef.h>
 #include <stdint.h>
@@ -28,8 +31,6 @@ namespace tupai
 {
 	namespace fs
 	{
-		typedef int32_t id_t;
-
 		static const size_t FILENAME_SIZE = 256;
 	}
 }

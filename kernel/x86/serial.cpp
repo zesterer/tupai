@@ -21,6 +21,7 @@
 #include <tupai/x86/serial.hpp>
 #include <tupai/x86/port.hpp>
 #include <tupai/util/mutex.hpp>
+#include <tupai/util/spinlock.hpp>
 
 // Standard
 #include <stddef.h>
@@ -38,15 +39,15 @@ namespace tupai
 		static bool serial_initiated = false;
 		static bool serial_port_open[4] = { false, };
 
-		static util::mutex mutex;
+		static util::spinlock_t spinlock;
 
 		void serial_init()
 		{
-			mutex.lock(); // Begin critical section
+			spinlock.lock(); // Begin critical section
 
 			serial_initiated = true;
 
-			mutex.unlock(); // End critical section
+			spinlock.unlock(); // End critical section
 		}
 
 		size_t serial_count_ports()
@@ -61,50 +62,47 @@ namespace tupai
 
 		bool serial_open_port(int port_id, uint32_t baudrate, uint8_t databits, uint8_t stopbits, dev::serial_parity parity)
 		{
-			mutex.lock(); // Begin critical section
+			spinlock.lock(); // Begin critical section
 
-			if (port_id == -1 || serial_port_open[port_id]) // Make sure the port id is valid and that it isn't already open
+			if (port_id != -1 && !serial_port_open[port_id]) // Make sure the port id is valid and that it isn't already open
 			{
-				mutex.unlock(); // End critical section
-				return false;
+				// Find the serial port's I/O port
+				uint16_t port_offset = port_offsets[port_id];
+
+				if (databits < 5 || databits > 8)
+				{
+					spinlock.unlock(); // End critical section
+					return false; // Invalid number of data bits
+				}
+
+				if (stopbits < 1 || stopbits > 2)
+				{
+					spinlock.unlock(); // End critical section
+					return false; // Invalid number of stop bits
+				}
+
+				outb(port_offset + 1, 0x00); // Disable serial interrupts
+
+				// Setting the divisor
+				uint16_t divisor = UART_CLOCK_RATE / baudrate;
+				outb(port_offset + 3, 0x80); // Enable DLAB (to set baud rate divisor)
+				outb(port_offset + 0, (divisor >> 0) & 0xFF); // Lo byte
+				outb(port_offset + 1, (divisor >> 8) & 0xFF); // Hi byte
+
+				// Calculate serial configuration
+				uint8_t databits_val = databits - 5;
+				uint8_t stopbits_val = (stopbits - 1) << 2;
+				uint8_t parity_val = parity_values[(int)parity];
+				uint8_t serial_cfg = databits_val | stopbits_val | parity_val;
+				outb(port_offset + 3, serial_cfg); // Set serial configuration
+				outb(port_offset + 2, 0xC7); // Enable FIFO and clear (with a 14-byte buffer)
+				outb(port_offset + 4, 0x0B); // Reenable serial interrupts
+
+				// Flag the port as open
+				serial_port_open[port_id] = true;
 			}
 
-			// Find the serial port's I/O port
-			uint16_t port_offset = port_offsets[port_id];
-
-			if (databits < 5 || databits > 8)
-			{
-				mutex.unlock(); // End critical section
-				return false; // Invalid number of data bits
-			}
-
-			if (stopbits < 1 || stopbits > 2)
-			{
-				mutex.unlock(); // End critical section
-				return false; // Invalid number of stop bits
-			}
-
-			outb(port_offset + 1, 0x00); // Disable serial interrupts
-
-			// Setting the divisor
-			uint16_t divisor = UART_CLOCK_RATE / baudrate;
-			outb(port_offset + 3, 0x80); // Enable DLAB (to set baud rate divisor)
-			outb(port_offset + 0, (divisor >> 0) & 0xFF); // Lo byte
-			outb(port_offset + 1, (divisor >> 8) & 0xFF); // Hi byte
-
-			// Calculate serial configuration
-			uint8_t databits_val = databits - 5;
-			uint8_t stopbits_val = (stopbits - 1) << 2;
-			uint8_t parity_val = parity_values[(int)parity];
-			uint8_t serial_cfg = databits_val | stopbits_val | parity_val;
-			outb(port_offset + 3, serial_cfg); // Set serial configuration
-			outb(port_offset + 2, 0xC7); // Enable FIFO and clear (with a 14-byte buffer)
-			outb(port_offset + 4, 0x0B); // Reenable serial interrupts
-
-			// Flag the port as open
-			serial_port_open[port_id] = true;
-
-			mutex.unlock(); // End critical section
+			spinlock.unlock(); // End critical section
 
 			return true;
 		}
@@ -114,14 +112,15 @@ namespace tupai
 			if (port_id == -1) // Make sure the port id is valid
 				return;
 
-			mutex.lock(); // Start critical section
+			spinlock.lock(); // Start critical section
 
 			uint16_t port_offset = port_offsets[port_id]; // Find the serial port's I/O port
 
-			while ((inb(port_offset + 5) & 0x20) == 0); // Wait until port is ready for writing
+			while ((inb(port_offset + 5) & 0x20) == 0) // Wait until port is ready for writing
+				wait(150);
 			outb(port_offset, c);
 
-			mutex.unlock(); // End critical section
+			spinlock.unlock(); // End critical section
 		}
 
 		uint8_t serial_read(int port_id)
@@ -129,14 +128,15 @@ namespace tupai
 			if (port_id == -1) // Make sure the port id is valid
 				return 0; // Return null data
 
-			mutex.lock(); // Start critical section
+			spinlock.lock(); // Start critical section
 
 			uint16_t port_offset = port_offsets[port_id]; // Find the serial port's I/O port
 
-			while ((inb(port_offset + 5) & 0x1) == 0); // Wait until port is ready for reading
-			uint8_t val = inb(port_offset);
+			uint8_t val = 0;
+			if ((inb(port_offset + 5) & 0x1) == 0) // Wait until port is ready for reading
+				val = inb(port_offset);
 
-			mutex.unlock(); // End critical section
+			spinlock.unlock(); // End critical section
 
 			return val;
 		}

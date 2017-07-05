@@ -102,6 +102,16 @@
 		PUSH_REGS
 		cld
 
+		push %rax // Preserve call ID
+		push %rbx // Preserve arg 0
+		push %rcx // Preserve arg 1
+		push %rdx // Preserve arg 2
+
+		pop %r8  // Arg 2
+		pop %rcx // Arg 1
+		pop %rdx // Arg 0
+		pop %rsi // Call ID
+
 		mov %rsp, %rdi // Pass the current stack pointer
 		call syscall_isr_main
 		mov %rax, %rsp // Restore the thread stack pointer

@@ -1,5 +1,5 @@
 //
-// file : mutex.s
+// file : lock.s
 //
 // This file is part of Tupai.
 //
@@ -17,12 +17,12 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-.global mutex_lock_impl
-.global mutex_unlock_impl
+.global spinlock_lock_impl
+.global spinlock_unlock_impl
 
 .section .text.boot
 
-	mutex_lock_impl:
+	spinlock_lock_impl:
 		mov 4(%esp), %edx // Get byte location from stack
 
 		mov $1, %eax
@@ -35,13 +35,16 @@
 
 		ret
 
-	preempt:
-		int $0x80
+		preempt:
+			//int $0x80
+			jmp _lock
 
-	mutex_unlock_impl:
+	spinlock_unlock_impl:
 		mov 4(%esp), %edx // Get byte location from stack
 
 		mov $0, %eax
 		xchg (%edx), %eax // Perform exchange
+
+		//int $0x80
 
 		ret

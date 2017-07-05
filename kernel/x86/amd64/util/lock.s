@@ -1,5 +1,5 @@
 //
-// file : pool.hpp
+// file : mutex.s
 //
 // This file is part of Tupai.
 //
@@ -17,35 +17,32 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_SYS_POOL_HPP
-#define TUPAI_SYS_POOL_HPP
+.global spinlock_lock_impl
+.global spinlock_unlock_impl
 
-// Tupai
-#include <tupai/util/mutex.hpp>
-#include <tupai/util/spinlock.hpp>
+.section .text
 
-// Standard
-#include <stddef.h>
-#include <stdint.h>
+	spinlock_lock_impl:
 
-namespace tupai
-{
-	namespace sys
-	{
-		struct pool_t
-		{
-			size_t map;
-			size_t body;
-			size_t block_size;
-			size_t block_count;
-			util::spinlock_t spinlock;
-		};
+		mov $1, %rax
 
-		bool  pool_construct(pool_t* pool, void* start, size_t size, size_t block_size = 64);
-		void* pool_alloc(pool_t* pool, size_t n);
-		void  pool_dealloc(pool_t* pool, void* ptr);
-		void  pool_display(pool_t* pool, size_t n = 32);
-	}
-}
+	_lock:
+			xchg (%rdi), %rax // Perform exchange
 
-#endif
+			test %rax, %rax
+			jnz preempt // If the mutex was not 0 (i.e: already locked) jump back to the lock procedure (TODO: pre-empt instead)
+
+		ret
+
+	preempt:
+		//int $0x80
+		jmp _lock
+
+	spinlock_unlock_impl:
+
+		mov $0, %rax
+		xchg (%rdi), %rax // Perform exchange
+
+		//int $0x80
+
+		ret

@@ -1,5 +1,5 @@
 //
-// file : pool.hpp
+// file : vtable.hpp
 //
 // This file is part of Tupai.
 //
@@ -17,12 +17,14 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_SYS_POOL_HPP
-#define TUPAI_SYS_POOL_HPP
+#ifndef TUPAI_FS_VTABLE_HPP
+#define TUPAI_FS_VTABLE_HPP
 
 // Tupai
-#include <tupai/util/mutex.hpp>
-#include <tupai/util/spinlock.hpp>
+#include <tupai/fs/com.hpp>
+#include <tupai/fs/inode.hpp>
+#include <tupai/fs/desc.hpp>
+#include <tupai/fs/fs.hpp>
 
 // Standard
 #include <stddef.h>
@@ -30,21 +32,15 @@
 
 namespace tupai
 {
-	namespace sys
+	namespace fs
 	{
-		struct pool_t
+		struct vtable_t
 		{
-			size_t map;
-			size_t body;
-			size_t block_size;
-			size_t block_count;
-			util::spinlock_t spinlock;
+			int (*open) (const inode_t*, id_t proc, desc_t* ret_desc)                           = nullptr;
+			int (*read) (const inode_t*, id_t proc, size_t n, void* ret_buff, ssize_t* ret_n)   = nullptr;
+			int (*write)(const inode_t*, id_t proc, const void* buff, size_t n, ssize_t* ret_n) = nullptr;
+			int (*close)(const inode_t*, id_t proc, desc_t* desc)                               = nullptr;
 		};
-
-		bool  pool_construct(pool_t* pool, void* start, size_t size, size_t block_size = 64);
-		void* pool_alloc(pool_t* pool, size_t n);
-		void  pool_dealloc(pool_t* pool, void* ptr);
-		void  pool_display(pool_t* pool, size_t n = 32);
 	}
 }
 

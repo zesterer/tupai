@@ -33,10 +33,10 @@ namespace tupai
 	{
 		struct mmap_status_t
 		{
-			pid_t owner = NO_PROC_ID;
-			bool  valid = false;
+			id_t owner = NO_PROC_ID;
+			bool valid = false;
 
-			mmap_status_t(pid_t owner, bool valid = true)
+			mmap_status_t(id_t owner, bool valid = true)
 			{
 				this->owner = owner;
 				this->valid = valid;
@@ -54,7 +54,7 @@ namespace tupai
 		};
 
 		void mmap_init();
-		void mmap_reserve(uint64_t start, uint64_t size, pid_t owner);
+		void mmap_reserve(uint64_t start, uint64_t size, id_t owner);
 
 		void mmap_display();
 	}

@@ -46,8 +46,6 @@
 #include <tupai/util/out.hpp>
 #include <tupai/util/in.hpp>
 
-#include <tupai/x86/textmode.hpp>
-
 namespace tupai
 {
 	void early()
@@ -83,6 +81,8 @@ namespace tupai
 		sys::thread_create(shell_main, 0, nullptr, "shell");
 
 		interrupt_enable(true); // Enable interrupts
+
+		//asm volatile ("int $0x80");
 
 		sys::thread_kill(sys::thread_get_id());
 	}

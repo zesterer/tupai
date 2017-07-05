@@ -1,5 +1,5 @@
 //
-// file : pool.hpp
+// file : spinlock.hpp
 //
 // This file is part of Tupai.
 //
@@ -17,12 +17,8 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_SYS_POOL_HPP
-#define TUPAI_SYS_POOL_HPP
-
-// Tupai
-#include <tupai/util/mutex.hpp>
-#include <tupai/util/spinlock.hpp>
+#ifndef TUPAI_UTIL_SPINLOCK_HPP
+#define TUPAI_UTIL_SPINLOCK_HPP
 
 // Standard
 #include <stddef.h>
@@ -30,21 +26,17 @@
 
 namespace tupai
 {
-	namespace sys
+	namespace util
 	{
-		struct pool_t
+		struct spinlock_t
 		{
-			size_t map;
-			size_t body;
-			size_t block_size;
-			size_t block_count;
-			util::spinlock_t spinlock;
-		};
+			volatile size_t val = 0;
 
-		bool  pool_construct(pool_t* pool, void* start, size_t size, size_t block_size = 64);
-		void* pool_alloc(pool_t* pool, size_t n);
-		void  pool_dealloc(pool_t* pool, void* ptr);
-		void  pool_display(pool_t* pool, size_t n = 32);
+			bool is_locked() volatile;
+
+			void lock() volatile;
+			void unlock() volatile;
+		};
 	}
 }
 

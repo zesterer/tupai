@@ -31,16 +31,20 @@ namespace tupai
 		fs_t::fs_t(const char* name)
 		{
 			this->id = ++fs_counter;
-			
+
 			if (name != nullptr)
 				util::str_cpy_n(name, this->name, MAX_FS_NAME);
 		}
 
-		inode_t* fs_create_inode(fs_t* fs, inode_type type)
+		inode_t* fs_create_inode(fs_t* fs, inode_type type, vtable_t* vtable)
 		{
 			fs->inode_id_counter ++; // Increment id counter
-			inode_t* ninode = vfs_create_inode(fs->inode_id_counter);
-			ninode->type = type;
+			inode_t* ninode = vfs_create_inode(fs->inode_id_counter, type);
+			ninode->fs = fs->id;
+
+			if (ninode->type != inode_type::DIRECTORY)
+				ninode->vtable = vtable;
+
 			return ninode;
 		}
 	}

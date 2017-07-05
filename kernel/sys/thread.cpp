@@ -34,12 +34,9 @@ namespace tupai
 		const size_t MAX_THREADS = 64;
 		const size_t STACK_SIZE  = 1024;
 
+		util::hw_mutex hw_mutex;
+
 		volatile thread_t threads[MAX_THREADS];
-		/*#if defined(ARCH_ADDRESS_64)
-			volatile uint64_t stacks[STACKSIZE / 8][MAXTHREADS] __attribute__((aligned(16)));
-		#elif defined(ARCH_ADDRESS_32)
-			volatile uint32_t stacks[STACKSIZE / 4][MAXTHREADS] __attribute__((aligned(16)));
-		#endif*/
 
 		volatile bool   threads_enabled = false;
 		volatile id_t   cthread = -1;
@@ -52,9 +49,7 @@ namespace tupai
 
 		void threading_init()
 		{
-			bool int_enabled = interrupt_enabled();
-			if (int_enabled)
-				interrupt_enable(false); // Begin critical section
+			hw_mutex.lock(); // Begin critical section
 
 			// Clear threads
 			for (size_t i = 0; i < MAX_THREADS; i ++)
@@ -75,8 +70,7 @@ namespace tupai
 			// Set threading to enabled
 			threads_enabled = true;
 
-			if (int_enabled)
-				interrupt_enable(true); // End critical section
+			hw_mutex.unlock(); // End critical section
 		}
 
 		bool threading_enabled()
@@ -86,9 +80,7 @@ namespace tupai
 
 		id_t thread_create(void(*addr)(int argc, char* argv[]), int argc, char* argv[], const char* name, bool create_stack)
 		{
-			bool int_enabled = interrupt_enabled();
-			if (int_enabled)
-				interrupt_enable(false); // Begin critical section
+			hw_mutex.lock(); // Begin critical section
 
 			id_t nid = thread_gen_id();
 
@@ -123,8 +115,7 @@ namespace tupai
 				}
 			}
 
-			if (int_enabled)
-				interrupt_enable(true); // End critical section
+			hw_mutex.unlock(); // End critical section
 
 			return nid;
 		}
@@ -139,9 +130,7 @@ namespace tupai
 			if (id < 0)
 				return;
 
-			bool int_enabled = interrupt_enabled();
-			if (int_enabled)
-				interrupt_enable(false); // Begin critical section
+			hw_mutex.lock(); // Begin critical section
 
 			for (size_t i = 0; i < MAX_THREADS; i ++)
 			{
@@ -161,22 +150,41 @@ namespace tupai
 				}
 			}
 
-			if (int_enabled)
-				interrupt_enable(true); // End critical section
+			hw_mutex.unlock(); // End critical section
+		}
+
+		void thread_wait_signal(id_t id, volatile signal_t* signal)
+		{
+			hw_mutex.lock(); // Begin critical section
+
+			for (size_t i = 0; i < MAX_THREADS; i ++)
+			{
+				if (threads[i].id == id)
+				{
+					if (threads[i].cstate != thread_t::state::ACTIVE && threads[i].cstate != thread_t::state::UNSPAWNED)
+						break;
+
+					threads[i].cstate = thread_t::state::WAITING;
+					threads[i].wait_signal = signal;
+
+					break;
+				}
+			}
+
+			hw_mutex.unlock(); // End critical section
 		}
 
 		void thread_finish()
 		{
 			thread_kill(thread_get_id());
-			sys::call(0);
 			while (1);
 		}
 
 		size_t thread_next_stack(size_t ostack)
 		{
 			// Set current thread to waiting
-			if (threads[cindex].cstate == thread_t::state::ACTIVE)
-				threads[cindex].cstate = thread_t::state::WAITING;
+			//if (threads[cindex].cstate == thread_t::state::ACTIVE)
+			//	threads[cindex].cstate = thread_t::state::WAITING;
 
 			threads[cindex].stack = ostack;
 
@@ -184,8 +192,19 @@ namespace tupai
 			{
 				size_t index = (cindex + i + 1) % MAX_THREADS;
 
-				if (threads[index].cstate == thread_t::state::WAITING)
+				if (threads[index].cstate == thread_t::state::WAITING || threads[index].cstate == thread_t::state::ACTIVE)
 				{
+					if (threads[index].cstate == thread_t::state::WAITING)
+					{
+						if (threads[index].wait_signal != nullptr)
+						{
+							if (!threads[index].wait_signal->has_fired())
+								continue;
+							else
+								threads[index].wait_signal = nullptr;
+						}
+					}
+
 					// Make it the active thread
 					cthread = threads[index].id;
 					cindex = index;
@@ -246,9 +265,7 @@ namespace tupai
 		{
 			size_t n = 0;
 
-			bool int_enabled = interrupt_enabled();
-			if (int_enabled)
-				interrupt_enable(false); // Begin critical section
+			hw_mutex.lock(); // Begin critical section
 
 			for (size_t i = 0; i < MAX_THREADS; i ++)
 			{
@@ -256,17 +273,14 @@ namespace tupai
 					n ++;
 			}
 
-			if (int_enabled)
-				interrupt_enable(true); // End critical section
+			hw_mutex.unlock(); // End critical section
 
 			return n;
 		}
 
 		id_t thread_get_id(size_t index)
 		{
-			bool int_enabled = interrupt_enabled();
-			if (int_enabled)
-				interrupt_enable(false); // Begin critical section
+			hw_mutex.lock(); // Begin critical section
 
 			size_t c = 0;
 			for (size_t i = 0; i < MAX_THREADS; i ++)
@@ -275,8 +289,7 @@ namespace tupai
 				{
 					if (c == index)
 					{
-						if (int_enabled)
-							interrupt_enable(true); // End critical section
+						hw_mutex.unlock(); // End critical section
 						return threads[i].id;
 					}
 
@@ -284,16 +297,13 @@ namespace tupai
 				}
 			}
 
-			if (int_enabled)
-				interrupt_enable(true); // End critical section
+			hw_mutex.unlock(); // End critical section
 			return 0;
 		}
 
 		bool __thread_get_name(id_t id, char* buff, size_t n)
 		{
-			bool int_enabled = interrupt_enabled();
-			if (int_enabled)
-				interrupt_enable(false); // Begin critical section
+			hw_mutex.lock(); // Begin critical section
 
 			size_t c = 0;
 			for (size_t i = 0; i < MAX_THREADS; i ++)
@@ -304,8 +314,7 @@ namespace tupai
 					{
 						util::str_cpy_n((const char*)threads[i].name, buff, n);
 
-						if (int_enabled)
-							interrupt_enable(true); // End critical section
+						hw_mutex.unlock(); // End critical section
 						return true;
 					}
 
@@ -313,8 +322,7 @@ namespace tupai
 				}
 			}
 
-			if (int_enabled)
-				interrupt_enable(true); // End critical section
+			hw_mutex.unlock(); // End critical section
 			return false;
 		}
 	}

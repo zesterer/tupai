@@ -20,6 +20,7 @@
 // Tupai
 #include <tupai/fs/vfs.hpp>
 #include <tupai/util/mutex.hpp>
+#include <tupai/util/spinlock.hpp>
 #include <tupai/util/vector.hpp>
 #include <tupai/util/out.hpp>
 
@@ -39,7 +40,7 @@ namespace tupai
 			}
 		};
 
-		util::mutex fs_mutex;
+		util::spinlock_t spinlock;
 
 		util::vector_t<fs_t*>    active_fs;
 		util::vector_t<inode_pair_t> active_inodes;
@@ -51,9 +52,9 @@ namespace tupai
 
 		void vfs_init()
 		{
-			fs_mutex.lock(); // Begin critical section
+			spinlock.lock(); // Begin critical section
 
-			fs_mutex.unlock(); // End critical section
+			spinlock.unlock(); // End critical section
 		}
 
 		void vfs_print()
@@ -92,7 +93,7 @@ namespace tupai
 		fs_t* vfs_create_fs(const char* name)
 		{
 			fs_t* nfs = new fs_t(name);
-			inode_t* nroot = fs_create_inode(nfs, inode_type::DIRECTORY);
+			inode_t* nroot = fs_create_inode(nfs, inode_type::DIRECTORY, nullptr);
 			nfs->root = nroot;
 
 			active_fs.push(nfs);
@@ -100,9 +101,9 @@ namespace tupai
 			return nfs;
 		}
 
-		inode_t* vfs_create_inode(id_t id)
+		inode_t* vfs_create_inode(id_t id, inode_type type)
 		{
-			inode_t* ninode = new inode_t();
+			inode_t* ninode = new inode_t(type);
 			ninode->id = id;
 
 			id_t g_id = ++g_inode_id;

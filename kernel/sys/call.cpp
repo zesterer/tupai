@@ -21,13 +21,16 @@
 #include <tupai/sys/call.hpp>
 #include <tupai/interrupt.hpp>
 #include <tupai/sys/thread.hpp>
+#include <tupai/util/out.hpp>
+
+#include <tupai/x86/textmode.hpp>
 
 namespace tupai
 {
 	namespace sys
 	{
 		extern "C" void isr_syscall();
-		extern "C" size_t syscall_isr_main(size_t stack_ptr);
+		extern "C" size_t syscall_isr_main(size_t stack_ptr, size_t arg0, size_t arg1, size_t arg2, size_t arg3);
 
 		void call_bind()
 		{
@@ -40,17 +43,16 @@ namespace tupai
 			// Do nothing yet
 		}
 
-		size_t syscall_isr_main(size_t stack_ptr)
+		size_t syscall_isr_main(size_t stack_ptr, size_t arg0, size_t arg1, size_t arg2, size_t arg3)
 		{
+			char buff[1024];
+			util::fmt(buff, "SYSCALL (arg0 = ", arg0, ", arg1 = ", arg1, ", arg2 = ", arg2, ", arg3 = ", arg3, ")");
+			//for (size_t i = 0; buff[i] != '\0'; i ++)
+			//	x86::textmode_write(buff[i]);
+
 			if (sys::threading_enabled())
 				stack_ptr = sys::thread_next_stack(stack_ptr);
 			return stack_ptr;
-		}
-
-		void call(int call)
-		{
-			(void)call;
-			asm volatile ("int $0x80");
 		}
 	}
 }

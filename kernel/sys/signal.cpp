@@ -1,5 +1,5 @@
 //
-// file : mutex.s
+// file : signal.cpp
 //
 // This file is part of Tupai.
 //
@@ -17,29 +17,32 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-.global mutex_lock_impl
-.global mutex_unlock_impl
+// Tupai
+#include <tupai/sys/signal.hpp>
+#include <tupai/util/mutex.hpp>
 
-.section .text
+namespace tupai
+{
+	namespace sys
+	{
+		static util::hw_mutex hw_mutex;
 
-	mutex_lock_impl:
+		void signal_t::reset() volatile
+		{
+			hw_mutex.lock(); // Begin critical section
 
-		mov $1, %rax
+			this->fired = false;
 
-	_lock:
-			xchg (%rdi), %rax // Perform exchange
+			hw_mutex.unlock(); // End critical section
+		}
 
-			test %rax, %rax
-			jnz preempt // If the mutex was not 0 (i.e: already locked) jump back to the lock procedure (TODO: pre-empt instead)
+		void signal_t::fire() volatile
+		{
+			hw_mutex.lock(); // Begin critical section
 
-		ret
+			this->fired = true;
 
-	preempt:
-		int $0x80
-
-	mutex_unlock_impl:
-
-		mov $0, %rax
-		xchg (%rdi), %rax // Perform exchange
-
-		ret
+			hw_mutex.unlock(); // End critical section
+		}
+	}
+}

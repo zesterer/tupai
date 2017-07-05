@@ -66,6 +66,11 @@
 		pushal
 		cld
 
+		push %edx // Arg 2
+		push %ecx // Arg 1
+		push %ebx // Arg 0
+		push %eax // Call ID
+
 		push %esp // Pass the current stack pointer
 		call syscall_isr_main
 		mov %eax, %esp // Restore the thread stack pointer

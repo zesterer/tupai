@@ -24,6 +24,7 @@
 #include <tupai/util/vector.hpp>
 #include <tupai/util/out.hpp>
 #include <tupai/util/mutex.hpp>
+#include <tupai/util/spinlock.hpp>
 
 #if defined(ARCH_FAMILY_x86)
 	#include <tupai/x86/multiboot.hpp>
@@ -36,7 +37,7 @@ namespace tupai
 		static const uint64_t MMAP_BR_P2 = 8;
 		static const uint64_t MMAP_BR    = 1 << MMAP_BR_P2;
 
-		util::mutex mmap_mutex;
+		util::spinlock_t spinlock;
 
 		struct mmap_br_t;
 
@@ -81,14 +82,14 @@ namespace tupai
 
 		void mmap_init()
 		{
-			mmap_mutex.lock(); // Begin critical section
+			spinlock.lock(); // Begin critical section
 
 			root = mmap_node_t(3, mmap_status_t(NO_PROC_ID, false));
 
 			//root.br = new mmap_br_t();
 			//root.br->depth = 2;//util::align_ceiling(sizeof(size_t) * 8 - ARCH_PAGE_SIZE_P2, MMAP_BR_P2) / MMAP_BR_P2 - 1;
 
-			mmap_mutex.unlock(); // End critical section
+			spinlock.unlock(); // End critical section
 
 			#if defined(ARCH_FAMILY_x86)
 				x86::mb_meminfo_t meminfo = x86::multiboot_get_meminfo();
@@ -136,16 +137,16 @@ namespace tupai
 			}
 		}
 
-		void mmap_reserve(uint64_t start, uint64_t size, pid_t owner)
+		void mmap_reserve(uint64_t start, uint64_t size, id_t owner)
 		{
-			mmap_mutex.lock(); // Begin critical section
+			spinlock.lock(); // Begin critical section
 
 			uint64_t pstart = start / ARCH_PAGE_SIZE;
 			uint64_t psize = util::align_ceiling(start + size, ARCH_PAGE_SIZE) / ARCH_PAGE_SIZE - pstart;
 
 			__mmap_reserve(&root, 0, mmap_status_t(owner, true), pstart, psize);
 
-			mmap_mutex.unlock(); // End critical section
+			spinlock.unlock(); // End critical section
 		}
 
 		mmap_status_t __mmap_display(mmap_node_t* node, uint64_t addr, mmap_status_t cstatus)
@@ -163,7 +164,7 @@ namespace tupai
 				if (node->status != cstatus)
 				{
 					cstatus = node->status;
-					util::println((void*)(addr * ARCH_PAGE_SIZE), " : owner = ", proc_get_name(cstatus.owner), " (", (int32_t)cstatus.owner, "), valid = ", cstatus.valid > 0);
+					util::println((void*)(addr + 0 * ARCH_PAGE_SIZE), " : owner = ", proc_get_name(cstatus.owner), " (", (int32_t)cstatus.owner, "), valid = ", cstatus.valid > 0);
 				}
 
 				return cstatus;
@@ -172,12 +173,12 @@ namespace tupai
 
 		void mmap_display()
 		{
-			mmap_mutex.lock(); // Begin critical section
+			spinlock.lock(); // Begin critical section
 
 			util::println("--- Physical Memory Map (1 page = ", util::fmt_int<uint16_t>(ARCH_PAGE_SIZE, 16), ") ---");
 			__mmap_display(&root, 0, mmap_status_t(INVALID_PROC_ID, false));
 
-			mmap_mutex.unlock(); // End critical section
+			spinlock.unlock(); // End critical section
 		}
 	}
 }

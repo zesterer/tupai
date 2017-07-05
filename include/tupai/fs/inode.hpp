@@ -23,6 +23,8 @@
 // Tupai
 #include <tupai/fs/com.hpp>
 #include <tupai/fs/fs.hpp>
+#include <tupai/fs/desc.hpp>
+#include <tupai/fs/vtable.hpp>
 #include <tupai/util/vector.hpp>
 
 // Standard
@@ -55,10 +57,12 @@ namespace tupai
 
 		struct inode_t
 		{
-			id_t  id = 0;
-			fs_t* fs = nullptr;
+			id_t id = 0;
+			id_t fs = 0;
 
 			inode_type type;
+			vtable_t* vtable = nullptr;
+
 			util::vector_t<inode_child_t> dir_table;
 
 			id_t     owner;
@@ -69,6 +73,11 @@ namespace tupai
 
 			uint64_t last_access;
 			uint64_t last_modify;
+
+			inode_t(inode_type type)
+			{
+				this->type = type;
+			};
 		};
 
 		void inode_add_child(inode_t* parent, inode_t* child, const char* name);

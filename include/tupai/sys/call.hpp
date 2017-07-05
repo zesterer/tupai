@@ -30,12 +30,33 @@ namespace tupai
 	{
 		const uint8_t CALL_IRQ = 0x80;
 
-		const int CALL_YIELD = 1;
+		enum class CALL
+		{
+			// Process control
+			YIELD = 0x100,
+			// and more...
+
+			// File descriptor creation
+			OPEN   = 0x200,
+			PIPE   = 0x201,
+			SOCKET = 0x202,
+			// and more...
+
+			// File descriptor destruction
+			CLOSE = 0x300,
+			// and more...
+
+			// File manipulation
+			READ  = 0x400,
+			WRITE = 0x401,
+			SEEK  = 0x402,
+			// and more...
+		};
 
 		void call_bind();
 		void call_init();
 
-		void call(int call);
+		void call(CALL call, size_t arg0, size_t arg1, size_t arg2);
 	}
 }
 

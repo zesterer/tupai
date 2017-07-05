@@ -40,7 +40,7 @@ namespace tupai
 
 		bool pool_construct(pool_t* pool, void* start, size_t size, size_t block_size)
 		{
-			pool->mutex.lock(); // Begin critical section
+			pool->spinlock.lock(); // Begin critical section
 
 			pool->block_size  = block_size;
 			pool->body        = util::align_ceiling((size_t)start, 16); // Align to 16 bytes
@@ -60,14 +60,14 @@ namespace tupai
 
 			bool success = (pool->block_count > 0);
 
-			pool->mutex.unlock(); // End critical section
+			pool->spinlock.unlock(); // End critical section
 
 			return success;
 		}
 
 		void* pool_alloc(pool_t* pool, size_t n)
 		{
-			pool->mutex.lock(); // Begin critical section
+			pool->spinlock.lock(); // Begin critical section
 
 			size_t start = 0;
 			size_t blocks_needed = util::align_ceiling(n, pool->block_size) / pool->block_size;
@@ -111,13 +111,13 @@ namespace tupai
 				mem = (void*)(pool->body + start * pool->block_size);
 			}
 
-			pool->mutex.unlock(); // End critical section
+			pool->spinlock.unlock(); // End critical section
 			return mem;
 		}
 
 		void pool_dealloc(pool_t* pool, void* ptr)
 		{
-			pool->mutex.lock(); // Begin critical section
+			pool->spinlock.lock(); // Begin critical section
 
 			size_t index = (size_t)ptr - pool->body;
 
@@ -133,12 +133,14 @@ namespace tupai
 			for (size_t i = index + 1; pool_get(pool, i) == block_status::TAIL && i < pool->block_count; i ++)
 				pool_set(pool, i, block_status::UNUSED);
 
-			pool->mutex.unlock(); // End critical section
+			pool->spinlock.unlock(); // End critical section
 		}
 
 		void pool_display(pool_t* pool, size_t n)
 		{
 			util::println("--- Memory pool map ---");
+
+			pool->spinlock.lock(); // Begin critical section
 
 			size_t max = 0;
 			for (size_t i = 0; i < n; i ++)
@@ -173,6 +175,8 @@ namespace tupai
 				}
 			}
 			util::print('\n');
+
+			pool->spinlock.unlock(); // End critical section
 		}
 
 		block_status pool_get(pool_t* pool, size_t index)

@@ -36,6 +36,7 @@ namespace tupai
 		// Forward declaration
 		struct inode_t;
 		enum class inode_type;
+		struct vtable_t;
 
 		struct fs_t
 		{
@@ -50,7 +51,7 @@ namespace tupai
 			fs_t(const char* name = nullptr);
 		};
 
-		inode_t* fs_create_inode(fs_t* fs, inode_type type);
+		inode_t* fs_create_inode(fs_t* fs, inode_type type, vtable_t* vtable);
 	}
 }
 

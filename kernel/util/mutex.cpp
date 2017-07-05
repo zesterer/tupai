@@ -20,14 +20,18 @@
 // Tupai
 #include <tupai/util/mutex.hpp>
 #include <tupai/util/out.hpp>
+#include <tupai/sys/thread.hpp>
 #include <tupai/interrupt.hpp>
 
 namespace tupai
 {
 	namespace util
 	{
+		/*
 		extern "C" void mutex_lock_impl(volatile size_t* val);
 		extern "C" void mutex_unlock_impl(volatile size_t* val);
+
+		hw_mutex mutex_hw_mutex;
 
 		bool mutex::is_locked() volatile
 		{
@@ -36,17 +40,42 @@ namespace tupai
 
 		void mutex::lock() volatile
 		{
-			mutex_lock_impl(&this->val);
+			if (interrupt_enabled())
+			{
+				mutex_hw_mutex.lock(); // Begin critical section
+
+				if (this->is_locked())
+				{
+					sys::thread_wait_signal(sys::thread_get_id(), &this->signal);
+					mutex_hw_mutex.unlock(); // End critical section
+					mutex_lock_impl(&this->val);
+				}
+				else
+				{
+					mutex_lock_impl(&this->val);
+					mutex_hw_mutex.unlock(); // End critical section
+				}
+
+				this->signal.reset();
+			}
 		}
 
 		void mutex::unlock() volatile
 		{
-			mutex_unlock_impl(&this->val);
-		}
+			//mutex_hw_mutex.lock(); // Begin critical section
+
+			if (interrupt_enabled())
+			{
+				mutex_unlock_impl(&this->val);
+				this->signal.fire();
+			}
+
+			//mutex_hw_mutex.unlock(); // End critical section
+		}*/
 
 		static volatile bool hw_int_enabled;
 		static volatile bool hw_locked = false;
-		static mutex hw_mutex_mutex;
+		//static mutex hw_mutex_mutex;
 
 		bool hw_mutex::is_locked() volatile
 		{

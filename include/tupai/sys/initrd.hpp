@@ -28,7 +28,7 @@ namespace tupai
 {
 	namespace sys
 	{
-		void initrd_cache_add(void* start, size_t size, const char* args);
+		void initrd_add(void* start, size_t size, const char* args);
 		void initrd_init();
 	}
 }

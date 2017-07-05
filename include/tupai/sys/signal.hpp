@@ -1,5 +1,5 @@
 //
-// file : pool.hpp
+// file : signal.hpp
 //
 // This file is part of Tupai.
 //
@@ -17,12 +17,11 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_SYS_POOL_HPP
-#define TUPAI_SYS_POOL_HPP
+#ifndef TUPAI_SYS_SIGNAL_HPP
+#define TUPAI_SYS_SIGNAL_HPP
 
 // Tupai
-#include <tupai/util/mutex.hpp>
-#include <tupai/util/spinlock.hpp>
+#include <tupai/fs/inode.hpp>
 
 // Standard
 #include <stddef.h>
@@ -32,19 +31,15 @@ namespace tupai
 {
 	namespace sys
 	{
-		struct pool_t
+		struct signal_t
 		{
-			size_t map;
-			size_t body;
-			size_t block_size;
-			size_t block_count;
-			util::spinlock_t spinlock;
-		};
+			volatile bool fired = false;
 
-		bool  pool_construct(pool_t* pool, void* start, size_t size, size_t block_size = 64);
-		void* pool_alloc(pool_t* pool, size_t n);
-		void  pool_dealloc(pool_t* pool, void* ptr);
-		void  pool_display(pool_t* pool, size_t n = 32);
+			bool has_fired() volatile { return this->fired; }
+
+			void reset() volatile;
+			void fire() volatile;
+		};
 	}
 }
 

@@ -19,39 +19,43 @@
 
 // Tupai
 #include <tupai/sys/initrd.hpp>
-#include <tupai/sys/thread.hpp>
 #include <tupai/sys/mmap.hpp>
 #include <tupai/util/out.hpp>
 #include <tupai/util/tar.hpp>
 #include <tupai/fs/vfs.hpp>
 #include <tupai/fs/path.hpp>
+#include <tupai/fs/vtable.hpp>
 
 namespace tupai
 {
 	namespace sys
 	{
-		struct initrd_cache_t
+		struct initrd_t
 		{
 			void*       start = nullptr;
 			size_t      size = 0;
 			const char* args = nullptr;
+
+			id_t fs;
 		};
 
 		static const size_t INITRD_MAX = 32;
-		initrd_cache_t initrd_cache[INITRD_MAX];
+		initrd_t initrds[INITRD_MAX];
 
-		static void initrd_thread(int argc, char* argv[]);
+		fs::vtable_t initrd_vtable;
 
-		void initrd_cache_add(void* start, size_t size, const char* args)
+		void initrd_create(initrd_t* initrd, const char* name);
+
+		void initrd_add(void* start, size_t size, const char* args)
 		{
 			// Search for empty cache
 			for (size_t i = 0; i < INITRD_MAX; i ++)
 			{
-				if (initrd_cache[i].size == 0)
+				if (initrds[i].size == 0)
 				{
-					initrd_cache[i].start = start;
-					initrd_cache[i].size  = size;
-					initrd_cache[i].args  = args;
+					initrds[i].start = start;
+					initrds[i].size  = size;
+					initrds[i].args  = args;
 					break;
 				}
 			}
@@ -61,27 +65,20 @@ namespace tupai
 		{
 			for (size_t i = 0; i < INITRD_MAX; i ++)
 			{
-				if (initrd_cache[i].size != 0)
-				{
-					//util::println("Found initrd!");
-					//util::tar_print_all((util::tar_header_t*)initrd_cache[i].start);
-
-					sys::thread_create(initrd_thread, 1, (char**)&initrd_cache[i], "initrd");
-				}
+				if (initrds[i].size != 0)
+					initrd_create(&initrds[i], "initrd");
 			}
 		}
 
-		void initrd_thread(int argc, char* argv[])
+		void initrd_create(initrd_t* initrd, const char* name)
 		{
-			(void)argc;
-
-			const initrd_cache_t* initrd = (const initrd_cache_t*)argv;
-
-			fs::fs_t* fs = fs::vfs_create_fs("initrd");
+			fs::fs_t* fs = fs::vfs_create_fs(name);
 			fs::vfs_set_root(fs->root);
 
+			initrd->fs = fs->id;
+
 			// TODO : re-add this
-			//mmap_reserve((size_t)initrd->start, (size_t)initrd->size, KERNEL_PROC_ID); // Reserve the memory
+			mmap_reserve((size_t)initrd->start, (size_t)initrd->size, KERNEL_PROC_ID); // Reserve the memory
 
 			util::tar_header_t* cheader = (util::tar_header_t*)initrd->start;
 			while (cheader != nullptr)
@@ -128,7 +125,7 @@ namespace tupai
 							}
 						}
 
-						fs::inode_t* ninode = fs::fs_create_inode(fs, type);
+						fs::inode_t* ninode = fs::fs_create_inode(fs, type, &initrd_vtable);
 						fs::inode_add_child(cinode, ninode, buff);
 						cinode = ninode;
 					}
@@ -136,8 +133,6 @@ namespace tupai
 
 				cheader = tar_next(cheader);
 			}
-
-			while(1);
 		}
 	}
 }

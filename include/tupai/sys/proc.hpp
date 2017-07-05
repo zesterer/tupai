@@ -33,12 +33,9 @@ namespace tupai
 {
 	namespace sys
 	{
-		typedef long pid_t;
-		typedef long tid_t;
-
-		const pid_t INVALID_PROC_ID = -2;
-		const pid_t NO_PROC_ID      = -1;
-		const pid_t KERNEL_PROC_ID  = 0;
+		const id_t INVALID_PROC_ID = -2;
+		const id_t NO_PROC_ID      = -1;
+		const id_t KERNEL_PROC_ID  = 0;
 
 		enum class proc_state
 		{
@@ -63,7 +60,7 @@ namespace tupai
 			{
 				const static size_t NAME_MAX = 256;
 
-				tid_t id;
+				id_t id;
 				char name[NAME_MAX];
 				thread_state state;
 
@@ -71,20 +68,20 @@ namespace tupai
 				void* stack;
 			};
 
-			pid_t id;            // Process ID
+			id_t id;             // Process ID
 			char name[NAME_MAX]; // Process name
 			proc_state state;    // Process state
-			fs::id_t dir;        // Current directory
+			id_t dir;            // Current directory
 
-			tid_t thread_counter = 0;
+			id_t thread_counter = 0;
 			util::vector_t<thread_t> threads; // Process threads
 
-			fs::id_t desc_counter = 0;
+			id_t desc_counter = 0;
 			util::vector_t<fs::desc_t> desc; // File descriptors
 		};
 
 		void proc_init();
-		const char* proc_get_name(pid_t id);
+		const char* proc_get_name(id_t id);
 	}
 }
 

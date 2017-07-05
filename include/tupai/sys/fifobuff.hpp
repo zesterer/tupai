@@ -22,6 +22,7 @@
 
 // Tupai
 #include <tupai/util/mutex.hpp>
+#include <tupai/util/spinlock.hpp>
 
 // Standard
 #include <stddef.h>
@@ -47,7 +48,7 @@ namespace tupai
 			volatile size_t  tail   = 0;
 			volatile size_t  length = 0;
 
-			volatile util::mutex mutex;
+			volatile util::spinlock_t spinlock;
 
 		public:
 			void    write(uint8_t c) volatile { return __fifo_write(*this, c); }
@@ -78,11 +79,11 @@ namespace tupai
 		template <size_t SIZE>
 		void __fifo_write(volatile fifobuff_t<SIZE>& buff, uint8_t c)
 		{
-			buff.mutex.lock(); // Begin critical section
+			buff.spinlock.lock(); // Begin critical section
 
 			__fifo_write_unsafe(buff, c);
 
-			buff.mutex.unlock(); // End critical section
+			buff.spinlock.unlock(); // End critical section
 		}
 
 		template <size_t SIZE>
@@ -119,13 +120,13 @@ namespace tupai
 				while (__fifo_len(buff) <= 0);
 
 				// Lock the buffer while we check
-				buff.mutex.lock(); // Begin critical section
+				buff.spinlock.lock(); // Begin critical section
 
 				// Double-check to make sure there's STILL data
 				if (buff.length > 0)
 					break; // Exit to start reading data
 				else
-					buff.mutex.unlock(); // Somebody jumped the queue. Damn!
+					buff.spinlock.unlock(); // Somebody jumped the queue. Damn!
 			}
 
 			buff.length --;
@@ -135,7 +136,7 @@ namespace tupai
 			if (buff.length != 0)
 					buff.tail = (buff.tail + 1) % SIZE;
 
-			buff.mutex.unlock(); // End critical section
+			buff.spinlock.unlock(); // End critical section
 
 			return val;
 		}
@@ -150,11 +151,11 @@ namespace tupai
 		template <size_t SIZE>
 		size_t __fifo_len(volatile fifobuff_t<SIZE>& buff)
 		{
-			buff.mutex.lock(); // Begin critical section
+			buff.spinlock.lock(); // Begin critical section
 
 			size_t len = __fifo_len_unsafe(buff);
 
-			buff.mutex.unlock(); // End critical section
+			buff.spinlock.unlock(); // End critical section
 
 			return len;
 		}

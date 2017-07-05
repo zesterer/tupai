@@ -31,7 +31,7 @@ namespace tupai
 			// Do nothing
 		}
 
-		const char* proc_get_name(pid_t id)
+		const char* proc_get_name(id_t id)
 		{
 			switch (id)
 			{

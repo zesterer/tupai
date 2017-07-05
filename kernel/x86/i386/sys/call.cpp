@@ -1,5 +1,5 @@
 //
-// file : pool.hpp
+// file : call.cpp
 //
 // This file is part of Tupai.
 //
@@ -17,35 +17,26 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_SYS_POOL_HPP
-#define TUPAI_SYS_POOL_HPP
-
 // Tupai
-#include <tupai/util/mutex.hpp>
-#include <tupai/util/spinlock.hpp>
-
-// Standard
-#include <stddef.h>
-#include <stdint.h>
+#include <tupai/sys/call.hpp>
+#include <tupai/util/out.hpp>
 
 namespace tupai
 {
 	namespace sys
 	{
-		struct pool_t
+		void call(CALL call, size_t arg0, size_t arg1, size_t arg2)
 		{
-			size_t map;
-			size_t body;
-			size_t block_size;
-			size_t block_count;
-			util::spinlock_t spinlock;
-		};
-
-		bool  pool_construct(pool_t* pool, void* start, size_t size, size_t block_size = 64);
-		void* pool_alloc(pool_t* pool, size_t n);
-		void  pool_dealloc(pool_t* pool, void* ptr);
-		void  pool_display(pool_t* pool, size_t n = 32);
+			asm volatile (
+				"mov %0, %%rax \n\
+				 mov %1, %%rbx \n\
+				 mov %2, %%rcx \n\
+				 mov %3, %%rdx \n\
+				 int $0x80"
+				:
+				: "r"((size_t)call), "r"(arg0), "r"(arg1), "r"(arg2)
+				: "%rax", "%rbx", "%rcx", "%rcx"
+			);
+		}
 	}
 }
-
-#endif

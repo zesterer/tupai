@@ -41,8 +41,8 @@ namespace tupai
 		static volatile bool tty_initiated = false;
 		static volatile int tty_serial_port = -1;
 
-		static volatile util::mutex    tty_mutex;
-		static volatile util::hw_mutex tty_hw_mutex;
+		static util::spinlock_t spinlock;
+		static util::hw_mutex   tty_hw_mutex;
 
 		// The I/O pipe. 256 character buffer
 		static volatile sys::pipe_t<8192> iopipe;
@@ -52,62 +52,55 @@ namespace tupai
 
 		void tty_init()
 		{
-			tty_mutex.lock(); // Begin critical section
+			spinlock.lock(); // Begin critical section
 
-			if (tty_initiated)
+			if (!tty_initiated)
 			{
-				tty_mutex.unlock(); // End critical section
-				return;
-			}
+				#if defined(ARCH_FAMILY_x86)
+					x86::textmode_init();
+				#endif
 
-			#if defined(ARCH_FAMILY_x86)
-				x86::textmode_init();
-			#endif
-
-			// Open a serial port
-			{
-				// Find the names of available serial ports
-				const char** serial_port_names = dev::serial_list_ports();
-				// Search the serial port list, trying to open a debugging port
-				for (size_t i = 0; i < dev::serial_count_ports() && tty_serial_port == -1; i ++)
-					tty_serial_port = dev::serial_open_port(serial_port_names[i], 57600, 8, 1, dev::serial_parity::NONE);
-
-				if (tty_serial_port != -1)
+				// Open a serial port
+				if (false)
 				{
-					debug_print(
-						"Started serial tty output on ", serial_port_names[tty_serial_port], '\n',
-						"  baudrate -> ", 57600, '\n',
-						"  databits -> ", 8, '\n',
-						"  stopbits -> ", 1, '\n',
-						"  parity   -> ", "NONE", '\n'
-					);
+					// Find the names of available serial ports
+					const char** serial_port_names = dev::serial_list_ports();
+					// Search the serial port list, trying to open a debugging port
+					for (size_t i = 0; i < dev::serial_count_ports() && tty_serial_port == -1; i ++)
+						tty_serial_port = dev::serial_open_port(serial_port_names[i], 57600, 8, 1, dev::serial_parity::NONE);
+
+					if (tty_serial_port != -1)
+					{
+						debug_print(
+							"Started serial tty output on ", serial_port_names[tty_serial_port], '\n',
+							"  baudrate -> ", 57600, '\n',
+							"  databits -> ", 8, '\n',
+							"  stopbits -> ", 1, '\n',
+							"  parity   -> ", "NONE", '\n'
+						);
+					}
+					else
+						debug_print("Could not find port for serial tty output!\n");
 				}
-				else
-					debug_print("Could not find port for serial tty output!\n");
+
+				// Create the TTY I/O threads
+				if (sys::threading_enabled())
+				{
+					sys::thread_create(tty_in_thread, 0, nullptr, "tty-in");
+					sys::thread_create(tty_out_thread, 0, nullptr, "tty-out");
+				}
+
+				tty_initiated = true;
 			}
 
-			// Create the TTY I/O threads
-			if (sys::threading_enabled())
-			{
-				sys::thread_create(tty_in_thread, 0, nullptr, "tty-in");
-				sys::thread_create(tty_out_thread, 0, nullptr, "tty-out");
-			}
-			else
-			{
-				tty_mutex.unlock(); // End critical section
-				return;
-			}
-
-			tty_initiated = true;
-
-			tty_mutex.unlock(); // End critical section
+			spinlock.unlock(); // End critical section
 		}
 
 		void tty_write(char c)
 		{
-			if (tty_initiated) tty_mutex.lock(); // Begin critical section
+			spinlock.lock(); // Begin critical section
 			iopipe.write(c);
-			if (tty_initiated) tty_mutex.unlock(); // End critical section
+			spinlock.unlock(); // End critical section
 		}
 
 		void tty_print(const char* str)
@@ -118,9 +111,9 @@ namespace tupai
 
 		char tty_read()
 		{
-			if (tty_initiated) tty_mutex.lock(); // Begin critical section
+			spinlock.lock(); // Begin critical section
 			char val = iopipe.read();
-			if (tty_initiated) tty_mutex.unlock(); // End critical section
+			spinlock.unlock(); // End critical section
 			return val;
 		}
 
@@ -140,7 +133,8 @@ namespace tupai
 			{
 				unsigned char c = dev::serial_read(tty_serial_port);
 
-				iopipe.write_in_unsafe(c); // Unsafe call to avoid interrupt locking
+				if (c != 0)
+					iopipe.write_in_unsafe(c); // Unsafe call to avoid interrupt locking
 			}
 		}
 
@@ -161,8 +155,6 @@ namespace tupai
 
 				if (c == '\n')
 					dev::serial_write(tty_serial_port, '\r');
-				//else if (c == '\r')
-				//	dev::serial_write(tty_serial_port, '\n');
 			}
 		}
 	}
