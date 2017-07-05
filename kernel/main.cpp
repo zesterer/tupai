@@ -55,13 +55,6 @@ namespace tupai
 		sys::kmem_init(); // Initiate kernel memory allocation
 		sys::mmap_init(); // Initiate page map & frame allocation
 
-		sys::threading_init(); // Initiate multi-threading
-		sys::proc_init();      // Initiate processes
-		sys::call_bind();      // Initiate SYSCALL routine
-
-		fs::vfs_init();     // Initiate filesystem
-		sys::initrd_init(); // Initiate initrd filesystems
-
 		// Map kernel memory
 		//sys::mmap_reserve(0, arch_get_kernel_end() - arch_get_offset(), sys::KERNEL_PROC_ID);
 	}
@@ -73,6 +66,13 @@ namespace tupai
 		// The methods through which this is done are platform-dependent.
 		// Now, however, it's relatively safe to run most code.
 
+		sys::threading_init(); // Initiate multi-threading
+		sys::proc_init();      // Initiate processes
+		sys::call_bind();      // Initiate SYSCALL routine
+
+		fs::vfs_init();     // Initiate filesystem
+		sys::initrd_init(); // Initiate initrd filesystems
+
 		// Initiate virtual devices
 		dev::serial_init();
 		dev::tty_init();
@@ -81,5 +81,7 @@ namespace tupai
 		sys::thread_create(shell_main, 0, nullptr, "shell");
 
 		interrupt_enable(true); // Enable interrupts
+
+		sys::thread_kill(sys::thread_get_id());
 	}
 }

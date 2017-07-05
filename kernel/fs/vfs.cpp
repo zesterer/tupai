@@ -22,37 +22,30 @@
 #include <tupai/util/mutex.hpp>
 #include <tupai/util/spinlock.hpp>
 #include <tupai/util/vector.hpp>
+#include <tupai/util/hashtable.hpp>
 #include <tupai/util/out.hpp>
 
 namespace tupai
 {
 	namespace fs
 	{
-		struct inode_pair_t
-		{
-			inode_t* inode;
-			id_t     id;
+		static util::spinlock_t spinlock;
 
-			inode_pair_t(inode_t* inode, id_t id)
-			{
-				this->inode = inode;
-				this->id = id;
-			}
-		};
+		static util::hashtable_t<id_t, fs_t*>    fs;
+		static util::hashtable_t<id_t, inode_t*> inodes;
 
-		util::spinlock_t spinlock;
+		inode_t* root_inode = nullptr;
 
-		util::vector_t<fs_t*>    active_fs;
-		util::vector_t<inode_pair_t> active_inodes;
-		inode_t*                 root_inode = nullptr;
-
-		id_t g_inode_id = 0;
+		id_t g_inode_counter = 0;
 
 		static void vfs_print_inode(inode_t* inode, const char* name, size_t depth = 0);
 
 		void vfs_init()
 		{
 			spinlock.lock(); // Begin critical section
+
+			fs     = util::hashtable_t<id_t, fs_t*>();
+			inodes = util::hashtable_t<id_t, inode_t*>();
 
 			spinlock.unlock(); // End critical section
 		}
@@ -63,8 +56,8 @@ namespace tupai
 			vfs_print_inode(root_inode, "");
 
 			util::println("--- Filesystem Devices ---");
-			//for (size_t i = 0; i < active_fs.size(); i ++)
-			//	util::println(active_fs[i]->id, " : ", active_fs[i]->name);
+			for (size_t i = 0; i < fs.size(); i ++)
+				util::println(fs.nth_key(i), " : ", fs.nth(i)->name);
 		}
 
 		void vfs_print_inode(inode_t* inode, const char* name, size_t depth)
@@ -93,10 +86,12 @@ namespace tupai
 		fs_t* vfs_create_fs(const char* name)
 		{
 			fs_t* nfs = new fs_t(name);
+
+			// Create a root for the inode
 			inode_t* nroot = fs_create_inode(nfs, inode_type::DIRECTORY, nullptr);
 			nfs->root = nroot;
 
-			active_fs.push(nfs);
+			fs.add(nfs->id, nfs);
 
 			return nfs;
 		}
@@ -106,18 +101,18 @@ namespace tupai
 			inode_t* ninode = new inode_t(type);
 			ninode->id = id;
 
-			id_t g_id = ++g_inode_id;
-			active_inodes.push(inode_pair_t(ninode, g_id));
+			id_t g_id = ++g_inode_counter;
+			inodes.add(g_id, ninode);
 
 			return ninode;
 		}
 
 		inode_t* vfs_find_inode(id_t g_id)
 		{
-			for (size_t i = 0; i < active_inodes.size(); i ++)
+			for (size_t i = 0; i < inodes.size(); i ++)
 			{
-				if (active_inodes[i].id == g_id)
-					return active_inodes[i].inode;
+				if (inodes.nth_key(i) == g_id)
+					return inodes.nth(i);
 			}
 
 			return nullptr;
