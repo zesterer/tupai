@@ -157,7 +157,12 @@ namespace tupai
 					if (this->filled[index] && this->keys[index] == key)
 						return this->items[index];
 				}
-				return T();
+				return nullptr;
+			}
+
+			T operator[](size_t i)
+			{
+				return this->get(i);
 			}
 
 			T nth(size_t n)
@@ -173,7 +178,7 @@ namespace tupai
 							count ++;
 					}
 				}
-				return T();
+				return nullptr;
 			}
 
 			Key nth_key(size_t n)

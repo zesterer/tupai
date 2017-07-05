@@ -34,12 +34,12 @@ namespace tupai
 	namespace fs
 	{
 		void vfs_init();
-		void vfs_print();
+		void vfs_display();
 
 		void     vfs_set_root(inode_t* inode);
 		fs_t*    vfs_create_fs(const char* name);
 		inode_t* vfs_create_inode(id_t id, inode_type type);
-		inode_t* vfs_find_inode(id_t g_id);
+		inode_t* vfs_get_inode(id_t g_id);
 	}
 }
 

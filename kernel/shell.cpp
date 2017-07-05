@@ -97,7 +97,7 @@ namespace tupai
 			}
 			else if (util::str_equal(buff, "fs"))
 			{
-				fs::vfs_print();
+				fs::vfs_display();
 			}
 			else if (util::str_equal(buff, "pool"))
 			{

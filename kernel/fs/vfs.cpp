@@ -38,8 +38,6 @@ namespace tupai
 
 		id_t g_inode_counter = 0;
 
-		static void vfs_print_inode(inode_t* inode, const char* name, size_t depth = 0);
-
 		void vfs_init()
 		{
 			spinlock.lock(); // Begin critical section
@@ -48,34 +46,6 @@ namespace tupai
 			inodes = util::hashtable_t<id_t, inode_t*>();
 
 			spinlock.unlock(); // End critical section
-		}
-
-		void vfs_print()
-		{
-			util::println("--- Virtual Filesystem ---");
-			vfs_print_inode(root_inode, "");
-
-			util::println("--- Filesystem Devices ---");
-			for (size_t i = 0; i < fs.size(); i ++)
-				util::println(fs.nth_key(i), " : ", fs.nth(i)->name);
-		}
-
-		void vfs_print_inode(inode_t* inode, const char* name, size_t depth)
-		{
-			if (inode == nullptr)
-				return;
-
-			// Indentation
-			for (size_t i = 0; i < depth; i ++)
-				util::print((i == depth - 1) ? "|--" : "|  ");
-			// Name
-			util::print('[', inode->id, "] ", name, (inode->type == inode_type::DIRECTORY) ? "/" : "", '\n');
-
-			for (size_t i = 0; i < inode->dir_table.size(); i ++)
-			{
-				inode_child_t* ninode = &inode->dir_table[i];
-				vfs_print_inode(ninode->inode, ninode->get_name(), depth + 1);
-			}
 		}
 
 		void vfs_set_root(inode_t* inode)
@@ -87,7 +57,7 @@ namespace tupai
 		{
 			fs_t* nfs = new fs_t(name);
 
-			// Create a root for the inode
+			// Create a root inode for the filesystem
 			inode_t* nroot = fs_create_inode(nfs, inode_type::DIRECTORY, nullptr);
 			nfs->root = nroot;
 
@@ -107,15 +77,39 @@ namespace tupai
 			return ninode;
 		}
 
-		inode_t* vfs_find_inode(id_t g_id)
+		inode_t* vfs_get_inode(id_t g_id)
 		{
-			for (size_t i = 0; i < inodes.size(); i ++)
-			{
-				if (inodes.nth_key(i) == g_id)
-					return inodes.nth(i);
-			}
+			return inodes[g_id];
+		}
 
-			return nullptr;
+		void vfs_print_inode(inode_t* inode, const char* name, size_t depth = 0)
+		{
+			if (inode == nullptr)
+				return;
+
+			// Indentation
+			for (size_t i = 0; i < depth; i ++)
+				util::print((i == depth - 1) ? "|--" : "|  ");
+			// Name
+			util::print('[', inode->id, "] ", name, (inode->type == inode_type::DIRECTORY) ? "/" : "", '\n');
+
+			for (size_t i = 0; i < inode->dir_table.size(); i ++)
+			{
+				inode_child_t* ninode = &inode->dir_table[i];
+				vfs_print_inode(ninode->inode, ninode->get_name(), depth + 1);
+			}
+		}
+
+		void vfs_display()
+		{
+			util::println("--- Virtual Filesystem ---");
+			vfs_print_inode(root_inode, "");
+
+			util::print('\n');
+
+			util::println("--- Filesystem Devices ---");
+			for (size_t i = 0; i < fs.size(); i ++)
+				util::println(fs.nth_key(i), " : ", fs.nth(i)->name);
 		}
 	}
 }
