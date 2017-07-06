@@ -40,6 +40,7 @@ namespace tupai
 		};
 
 		id_t    desc_open(inode_t* inode);
+		int     desc_close(id_t desc);
 		ssize_t desc_read(id_t desc, size_t n, void* ret_buff);
 	}
 }

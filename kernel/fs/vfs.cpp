@@ -79,7 +79,7 @@ namespace tupai
 		{
 			id_t gid = ++g_inode_counter;
 			inode_t* ninode = new inode_t(type);
-			ninode->id = gid;
+			ninode->gid = gid;
 			ninode->id = id;
 
 			inodes.add(gid, ninode);
@@ -87,9 +87,9 @@ namespace tupai
 			return ninode;
 		}
 
-		inode_t* vfs_get_inode(id_t g_id)
+		inode_t* vfs_get_inode(id_t gid)
 		{
-			return inodes[g_id];
+			return inodes[gid];
 		}
 
 		inode_t* vfs_get_inode(const char* path)

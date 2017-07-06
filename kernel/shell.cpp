@@ -47,6 +47,38 @@ namespace tupai
 			"Copyright 2017, ", P_MAINTAINER_NAME);
 	}
 
+	size_t split_args(char* cmd, char* buff[], size_t size)
+	{
+		bool in_arg = false;
+		int j = 0;
+
+		// Read characters from the command until the null terminator
+		for (size_t i = 0; cmd[i] != '\0'; i ++)
+		{
+			// If it's whitespace, zero and skip it
+			if (cmd[i] == ' ' || cmd[i] == '\t')
+			{
+				cmd[i] = '\0';
+				in_arg = false;
+			}
+			else
+			{
+				// If it's not whitespace and we just entered a new region, assign it's location to the buffer list
+				if (!in_arg)
+				{
+					if ((size_t)j >= size) // We've reached the buffer limit
+						break;
+
+					buff[j] = &cmd[i];
+					j ++;
+				}
+				in_arg = true;
+			}
+		}
+
+		return j;
+	}
+
 	void shell_main(int argc, char* argv[])
 	{
 		(void)argc;
@@ -54,24 +86,31 @@ namespace tupai
 
 		// Display information
 		shell_motd();
-		util::println("Type 'help' for more info.");
+		util::println("Type 'help' for more info.\n");
 
 		bool halted = false;
 		while (!halted)
 		{
-			util::print("\n$ ");
+			util::print("$ ");
 
 			char buff[64];
 			util::readline(buff);
-			util::print('\n');
 
-			if (util::str_equal(buff, "help"))
+			char* argv[64];
+			size_t argc = split_args(buff, argv, 64);
+
+			if (argc == 0)
+			{
+				// Nothing
+			}
+			else if (util::str_equal(argv[0], "help"))
 			{
 				util::print(
 					"Available commands:\n",
 					"  help    -> Show this help text\n",
 					"  threads -> Show running threads\n",
 					"  fs      -> Show filesystem tree\n",
+					"  cat     -> Display the contents of a file\n",
 					"  pool    -> Show kernel memory pool\n",
 					"  motd    -> Show the MOTD\n",
 					"  div     -> Trigger a divided-by-zero exception\n",
@@ -80,7 +119,7 @@ namespace tupai
 					"  time    -> Show the system time\n"
 				);
 			}
-			else if (util::str_equal(buff, "threads"))
+			else if (util::str_equal(argv[0], "threads"))
 			{
 				size_t n = sys::threads_count();
 				for (size_t i = 0; i < n; i ++)
@@ -91,34 +130,47 @@ namespace tupai
 					util::println(i, ' ', id, ' ', name);
 				}
 			}
-			else if (util::str_equal(buff, "fs"))
+			else if (util::str_equal(argv[0], "fs"))
 			{
 				fs::vfs_display();
 			}
-			else if (util::str_equal(buff, "file"))
+			else if (util::str_equal(argv[0], "cat"))
 			{
-				id_t id;
-				const char* path = "/conf/init.cfg";
-				sys::call(sys::CALL::OPEN, (size_t)&id, (size_t)path);
-				util::println("FD id is ", id);
+				if (argc > 1)
+				{
+					id_t cfile;
+					const char* path = argv[1];
+					sys::call(sys::CALL::OPEN, (size_t)path, (size_t)&cfile);
+
+					char rbuff[512];
+					ssize_t n = 511;
+					sys::call(sys::CALL::READ, (size_t)cfile, (size_t)&n, (size_t)rbuff);
+
+					if (n > 0)
+						util::print(rbuff);
+
+					sys::call(sys::CALL::CLOSE, (size_t)cfile);
+				}
+				else
+					util::println("Please specify a file!");
 			}
-			else if (util::str_equal(buff, "pool"))
+			else if (util::str_equal(argv[0], "pool"))
 			{
 				sys::kmem_display();
 			}
-			else if (util::str_equal(buff, "motd"))
+			else if (util::str_equal(argv[0], "motd"))
 			{
 				shell_motd();
 			}
-			else if (util::str_equal(buff, "div"))
+			else if (util::str_equal(argv[0], "div"))
 			{
 				int volatile a = 5 / 0; //
 			}
-			else if (util::str_equal(buff, "panic"))
+			else if (util::str_equal(argv[0], "panic"))
 			{
 				panic("Panic triggered artificially");
 			}
-			else if (util::str_equal(buff, "info"))
+			else if (util::str_equal(argv[0], "info"))
 			{
 				util::print(
 					"System Info:\n",
@@ -129,7 +181,7 @@ namespace tupai
 				sys::kmem_info();
 				sys::mmap_display();
 			}
-			else if (util::str_equal(buff, "time"))
+			else if (util::str_equal(argv[0], "time"))
 			{
 				datetime_t time = dev::clock_read();
 
@@ -139,8 +191,8 @@ namespace tupai
 					util::fmt_int<unsigned char>(time.hour, 10, 2), ':', util::fmt_int<unsigned char>(time.min  , 10, 2), ':', util::fmt_int<unsigned char>(time.sec, 10, 2)
 				);
 			}
-			else if (util::str_len(buff) > 0)
-				util::println("Command '", buff, "' not found!");
+			else if (util::str_len(argv[0]) > 0)
+				util::println("Command '", argv[0], "' not found!");
 		}
 	}
 }

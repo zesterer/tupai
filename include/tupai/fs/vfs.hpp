@@ -35,7 +35,7 @@ namespace tupai
 		void vfs_display();
 
 		id_t     vfs_get_root();
-		inode_t* vfs_get_inode(id_t g_id);
+		inode_t* vfs_get_inode(id_t gid);
 		inode_t* vfs_get_inode(const char* path);
 
 		void vfs_set_root(inode_t* inode);

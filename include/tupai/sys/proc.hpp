@@ -88,6 +88,7 @@ namespace tupai
 
 		id_t proc_create(const char* name, id_t dir);
 		id_t proc_create_desc(id_t pid, fs::inode_t* inode);
+		int  proc_close_desc(id_t pid, id_t desc);
 	}
 }
 

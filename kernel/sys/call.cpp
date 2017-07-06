@@ -89,14 +89,30 @@ namespace tupai
 
 			case CALL::OPEN:
 				{
-					id_t*       desc_id = (id_t*)arg1;
-					const char* path = (const char*)arg2;
+					const char* path  = (const char*)arg1;
+					id_t*       rdesc = (id_t*)arg2;
 
 					fs::inode_t* inode = fs::vfs_get_inode(path);
 					if (inode == nullptr)
-						*desc_id = 0;
+						*rdesc = 0;
 					else
-						*desc_id = fs::desc_open(inode);
+						*rdesc = fs::desc_open(inode);
+				}
+				break;
+
+			case CALL::CLOSE:
+				{
+					id_t desc = (id_t)arg1;
+					fs::desc_close(desc);
+				}
+				break;
+
+			case CALL::READ:
+				{
+					id_t     desc  = (id_t)arg1;
+					ssize_t* rn    = (ssize_t*)arg2;
+					void*    rbuff = (void*)arg3;
+					*rn = fs::desc_read(desc, *rn, rbuff);
 				}
 				break;
 

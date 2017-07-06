@@ -40,10 +40,11 @@ namespace tupai
 			char    typeflag;
 		} __attribute__((packed));
 
-		void tar_print_all(tar_header_t* header);
-		void tar_print(tar_header_t* header);
+		void          tar_print_all(tar_header_t* header);
+		void          tar_print(tar_header_t* header);
 		tar_header_t* tar_next(tar_header_t* header);
-		size_t tar_size(tar_header_t* header);
+		size_t        tar_size(tar_header_t* header);
+		void*         tar_data(tar_header_t* header);
 	}
 }
 

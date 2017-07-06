@@ -28,7 +28,7 @@
 #include <tupai/fs/vtable.hpp>
 
 #include <tupai/util/tar.hpp>
-#include <tupai/util/out.hpp>
+#include <tupai/util/hashtable.hpp>
 
 namespace tupai
 {
@@ -44,16 +44,18 @@ namespace tupai
 		};
 
 		static const size_t INITRD_MAX = 32;
-		initrd_t initrds[INITRD_MAX];
+		static initrd_t initrds[INITRD_MAX];
 
-		fs::vtable_t initrd_vtable;
+		static fs::vtable_t initrd_vtable;
+
+		static util::hashtable_t<id_t, util::tar_header_t*> inodes;
 
 		void initrd_create(initrd_t* initrd, const char* name);
 
 		id_t    initrd_open_call (id_t pid, fs::inode_t* inode);
+		int     initrd_close_call(id_t pid, fs::desc_t* desc);
 		ssize_t initrd_read_call (id_t pid, fs::desc_t* desc, size_t n, void* ret_buff);
 		ssize_t initrd_write_call(id_t pid, fs::desc_t* desc, const void* buff, size_t n);
-		void    initrd_read_call (id_t pid, fs::desc_t* desc);
 
 		void initrd_add(void* start, size_t size, const char* args)
 		{
@@ -62,6 +64,8 @@ namespace tupai
 			{
 				if (initrds[i].size == 0)
 				{
+					initrds[i] = initrd_t();
+
 					initrds[i].start = start;
 					initrds[i].size  = size;
 					initrds[i].args  = args;
@@ -72,8 +76,11 @@ namespace tupai
 
 		void initrd_init()
 		{
-			initrd_vtable.open = initrd_open_call;
-			initrd_vtable.read = initrd_read_call;
+			initrd_vtable.open  = initrd_open_call;
+			initrd_vtable.close = initrd_close_call;
+			initrd_vtable.read  = initrd_read_call;
+
+			inodes = util::hashtable_t<id_t, util::tar_header_t*>();
 
 			for (size_t i = 0; i < INITRD_MAX; i ++)
 			{
@@ -138,6 +145,7 @@ namespace tupai
 
 						fs::inode_t* ninode = fs::fs_create_inode(fs, type, &initrd_vtable);
 						fs::inode_add_child(cinode, ninode, buff);
+						inodes.add(ninode->gid, cheader);
 						cinode = ninode;
 					}
 				}
@@ -151,12 +159,32 @@ namespace tupai
 			return proc_create_desc(pid, inode);
 		}
 
-		ssize_t initrd_read_call (id_t pid, fs::desc_t* desc, size_t n, void* ret_buff)
+		int initrd_close_call(id_t pid, fs::desc_t* desc)
 		{
-			size_t i;
-			for (i = 0; i < n && desc->offset < 128; i ++)
-				((uint8_t*)ret_buff)[i] = '!';
-			return i;
+			return proc_close_desc(pid, desc->id);
+		}
+
+		ssize_t initrd_read_call(id_t pid, fs::desc_t* desc, size_t n, void* ret_buff)
+		{
+			util::tar_header_t* header = inodes[desc->inode];
+
+			if (header != nullptr)
+			{
+				size_t filesize = util::tar_size(header);
+				uint8_t* data = (uint8_t*)util::tar_data(header);
+
+				size_t i;
+				for (i = 0; i + 1 < n && desc->offset < filesize; i ++)
+				{
+					((uint8_t*)ret_buff)[i] = data[desc->offset];
+					desc->offset ++;
+				}
+				((uint8_t*)ret_buff)[i] = '\0';
+
+				return i;
+			}
+			else
+				return -1;
 		}
 	}
 }

@@ -34,9 +34,9 @@ namespace tupai
 		struct vtable_t
 		{
 			id_t (*open) (id_t proc, inode_t* inode)                              = nullptr;
+			int     (*close)(id_t proc, desc_t* desc)                             = nullptr;
 			ssize_t (*read) (id_t proc, desc_t* desc, size_t n, void* ret_buff)   = nullptr;
 			ssize_t (*write)(id_t proc, desc_t* desc, const void* buff, size_t n) = nullptr;
-			void    (*close)(id_t proc, desc_t* desc)                             = nullptr;
 		};
 	}
 }

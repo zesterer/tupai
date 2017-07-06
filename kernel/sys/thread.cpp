@@ -32,7 +32,7 @@ namespace tupai
 	namespace sys
 	{
 		const size_t MAX_THREADS = 64;
-		const size_t STACK_SIZE  = 1024;
+		const size_t STACK_SIZE  = 64 * 1024; // 64K
 
 		util::hw_mutex hw_mutex;
 

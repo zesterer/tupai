@@ -63,5 +63,10 @@ namespace tupai
 
 			return csize;
 		}
+
+		void* tar_data(tar_header_t* header)
+		{
+			return (void*)((size_t)header + 512);
+		}
 	}
 }

@@ -71,6 +71,8 @@ namespace tupai
 			util::str_cpy_n(name, nproc->name);
 			nproc->dir = dir;
 
+			procs.add(nproc->id, nproc);
+
 			return nproc->id;
 		}
 
@@ -78,12 +80,34 @@ namespace tupai
 		{
 			proc_t* proc = procs[pid];
 
-			fs::desc_t* ndesc = new fs::desc_t();
-			ndesc->id = ++proc->desc_counter;
-			ndesc->inode = inode->gid;
-			proc->descs.add(ndesc->id, ndesc);
+			if (proc != nullptr)
+			{
+				fs::desc_t* ndesc = new fs::desc_t();
+				ndesc->id = ++proc->desc_counter;
+				ndesc->inode = inode->gid;
+				proc->descs.add(ndesc->id, ndesc);
 
-			return ndesc->id;
+				return ndesc->id;
+			}
+			else
+				return 0;
+		}
+
+		int proc_close_desc(id_t pid, id_t desc)
+		{
+			proc_t* proc = procs[pid];
+
+			if (proc != nullptr)
+			{
+				bool removed = proc->descs.remove(desc);
+
+				if (removed)
+					return 0;
+				else
+					return 1;
+			}
+			else
+				return 2;
 		}
 	}
 }

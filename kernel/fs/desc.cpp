@@ -24,6 +24,8 @@
 
 #include <tupai/sys/proc.hpp>
 
+#include <tupai/util/out.hpp>
+
 namespace tupai
 {
 	namespace fs
@@ -31,7 +33,33 @@ namespace tupai
 		id_t desc_open(inode_t* inode)
 		{
 			id_t cproc  = sys::proc_get_current();
+
+			if (inode->vtable == nullptr)
+				return 0;
+			if (inode->vtable->open == nullptr)
+				return 0;
+
 			return inode->vtable->open(cproc, inode);
+		}
+
+		int desc_close(id_t desc)
+		{
+			id_t     cproc = sys::proc_get_current();
+			desc_t*  cdesc = sys::proc_get_desc(cproc, desc);
+
+			if (cdesc == nullptr)
+				return -1;
+
+			inode_t* cinode = vfs_get_inode(cdesc->inode);
+
+			if (cinode == nullptr)
+				return -1;
+			if (cinode->vtable == nullptr)
+				return -1;
+			if (cinode->vtable->close == nullptr)
+				return -1;
+
+			return cinode->vtable->close(cproc, cdesc);
 		}
 
 		ssize_t desc_read(id_t desc, size_t n, void* ret_buff)
@@ -46,8 +74,12 @@ namespace tupai
 
 			if (cinode == nullptr)
 				return -1;
-			else
-				return cinode->vtable->read(cproc, cdesc, n, ret_buff);
+			if (cinode->vtable == nullptr)
+				return -1;
+			if (cinode->vtable->read == nullptr)
+				return -1;
+
+			return cinode->vtable->read(cproc, cdesc, n, ret_buff);
 		}
 	}
 }
