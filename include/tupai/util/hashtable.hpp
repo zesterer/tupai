@@ -32,7 +32,7 @@ namespace tupai
 {
 	namespace util
 	{
-		int hash(int x) { return x; }
+		static size_t hash(id_t x) { return x; }
 
 		template <typename Key, typename T>
 		struct hashtable_t
@@ -104,7 +104,7 @@ namespace tupai
 				this->clear_filled();
 			}
 
-			size_t size()
+			size_t size() const
 			{
 				return this->item_count;
 			}
@@ -148,7 +148,7 @@ namespace tupai
 				return removed;
 			}
 
-			T get(Key key)
+			T get(Key key) const
 			{
 				size_t offset = hash(key) % this->capacity;
 				for (size_t i = 0; i < this->capacity; i ++)
@@ -160,12 +160,12 @@ namespace tupai
 				return nullptr;
 			}
 
-			T operator[](size_t i)
+			T operator[](size_t i) const
 			{
 				return this->get(i);
 			}
 
-			T nth(size_t n)
+			T nth(size_t n) const
 			{
 				size_t count = 0;
 				for (size_t i = 0; i < this->capacity; i ++)
@@ -181,7 +181,7 @@ namespace tupai
 				return nullptr;
 			}
 
-			Key nth_key(size_t n)
+			Key nth_key(size_t n) const
 			{
 				size_t count = 0;
 				for (size_t i = 0; i < this->capacity; i ++)
@@ -197,7 +197,7 @@ namespace tupai
 				return Key();
 			}
 
-			bool contains(Key key)
+			bool contains(Key key) const
 			{
 				for (size_t i = 0; i < this->capacity; i ++)
 				{

@@ -23,7 +23,7 @@
 // Tupai
 #include <tupai/fs/inode.hpp>
 #include <tupai/fs/desc.hpp>
-#include <tupai/util/vector.hpp>
+#include <tupai/util/hashtable.hpp>
 
 // Standard
 #include <stddef.h>
@@ -74,14 +74,20 @@ namespace tupai
 			id_t dir;            // Current directory
 
 			id_t thread_counter = 0;
-			util::vector_t<thread_t> threads; // Process threads
+			util::hashtable_t<id_t, thread_t*> threads; // Process threads
 
 			id_t desc_counter = 0;
-			util::vector_t<fs::desc_t> desc; // File descriptors
+			util::hashtable_t<id_t, fs::desc_t*> descs; // File descriptors
 		};
 
 		void proc_init();
-		const char* proc_get_name(id_t id);
+
+		id_t        proc_get_current();
+		const char* proc_get_name(id_t pid);
+		fs::desc_t* proc_get_desc(id_t pid, id_t desc);
+
+		id_t proc_create(const char* name, id_t dir);
+		id_t proc_create_desc(id_t pid, fs::inode_t* inode);
 	}
 }
 

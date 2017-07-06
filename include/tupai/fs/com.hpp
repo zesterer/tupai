@@ -32,6 +32,23 @@ namespace tupai
 	namespace fs
 	{
 		static const size_t FILENAME_SIZE = 256;
+
+		enum class inode_type
+		{
+			NORMAL_FILE,
+			HARD_LINK,
+			SYM_LINK,
+			CHAR_DEVICE,
+			BLOCK_DEVICE,
+			DIRECTORY,
+			FIFO,
+		};
+
+		// Forward declarations
+		struct inode_t;
+		struct desc_t;
+		struct fs_t;
+		struct vtable_t;
 	}
 }
 

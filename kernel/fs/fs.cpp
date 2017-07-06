@@ -20,6 +20,8 @@
 // Tupai
 #include <tupai/fs/fs.hpp>
 #include <tupai/fs/vfs.hpp>
+#include <tupai/fs/inode.hpp>
+
 #include <tupai/util/str.hpp>
 
 namespace tupai

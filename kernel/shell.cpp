@@ -52,11 +52,11 @@ namespace tupai
 		(void)argc;
 		(void)argv;
 
-		// Display the MOTD
+		// Display information
 		shell_motd();
+		util::println("Type 'help' for more info.");
 
 		bool halted = false;
-		util::println("Type 'help' for more info.");
 		while (!halted)
 		{
 			util::print("\n$ ");
@@ -91,13 +91,16 @@ namespace tupai
 					util::println(i, ' ', id, ' ', name);
 				}
 			}
-			else if (util::str_equal(buff, "sys"))
-			{
-				sys::call((sys::CALL)0, 1, 2, 3);
-			}
 			else if (util::str_equal(buff, "fs"))
 			{
 				fs::vfs_display();
+			}
+			else if (util::str_equal(buff, "file"))
+			{
+				id_t id;
+				const char* path = "/conf/init.cfg";
+				sys::call(sys::CALL::OPEN, (size_t)&id, (size_t)path);
+				util::println("FD id is ", id);
 			}
 			else if (util::str_equal(buff, "pool"))
 			{

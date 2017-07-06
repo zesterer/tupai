@@ -20,11 +20,15 @@
 // Tupai
 #include <tupai/sys/initrd.hpp>
 #include <tupai/sys/mmap.hpp>
-#include <tupai/util/out.hpp>
-#include <tupai/util/tar.hpp>
+#include <tupai/sys/proc.hpp>
+
 #include <tupai/fs/vfs.hpp>
+#include <tupai/fs/fs.hpp>
 #include <tupai/fs/path.hpp>
 #include <tupai/fs/vtable.hpp>
+
+#include <tupai/util/tar.hpp>
+#include <tupai/util/out.hpp>
 
 namespace tupai
 {
@@ -46,6 +50,11 @@ namespace tupai
 
 		void initrd_create(initrd_t* initrd, const char* name);
 
+		id_t    initrd_open_call (id_t pid, fs::inode_t* inode);
+		ssize_t initrd_read_call (id_t pid, fs::desc_t* desc, size_t n, void* ret_buff);
+		ssize_t initrd_write_call(id_t pid, fs::desc_t* desc, const void* buff, size_t n);
+		void    initrd_read_call (id_t pid, fs::desc_t* desc);
+
 		void initrd_add(void* start, size_t size, const char* args)
 		{
 			// Search for empty cache
@@ -63,6 +72,9 @@ namespace tupai
 
 		void initrd_init()
 		{
+			initrd_vtable.open = initrd_open_call;
+			initrd_vtable.read = initrd_read_call;
+
 			for (size_t i = 0; i < INITRD_MAX; i ++)
 			{
 				if (initrds[i].size != 0)
@@ -74,7 +86,6 @@ namespace tupai
 		{
 			fs::fs_t* fs = fs::vfs_create_fs(name);
 			fs::vfs_set_root(fs->root);
-
 			initrd->fs = fs->id;
 
 			// TODO : re-add this
@@ -133,6 +144,19 @@ namespace tupai
 
 				cheader = tar_next(cheader);
 			}
+		}
+
+		id_t initrd_open_call(id_t pid, fs::inode_t* inode)
+		{
+			return proc_create_desc(pid, inode);
+		}
+
+		ssize_t initrd_read_call (id_t pid, fs::desc_t* desc, size_t n, void* ret_buff)
+		{
+			size_t i;
+			for (i = 0; i < n && desc->offset < 128; i ++)
+				((uint8_t*)ret_buff)[i] = '!';
+			return i;
 		}
 	}
 }

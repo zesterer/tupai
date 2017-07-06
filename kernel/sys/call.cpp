@@ -23,6 +23,8 @@
 #include <tupai/sys/thread.hpp>
 #include <tupai/util/mutex.hpp>
 #include <tupai/util/out.hpp>
+#include <tupai/fs/desc.hpp>
+#include <tupai/fs/vfs.hpp>
 
 #include <tupai/x86/textmode.hpp>
 
@@ -82,6 +84,19 @@ namespace tupai
 					util::mutex_t* mutex = (util::mutex_t*)arg0;
 					mutex->locked = false;
 					sys::thread_update_mutex(mutex);
+				}
+				break;
+
+			case CALL::OPEN:
+				{
+					id_t*       desc_id = (id_t*)arg1;
+					const char* path = (const char*)arg2;
+
+					fs::inode_t* inode = fs::vfs_get_inode(path);
+					if (inode == nullptr)
+						*desc_id = 0;
+					else
+						*desc_id = fs::desc_open(inode);
 				}
 				break;
 

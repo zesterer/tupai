@@ -67,11 +67,12 @@ namespace tupai
 		// Now, however, it's relatively safe to run most code.
 
 		sys::threading_init(); // Initiate multi-threading
-		sys::proc_init();      // Initiate processes
 		sys::call_bind();      // Initiate SYSCALL routine
 
 		fs::vfs_init();     // Initiate filesystem
 		sys::initrd_init(); // Initiate initrd filesystems
+		
+		sys::proc_init();      // Initiate processes
 
 		// Initiate virtual devices
 		dev::serial_init();

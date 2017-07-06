@@ -22,9 +22,6 @@
 
 // Tupai
 #include <tupai/fs/com.hpp>
-#include <tupai/fs/fs.hpp>
-#include <tupai/fs/desc.hpp>
-#include <tupai/fs/vtable.hpp>
 #include <tupai/util/vector.hpp>
 
 // Standard
@@ -35,17 +32,6 @@ namespace tupai
 {
 	namespace fs
 	{
-		enum class inode_type
-		{
-			NORMAL_FILE,
-			HARD_LINK,
-			SYM_LINK,
-			CHAR_DEVICE,
-			BLOCK_DEVICE,
-			DIRECTORY,
-			FIFO,
-		};
-
 		struct inode_child_t
 		{
 			inode_t* inode = nullptr;
@@ -55,8 +41,16 @@ namespace tupai
 			const char* get_name();
 		};
 
+		struct inode_ptr_t
+		{
+			id_t inode;
+
+			inode_t& operator->() const;
+		};
+
 		struct inode_t
 		{
+			id_t gid = 0;
 			id_t id = 0;
 			id_t fs = 0;
 

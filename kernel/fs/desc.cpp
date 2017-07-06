@@ -1,5 +1,5 @@
 //
-// file : vtable.hpp
+// file : desc.cpp
 //
 // This file is part of Tupai.
 //
@@ -17,28 +17,37 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_FS_VTABLE_HPP
-#define TUPAI_FS_VTABLE_HPP
-
 // Tupai
-#include <tupai/fs/com.hpp>
+#include <tupai/fs/desc.hpp>
+#include <tupai/fs/vfs.hpp>
+#include <tupai/fs/vtable.hpp>
 
-// Standard
-#include <stddef.h>
-#include <stdint.h>
+#include <tupai/sys/proc.hpp>
 
 namespace tupai
 {
 	namespace fs
 	{
-		struct vtable_t
+		id_t desc_open(inode_t* inode)
 		{
-			id_t (*open) (id_t proc, inode_t* inode)                              = nullptr;
-			ssize_t (*read) (id_t proc, desc_t* desc, size_t n, void* ret_buff)   = nullptr;
-			ssize_t (*write)(id_t proc, desc_t* desc, const void* buff, size_t n) = nullptr;
-			void    (*close)(id_t proc, desc_t* desc)                             = nullptr;
-		};
+			id_t cproc  = sys::proc_get_current();
+			return inode->vtable->open(cproc, inode);
+		}
+
+		ssize_t desc_read(id_t desc, size_t n, void* ret_buff)
+		{
+			id_t     cproc = sys::proc_get_current();
+			desc_t*  cdesc = sys::proc_get_desc(cproc, desc);
+
+			if (cdesc == nullptr)
+				return -1;
+
+			inode_t* cinode = vfs_get_inode(cdesc->inode);
+
+			if (cinode == nullptr)
+				return -1;
+			else
+				return cinode->vtable->read(cproc, cdesc, n, ret_buff);
+		}
 	}
 }
-
-#endif

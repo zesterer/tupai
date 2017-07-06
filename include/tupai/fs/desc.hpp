@@ -22,7 +22,6 @@
 
 // Tupai
 #include <tupai/fs/com.hpp>
-#include <tupai/fs/fs.hpp>
 
 // Standard
 #include <stddef.h>
@@ -39,6 +38,9 @@ namespace tupai
 
 			uint64_t offset;
 		};
+
+		id_t    desc_open(inode_t* inode);
+		ssize_t desc_read(id_t desc, size_t n, void* ret_buff);
 	}
 }
 

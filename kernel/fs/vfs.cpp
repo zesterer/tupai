@@ -19,6 +19,10 @@
 
 // Tupai
 #include <tupai/fs/vfs.hpp>
+#include <tupai/fs/fs.hpp>
+#include <tupai/fs/inode.hpp>
+#include <tupai/fs/path.hpp>
+
 #include <tupai/util/mutex.hpp>
 #include <tupai/util/spinlock.hpp>
 #include <tupai/util/vector.hpp>
@@ -34,7 +38,7 @@ namespace tupai
 		static util::hashtable_t<id_t, fs_t*>    fs;
 		static util::hashtable_t<id_t, inode_t*> inodes;
 
-		inode_t* root_inode = nullptr;
+		inode_t* root = nullptr;
 
 		id_t g_inode_counter = 0;
 
@@ -50,7 +54,12 @@ namespace tupai
 
 		void vfs_set_root(inode_t* inode)
 		{
-			root_inode = inode;
+			root = inode;
+		}
+
+		id_t vfs_get_root()
+		{
+			return root->gid;
 		}
 
 		fs_t* vfs_create_fs(const char* name)
@@ -68,11 +77,12 @@ namespace tupai
 
 		inode_t* vfs_create_inode(id_t id, inode_type type)
 		{
+			id_t gid = ++g_inode_counter;
 			inode_t* ninode = new inode_t(type);
+			ninode->id = gid;
 			ninode->id = id;
 
-			id_t g_id = ++g_inode_counter;
-			inodes.add(g_id, ninode);
+			inodes.add(gid, ninode);
 
 			return ninode;
 		}
@@ -80,6 +90,23 @@ namespace tupai
 		inode_t* vfs_get_inode(id_t g_id)
 		{
 			return inodes[g_id];
+		}
+
+		inode_t* vfs_get_inode(const char* path)
+		{
+			size_t element_count = path_element_count(path);
+			inode_t* cinode = root;
+			for (size_t i = 0; i < element_count; i ++)
+			{
+				char element[FILENAME_SIZE];
+				path_element_get(path, element, i);
+
+				cinode = inode_get_child(cinode, element);
+
+				if (cinode == nullptr)
+					return nullptr;
+			}
+			return cinode;
 		}
 
 		void vfs_print_inode(inode_t* inode, const char* name, size_t depth = 0)
@@ -103,7 +130,7 @@ namespace tupai
 		void vfs_display()
 		{
 			util::println("--- Virtual Filesystem ---");
-			vfs_print_inode(root_inode, "");
+			vfs_print_inode(root, "");
 
 			util::print('\n');
 

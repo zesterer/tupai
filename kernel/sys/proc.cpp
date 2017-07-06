@@ -19,28 +19,71 @@
 
 // Tupai
 #include <tupai/sys/proc.hpp>
+#include <tupai/fs/vfs.hpp>
+#include <tupai/util/str.hpp>
+
+#include <tupai/util/out.hpp>
 
 namespace tupai
 {
 	namespace sys
 	{
-		util::vector_t<proc_t> proc;
+		static util::hashtable_t<id_t, proc_t*> procs;
+		static id_t proc_counter = 0;
+
+		static id_t cproc;
 
 		void proc_init()
 		{
-			// Do nothing
+			procs = util::hashtable_t<id_t, proc_t*>();
+			cproc = proc_create("kernel", fs::vfs_get_root());
 		}
 
-		const char* proc_get_name(id_t id)
+		id_t proc_get_current()
 		{
-			switch (id)
-			{
-			case KERNEL_PROC_ID:
-				return "Kernel";
+			return cproc;
+		}
 
-			default:
+		const char* proc_get_name(id_t pid)
+		{
+			proc_t* proc = procs[pid];
+
+			if (proc == nullptr)
 				return "null";
-			}
+			else
+				return proc->name;
+		}
+
+		fs::desc_t* proc_get_desc(id_t pid, id_t desc)
+		{
+			proc_t* proc = procs[pid];
+
+			if (proc == nullptr)
+				return nullptr;
+			else
+				return proc->descs[desc];
+		}
+
+		id_t proc_create(const char* name, id_t dir)
+		{
+			proc_t* nproc = new proc_t();
+			nproc->id = ++proc_counter;
+			util::str_cpy_n(name, nproc->name);
+			nproc->dir = dir;
+
+			return nproc->id;
+		}
+
+		id_t proc_create_desc(id_t pid, fs::inode_t* inode)
+		{
+			proc_t* proc = procs[pid];
+
+			fs::desc_t* ndesc = new fs::desc_t();
+			ndesc->id = ++proc->desc_counter;
+			ndesc->inode = inode->gid;
+			proc->descs.add(ndesc->id, ndesc);
+
+			return ndesc->id;
 		}
 	}
 }

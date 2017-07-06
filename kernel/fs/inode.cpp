@@ -19,14 +19,26 @@
 
 // Tupai
 #include <tupai/fs/inode.hpp>
-#include <tupai/sys/kmem.hpp>
+#include <tupai/fs/vfs.hpp>
+
 #include <tupai/util/str.hpp>
 #include <tupai/util/out.hpp>
+
+#include <tupai/panic.hpp>
 
 namespace tupai
 {
 	namespace fs
 	{
+		inode_t& inode_ptr_t::operator->() const
+		{
+			inode_t* inode = vfs_get_inode(this->inode);
+			if (inode == nullptr)
+				panic("Attempted to dereference invalid inode pointer");
+			else
+				return *inode;
+		}
+
 		void inode_child_t::set_name(const char* name)
 		{
 			util::str_cpy_n(name, this->name, FILENAME_SIZE);
