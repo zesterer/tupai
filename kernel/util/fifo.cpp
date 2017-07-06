@@ -1,5 +1,5 @@
 //
-// file : fifobuff.cpp
+// file : fifo.cpp
 //
 // This file is part of Tupai.
 //
@@ -18,7 +18,7 @@
 //
 
 // Tupai
-#include <tupai/util/fifobuff.hpp>
+#include <tupai/util/fifo.hpp>
 
 namespace tupai
 {

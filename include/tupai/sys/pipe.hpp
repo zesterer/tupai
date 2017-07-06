@@ -21,7 +21,7 @@
 #define TUPAI_SYS_PIPE_HPP
 
 // Tupai
-#include <tupai/util/fifobuff.hpp>
+#include <tupai/util/fifo.hpp>
 
 // Standard
 #include <stddef.h>
@@ -35,8 +35,8 @@ namespace tupai
 		struct pipe_t
 		{
 		public:
-			volatile util::fifobuff_t<uint8_t, SIZE> in;
-			volatile util::fifobuff_t<uint8_t, SIZE> out;
+			volatile util::fifo_t<uint8_t, SIZE> in;
+			volatile util::fifo_t<uint8_t, SIZE> out;
 
 		public:
 			void    write(uint8_t c) volatile { return this->out.write(c); }
