@@ -1,5 +1,5 @@
 //
-// file : call.cpp
+// file : fifobuff.cpp
 //
 // This file is part of Tupai.
 //
@@ -18,11 +18,11 @@
 //
 
 // Tupai
-#include <tupai/sys/fifobuff.hpp>
+#include <tupai/util/fifobuff.hpp>
 
 namespace tupai
 {
-	namespace sys
+	namespace util
 	{
 		// Nothing yet
 	}

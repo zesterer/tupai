@@ -17,8 +17,8 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_SYS_FIFOBUFF_HPP
-#define TUPAI_SYS_FIFOBUFF_HPP
+#ifndef TUPAI_UTIL_FIFOBUFF_HPP
+#define TUPAI_UTIL_FIFOBUFF_HPP
 
 // Tupai
 #include <tupai/util/mutex.hpp>
@@ -30,38 +30,38 @@
 
 namespace tupai
 {
-	namespace sys
+	namespace util
 	{
-		template <size_t SIZE>
+		template <typename T, size_t SIZE>
 		struct fifobuff_t;
 
-		template <size_t SIZE> void    __fifo_write(volatile fifobuff_t<SIZE>& buff, uint8_t c);
-		template <size_t SIZE> uint8_t __fifo_read (volatile fifobuff_t<SIZE>& buff);
-		template <size_t SIZE> size_t  __fifo_len  (volatile fifobuff_t<SIZE>& buff);
+		template <typename T, size_t SIZE> void   __fifo_write(volatile fifobuff_t<T, SIZE>& buff, T c);
+		template <typename T, size_t SIZE> T      __fifo_read (volatile fifobuff_t<T, SIZE>& buff);
+		template <typename T, size_t SIZE> size_t __fifo_len  (volatile fifobuff_t<T, SIZE>& buff);
 
-		template <size_t SIZE>
+		template <typename T, size_t SIZE>
 		struct fifobuff_t
 		{
 		public:
-			volatile uint8_t arr[SIZE] = { 0, };
-			volatile size_t  head   = 0;
-			volatile size_t  tail   = 0;
-			volatile size_t  length = 0;
+			volatile T      arr[SIZE] = { 0, };
+			volatile size_t head   = 0;
+			volatile size_t tail   = 0;
+			volatile size_t length = 0;
 
 			util::mutex_t spinlock;
 
 		public:
-			void    write(uint8_t c) volatile { return __fifo_write(*this, c); }
-			uint8_t read()           volatile { return __fifo_read(*this); }
-			size_t  len()            volatile { return __fifo_len(*this); }
+			void    write(T c) volatile { return __fifo_write(*this, c); }
+			uint8_t read()     volatile { return __fifo_read(*this); }
+			size_t  len()      volatile { return __fifo_len(*this); }
 
-			void    write_unsafe(uint8_t c) volatile { return __fifo_write_unsafe(*this, c); }
-			uint8_t read_unsafe()           volatile { return __fifo_read_unsafe(*this); }
-			size_t  len_unsafe()            volatile { return __fifo_len_unsafe(*this); }
+			void    write_unsafe(T c) volatile { return __fifo_write_unsafe(*this, c); }
+			uint8_t read_unsafe()     volatile { return __fifo_read_unsafe(*this); }
+			size_t  len_unsafe()      volatile { return __fifo_len_unsafe(*this); }
 		};
 
-		template <size_t SIZE>
-		void __fifo_write_unsafe(volatile fifobuff_t<SIZE>& buff, uint8_t c)
+		template <typename T, size_t SIZE>
+		void __fifo_write_unsafe(volatile fifobuff_t<T, SIZE>& buff, T c)
 		{
 			if (buff.length != 0)
 			{
@@ -76,8 +76,8 @@ namespace tupai
 				buff.length ++;
 		}
 
-		template <size_t SIZE>
-		void __fifo_write(volatile fifobuff_t<SIZE>& buff, uint8_t c)
+		template <typename T, size_t SIZE>
+		void __fifo_write(volatile fifobuff_t<T, SIZE>& buff, T c)
 		{
 			buff.spinlock.lock(); // Begin critical section
 
@@ -86,8 +86,8 @@ namespace tupai
 			buff.spinlock.unlock(); // End critical section
 		}
 
-		template <size_t SIZE>
-		uint8_t __fifo_read_unsafe(volatile fifobuff_t<SIZE>& buff)
+		template <typename T, size_t SIZE>
+		T __fifo_read_unsafe(volatile fifobuff_t<T, SIZE>& buff)
 		{
 			// Wait loop
 			while (true)
@@ -102,7 +102,7 @@ namespace tupai
 
 			buff.length --;
 
-			uint8_t val = buff.arr[buff.tail];
+			T val = buff.arr[buff.tail];
 
 			if (buff.length != 0)
 					buff.tail = (buff.tail + 1) % SIZE;
@@ -110,8 +110,8 @@ namespace tupai
 			return val;
 		}
 
-		template <size_t SIZE>
-		uint8_t __fifo_read(volatile fifobuff_t<SIZE>& buff)
+		template <typename T, size_t SIZE>
+		T __fifo_read(volatile fifobuff_t<T, SIZE>& buff)
 		{
 			// Wait loop
 			while (true)
@@ -131,7 +131,7 @@ namespace tupai
 
 			buff.length --;
 
-			uint8_t val = buff.arr[buff.tail];
+			T val = buff.arr[buff.tail];
 
 			if (buff.length != 0)
 					buff.tail = (buff.tail + 1) % SIZE;
@@ -141,15 +141,15 @@ namespace tupai
 			return val;
 		}
 
-		template <size_t SIZE>
-		size_t __fifo_len_unsafe(volatile fifobuff_t<SIZE>& buff)
+		template <typename T, size_t SIZE>
+		size_t __fifo_len_unsafe(volatile fifobuff_t<T, SIZE>& buff)
 		{
 			size_t len = buff.length;
 
 			return len;
 		}
-		template <size_t SIZE>
-		size_t __fifo_len(volatile fifobuff_t<SIZE>& buff)
+		template <typename T, size_t SIZE>
+		size_t __fifo_len(volatile fifobuff_t<T, SIZE>& buff)
 		{
 			buff.spinlock.lock(); // Begin critical section
 
