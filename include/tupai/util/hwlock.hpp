@@ -1,5 +1,5 @@
 //
-// file : mutex.cpp
+// file : hwlock.hpp
 //
 // This file is part of Tupai.
 //
@@ -17,22 +17,21 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-// Tupai
-#include <tupai/util/mutex.hpp>
-#include <tupai/sys/call.hpp>
+#ifndef TUPAI_UTIL_HWLOCK_HPP
+#define TUPAI_UTIL_HWLOCK_HPP
 
 namespace tupai
 {
 	namespace util
 	{
-		void mutex_t::lock() volatile
+		struct hwlock_t
 		{
-			sys::call(sys::CALL::LMUTEX, (size_t)this);
-		}
+			bool is_locked() volatile;
 
-		void mutex_t::unlock() volatile
-		{
-			sys::call(sys::CALL::UMUTEX, (size_t)this);
-		}
+			void lock() volatile;
+			void unlock() volatile;
+		};
 	}
 }
+
+#endif

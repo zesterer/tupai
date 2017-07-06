@@ -21,6 +21,7 @@
 #include <tupai/sys/proc.hpp>
 #include <tupai/fs/vfs.hpp>
 #include <tupai/util/str.hpp>
+#include <tupai/util/hwlock.hpp>
 
 #include <tupai/util/out.hpp>
 
@@ -31,41 +32,62 @@ namespace tupai
 		static util::hashtable_t<id_t, proc_t*> procs;
 		static id_t proc_counter = 0;
 
-		static id_t cproc;
+		static util::hwlock_t hwlock;
+		static volatile id_t cproc;
 
 		void proc_init()
 		{
+			hwlock.lock(); // Begin critical section
+
 			procs = util::hashtable_t<id_t, proc_t*>();
 			cproc = proc_create("kernel", fs::vfs_get_root());
+
+			hwlock.unlock(); // End critical section
 		}
 
 		id_t proc_get_current()
 		{
-			return cproc;
+			hwlock.lock(); // Begin critical section
+
+			id_t val = cproc;
+
+			hwlock.unlock(); // End critical section
+
+			return val;
 		}
 
 		const char* proc_get_name(id_t pid)
 		{
+			hwlock.lock(); // Begin critical section
+
 			proc_t* proc = procs[pid];
 
-			if (proc == nullptr)
-				return "null";
-			else
-				return proc->name;
+			const char* val = "null";
+			if (proc != nullptr)
+				val = proc->name;
+
+			hwlock.unlock(); // End critical section
+			return val;
 		}
 
 		fs::desc_t* proc_get_desc(id_t pid, id_t desc)
 		{
+			hwlock.lock(); // Begin critical section
+
 			proc_t* proc = procs[pid];
 
-			if (proc == nullptr)
-				return nullptr;
-			else
+			fs::desc_t* val = nullptr;
+			if (proc != nullptr)
 				return proc->descs[desc];
+
+			hwlock.unlock(); // End critical section
+			return val;
 		}
 
 		id_t proc_create(const char* name, id_t dir)
 		{
+			hwlock.lock(); // Begin critical section
+
 			proc_t* nproc = new proc_t();
 			nproc->id = ++proc_counter;
 			util::str_cpy_n(name, nproc->name);
@@ -73,41 +95,48 @@ namespace tupai
 
 			procs.add(nproc->id, nproc);
 
+			hwlock.unlock(); // End critical section
 			return nproc->id;
 		}
 
 		id_t proc_create_desc(id_t pid, fs::inode_t* inode)
 		{
+			hwlock.lock(); // Begin critical section
+
 			proc_t* proc = procs[pid];
 
+			id_t val = -1;
 			if (proc != nullptr)
 			{
 				fs::desc_t* ndesc = new fs::desc_t();
-				ndesc->id = ++proc->desc_counter;
+				ndesc->id = proc->desc_counter++;
 				ndesc->inode = inode->gid;
 				proc->descs.add(ndesc->id, ndesc);
 
-				return ndesc->id;
+				val = ndesc->id;
 			}
-			else
-				return 0;
+
+			hwlock.unlock(); // Endcritical section
+			return val;
 		}
 
 		int proc_close_desc(id_t pid, id_t desc)
 		{
+			hwlock.lock(); // Begin critical section
+
 			proc_t* proc = procs[pid];
 
+			int val = 1;
 			if (proc != nullptr)
 			{
 				bool removed = proc->descs.remove(desc);
 
 				if (removed)
-					return 0;
-				else
-					return 1;
+					val = 0;
 			}
-			else
-				return 2;
+
+			hwlock.unlock(); // End critical section
+			return val;
 		}
 	}
 }

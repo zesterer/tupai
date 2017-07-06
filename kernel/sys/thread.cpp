@@ -23,7 +23,7 @@
 #include <tupai/sys/call.hpp>
 #include <tupai/interrupt.hpp>
 #include <tupai/util/out.hpp>
-#include <tupai/util/mutex.hpp>
+#include <tupai/util/hwlock.hpp>
 #include <tupai/util/str.hpp>
 #include <tupai/panic.hpp>
 
@@ -31,25 +31,25 @@ namespace tupai
 {
 	namespace sys
 	{
-		const size_t MAX_THREADS = 64;
-		const size_t STACK_SIZE  = 64 * 1024; // 64K
+		static const size_t MAX_THREADS = 64;
+		static const size_t STACK_SIZE  = 64 * 1024; // 64K
 
-		util::hw_mutex hw_mutex;
+		static util::hwlock_t hwlock;
 
-		volatile thread_t threads[MAX_THREADS];
+		static volatile thread_t threads[MAX_THREADS];
 
-		volatile bool   threads_enabled = false;
-		volatile id_t   cthread = -1;
-		volatile size_t cindex = -1;
+		static volatile bool   threads_enabled = false;
+		static volatile id_t   cthread = -1;
+		static volatile size_t cindex = -1;
 
-		volatile id_t thread_id_counter = 0;
+		static volatile id_t thread_id_counter = 0;
 		static id_t thread_gen_id() { return thread_id_counter++; }
 
 		extern "C" void thread_finish();
 
 		void threading_init()
 		{
-			hw_mutex.lock(); // Begin critical section
+			hwlock.lock(); // Begin critical section
 
 			// Clear threads
 			for (size_t i = 0; i < MAX_THREADS; i ++)
@@ -69,7 +69,7 @@ namespace tupai
 			// Set threading to enabled
 			threads_enabled = true;
 
-			hw_mutex.unlock(); // End critical section
+			hwlock.unlock(); // End critical section
 		}
 
 		bool threading_enabled()
@@ -79,7 +79,7 @@ namespace tupai
 
 		id_t thread_create(void(*addr)(int argc, char* argv[]), int argc, char* argv[], const char* name, bool create_stack)
 		{
-			hw_mutex.lock(); // Begin critical section
+			hwlock.lock(); // Begin critical section
 
 			id_t nid = thread_gen_id();
 
@@ -114,7 +114,7 @@ namespace tupai
 				}
 			}
 
-			hw_mutex.unlock(); // End critical section
+			hwlock.unlock(); // End critical section
 
 			return nid;
 		}
@@ -129,7 +129,7 @@ namespace tupai
 			if (id < 0)
 				return;
 
-			hw_mutex.lock(); // Begin critical section
+			hwlock.lock(); // Begin critical section
 
 			for (size_t i = 0; i < MAX_THREADS; i ++)
 			{
@@ -149,12 +149,12 @@ namespace tupai
 				}
 			}
 
-			hw_mutex.unlock(); // End critical section
+			hwlock.unlock(); // End critical section
 		}
 
 		void thread_wait_mutex(id_t id, util::mutex_t* mutex)
 		{
-			hw_mutex.lock(); // Begin critical section
+			hwlock.lock(); // Begin critical section
 
 			for (size_t i = 0; i < MAX_THREADS; i ++)
 			{
@@ -172,14 +172,14 @@ namespace tupai
 				}
 			}
 
-			hw_mutex.unlock(); // End critical section
+			hwlock.unlock(); // End critical section
 
 			thread_update_mutex(mutex);
 		}
 
 		void thread_update_mutex(util::mutex_t* mutex)
 		{
-			hw_mutex.lock(); // Begin critical section
+			hwlock.lock(); // Begin critical section
 
 			for (size_t i = 0; i < MAX_THREADS; i ++)
 			{
@@ -192,7 +192,7 @@ namespace tupai
 				}
 			}
 
-			hw_mutex.unlock(); // End critical section
+			hwlock.unlock(); // End critical section
 		}
 
 		void thread_finish()
@@ -281,7 +281,7 @@ namespace tupai
 		{
 			size_t n = 0;
 
-			hw_mutex.lock(); // Begin critical section
+			hwlock.lock(); // Begin critical section
 
 			for (size_t i = 0; i < MAX_THREADS; i ++)
 			{
@@ -289,14 +289,14 @@ namespace tupai
 					n ++;
 			}
 
-			hw_mutex.unlock(); // End critical section
+			hwlock.unlock(); // End critical section
 
 			return n;
 		}
 
 		id_t thread_get_id(size_t index)
 		{
-			hw_mutex.lock(); // Begin critical section
+			hwlock.lock(); // Begin critical section
 
 			size_t c = 0;
 			for (size_t i = 0; i < MAX_THREADS; i ++)
@@ -305,7 +305,7 @@ namespace tupai
 				{
 					if (c == index)
 					{
-						hw_mutex.unlock(); // End critical section
+						hwlock.unlock(); // End critical section
 						return threads[i].id;
 					}
 
@@ -313,13 +313,13 @@ namespace tupai
 				}
 			}
 
-			hw_mutex.unlock(); // End critical section
+			hwlock.unlock(); // End critical section
 			return 0;
 		}
 
 		bool __thread_get_name(id_t id, char* buff, size_t n)
 		{
-			hw_mutex.lock(); // Begin critical section
+			hwlock.lock(); // Begin critical section
 
 			size_t c = 0;
 			for (size_t i = 0; i < MAX_THREADS; i ++)
@@ -330,7 +330,7 @@ namespace tupai
 					{
 						util::str_cpy_n((const char*)threads[i].name, buff, n);
 
-						hw_mutex.unlock(); // End critical section
+						hwlock.unlock(); // End critical section
 						return true;
 					}
 
@@ -338,7 +338,7 @@ namespace tupai
 				}
 			}
 
-			hw_mutex.unlock(); // End critical section
+			hwlock.unlock(); // End critical section
 			return false;
 		}
 	}

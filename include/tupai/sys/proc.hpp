@@ -78,6 +78,15 @@ namespace tupai
 
 			id_t desc_counter = 0;
 			util::hashtable_t<id_t, fs::desc_t*> descs; // File descriptors
+
+			~proc_t()
+			{
+				for (size_t i = 0; i < this->threads.size(); i ++)
+					delete this->threads.nth(i);
+
+				for (size_t i = 0; i < this->descs.size(); i ++)
+					delete this->descs.nth(i);
+			}
 		};
 
 		void proc_init();

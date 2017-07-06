@@ -26,7 +26,7 @@
 
 namespace tupai
 {
-	typedef long id_t;
+	typedef int64_t id_t;
 	typedef intptr_t ssize_t;
 }
 

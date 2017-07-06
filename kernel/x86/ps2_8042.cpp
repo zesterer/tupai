@@ -20,7 +20,7 @@
 // Tupai
 #include <tupai/x86/ps2_8042.hpp>
 #include <tupai/x86/port.hpp>
-#include <tupai/util/mutex.hpp>
+#include <tupai/util/hwlock.hpp>
 #include <tupai/debug.hpp>
 
 namespace tupai
@@ -54,7 +54,7 @@ namespace tupai
 
 		static const uint8_t PS2_RESET = 0xFF;
 
-		static util::hw_mutex mutex;
+		static util::hwlock_t hwlock;
 
 		static void ps2_8042_send_cmd(uint8_t code)
 		{
@@ -89,7 +89,7 @@ namespace tupai
 
 			// TODO: Detect PS2 existence with ACPI
 
-			mutex.lock(); // Begin critical section
+			hwlock.lock(); // Begin critical section
 
 			// First, disable both PS2 ports
 			ps2_8042_send_cmd(PS28042_CMD_DISABLE1);
@@ -169,7 +169,7 @@ namespace tupai
 			if (ps2_8042_channel & (1 << 0)) debug_println("Detected 8042 PS/2 channel 2 device.");
 			debug_println("Finished 8042 PS/2 controller initiation");
 
-			mutex.unlock(); // End critical section
+			hwlock.unlock(); // End critical section
 
 			ps2_8042_initiated = true;
 		}

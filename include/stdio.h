@@ -1,5 +1,5 @@
 //
-// file : mutex.cpp
+// file : stdio.h : Input/Output operations
 //
 // This file is part of Tupai.
 //
@@ -16,23 +16,32 @@
 // You should have received a copy of the GNU General Public License
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
+// This file is part of the Tupai C standard library implementation.
+//
 
-// Tupai
-#include <tupai/util/mutex.hpp>
-#include <tupai/sys/call.hpp>
+// Standard
+#include <stdint.h>
 
-namespace tupai
-{
-	namespace util
-	{
-		void mutex_t::lock() volatile
-		{
-			sys::call(sys::CALL::LMUTEX, (size_t)this);
-		}
+// Types
+typedef int64_t FILE;
+typedef int64_t fpos_t;
 
-		void mutex_t::unlock() volatile
-		{
-			sys::call(sys::CALL::UMUTEX, (size_t)this);
-		}
-	}
-}
+// Macros
+//#define NULL 0
+#define EOF  -1
+#define FILENAME_MAX 512
+
+// Standard streams
+const FILE stdin  = 0;
+const FILE stdout = 1;
+const FILE stderr = 2;
+
+// File access
+FILE* fopen(const char* filename, const char* mode);
+int   fclose(FILE* stream);
+
+// File I/O
+size_t fread (void* ptr, size_t size, size_t count, FILE* stream);
+size_t fwrite(const void* ptr, size_t size, size_t count, FILE* stream);
+
+// TODO : Complete this

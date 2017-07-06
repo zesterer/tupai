@@ -35,28 +35,6 @@ namespace tupai
 			void lock() volatile;
 			void unlock() volatile;
 		};
-
-		/*
-		struct mutex
-		{
-			volatile size_t val = 0;
-			sys::signal_t signal;
-
-			bool is_locked() volatile;
-			sys::signal_t* get_signal() { return &this->signal; }
-
-			void lock() volatile;
-			void unlock() volatile;
-		};
-		*/
-
-		struct hw_mutex
-		{
-			bool is_locked() volatile;
-
-			void lock() volatile;
-			void unlock() volatile;
-		};
 	}
 }
 

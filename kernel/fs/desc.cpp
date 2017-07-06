@@ -35,9 +35,9 @@ namespace tupai
 			id_t cproc  = sys::proc_get_current();
 
 			if (inode->vtable == nullptr)
-				return 0;
+				return -1;
 			if (inode->vtable->open == nullptr)
-				return 0;
+				return -1;
 
 			return inode->vtable->open(cproc, inode);
 		}
@@ -48,16 +48,16 @@ namespace tupai
 			desc_t*  cdesc = sys::proc_get_desc(cproc, desc);
 
 			if (cdesc == nullptr)
-				return -1;
+				return 1;
 
 			inode_t* cinode = vfs_get_inode(cdesc->inode);
 
 			if (cinode == nullptr)
-				return -1;
+				return 1;
 			if (cinode->vtable == nullptr)
-				return -1;
+				return 1;
 			if (cinode->vtable->close == nullptr)
-				return -1;
+				return 1;
 
 			return cinode->vtable->close(cproc, cdesc);
 		}

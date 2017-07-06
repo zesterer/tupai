@@ -45,6 +45,9 @@ namespace tupai
 			void    write_in(uint8_t c) volatile { return this->in.write(c); }
 			uint8_t read_out()          volatile { return this->out.read(); }
 
+			void    write_unsafe(uint8_t c) volatile { return this->out.write_unsafe(c); }
+			uint8_t read_unsafe()           volatile { return this->in.read_unsafe(); }
+
 			void    write_in_unsafe(uint8_t c) volatile { return this->in.write_unsafe(c); }
 			uint8_t read_out_unsafe()          volatile { return this->out.read_unsafe(); }
 		};

@@ -89,9 +89,9 @@ namespace tupai
 						this->_add(okeys[i], oitems[i]);
 				}
 
-				if (ofilled != nullptr) delete ofilled;
-				if (okeys != nullptr)   delete okeys;
-				if (oitems != nullptr)  delete oitems;
+				delete ofilled;
+				delete okeys;
+				delete oitems;
 			}
 
 			hashtable_t()

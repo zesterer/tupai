@@ -23,19 +23,24 @@
 #include <tupai/arch.hpp>
 #include <tupai/panic.hpp>
 #include <tupai/util/out.hpp>
+#include <tupai/util/hwlock.hpp>
 #include <tupai/debug.hpp>
 
 namespace tupai
 {
 	namespace sys
 	{
-		const size_t KMEM_SIZE = 4096 * 4096; // 4096 4K pages (16M)
-		const size_t KMEM_BLOCK_SIZE = 64;   // 16th of a 4K page (256B)
+		static const size_t KMEM_SIZE = 4096 * 4096; // 4096 4K pages (16M)
+		static const size_t KMEM_BLOCK_SIZE = 64;   // 16th of a 4K page (256B)
 
-		pool_t kmem_pool;
+		static pool_t kmem_pool;
+
+		static util::hwlock_t hwlock;
 
 		void kmem_init()
 		{
+			hwlock.lock(); // Begin critical section
+
 			void* pool = arch_kernel_alloc(KMEM_SIZE);
 
 			debug_println("KMem Pool = ", pool, " : ", (void*)((size_t)pool + KMEM_SIZE));
@@ -47,21 +52,30 @@ namespace tupai
 
 			if (!result)
 				panic("Could not construct kernel memory pool");
+
+			hwlock.unlock(); // End critical section
 		}
 
 		void* kmem_alloc(size_t n)
 		{
+			hwlock.lock(); // Begin critical section
+
 			void* ptr = pool_alloc(&kmem_pool, n);
 
 			if (ptr == nullptr)
 				panic("Failed to allocate kernel blocks");
 
+			hwlock.unlock(); // End critical section
 			return ptr;
 		}
 
 		void kmem_dealloc(void* ptr)
 		{
+			hwlock.lock(); // Begin critical section
+
 			pool_dealloc(&kmem_pool, ptr);
+
+			hwlock.unlock(); // End critical section
 		}
 
 		void kmem_info()
@@ -76,7 +90,11 @@ namespace tupai
 
 		void kmem_display()
 		{
+			hwlock.lock(); // Begin critical section
+
 			pool_display(&kmem_pool, KMEM_SIZE / KMEM_BLOCK_SIZE);
+
+			hwlock.unlock(); // End critical section
 		}
 	}
 }

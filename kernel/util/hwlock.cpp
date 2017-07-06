@@ -18,21 +18,45 @@
 //
 
 // Tupai
-#include <tupai/util/mutex.hpp>
-#include <tupai/sys/call.hpp>
+#include <tupai/util/hwlock.hpp>
+#include <tupai/interrupt.hpp>
 
 namespace tupai
 {
 	namespace util
 	{
-		void mutex_t::lock() volatile
+		static volatile bool hw_int_enabled;
+		static volatile bool hw_locked = false;
+
+		bool hwlock_t::is_locked() volatile
 		{
-			sys::call(sys::CALL::LMUTEX, (size_t)this);
+			return hw_locked;
 		}
 
-		void mutex_t::unlock() volatile
+		void hwlock_t::lock() volatile
 		{
-			sys::call(sys::CALL::UMUTEX, (size_t)this);
+			if (!hw_locked)
+			{
+				hw_int_enabled = interrupt_enabled();
+
+				if (hw_int_enabled)
+					interrupt_enable(false);
+
+				hw_locked = true;
+			}
+		}
+
+		void hwlock_t::unlock() volatile
+		{
+			if (hw_locked)
+			{
+				if (hw_int_enabled)
+					interrupt_enable(true);
+
+				hw_int_enabled = interrupt_enabled();
+
+				hw_locked = false;
+			}
 		}
 	}
 }

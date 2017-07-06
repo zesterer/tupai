@@ -37,6 +37,9 @@
 
 #include <tupai/fs/vfs.hpp>
 
+// LibC
+#include <stdio.h>
+
 namespace tupai
 {
 	void shell_motd()
@@ -138,21 +141,20 @@ namespace tupai
 			{
 				if (argc > 1)
 				{
-					id_t cfile;
-					const char* path = argv[1];
-					sys::call(sys::CALL::OPEN, (size_t)path, (size_t)&cfile);
+					const size_t BUFF_SIZE = 8192;
+					char* rbuff = new char[BUFF_SIZE];
 
-					char rbuff[512];
-					ssize_t n = 511;
-					sys::call(sys::CALL::READ, (size_t)cfile, (size_t)&n, (size_t)rbuff);
+					FILE* f = fopen(argv[1], "r");
+					size_t n = fread(rbuff, 1, BUFF_SIZE - 1, f);
 
 					if (n > 0)
 						util::print(rbuff);
 
-					sys::call(sys::CALL::CLOSE, (size_t)cfile);
+					fclose(f);
+					delete rbuff;
 				}
 				else
-					util::println("Please specify a file!");
+					util::println("Usage: cat <file>");
 			}
 			else if (util::str_equal(argv[0], "pool"))
 			{

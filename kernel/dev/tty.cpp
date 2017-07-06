@@ -21,6 +21,7 @@
 #include <tupai/dev/tty.hpp>
 #include <tupai/dev/serial.hpp>
 #include <tupai/util/mutex.hpp>
+#include <tupai/util/hwlock.hpp>
 #include <tupai/sys/thread.hpp>
 #include <tupai/sys/pipe.hpp>
 #include <tupai/debug.hpp>
@@ -42,10 +43,10 @@ namespace tupai
 		static volatile int tty_serial_port = -1;
 
 		static util::spinlock_t spinlock;
-		static util::hw_mutex   tty_hw_mutex;
+		static util::hwlock_t   hwlock;
 
-		// The I/O pipe. 256 character buffer
-		static volatile sys::pipe_t<8192> iopipe;
+		// The I/O pipe. 4096 character buffer
+		static volatile sys::pipe_t<4096> iopipe;
 
 		static void tty_in_thread(int argc, char* argv[]);
 		static void tty_out_thread(int argc, char* argv[]);
@@ -99,7 +100,7 @@ namespace tupai
 		void tty_write(char c)
 		{
 			spinlock.lock(); // Begin critical section
-			iopipe.write(c);
+			iopipe.write_unsafe(c);
 			spinlock.unlock(); // End critical section
 		}
 
@@ -112,16 +113,16 @@ namespace tupai
 		char tty_read()
 		{
 			spinlock.lock(); // Begin critical section
-			char val = iopipe.read();
+			char val = iopipe.read_unsafe();
 			spinlock.unlock(); // End critical section
 			return val;
 		}
 
 		void tty_write_in(char c)
 		{
-			tty_hw_mutex.lock(); // Begin critical section
+			hwlock.lock(); // Begin critical section
 			iopipe.write_in_unsafe(c);
-			tty_hw_mutex.unlock(); // End critical section
+			hwlock.unlock(); // End critical section
 		}
 
 		void tty_in_thread(int argc, char* argv[])

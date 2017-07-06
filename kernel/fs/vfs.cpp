@@ -118,7 +118,8 @@ namespace tupai
 			for (size_t i = 0; i < depth; i ++)
 				util::print((i == depth - 1) ? "|--" : "|  ");
 			// Name
-			util::print('[', inode->id, "] ", name, (inode->type == inode_type::DIRECTORY) ? "/" : "", '\n');
+			//util::print('[', inode->id, "] ", name, (inode->type == inode_type::DIRECTORY) ? "/" : "", '\n');
+			util::print(name, (inode->type == inode_type::DIRECTORY) ? "/" : "", '\n');
 
 			for (size_t i = 0; i < inode->dir_table.size(); i ++)
 			{
