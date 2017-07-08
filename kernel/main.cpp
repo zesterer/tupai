@@ -25,13 +25,13 @@
 // Core system environment
 #include <tupai/sys/kmem.hpp>
 #include <tupai/sys/mmap.hpp>
+#include <tupai/sys/pipe.hpp>
 #include <tupai/sys/thread.hpp>
 #include <tupai/sys/initrd.hpp>
 #include <tupai/sys/call.hpp>
 #include <tupai/sys/proc.hpp>
 
 // Filesystem
-#include <tupai/fs/vfs.hpp>
 #include <tupai/vfs/vfs.hpp>
 
 // Virtual devices
@@ -70,12 +70,12 @@ namespace tupai
 		sys::threading_init(); // Initiate multi-threading
 		sys::call_bind();      // Initiate SYSCALL routine
 
-		vfs::vfs_init(); // Init virtual filesystem
+		vfs::vfs_init();  // Init virtual filesystem
+		sys::pipe_init(); // Init pipe system
 
-		//fs::vfs_init();     // Initiate filesystem
 		sys::initrd_init(); // Initiate initrd filesystems
 
-		sys::proc_init();      // Initiate processes
+		sys::proc_init(); // Initiate processes
 
 		// Initiate virtual devices
 		dev::serial_init();

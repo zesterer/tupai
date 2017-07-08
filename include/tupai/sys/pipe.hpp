@@ -22,6 +22,7 @@
 
 // Tupai
 #include <tupai/util/fifo.hpp>
+#include <tupai/vfs/vfs.hpp>
 
 // Standard
 #include <stddef.h>
@@ -31,26 +32,11 @@ namespace tupai
 {
 	namespace sys
 	{
-		template <size_t SIZE>
-		struct pipe_t
-		{
-		public:
-			volatile util::fifo_t<uint8_t, SIZE> in;
-			volatile util::fifo_t<uint8_t, SIZE> out;
+		const size_t PIPE_SIZE = 4096;
+		using pipe_t = util::fifo_t<uint8_t, PIPE_SIZE>;
 
-		public:
-			void    write(uint8_t c) volatile { return this->out.write(c); }
-			uint8_t read()           volatile { return this->in.read(); }
-
-			void    write_in(uint8_t c) volatile { return this->in.write(c); }
-			uint8_t read_out()          volatile { return this->out.read(); }
-
-			void    write_unsafe(uint8_t c) volatile { return this->out.write_unsafe(c); }
-			uint8_t read_unsafe()           volatile { return this->in.read_unsafe(); }
-
-			void    write_in_unsafe(uint8_t c) volatile { return this->in.write_unsafe(c); }
-			uint8_t read_out_unsafe()          volatile { return this->out.read_unsafe(); }
-		};
+		void             pipe_init();
+		vfs::inode_ptr_t mount_pipe(pipe_t* pipe, const char* path);
 	}
 }
 

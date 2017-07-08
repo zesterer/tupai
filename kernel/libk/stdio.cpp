@@ -60,6 +60,12 @@ size_t fread (void* ptr, size_t size, size_t count, FILE* stream)
 	return n;
 }
 
-size_t fwrite(const void* ptr, size_t size, size_t count, FILE* stream);
+size_t fwrite(const void* ptr, size_t size, size_t count, FILE* stream)
+{
+	size_t n = size * count;
+	tupai::id_t fd = (tupai::id_t)stream - 1;
+	tupai::sys::call(tupai::sys::CALL::WRITE, (size_t)fd, (size_t)&n, (size_t)ptr);
+	return n;
+}
 
 // TODO : Complete this

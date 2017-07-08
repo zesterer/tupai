@@ -101,6 +101,58 @@ namespace tupai
 			return 0;
 		}
 
+		int vfs_mount(inode_ptr_t inode, const char* path)
+		{
+			spinlock.lock(); // Begin critical section
+
+			int err = 1;
+
+			size_t element_count = path_element_count(path);
+			inode_ptr_t cinode = vfs_root;
+			for (size_t i = 0; i < element_count - 1; i ++)
+			{
+				char element[FILENAME_MAX];
+				path_element_get(path, element, i);
+
+				inode_t* inode = inode_table[cinode];
+				cinode = ID_INVALID;
+				if (inode != nullptr)
+				{
+					for (size_t i = 0; i < inode->children.size(); i ++)
+					{
+						if (util::str_equal(inode->children[i].name, element))
+						{
+							cinode = inode->children[i].inode;
+							break;
+						}
+					}
+				}
+
+				if (cinode == ID_INVALID)
+					break;
+			}
+
+			if (cinode != ID_INVALID)
+			{
+				inode_t* dir = inode_table[cinode];
+				char filename[FILENAME_MAX];
+				path_element_get(path, filename, element_count - 1);
+
+				if (dir != nullptr)
+				{
+					inode_child_t nchild;
+					nchild.inode = inode;
+					util::str_cpy_n(filename, nchild.name, FILENAME_MAX);
+					dir->children.push(nchild);
+
+					err = 0;
+				}
+			}
+
+			spinlock.unlock(); // End critical section
+			return err;
+		}
+
 		void vfs_init()
 		{
 			spinlock.lock(); // Begin critical section
@@ -110,16 +162,6 @@ namespace tupai
 			//fd_table    = util::hashtable_t<fd_t>();
 
 			spinlock.unlock(); // End critical section
-
-			fs_ptr_t nfs = vfs_create_fs("testfs");
-			auto node0 = vfs_create_inode(inode_type::NORMAL_FILE);
-			nfs.get_root().mount_child(node0, "test0");
-			auto node1 = vfs_create_inode(inode_type::NORMAL_FILE);
-			nfs.get_root().mount_child(node1, "test1");
-			auto node2 = vfs_create_inode(inode_type::NORMAL_FILE);
-			node1.mount_child(node2, "test2");
-
-			vfs_set_root(nfs.get_root());
 		}
 
 		void vfs_print_inode(inode_ptr_t inode, const char* name, size_t depth = 0)

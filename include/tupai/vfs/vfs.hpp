@@ -63,7 +63,7 @@ namespace tupai
 			CHAR_DEVICE,
 			BLOCK_DEVICE,
 			DIRECTORY,
-			FIFO,
+			PIPE,
 		};
 
 		const size_t FILENAME_MAX = 256;
@@ -120,6 +120,7 @@ namespace tupai
 		inode_ptr_t vfs_get_root();
 		inode_ptr_t vfs_get_inode(const char* path);
 		int         vfs_set_root(inode_ptr_t root);
+		int         vfs_mount(inode_ptr_t inode, const char* path);
 
 		void vfs_init();
 		void vfs_display();

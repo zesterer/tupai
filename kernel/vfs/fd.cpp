@@ -78,7 +78,7 @@ namespace tupai
 			}
 		}
 
-		ssize_t fd_read(id_t lfd, size_t n, void* rbuff)
+		ssize_t fd_read(id_t lfd, void* rbuff, size_t n)
 		{
 			id_t cproc = sys::proc_get_current();
 
@@ -95,7 +95,28 @@ namespace tupai
 				else if (vtable->read == nullptr)
 					return 1;
 				else
-					return vtable->read(fd, n, rbuff);
+					return vtable->read(fd, rbuff, n);
+			}
+		}
+
+		ssize_t fd_write(id_t lfd, const void* buff, size_t n)
+		{
+			id_t cproc = sys::proc_get_current();
+
+			if (cproc == ID_INVALID)
+				return 1;
+			else
+			{
+				fd_ptr_t fd = sys::proc_get_fd(cproc, lfd);
+				vtable_t* vtable;
+				fd.get_inode().get_vtable(&vtable);
+
+				if (vtable == nullptr)
+					return 1;
+				else if (vtable->write == nullptr)
+					return 1;
+				else
+					return vtable->write(fd, buff, n);
 			}
 		}
 	}

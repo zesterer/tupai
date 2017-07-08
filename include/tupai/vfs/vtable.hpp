@@ -36,7 +36,7 @@ namespace tupai
 		{
 			int      (*open) (inode_ptr_t inode)                         = nullptr;
 			int      (*close)(fd_ptr_t desc)                             = nullptr;
-			ssize_t  (*read) (fd_ptr_t desc, size_t n, void* rbuff)      = nullptr;
+			ssize_t  (*read) (fd_ptr_t desc, void* rbuff, size_t n)      = nullptr;
 			ssize_t  (*write)(fd_ptr_t desc, const void* buff, size_t n) = nullptr;
 		};
 	}

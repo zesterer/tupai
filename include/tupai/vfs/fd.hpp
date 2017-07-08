@@ -44,7 +44,8 @@ namespace tupai
 
 		id_t    fd_open (inode_ptr_t inode);
 		int     fd_close(id_t lfd);
-		ssize_t fd_read (id_t lfd, size_t n, void* rbuff);
+		ssize_t fd_read (id_t lfd, void* rbuff, size_t n);
+		ssize_t fd_write(id_t lfd, const void* buff, size_t n);
 	}
 }
 

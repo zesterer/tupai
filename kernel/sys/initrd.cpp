@@ -60,7 +60,7 @@ namespace tupai
 
 		int     initrd_open_call (vfs::inode_ptr_t inode);
 		int     initrd_close_call(vfs::fd_ptr_t fd);
-		ssize_t initrd_read_call (vfs::fd_ptr_t fd, size_t n, void* rbuff);
+		ssize_t initrd_read_call (vfs::fd_ptr_t fd, void* rbuff, size_t n);
 		ssize_t initrd_write_call(vfs::fd_ptr_t fd, const void* buff, size_t n);
 
 		void initrd_add(void* start, size_t size, const char* args)
@@ -146,7 +146,7 @@ namespace tupai
 								type = vfs::inode_type::BLOCK_DEVICE;
 								break;
 							case '6':
-								type = vfs::inode_type::FIFO;
+								type = vfs::inode_type::PIPE;
 								break;
 							case '5':
 							default:
@@ -173,15 +173,15 @@ namespace tupai
 
 		int initrd_open_call (vfs::inode_ptr_t inode)
 		{
-			return 0;
+			return (inode == ID_INVALID) ? 1 : 0;
 		}
 
 		int initrd_close_call(vfs::fd_ptr_t fd)
 		{
-			return 0;
+			return (fd == ID_INVALID) ? 1 : 0;
 		}
 
-		ssize_t initrd_read_call (vfs::fd_ptr_t fd, size_t n, void* rbuff)
+		ssize_t initrd_read_call (vfs::fd_ptr_t fd, void* rbuff, size_t n)
 		{
 			util::tar_header_t* header = *inodes[fd.get_inode()];
 

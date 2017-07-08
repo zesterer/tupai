@@ -115,6 +115,7 @@ namespace tupai
 					"  threads -> Show running threads\n",
 					"  fs      -> Show filesystem tree\n",
 					"  cat     -> Display the contents of a file\n",
+					"  echo    -> Echo the typed text to stdout\n",
 					"  pool    -> Show kernel memory pool\n",
 					"  motd    -> Show the MOTD\n",
 					"  div     -> Trigger a divided-by-zero exception\n",
@@ -144,7 +145,6 @@ namespace tupai
 				{
 					const size_t BUFF_SIZE = 8192;
 					char* rbuff = new char[BUFF_SIZE];
-					rbuff[0] = '\0';
 
 					FILE* f = fopen(argv[1], "r");
 					size_t n = fread(rbuff, 1, BUFF_SIZE - 1, f);
@@ -157,6 +157,23 @@ namespace tupai
 				}
 				else
 					util::println("Usage: cat <file>");
+			}
+			else if (util::str_equal(argv[0], "echo"))
+			{
+				if (argc > 1)
+				{
+					FILE* f = fopen("/dev/stdout", "w");
+					for (size_t i = 1; i < argc; i ++)
+					{
+						if (i != 1)
+							fwrite(" ", 1, 1, f);
+
+						fwrite(argv[i], 1, util::str_len(argv[i]), f);
+					}
+					fclose(f);
+
+					util::print('\n');
+				}
 			}
 			else if (util::str_equal(argv[0], "pool"))
 			{

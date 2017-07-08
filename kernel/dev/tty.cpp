@@ -45,8 +45,8 @@ namespace tupai
 		static util::spinlock_t spinlock;
 		static util::hwlock_t   hwlock;
 
-		// The I/O pipe. 4096 character buffer
-		static volatile sys::pipe_t<4096> iopipe;
+		static sys::pipe_t inpipe;
+		static sys::pipe_t outpipe;
 
 		static void tty_in_thread(int argc, char* argv[]);
 		static void tty_out_thread(int argc, char* argv[]);
@@ -57,6 +57,10 @@ namespace tupai
 
 			if (!tty_initiated)
 			{
+				// Mount the pipes
+				sys::mount_pipe(&inpipe, "/dev/stdin");
+				sys::mount_pipe(&outpipe, "/dev/stdout");
+
 				#if defined(ARCH_FAMILY_x86)
 					x86::textmode_init();
 				#endif
@@ -100,7 +104,7 @@ namespace tupai
 		void tty_write(char c)
 		{
 			spinlock.lock(); // Begin critical section
-			iopipe.write_unsafe(c);
+			outpipe.write_unsafe(c);
 			spinlock.unlock(); // End critical section
 		}
 
@@ -113,7 +117,7 @@ namespace tupai
 		char tty_read()
 		{
 			spinlock.lock(); // Begin critical section
-			char val = iopipe.read_unsafe();
+			char val = inpipe.read_unsafe();
 			spinlock.unlock(); // End critical section
 			return val;
 		}
@@ -121,7 +125,7 @@ namespace tupai
 		void tty_write_in(char c)
 		{
 			hwlock.lock(); // Begin critical section
-			iopipe.write_in_unsafe(c);
+			inpipe.write_unsafe(c);
 			hwlock.unlock(); // End critical section
 		}
 
@@ -135,7 +139,7 @@ namespace tupai
 				unsigned char c = dev::serial_read(tty_serial_port);
 
 				if (c != 0)
-					iopipe.write_in_unsafe(c); // Unsafe call to avoid interrupt locking
+					inpipe.write_unsafe(c); // Unsafe call to avoid interrupt locking
 			}
 		}
 
@@ -146,7 +150,7 @@ namespace tupai
 
 			while (true)
 			{
-				unsigned char c = iopipe.read_out_unsafe(); // Unsafe call to avoid exception locking
+				unsigned char c = outpipe.read_unsafe(); // Unsafe call to avoid exception locking
 
 				#if defined(ARCH_FAMILY_x86)
 					x86::textmode_write(c);
