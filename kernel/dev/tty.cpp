@@ -134,6 +134,7 @@ namespace tupai
 			(void)argc;
 			(void)argv;
 
+			/*
 			while (true)
 			{
 				unsigned char c = dev::serial_read(tty_serial_port);
@@ -141,6 +142,7 @@ namespace tupai
 				if (c != 0)
 					inpipe.write_unsafe(c); // Unsafe call to avoid interrupt locking
 			}
+			*/
 		}
 
 		void tty_out_thread(int argc, char* argv[])

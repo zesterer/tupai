@@ -51,6 +51,9 @@ namespace tupai
 		static const uint8_t ICW4_BUFF_MASTER = 0x0C; // Buffered mode / master
 		static const uint8_t ICW4_SFNM        = 0x10; // Special fully nested (not)
 
+		static const uint8_t OCW3_READ_IRR = 0x0A; // OCW3 irq ready next CMD read
+		static const uint8_t OCW3_READ_ISR = 0x0B; // OCW3 irq service next CMD read
+
 		static const uint8_t PIC_EOI = 0x20; // PIC EOI byte
 
 		void pic_bind()
@@ -99,6 +102,25 @@ namespace tupai
 				"PIC initiated with properties:", '\n',
 				"  IRQ offset -> ", offset, '\n'
 			);
+		}
+
+		uint16_t __pic_get_irq_reg(uint8_t ocw3)
+		{
+			/* OCW3 to PIC CMD to get the register values.  PIC2 is chained, and
+			 * represents IRQs 8-15.  PIC1 is IRQs 0-7, with 2 being the chain */
+			outb(PORT_PIC1_CMD, ocw3);
+			outb(PORT_PIC2_CMD, ocw3);
+			return (inb(PORT_PIC2_CMD) << 8) | inb(PORT_PIC1_CMD);
+		}
+
+		uint16_t pic_get_irr()
+		{
+			return __pic_get_irq_reg(OCW3_READ_IRR);
+		}
+
+		uint16_t pic_get_isr()
+		{
+			return __pic_get_irq_reg(OCW3_READ_ISR);
 		}
 
 		void pic_ack(uint8_t irq)

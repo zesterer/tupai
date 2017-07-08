@@ -35,7 +35,11 @@ namespace tupai
 	void interrupt_enable(bool enable)
 	{
 		if (enable)
+		{
+			//asm volatile ("xchg %bx, %bx");
 			asm volatile ("sti");
+			//asm volatile ("xchg %bx, %bx");
+		}
 		else
 			asm volatile ("cli");
 	}

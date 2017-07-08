@@ -30,10 +30,12 @@ namespace tupai
 	{
 		const uint8_t PIC_REMAP_OFFSET = 32;
 
-		void pic_bind();
-		void pic_init();
-		void pic_ack(uint8_t irq);
-		void pic_mask(uint8_t irq, bool enabled);
+		void     pic_bind();
+		void     pic_init();
+		uint16_t pic_get_irr();
+		uint16_t pic_get_isr();
+		void     pic_ack(uint8_t irq);
+		void     pic_mask(uint8_t irq, bool enabled);
 	}
 }
 

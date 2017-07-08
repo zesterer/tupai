@@ -95,9 +95,19 @@ namespace tupai
 
 			// IDT default handler
 			extern "C" void isr_stub();
-			extern "C" void stub_isr_main()
+			extern "C" size_t stub_isr_main(size_t stack)
 			{
-				debug_println("Undefined interrupt occured");
+				panic("Undefined interrupt occured");
+
+				return stack;
+			}
+
+			extern "C" void isr_spurious();
+			extern "C" size_t spurious_isr_main(size_t stack)
+			{
+				debug_println("Spurious interrupt occured");
+
+				return stack;
 			}
 
 			void idt_init()
@@ -126,6 +136,9 @@ namespace tupai
 				// Assign IDT entries to the stub handler for now
 				for (size_t i = PIC_REMAP_OFFSET; i < IDT_LENGTH; i ++)
 					idt_set_entry(i, (void*)&isr_stub);
+
+				// Set the spurious interrupt handler
+				idt_set_entry(PIC_REMAP_OFFSET + 7, (void*)isr_spurious);
 
 				debug_println("IDT initiated");
 			}
