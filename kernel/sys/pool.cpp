@@ -42,8 +42,12 @@ namespace tupai
 		{
 			pool->spinlock.lock(); // Begin critical section
 
+			size_t diff = (size_t)start - util::align_ceiling((size_t)start, 16);
+			start = (void*)((size_t)start + diff);
+			size -= diff;
+
 			pool->block_size  = block_size;
-			pool->body        = util::align_ceiling((size_t)start, 16); // Align to 16 bytes
+			pool->body        = (size_t)start; // Align to 16 bytes
 			pool->block_count = (4 * ((uint64_t)size + (size_t)start - pool->body)) / (4 * (uint64_t)pool->block_size + 1);
 			pool->map         = pool->body + pool->block_size * pool->block_count;
 

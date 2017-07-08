@@ -19,12 +19,12 @@
 
 // Tupai
 #include <tupai/sys/call.hpp>
-#include <tupai/interrupt.hpp>
 #include <tupai/sys/thread.hpp>
+#include <tupai/vfs/vfs.hpp>
+#include <tupai/vfs/fd.hpp>
 #include <tupai/util/mutex.hpp>
 #include <tupai/util/out.hpp>
-#include <tupai/fs/desc.hpp>
-#include <tupai/fs/vfs.hpp>
+#include <tupai/interrupt.hpp>
 
 #include <tupai/x86/textmode.hpp>
 
@@ -92,27 +92,27 @@ namespace tupai
 					const char* path  = (const char*)arg1;
 					id_t*       rdesc = (id_t*)arg2;
 
-					fs::inode_t* inode = fs::vfs_get_inode(path);
-					if (inode == nullptr)
+					vfs::inode_ptr_t inode = vfs::vfs_get_inode(path);
+					if (inode == ID_INVALID)
 						*rdesc = 0;
 					else
-						*rdesc = fs::desc_open(inode);
+						*rdesc = vfs::fd_open(inode);
 				}
 				break;
 
 			case CALL::CLOSE:
 				{
-					id_t desc = (id_t)arg1;
-					fs::desc_close(desc);
+					id_t lfd = (id_t)arg1;
+					vfs::fd_close(lfd);
 				}
 				break;
 
 			case CALL::READ:
 				{
-					id_t     desc  = (id_t)arg1;
+					id_t     lfd  = (id_t)arg1;
 					ssize_t* rn    = (ssize_t*)arg2;
 					void*    rbuff = (void*)arg3;
-					*rn = fs::desc_read(desc, *rn, rbuff);
+					*rn = vfs::fd_read(lfd, *rn, rbuff);
 				}
 				break;
 

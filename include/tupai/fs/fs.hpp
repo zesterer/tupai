@@ -46,12 +46,13 @@ namespace tupai
 
 			char name[MAX_FS_NAME];
 
-			inode_t* root = nullptr;
+			id_t root = -1;
 
 			fs_t(const char* name = nullptr);
 		};
 
-		inode_t* fs_create_inode(fs_t* fs, inode_type type, vtable_t* vtable);
+		id_t fs_create_inode(id_t id, inode_type type, vtable_t* vtable);
+		id_t fs_get_root    (id_t id);
 	}
 }
 

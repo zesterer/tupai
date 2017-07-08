@@ -1,5 +1,5 @@
 //
-// file : com.hpp
+// file : cpp.hpp
 //
 // This file is part of Tupai.
 //
@@ -17,11 +17,8 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_FS_COM_HPP
-#define TUPAI_FS_COM_HPP
-
-// Tupai
-#include <tupai/type.hpp>
+#ifndef TUPAI_UTIL_CPP_HPP
+#define TUPAI_UTIL_CPP_HPP
 
 // Standard
 #include <stddef.h>
@@ -29,27 +26,13 @@
 
 namespace tupai
 {
-	namespace fs
+	namespace util
 	{
-		static const size_t FILENAME_SIZE = 256;
-
-		enum class inode_type
+		template <typename T>
+		T&& move(T&& arg)
 		{
-			NORMAL_FILE,
-			HARD_LINK,
-			SYM_LINK,
-			CHAR_DEVICE,
-			BLOCK_DEVICE,
-			DIRECTORY,
-			FIFO,
-		};
-
-		// Forward declarations
-		struct fs_t;
-		struct inode_t;
-		struct file_t;
-		struct desc_t;
-		struct vtable_t;
+			return static_cast<T&&>(arg);
+		}
 	}
 }
 

@@ -36,6 +36,7 @@
 #include <tupai/util/vector.hpp>
 
 #include <tupai/fs/vfs.hpp>
+#include <tupai/vfs/vfs.hpp>
 
 // LibC
 #include <stdio.h>
@@ -135,7 +136,7 @@ namespace tupai
 			}
 			else if (util::str_equal(argv[0], "fs"))
 			{
-				fs::vfs_display();
+				vfs::vfs_display();
 			}
 			else if (util::str_equal(argv[0], "cat"))
 			{
@@ -143,6 +144,7 @@ namespace tupai
 				{
 					const size_t BUFF_SIZE = 8192;
 					char* rbuff = new char[BUFF_SIZE];
+					rbuff[0] = '\0';
 
 					FILE* f = fopen(argv[1], "r");
 					size_t n = fread(rbuff, 1, BUFF_SIZE - 1, f);

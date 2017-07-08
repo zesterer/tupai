@@ -49,9 +49,6 @@
 		// Set the stack pointer
 		mov $stack_top, %esp
 
-		// Call global constructor code
-		call _init
-
 		// Set up kentry arguments
 		push %esp // Stack
 		mov (mb_header_ptr), %eax
@@ -59,8 +56,9 @@
 		mov (mb_header_magic), %eax
 		push %eax // Multiboot magic
 
-		// Call the kernel's entry point
-		call kentry
+		call kentry // Call the kernel's entry point
+		call _init  // Call global constructor code
+		call kmain  // Call kernel main procedure
 
 		// Hang the kernel
 		hang:

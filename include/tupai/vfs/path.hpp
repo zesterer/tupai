@@ -1,5 +1,5 @@
 //
-// file : com.hpp
+// file : path.hpp
 //
 // This file is part of Tupai.
 //
@@ -17,11 +17,11 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_FS_COM_HPP
-#define TUPAI_FS_COM_HPP
+#ifndef TUPAI_VFS_PATH_HPP
+#define TUPAI_VFS_PATH_HPP
 
 // Tupai
-#include <tupai/type.hpp>
+#include <tupai/vfs/vfs.hpp>
 
 // Standard
 #include <stddef.h>
@@ -29,27 +29,10 @@
 
 namespace tupai
 {
-	namespace fs
+	namespace vfs
 	{
-		static const size_t FILENAME_SIZE = 256;
-
-		enum class inode_type
-		{
-			NORMAL_FILE,
-			HARD_LINK,
-			SYM_LINK,
-			CHAR_DEVICE,
-			BLOCK_DEVICE,
-			DIRECTORY,
-			FIFO,
-		};
-
-		// Forward declarations
-		struct fs_t;
-		struct inode_t;
-		struct file_t;
-		struct desc_t;
-		struct vtable_t;
+		size_t path_element_count(const char* path);
+		bool   path_element_get(const char* path, char(&buff)[FILENAME_MAX], size_t index);
 	}
 }
 

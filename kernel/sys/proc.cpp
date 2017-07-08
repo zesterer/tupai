@@ -19,7 +19,6 @@
 
 // Tupai
 #include <tupai/sys/proc.hpp>
-#include <tupai/fs/vfs.hpp>
 #include <tupai/util/str.hpp>
 #include <tupai/util/hwlock.hpp>
 
@@ -29,7 +28,7 @@ namespace tupai
 {
 	namespace sys
 	{
-		static util::hashtable_t<id_t, proc_t*> procs;
+		static util::hashtable_t<proc_t*> procs;
 		static id_t proc_counter = 0;
 
 		static util::hwlock_t hwlock;
@@ -39,8 +38,7 @@ namespace tupai
 		{
 			hwlock.lock(); // Begin critical section
 
-			procs = util::hashtable_t<id_t, proc_t*>();
-			cproc = proc_create("kernel", fs::vfs_get_root());
+			cproc = proc_create("kernel", vfs::vfs_get_root());
 
 			hwlock.unlock(); // End critical section
 		}
@@ -60,7 +58,7 @@ namespace tupai
 		{
 			hwlock.lock(); // Begin critical section
 
-			proc_t* proc = procs[pid];
+			proc_t* proc = *procs[pid];
 
 			const char* val = "null";
 			if (proc != nullptr)
@@ -70,21 +68,26 @@ namespace tupai
 			return val;
 		}
 
-		fs::desc_t* proc_get_desc(id_t pid, id_t desc)
+		vfs::fd_ptr_t proc_get_fd(id_t pid, id_t lfd)
 		{
 			hwlock.lock(); // Begin critical section
 
-			proc_t* proc = procs[pid];
+			proc_t* proc = *procs[pid];
 
-			fs::desc_t* val = nullptr;
+			vfs::fd_ptr_t val = ID_INVALID;
 			if (proc != nullptr)
-				return proc->descs[desc];
+			{
+				vfs::fd_ptr_t* fd = proc->fds[lfd];
+
+				if (fd != nullptr)
+					val = *fd;
+			}
 
 			hwlock.unlock(); // End critical section
 			return val;
 		}
 
-		id_t proc_create(const char* name, id_t dir)
+		id_t proc_create(const char* name, vfs::inode_ptr_t dir)
 		{
 			hwlock.lock(); // Begin critical section
 
@@ -99,37 +102,37 @@ namespace tupai
 			return nproc->id;
 		}
 
-		id_t proc_create_desc(id_t pid, fs::inode_t* inode)
+		id_t proc_create_fd(id_t pid, vfs::inode_ptr_t inode)
 		{
 			hwlock.lock(); // Begin critical section
 
-			proc_t* proc = procs[pid];
+			proc_t* proc = *procs[pid];
 
 			id_t val = -1;
 			if (proc != nullptr)
 			{
-				fs::desc_t* ndesc = new fs::desc_t();
-				ndesc->id = proc->desc_counter++;
-				ndesc->inode = inode->gid;
-				proc->descs.add(ndesc->id, ndesc);
+				id_t nid = proc->desc_counter++;
 
-				val = ndesc->id;
+				vfs::fd_ptr_t nfd = vfs::vfs_create_fd(inode);
+				proc->fds.add(nid, nfd);
+
+				val = nid;
 			}
 
 			hwlock.unlock(); // Endcritical section
 			return val;
 		}
 
-		int proc_close_desc(id_t pid, id_t desc)
+		int proc_remove_fd(id_t pid, id_t lfd)
 		{
 			hwlock.lock(); // Begin critical section
 
-			proc_t* proc = procs[pid];
+			proc_t* proc = *procs[pid];
 
 			int val = 1;
 			if (proc != nullptr)
 			{
-				bool removed = proc->descs.remove(desc);
+				bool removed = proc->fds.remove(lfd);
 
 				if (removed)
 					val = 0;

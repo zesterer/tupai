@@ -32,6 +32,7 @@
 
 // Filesystem
 #include <tupai/fs/vfs.hpp>
+#include <tupai/vfs/vfs.hpp>
 
 // Virtual devices
 #include <tupai/dev/serial.hpp>
@@ -69,9 +70,11 @@ namespace tupai
 		sys::threading_init(); // Initiate multi-threading
 		sys::call_bind();      // Initiate SYSCALL routine
 
-		fs::vfs_init();     // Initiate filesystem
+		vfs::vfs_init(); // Init virtual filesystem
+
+		//fs::vfs_init();     // Initiate filesystem
 		sys::initrd_init(); // Initiate initrd filesystems
-		
+
 		sys::proc_init();      // Initiate processes
 
 		// Initiate virtual devices

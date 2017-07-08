@@ -67,7 +67,11 @@ namespace tupai
 				debug_print("Finished rpi2 initiation\n");
 
 				early(); // Core system setup
-				main();  // Kernel main
+			}
+
+			extern "C" void kmain()
+			{
+				main(); // Main kernel entry
 			}
 
 			void core_hang()

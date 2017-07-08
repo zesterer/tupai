@@ -28,6 +28,8 @@ namespace tupai
 {
 	typedef int64_t id_t;
 	typedef intptr_t ssize_t;
+
+	const id_t ID_INVALID = -1;
 }
 
 #endif

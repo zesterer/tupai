@@ -21,8 +21,10 @@
 #define TUPAI_UTIL_HASHTABLE_HPP
 
 // Tupai
-#include <tupai/util/math.hpp>
-#include <tupai/panic.hpp>
+#include <tupai/type.hpp>
+#include <tupai/util/mem.hpp>
+
+#include <tupai/util/out.hpp>
 
 // Standard
 #include <stddef.h>
@@ -32,15 +34,105 @@ namespace tupai
 {
 	namespace util
 	{
-		static size_t hash(id_t x) { return x; }
+		static size_t hash(id_t x) { return x ^ 0xF37E2A92F37E2A92; }
 
-		template <typename Key, typename T>
+		const size_t HASHTABLE_CAPACITY = 256;
+
+		template <typename T>
+		struct hashtable_t
+		{
+			uint8_t data[HASHTABLE_CAPACITY * sizeof(T)];
+			bool    used[HASHTABLE_CAPACITY];
+			id_t    keys[HASHTABLE_CAPACITY];
+			size_t  item_count = 0;
+
+			size_t size()
+			{
+				return this->item_count;
+			}
+
+			bool add(id_t key, T item)
+			{
+				size_t offset = hash(key) % HASHTABLE_CAPACITY;
+				for (size_t i = 0; i < HASHTABLE_CAPACITY; i ++)
+				{
+					size_t index = (offset + i) % HASHTABLE_CAPACITY;
+
+					if (!this->used[index])
+					{
+						this->used[index]        = true;
+						this->keys[index]        = key;
+						((T*)this->data)[index]  = item;
+						this->item_count ++;
+						return true;
+					}
+				}
+				return false;
+			}
+
+			bool remove(id_t key)
+			{
+				size_t offset = hash(key) % HASHTABLE_CAPACITY;
+				for (size_t i = 0; i < HASHTABLE_CAPACITY; i ++)
+				{
+					size_t index = (offset + i) % HASHTABLE_CAPACITY;
+
+					if (this->keys[index] == key && this->used[index] == true)
+					{
+						this->used[index] = false;
+						((T*)this->data)[index].~T();
+						this->item_count --;
+						return true;
+					}
+				}
+				return false;
+			}
+
+			T* get(id_t key)
+			{
+				size_t offset = hash(key) % HASHTABLE_CAPACITY;
+				for (size_t i = 0; i < HASHTABLE_CAPACITY; i ++)
+				{
+					size_t index = (offset + i) % HASHTABLE_CAPACITY;
+
+					if (this->keys[index] == key && this->used[index] == true)
+						return &((T*)this->data)[index];
+				}
+				return nullptr;
+			}
+
+			T* operator[](id_t key)
+			{
+				return this->get(key);
+			}
+
+			T* nth(size_t index)
+			{
+				size_t count = 0;
+				for (size_t i = 0; i < HASHTABLE_CAPACITY; i ++)
+				{
+					if (this->used[i])
+					{
+						if (count == index)
+							return &((T*)this->data)[i];
+						else
+							count ++;
+					}
+				}
+				return nullptr;
+			}
+		};
+
+		/*
+		template <typename T>
 		struct hashtable_t
 		{
 			size_t item_count = 0;
 			size_t capacity;
+			bool  inited = false;
+
 			bool* filled = nullptr;
-			Key*  keys   = nullptr;
+			id_t* keys   = nullptr;
 			T*    items  = nullptr;
 
 			void clear_filled()
@@ -49,7 +141,7 @@ namespace tupai
 					this->filled[i] = false;
 			}
 
-			bool _add(Key key, T item)
+			bool _add(id_t key, T item)
 			{
 				size_t offset = hash(key) % this->capacity;
 				bool added = false;
@@ -72,13 +164,13 @@ namespace tupai
 			void resize(size_t n)
 			{
 				bool* ofilled    = this->filled;
-				Key*  okeys      = this->keys;
+				id_t* okeys      = this->keys;
 				T*    oitems     = this->items;
 				size_t ocapacity = this->capacity;
 
-				this->filled   = new bool[n];
-				this->keys     = new Key[n];
-				this->items    = new T[n];
+				this->filled   = (bool*)new uint8_t[n * sizeof(bool)];
+				this->keys     = (id_t*)new uint8_t[n * sizeof(id_t)];
+				this->items    = (T*)   new uint8_t[n * sizeof(T)];
 				this->capacity = n;
 
 				this->clear_filled();
@@ -86,22 +178,81 @@ namespace tupai
 				for (size_t i = 0; i < ocapacity; i ++)
 				{
 					if (ofilled[i] == true)
-						this->_add(okeys[i], oitems[i]);
+					{
+						size_t offset = hash(okeys[i]) % this->capacity;
+						for (size_t j = 0; j < this->capacity; j ++)
+						{
+							size_t index = (offset + j) % this->capacity;
+							if (!this->filled[index])
+							{
+								this->filled[index] = true;
+								this->keys[index]   = okeys[i];
+								mem_copy(&oitems[i], &this->items[index], sizeof(T));
+								break;
+							}
+						}
+					}
 				}
 
-				delete ofilled;
-				delete okeys;
-				delete oitems;
+				if (this->filled != nullptr) delete (uint8_t*)this->filled;
+				if (this->keys != nullptr)   delete (uint8_t*)this->keys;
+				if (this->items != nullptr)  delete (uint8_t*)this->items;
+			}
+
+			void _init()
+			{
+				this->filled    = new bool[1];
+				this->keys      = new id_t[1];
+				this->items     = new T[1];
+				this->capacity  = 1;
+
+				this->clear_filled();
+
+				this->inited = true;
+			}
+
+			hashtable_t(const hashtable_t<T>& other)
+			{
+				this->filled = (bool*)new uint8_t[other.capacity * sizeof(bool)];
+				this->keys   = (id_t*)new uint8_t[other.capacity * sizeof(id_t)];
+				this->items  = (T*)   new uint8_t[other.capacity * sizeof(T)];
+
+				this->capacity   = other.capacity;
+				this->item_count = other.item_count;
+
+				this->clear_filled();
+				for (size_t i = 0; i < other.capacity; i ++)
+				{
+					if (other.filled[i] == true)
+					{
+						this->filled[i] = true;
+						this->keys[i]   = other.keys[i];
+						this->items[i]  = other.items[i];
+					}
+				}
+
+				this->inited = true;
 			}
 
 			hashtable_t()
 			{
-				this->filled   = new bool[1];
-				this->keys     = new Key[1];
-				this->items    = new T[1];
-				this->capacity = 1;
+				this->_init();
+			}
 
-				this->clear_filled();
+			~hashtable_t()
+			{
+				if (this->inited)
+				{
+					for (size_t i = 0; i < this->capacity; i ++)
+					{
+						if (this->filled[i] == true)
+							this->items[i].~T();
+					}
+
+					if (this->filled != nullptr) delete (uint8_t*)this->filled;
+					if (this->keys != nullptr)   delete (uint8_t*)this->keys;
+					if (this->items != nullptr)  delete (uint8_t*)this->items;
+				}
 			}
 
 			size_t size() const
@@ -109,8 +260,11 @@ namespace tupai
 				return this->item_count;
 			}
 
-			bool add(Key key, T item)
+			bool add(id_t key, T item)
 			{
+				if (!this->inited)
+					this->_init();
+
 				if (this->item_count >= this->capacity)
 					this->resize(this->capacity * 2);
 
@@ -122,8 +276,11 @@ namespace tupai
 				return added;
 			}
 
-			bool remove(Key key)
+			bool remove(id_t key)
 			{
+				if (this->item_count == 0)
+					return false;
+
 				size_t offset = hash(key) % this->capacity;
 				bool removed = false;
 				for (size_t i = 0; i < this->capacity; i ++)
@@ -132,7 +289,7 @@ namespace tupai
 					if (this->keys[index] == key)
 					{
 						this->filled[index] = false;
-						this->keys[index].~Key();
+						this->keys[index].~id_t();
 						this->items[index].~T();
 						removed = true;
 						break;
@@ -148,32 +305,38 @@ namespace tupai
 				return removed;
 			}
 
-			T get(Key key) const
+			T* get(id_t key)
 			{
+				if (this->item_count == 0)
+					return nullptr;
+
 				size_t offset = hash(key) % this->capacity;
 				for (size_t i = 0; i < this->capacity; i ++)
 				{
 					size_t index = (offset + i) % this->capacity;
 					if (this->filled[index] && this->keys[index] == key)
-						return this->items[index];
+						return &this->items[index];
 				}
 				return nullptr;
 			}
 
-			T operator[](size_t i) const
+			T* operator[](size_t i)
 			{
 				return this->get(i);
 			}
 
-			T nth(size_t n) const
+			T* nth(size_t n)
 			{
+				if (this->item_count == 0)
+					return nullptr;
+
 				size_t count = 0;
 				for (size_t i = 0; i < this->capacity; i ++)
 				{
 					if (this->filled[i])
 					{
 						if (count >= n)
-							return this->items[i];
+							return &this->items[i];
 						else
 							count ++;
 					}
@@ -181,8 +344,11 @@ namespace tupai
 				return nullptr;
 			}
 
-			Key nth_key(size_t n) const
+			id_t nth_key(size_t n) const
 			{
+				if (this->item_count == 0)
+					return ID_INVALID;
+
 				size_t count = 0;
 				for (size_t i = 0; i < this->capacity; i ++)
 				{
@@ -194,11 +360,14 @@ namespace tupai
 							count ++;
 					}
 				}
-				return Key();
+				return ID_INVALID;
 			}
 
-			bool contains(Key key) const
+			bool contains(id_t key) const
 			{
+				if (this->item_count == 0)
+					return false;
+
 				for (size_t i = 0; i < this->capacity; i ++)
 				{
 					if (this->filled[i] && this->keys[i] == key)
@@ -207,6 +376,7 @@ namespace tupai
 				return false;
 			}
 		};
+		*/
 	}
 }
 

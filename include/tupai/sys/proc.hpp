@@ -21,8 +21,7 @@
 #define TUPAI_SYS_PROC_HPP
 
 // Tupai
-#include <tupai/fs/inode.hpp>
-#include <tupai/fs/desc.hpp>
+#include <tupai/vfs/vfs.hpp>
 #include <tupai/util/hashtable.hpp>
 
 // Standard
@@ -68,36 +67,27 @@ namespace tupai
 				void* stack;
 			};
 
-			id_t id;             // Process ID
-			char name[NAME_MAX]; // Process name
-			proc_state state;    // Process state
-			id_t dir;            // Current directory
+			id_t id;              // Process ID
+			char name[NAME_MAX];  // Process name
+			proc_state state;     // Process state
+			vfs::inode_ptr_t dir; // Current directory
 
 			id_t thread_counter = 0;
-			util::hashtable_t<id_t, thread_t*> threads; // Process threads
+			util::hashtable_t<thread_t*> threads; // Process threads
 
 			id_t desc_counter = 0;
-			util::hashtable_t<id_t, fs::desc_t*> descs; // File descriptors
-
-			~proc_t()
-			{
-				for (size_t i = 0; i < this->threads.size(); i ++)
-					delete this->threads.nth(i);
-
-				for (size_t i = 0; i < this->descs.size(); i ++)
-					delete this->descs.nth(i);
-			}
+			util::hashtable_t<vfs::fd_ptr_t> fds; // File descriptors
 		};
 
 		void proc_init();
 
-		id_t        proc_get_current();
-		const char* proc_get_name(id_t pid);
-		fs::desc_t* proc_get_desc(id_t pid, id_t desc);
+		id_t          proc_get_current();
+		const char*   proc_get_name   (id_t pid);
+		vfs::fd_ptr_t proc_get_fd     (id_t pid, id_t lfd);
 
-		id_t proc_create(const char* name, id_t dir);
-		id_t proc_create_desc(id_t pid, fs::inode_t* inode);
-		int  proc_close_desc(id_t pid, id_t desc);
+		id_t proc_create   (const char* name, vfs::inode_ptr_t dir);
+		id_t proc_create_fd(id_t pid, vfs::inode_ptr_t inode);
+		int  proc_remove_fd(id_t pid, id_t lfd);
 	}
 }
 

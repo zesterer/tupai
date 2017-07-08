@@ -22,7 +22,11 @@
 
 // Tupai
 #include <tupai/util/math.hpp>
+#include <tupai/util/mem.hpp>
+#include <tupai/util/cpp.hpp>
 #include <tupai/panic.hpp>
+
+#include <tupai/util/out.hpp>
 
 // Standard
 #include <stddef.h>
@@ -35,17 +39,86 @@ namespace tupai
 		template <typename T>
 		struct vector_t
 		{
-			T* arr = nullptr;
-			size_t ccapacity = 0;
-			size_t csize = 0;
+			T* arr;
+			size_t ccapacity;
+			size_t csize;
 
-			~vector_t()
+			void __copy(const vector_t<T>& other)
+			{
+				if (other.csize > 0)
+				{
+					this->csize     = other.csize;
+					this->ccapacity = other.ccapacity;
+					this->arr       = (T*)(new uint8_t[this->ccapacity * sizeof(T)]);
+				}
+				else
+				{
+					this->arr       = nullptr;
+					this->ccapacity = 0;
+					this->csize     = 0;
+				}
+
+				for (size_t i = 0; i < this->csize; i ++)
+					this->arr[i] = other.arr[i];
+			}
+
+			// Default constructor
+			vector_t()
+			{
+				this->arr       = nullptr;
+				this->ccapacity = 0;
+				this->csize     = 0;
+			}
+
+			// Copy constructor
+			vector_t(const vector_t<T>& other)
+			{
+				this->__copy(other);
+			}
+
+			// Move constructor
+			vector_t(vector_t<T>&& other)
+			{
+				this->arr       = other.arr;
+				this->ccapacity = other.ccapacity;
+				this->csize     = other.csize;
+
+				other.arr       = nullptr;
+				other.ccapacity = 0;
+				other.csize     = 0;
+			}
+
+			// Destructor
+			~vector_t() noexcept
 			{
 				for (size_t i = 0; i < this->csize; i ++)
 					this->arr[i].~T();
 
 				if (arr != nullptr)
-					delete this->arr;
+					delete (uint8_t*)this->arr;
+			}
+
+			// Copy assignment operator
+			vector_t<T>& operator=(const vector_t<T>& other)
+			{
+				this->__copy(other);
+				return *this;
+			}
+
+			// Move assignment operator
+			vector_t<T>& operator=(vector_t<T>&& other) noexcept
+			{
+				delete (uint8_t*)this->arr;
+
+				this->arr       = other.arr;
+				this->ccapacity = other.ccapacity;
+				this->csize     = other.csize;
+
+				other.arr       = nullptr;
+				other.ccapacity = 0;
+				other.csize     = 0;
+
+				return *this;
 			}
 
 			size_t size() const

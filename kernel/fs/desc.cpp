@@ -50,16 +50,16 @@ namespace tupai
 			if (cdesc == nullptr)
 				return 1;
 
-			inode_t* cinode = vfs_get_inode(cdesc->inode);
+			id_t cinode = cdesc->inode;
 
-			if (cinode == nullptr)
+			if (cinode == ID_INVALID)
 				return 1;
-			if (cinode->vtable == nullptr)
+			if (inode_get_vtable(cinode) == nullptr)
 				return 1;
-			if (cinode->vtable->close == nullptr)
+			if (inode_get_vtable(cinode)->close == nullptr)
 				return 1;
 
-			return cinode->vtable->close(cproc, cdesc);
+			return inode_get_vtable(cinode)->close(cproc, cdesc);
 		}
 
 		ssize_t desc_read(id_t desc, size_t n, void* ret_buff)
@@ -70,16 +70,16 @@ namespace tupai
 			if (cdesc == nullptr)
 				return -1;
 
-			inode_t* cinode = vfs_get_inode(cdesc->inode);
+			id_t cinode = cdesc->inode;
 
-			if (cinode == nullptr)
-				return -1;
-			if (cinode->vtable == nullptr)
-				return -1;
-			if (cinode->vtable->read == nullptr)
-				return -1;
+			if (cinode == ID_INVALID)
+				return 1;
+			if (inode_get_vtable(cinode) == nullptr)
+				return 1;
+			if (inode_get_vtable(cinode)->read == nullptr)
+				return 1;
 
-			return cinode->vtable->read(cproc, cdesc, n, ret_buff);
+			return inode_get_vtable(cinode)->read(cproc, cdesc, n, ret_buff);
 		}
 	}
 }

@@ -69,7 +69,11 @@ namespace tupai
 				debug_print("Finished amd64 initiation\n");
 
 				early(); // Core system setup
-				main();  // Kernel main
+			}
+
+			extern "C" void kmain()
+			{
+				main(); // Main kernel entry
 			}
 		}
 	}

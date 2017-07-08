@@ -63,8 +63,9 @@
 		mov (mb_header_ptr), %esi // Multiboot info
 		mov (mb_header_magic), %edi // Multiboot magic
 
-		// Call the kernel's entry point
-		call kentry
+		call kentry // Call the kernel's entry point
+		call _init  // Call global constructor code
+		call kmain  // Call kernel main procedure
 
 	// Hang the kernel
 	hang:

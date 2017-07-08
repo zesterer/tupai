@@ -28,26 +28,26 @@ namespace tupai
 {
 	namespace fs
 	{
-		id_t fs_counter = 0;
-
 		fs_t::fs_t(const char* name)
 		{
-			this->id = ++fs_counter;
-
 			if (name != nullptr)
 				util::str_cpy_n(name, this->name, MAX_FS_NAME);
 		}
 
-		inode_t* fs_create_inode(fs_t* fs, inode_type type, vtable_t* vtable)
+		id_t fs_create_inode(id_t fs, inode_type type, vtable_t* vtable)
 		{
-			fs->inode_id_counter ++; // Increment id counter
-			inode_t* ninode = vfs_create_inode(fs->inode_id_counter, type);
-			ninode->fs = fs->id;
+			id_t ninode = vfs_create_inode(type);
+			inode_set_fs(ninode, fs);
 
-			if (ninode->type != inode_type::DIRECTORY)
-				ninode->vtable = vtable;
+			if (type != inode_type::DIRECTORY)
+				inode_set_vtable(ninode, vtable);
 
 			return ninode;
+		}
+
+		id_t fs_get_root(id_t id)
+		{
+			return vfs_get_fs(id).root;
 		}
 	}
 }

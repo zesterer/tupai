@@ -3,6 +3,6 @@ include_rules
 INCLUDES=$(INCLUDES) -I../../../include
 
 # Compiling
-: foreach *.s   |> !ASM |>
-: foreach *.c   |> !CC  |>
-: foreach *.cpp |> !CPP |>
+#: foreach *.s   |> !ASM |>
+#: foreach *.c   |> !CC  |>
+#: foreach *.cpp |> !CPP |>

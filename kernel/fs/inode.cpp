@@ -30,15 +30,6 @@ namespace tupai
 {
 	namespace fs
 	{
-		inode_t& inode_ptr_t::operator->() const
-		{
-			inode_t* inode = vfs_get_inode(this->inode);
-			if (inode == nullptr)
-				panic("Attempted to dereference invalid inode pointer");
-			else
-				return *inode;
-		}
-
 		void inode_child_t::set_name(const char* name)
 		{
 			util::str_cpy_n(name, this->name, FILENAME_SIZE);
@@ -49,25 +40,71 @@ namespace tupai
 			return this->name;
 		}
 
-		void inode_add_child(inode_t* parent, inode_t* child, const char* name)
+		void inode_add_child(id_t id, id_t child, const char* name)
 		{
 			inode_child_t child_obj;
 			child_obj.inode = child;
 			child_obj.set_name(name);
-			parent->dir_table.push(child_obj);
+			vfs_get_inode(id).dir_table.push(child_obj);
 		}
 
-		inode_t* inode_get_child(inode_t* parent, const char* name)
+		id_t inode_get_child(id_t id, const char* name)
 		{
-			for (size_t i = 0; i < parent->dir_table.size(); i ++)
+			for (size_t i = 0; i < vfs_get_inode(id).dir_table.size(); i ++)
 			{
-				inode_child_t& cchild = parent->dir_table[i];
+				inode_child_t& cchild = vfs_get_inode(id).dir_table[i];
 
 				if (util::str_equal(cchild.get_name(), name) == true)
 					return cchild.inode;
 			}
 
-			return nullptr;
+			return ID_INVALID;
+		}
+
+		const char* inode_get_child_name(id_t id, id_t child)
+		{
+			for (size_t i = 0; i < vfs_get_inode(id).dir_table.size(); i ++)
+			{
+				inode_child_t& cchild = vfs_get_inode(id).dir_table[i];
+
+				if (cchild.inode == child)
+					return cchild.get_name();
+			}
+
+			return "null";
+		}
+
+		id_t inode_get_nth_child(id_t id, size_t n)
+		{
+			if (n < vfs_get_inode(id).dir_table.size())
+				return vfs_get_inode(id).dir_table[n].inode;
+			else
+				return ID_INVALID;
+		}
+
+		size_t inode_child_count(id_t id)
+		{
+			return vfs_get_inode(id).dir_table.size();
+		}
+
+		vtable_t* inode_get_vtable(id_t id)
+		{
+			return vfs_get_inode(id).vtable;
+		}
+
+		void inode_set_vtable(id_t id, vtable_t* vtable)
+		{
+			vfs_get_inode(id).vtable = vtable;
+		}
+
+		inode_type inode_get_type(id_t id)
+		{
+			return vfs_get_inode(id).type;
+		}
+
+		void inode_set_fs(id_t id, id_t fs)
+		{
+			vfs_get_inode(id).fs = fs;
 		}
 	}
 }

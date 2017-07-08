@@ -23,6 +23,8 @@
 // Tupai
 #include <tupai/fs/com.hpp>
 #include <tupai/util/vector.hpp>
+#include <tupai/util/table.hpp>
+#include <tupai/util/spinlock.hpp>
 
 // Standard
 #include <stddef.h>
@@ -34,18 +36,11 @@ namespace tupai
 	{
 		struct inode_child_t
 		{
-			inode_t* inode = nullptr;
+			id_t inode;
 			char name[FILENAME_SIZE] = "\0";
 
 			void set_name(const char* name);
 			const char* get_name();
-		};
-
-		struct inode_ptr_t
-		{
-			id_t inode;
-
-			inode_t& operator->() const;
 		};
 
 		struct inode_t
@@ -54,7 +49,7 @@ namespace tupai
 			id_t id = 0;
 			id_t fs = 0;
 
-			inode_type type;
+			inode_type type = inode_type::NORMAL_FILE;
 			vtable_t* vtable = nullptr;
 
 			util::vector_t<inode_child_t> dir_table;
@@ -68,14 +63,26 @@ namespace tupai
 			uint64_t last_access;
 			uint64_t last_modify;
 
+			inode_t() {}
 			inode_t(inode_type type)
 			{
 				this->type = type;
 			};
 		};
 
-		void inode_add_child(inode_t* parent, inode_t* child, const char* name);
-		inode_t* inode_get_child(inode_t* parent, const char* name);
+		//void inode_add_child(inode_t* parent, inode_t* child, const char* name);
+		//inode_t* inode_get_child(inode_t* parent, const char* name);
+
+		void inode_add_child (id_t id, id_t child, const char* name);
+		void inode_set_fs    (id_t id, id_t fs);
+		void inode_set_vtable(id_t id, vtable_t* table);
+
+		id_t        inode_get_child     (id_t id, const char* name);
+		id_t        inode_get_nth_child (id_t id, size_t n);
+		const char* inode_get_child_name(id_t id, id_t child);
+		vtable_t*   inode_get_vtable    (id_t id);
+		inode_type  inode_get_type      (id_t id);
+		size_t      inode_child_count   (id_t id);
 	}
 }
 

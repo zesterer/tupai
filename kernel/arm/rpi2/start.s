@@ -69,7 +69,9 @@
 		ldr r2, =#0x00000100
 
 		// Enter kernel main
-		ldr r3, =kentry
+		ldr r3, =kentry // Call the kernel's entry point
+		blx r3
+		ldr r3, =kmain  // Call kernel main procedure
 		blx r3
 
 	hang:
