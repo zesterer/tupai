@@ -22,7 +22,6 @@
 
 // Tupai
 #include <tupai/util/mutex.hpp>
-#include <tupai/util/signal.hpp>
 
 // Standard
 #include <stddef.h>

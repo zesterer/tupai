@@ -19,13 +19,9 @@
 
 // Tupai
 #include <tupai/sys/initrd.hpp>
-#include <tupai/sys/mmap.hpp>
-#include <tupai/sys/proc.hpp>
-
 #include <tupai/vfs/vfs.hpp>
 #include <tupai/vfs/vtable.hpp>
 #include <tupai/vfs/path.hpp>
-
 #include <tupai/util/tar.hpp>
 #include <tupai/util/hashtable.hpp>
 
@@ -104,7 +100,7 @@ namespace tupai
 			initrd->fs = fs;
 
 			// TODO : re-add this
-			mmap_reserve((size_t)initrd->start, (size_t)initrd->size, KERNEL_PROC_ID); // Reserve the memory
+			//mmap_reserve((size_t)initrd->start, (size_t)initrd->size, KERNEL_PROC_ID); // Reserve the memory
 
 			util::tar_header_t* cheader = (util::tar_header_t*)initrd->start;
 			while (cheader != nullptr)
@@ -157,13 +153,16 @@ namespace tupai
 						vfs::inode_ptr_t ninode = vfs::vfs_create_inode(type);
 						ninode.set_fs(fs);
 						cinode.mount_child(ninode, buff);
-						cinode = ninode;
 
-						if (type == vfs::inode_type::NORMAL_FILE)
+						if (type == vfs::inode_type::NORMAL_FILE && i + 1 == n)
 						{
 							ninode.set_vtable(&initrd_vtable);
 							inodes.add(ninode, cheader);
 						}
+						else
+							ninode.set_vtable(nullptr);
+
+						cinode = ninode;
 					}
 				}
 
@@ -183,12 +182,12 @@ namespace tupai
 
 		ssize_t initrd_read_call (vfs::fd_ptr_t fd, void* rbuff, size_t n)
 		{
-			util::tar_header_t* header = *inodes[fd.get_inode()];
+			util::tar_header_t** header = inodes[fd.get_inode()];
 
 			if (header != nullptr)
 			{
-				size_t filesize = util::tar_size(header);
-				uint8_t* data = (uint8_t*)util::tar_data(header);
+				size_t filesize = util::tar_size(*header);
+				uint8_t* data = (uint8_t*)util::tar_data(*header);
 
 				size_t i;
 				vfs::fd_offset offset = fd.get_offset();

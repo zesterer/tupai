@@ -27,15 +27,14 @@
 
 #include <tupai/sys/kmem.hpp>
 #include <tupai/sys/thread.hpp>
-#include <tupai/sys/mmap.hpp>
 #include <tupai/sys/call.hpp>
 
 #include <tupai/util/in.hpp>
-#include <tupai/util/out.hpp>
+#include <tupai/util/fmt.hpp>
+#include <tupai/util/log.hpp>
 #include <tupai/util/str.hpp>
 #include <tupai/util/vector.hpp>
 
-#include <tupai/fs/vfs.hpp>
 #include <tupai/vfs/vfs.hpp>
 
 // LibC
@@ -43,12 +42,23 @@
 
 namespace tupai
 {
+	FILE* stdout;
+
+	char pbuff[2048];
+	template <typename... Args>
+	void print(Args&&... args)
+	{
+		util::log(args ...);
+		//util::fmt(pbuff, args ...);
+		//fwrite(pbuff, 1, util::str_len(pbuff), stdout);
+	}
+
 	void shell_motd()
 	{
-		util::println(tupai_get_name_decorative(), " ",
+		print(tupai_get_name_decorative(), " ",
 			tupai_get_version(), " on ",
 			arch_get_family(), "/", arch_get_target(), '\n',
-			"Copyright 2017, ", P_MAINTAINER_NAME);
+			"Copyright 2017, ", P_MAINTAINER_NAME, '\n');
 	}
 
 	size_t split_args(char* cmd, char* buff[], size_t size)
@@ -88,14 +98,16 @@ namespace tupai
 		(void)argc;
 		(void)argv;
 
+		stdout = fopen("/dev/stdout", "w");
+
 		// Display information
 		shell_motd();
-		util::println("Type 'help' for more info.\n");
+		print("Type 'help' for more info.\n\n");
 
 		bool halted = false;
 		while (!halted)
 		{
-			util::print("$ ");
+			print("$ ");
 
 			char buff[64];
 			util::readline(buff);
@@ -109,7 +121,7 @@ namespace tupai
 			}
 			else if (util::str_equal(argv[0], "help"))
 			{
-				util::print(
+				print(
 					"Available commands:\n",
 					"  help    -> Show this help text\n",
 					"  threads -> Show running threads\n",
@@ -132,7 +144,7 @@ namespace tupai
 					char name[64];
 					sys::id_t id = sys::thread_get_id(i);
 					sys::thread_get_name(id, name);
-					util::println(i, ' ', id, ' ', name);
+					print(i, ' ', id, ' ', name, '\n');
 				}
 			}
 			else if (util::str_equal(argv[0], "fs"))
@@ -143,20 +155,26 @@ namespace tupai
 			{
 				if (argc > 1)
 				{
-					const size_t BUFF_SIZE = 8192;
-					char* rbuff = new char[BUFF_SIZE];
+					//const size_t BUFF_SIZE = 8192;
+					//char* rbuff = new char[BUFF_SIZE];
 
 					FILE* f = fopen(argv[1], "r");
-					size_t n = fread(rbuff, 1, BUFF_SIZE - 1, f);
+					//size_t n = fread(rbuff, 1, BUFF_SIZE - 1, f);
 
-					if (n > 0)
-						util::print(rbuff);
+					size_t n = 1;
+					char buff[2];
+					while (n > 0)
+					{
+						n = fread(&buff, 1, 2, f);
+						if (n > 0)
+							print(buff[0]);
+					}
 
 					fclose(f);
-					delete rbuff;
+					//delete rbuff;
 				}
 				else
-					util::println("Usage: cat <file>");
+					print("Usage: cat <file>\n");
 			}
 			else if (util::str_equal(argv[0], "echo"))
 			{
@@ -172,12 +190,12 @@ namespace tupai
 					}
 					fclose(f);
 
-					util::print('\n');
+					print('\n');
 				}
 			}
 			else if (util::str_equal(argv[0], "pool"))
 			{
-				sys::kmem_display();
+				sys::kmem_log();
 			}
 			else if (util::str_equal(argv[0], "motd"))
 			{
@@ -193,27 +211,31 @@ namespace tupai
 			}
 			else if (util::str_equal(argv[0], "info"))
 			{
-				util::print(
+				print(
 					"System Info:\n",
 					"  address_size -> ", sizeof(void*) * 8, " bits\n",
 					"  kernel_start -> ", (void*)arch_get_kernel_start(), '\n',
-					"  kernel_end   -> ", (void*)arch_get_kernel_end(), '\n'
+					"  kernel_end   -> ", (void*)arch_get_kernel_end(), '\n',
+					'\n'
 				);
 				sys::kmem_info();
-				sys::mmap_display();
+				//sys::mmap_display();
 			}
 			else if (util::str_equal(argv[0], "time"))
 			{
 				datetime_t time = dev::clock_read();
 
-				util::println(
+				print(
 					"The system time is ",
 					util::fmt_int<short        >(time.year, 10, 4), '-', util::fmt_int<unsigned char>(time.month, 10, 2), '-', util::fmt_int<unsigned char>(time.day, 10, 2), ' ',
-					util::fmt_int<unsigned char>(time.hour, 10, 2), ':', util::fmt_int<unsigned char>(time.min  , 10, 2), ':', util::fmt_int<unsigned char>(time.sec, 10, 2)
+					util::fmt_int<unsigned char>(time.hour, 10, 2), ':', util::fmt_int<unsigned char>(time.min  , 10, 2), ':', util::fmt_int<unsigned char>(time.sec, 10, 2),
+					'\n'
 				);
 			}
 			else if (util::str_len(argv[0]) > 0)
-				util::println("Command '", argv[0], "' not found!");
+				print("Command '", argv[0], "' not found!\n");
 		}
+
+		fclose(stdout);
 	}
 }

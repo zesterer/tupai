@@ -57,13 +57,13 @@ namespace tupai
 
 		enum class inode_type
 		{
-			NORMAL_FILE,
-			HARD_LINK,
-			SYM_LINK,
-			CHAR_DEVICE,
-			BLOCK_DEVICE,
-			DIRECTORY,
-			PIPE,
+			NORMAL_FILE  = 0,
+			HARD_LINK    = 1,
+			SYM_LINK     = 2,
+			CHAR_DEVICE  = 3,
+			BLOCK_DEVICE = 4,
+			DIRECTORY    = 5,
+			PIPE         = 6,
 		};
 
 		const size_t FILENAME_MAX = 256;

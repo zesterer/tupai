@@ -1,5 +1,5 @@
 //
-// file : com.hpp
+// file : process.hpp
 //
 // This file is part of Tupai.
 //
@@ -17,11 +17,12 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_FS_COM_HPP
-#define TUPAI_FS_COM_HPP
+#ifndef TUPAI_PROC_PROCESS_HPP
+#define TUPAI_PROC_PROCESS_HPP
 
 // Tupai
-#include <tupai/type.hpp>
+#include <tupai/proc/proc.hpp>
+#include <tupai/vfs/vfs.hpp>
 
 // Standard
 #include <stddef.h>
@@ -29,27 +30,21 @@
 
 namespace tupai
 {
-	namespace fs
+	namespace proc
 	{
-		static const size_t FILENAME_SIZE = 256;
-
-		enum class inode_type
+		struct proc_t
 		{
-			NORMAL_FILE,
-			HARD_LINK,
-			SYM_LINK,
-			CHAR_DEVICE,
-			BLOCK_DEVICE,
-			DIRECTORY,
-			FIFO,
-		};
+			id_t id;                  // Process ID
+			char name[PROC_NAME_MAX]; // Process name
+			proc_state state;         // Process state
+			vfs::inode_ptr_t dir;     // Current directory
 
-		// Forward declarations
-		struct fs_t;
-		struct inode_t;
-		struct file_t;
-		struct desc_t;
-		struct vtable_t;
+			id_t thread_counter = 0;
+			util::hashtable_t<thread_ptr_t> threads; // Process threads
+
+			id_t lfd_counter = 0;
+			util::hashtable_t<vfs::fd_ptr_t> fds; // File descriptors
+		};
 	}
 }
 

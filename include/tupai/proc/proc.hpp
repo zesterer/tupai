@@ -17,8 +17,8 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_SYS_PROC_HPP
-#define TUPAI_SYS_PROC_HPP
+#ifndef TUPAI_PROC_PROC_HPP
+#define TUPAI_PROC_PROC_HPP
 
 // Tupai
 #include <tupai/vfs/vfs.hpp>
@@ -30,11 +30,13 @@
 
 namespace tupai
 {
-	namespace sys
+	namespace proc
 	{
 		const id_t INVALID_PROC_ID = -2;
 		const id_t NO_PROC_ID      = -1;
 		const id_t KERNEL_PROC_ID  = 0;
+
+		const size_t PROC_NAME_MAX = 256;
 
 		enum class proc_state
 		{
@@ -51,43 +53,45 @@ namespace tupai
 			DEAD,
 		};
 
-		struct proc_t
+		struct thread_ptr_t
 		{
-			const static size_t NAME_MAX = 256;
+			id_t id;
 
-			struct thread_t
-			{
-				const static size_t NAME_MAX = 256;
+			thread_ptr_t() {}
+			thread_ptr_t(id_t id) { this->id = id; }
+			operator id_t() { return this->id; }
 
-				id_t id;
-				char name[NAME_MAX];
-				thread_state state;
-
-				void* entry;
-				void* stack;
-			};
-
-			id_t id;              // Process ID
-			char name[NAME_MAX];  // Process name
-			proc_state state;     // Process state
-			vfs::inode_ptr_t dir; // Current directory
-
-			id_t thread_counter = 0;
-			util::hashtable_t<thread_t*> threads; // Process threads
-
-			id_t desc_counter = 0;
-			util::hashtable_t<vfs::fd_ptr_t> fds; // File descriptors
+			int kill();
 		};
 
-		void proc_init();
+		struct proc_ptr_t
+		{
+			id_t id;
 
-		id_t          proc_get_current();
-		const char*   proc_get_name   (id_t pid);
-		vfs::fd_ptr_t proc_get_fd     (id_t pid, id_t lfd);
+			proc_ptr_t() {}
+			proc_ptr_t(id_t id) { this->id = id; }
+			operator id_t() { return this->id; }
 
-		id_t proc_create   (const char* name, vfs::inode_ptr_t dir);
-		id_t proc_create_fd(id_t pid, vfs::inode_ptr_t inode);
-		int  proc_remove_fd(id_t pid, id_t lfd);
+			int           get_name(char* rbuff, size_t n);
+			vfs::fd_ptr_t get_fd(id_t lfd);
+
+			thread_ptr_t spawn_thread(void (*entry)(int argc, char* argv[]));
+			id_t         create_fd(vfs::inode_ptr_t inode);
+			int          delete_fd(id_t lfd);
+
+			int kill();
+		};
+
+		proc_ptr_t proc_get_current();
+
+		void       proc_init();
+		proc_ptr_t proc_create(const char* name, vfs::inode_ptr_t dir);
+
+		/*
+		vfs::fd_ptr_t proc_get_fd(proc_ptr_t proc_ptr, id_t lfd);
+		id_t          proc_create_fd(proc_ptr_t proc_ptr, vfs::inode_ptr_t inode);
+		int           proc_remove_fd(proc_ptr_t proc_ptr, id_t lfd);
+		*/
 	}
 }
 

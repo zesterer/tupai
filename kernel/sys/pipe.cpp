@@ -76,7 +76,8 @@ namespace tupai
 
 			if (pipe != nullptr)
 			{
-				((uint8_t*)rbuff)[0] = (*pipe)->read();
+				((uint8_t*)rbuff)[0] = (*pipe)->read_unsafe();
+				((uint8_t*)rbuff)[1] = '\0';
 				return 1;
 			}
 			else

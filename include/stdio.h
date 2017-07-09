@@ -28,7 +28,7 @@ typedef int64_t fpos_t;
 
 // Macros
 //#define NULL 0
-#define EOF  -1
+#define EOF -1
 #define FILENAME_MAX 512
 
 // Standard streams

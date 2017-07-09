@@ -20,7 +20,7 @@
 // Tupai
 #include <tupai/sys/pool.hpp>
 #include <tupai/util/mem.hpp>
-#include <tupai/util/out.hpp>
+#include <tupai/util/log.hpp>
 #include <tupai/panic.hpp>
 
 namespace tupai
@@ -142,7 +142,7 @@ namespace tupai
 
 		void pool_display(pool_t* pool, size_t n)
 		{
-			util::println("--- Memory pool map ---");
+			util::logln("--- Memory pool map ---");
 
 			pool->spinlock.lock(); // Begin critical section
 
@@ -165,20 +165,20 @@ namespace tupai
 				switch(pool_get(pool, i))
 				{
 				case block_status::HEAD:
-					util::print('H');
+					util::log('H');
 					break;
 				case block_status::TAIL:
-					util::print('T');
+					util::log('T');
 					break;
 				case block_status::UNUSED:
-					util::print('.');
+					util::log('.');
 					break;
 				default:
-					util::print('?');
+					util::log('?');
 					break;
 				}
 			}
-			util::print('\n');
+			util::log('\n');
 
 			pool->spinlock.unlock(); // End critical section
 		}

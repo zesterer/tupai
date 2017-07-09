@@ -24,15 +24,12 @@
 
 // Core system environment
 #include <tupai/sys/kmem.hpp>
-#include <tupai/sys/mmap.hpp>
 #include <tupai/sys/pipe.hpp>
 #include <tupai/sys/thread.hpp>
 #include <tupai/sys/initrd.hpp>
 #include <tupai/sys/call.hpp>
-#include <tupai/sys/proc.hpp>
-
-// Filesystem
 #include <tupai/vfs/vfs.hpp>
+#include <tupai/proc/proc.hpp>
 
 // Virtual devices
 #include <tupai/dev/serial.hpp>
@@ -43,10 +40,6 @@
 // Initial software
 #include <tupai/shell.hpp>
 
-// I/O
-#include <tupai/util/out.hpp>
-#include <tupai/util/in.hpp>
-
 namespace tupai
 {
 	void early()
@@ -54,7 +47,7 @@ namespace tupai
 		// Core system environment
 
 		sys::kmem_init(); // Initiate kernel memory allocation
-		sys::mmap_init(); // Initiate page map & frame allocation
+		//sys::mmap_init(); // Initiate page map & frame allocation
 
 		// Map kernel memory
 		//sys::mmap_reserve(0, arch_get_kernel_end() - arch_get_offset(), sys::KERNEL_PROC_ID);
@@ -68,14 +61,12 @@ namespace tupai
 		// Now, however, it's relatively safe to run most code.
 
 		sys::threading_init(); // Initiate multi-threading
+		vfs::vfs_init();  // Init virtual filesystem
+
+		proc::proc_init(); // Initiate processes
 		sys::call_bind();      // Initiate SYSCALL routine
 
-		vfs::vfs_init();  // Init virtual filesystem
-		sys::pipe_init(); // Init pipe system
-
 		sys::initrd_init(); // Initiate initrd filesystems
-
-		sys::proc_init(); // Initiate processes
 
 		// Initiate virtual devices
 		dev::serial_init();

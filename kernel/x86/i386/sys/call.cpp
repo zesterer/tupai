@@ -19,7 +19,6 @@
 
 // Tupai
 #include <tupai/sys/call.hpp>
-#include <tupai/util/out.hpp>
 #include <tupai/interrupt.hpp>
 
 namespace tupai

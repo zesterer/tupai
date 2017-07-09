@@ -1,5 +1,5 @@
 //
-// file : fs.hpp
+// file : string.h : String and memory operations
 //
 // This file is part of Tupai.
 //
@@ -16,44 +16,15 @@
 // You should have received a copy of the GNU General Public License
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
-
-#ifndef TUPAI_FS_FS_HPP
-#define TUPAI_FS_FS_HPP
-
-// Tupai
-#include <tupai/fs/com.hpp>
+// This file is part of the Tupai POSIX implementation.
+//
 
 // Standard
-#include <stddef.h>
-#include <stdint.h>
+#include <sys/types.h>
 
-namespace tupai
-{
-	namespace fs
-	{
-		const size_t MAX_FS_NAME = 256;
+#define NULL 0
 
-		// Forward declaration
-		struct inode_t;
-		enum class inode_type;
-		struct vtable_t;
-
-		struct fs_t
-		{
-			id_t id;
-
-			id_t inode_id_counter = 0;
-
-			char name[MAX_FS_NAME];
-
-			id_t root = -1;
-
-			fs_t(const char* name = nullptr);
-		};
-
-		id_t fs_create_inode(id_t id, inode_type type, vtable_t* vtable);
-		id_t fs_get_root    (id_t id);
-	}
-}
-
-#endif
+// File access functions
+int creat(const char* fpath, mode_t mode);
+int fcntl(int fd, int cmd, ...);
+int open (const char* fpath, int flags, ...);

@@ -19,7 +19,7 @@
 
 // Tupai
 #include <tupai/util/tar.hpp>
-#include <tupai/util/out.hpp>
+#include <tupai/util/log.hpp>
 #include <tupai/util/mem.hpp>
 
 namespace tupai
@@ -28,7 +28,7 @@ namespace tupai
 	{
 		void tar_print_all(tar_header_t* header)
 		{
-			println("--- Tar ---");
+			logln("--- Tar ---");
 			while (header != nullptr)
 			{
 				tar_print(header);
@@ -38,7 +38,7 @@ namespace tupai
 
 		void tar_print(tar_header_t* header)
 		{
-			println("File: filename = ", header->filename, " size = ", tar_size(header), " type = ", (char)header->typeflag);
+			logln("File: filename = ", header->filename, " size = ", tar_size(header), " type = ", (char)header->typeflag);
 		}
 
 		tar_header_t* tar_next(tar_header_t* header)

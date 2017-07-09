@@ -23,12 +23,10 @@
 #include <tupai/vfs/inode.hpp>
 #include <tupai/vfs/fd.hpp>
 #include <tupai/vfs/path.hpp>
-
 #include <tupai/util/spinlock.hpp>
 #include <tupai/util/hashtable.hpp>
 #include <tupai/util/str.hpp>
-
-#include <tupai/util/out.hpp>
+#include <tupai/util/log.hpp>
 
 namespace tupai
 {
@@ -171,13 +169,13 @@ namespace tupai
 
 			// Indentation
 			for (size_t i = 0; i < depth; i ++)
-				util::print((i == depth - 1) ? "|--" : "|  ");
+				util::log((i == depth - 1) ? "|--" : "|  ");
 
 			inode_type type;
 			inode.get_type(&type);
 
 			// Name
-			util::print(name, (type == inode_type::DIRECTORY) ? "/" : "", '\n');
+			util::logln(name, (type == inode_type::DIRECTORY) ? "/" : "");
 
 			for (size_t i = 0; i < inode.get_children(); i ++)
 			{
@@ -192,15 +190,17 @@ namespace tupai
 
 		void vfs_display()
 		{
-			util::println("--- Virtual Filesystem ---");
+			util::logln("--- Virtual Filesystem ---");
 
 			vfs_print_inode(vfs_root, "");
 
+			/*
 			util::print('\n');
 
 			util::println("--- Filesystem Devices ---");
 			for (size_t i = 0; i < fs_table.size(); i ++)
 				util::println(fs_table.nth(i)->id, " : ", fs_table.nth(i)->name);
+			*/
 		}
 
 		fs_ptr_t vfs_create_fs(const char* name)
@@ -235,6 +235,7 @@ namespace tupai
 			inode_t ninode;
 			ninode.id = nid;
 			ninode.type = type;
+			ninode.vtable = nullptr;
 			inode_table.add(nid, ninode); // Add the new inode to the inode table
 
 			spinlock.unlock(); // End critical section

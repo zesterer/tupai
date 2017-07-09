@@ -1,5 +1,5 @@
 //
-// file : file.hpp
+// file : log.hpp
 //
 // This file is part of Tupai.
 //
@@ -17,34 +17,48 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_FS_FILE_HPP
-#define TUPAI_FS_FILE_HPP
+#ifndef TUPAI_UTIL_LOG_HPP
+#define TUPAI_UTIL_LOG_HPP
 
 // Tupai
-#include <tupai/util/table.hpp>
-#include <tupai/util/spinlock.hpp>
+#include <tupai/dev/tty.hpp>
+#include <tupai/util/fmt.hpp>
+
+// Standard
+#include <stddef.h>
+#include <stdint.h>
 
 namespace tupai
 {
-	namespace fs
+	namespace util
 	{
-		enum class file_mode : uint8_t
+		struct __log_ostream
 		{
-			READ  = 1 << 0,
-			WRITE = 1 << 1,
+			static void end();
+			static void write(char c);
 		};
 
-		struct file_mode_t
+		inline void log(const char* str)
 		{
-			uint8_t mode = 0xFF; // Enable all modes by default
-		};
+			__log_ostream ostream;
+			for (size_t i = 0; str[i] != '\0'; i ++)
+				ostream.write(str[i]);
+			ostream.end();
+		}
 
-		struct file_t
+		template <typename... Args>
+		inline void log(Args&&... args)
 		{
-			id_t        id       = ID_INVALID;
-			id_t        inode_id = ID_INVALID;
-			file_mode_t mode;
-		};
+			__log_ostream ostream;
+			__pass_funct{(__fmt_arg(ostream, args), 1)...};
+			ostream.end();
+		}
+
+		template <typename... Args>
+		inline void logln(Args&&... args)
+		{
+			log(args..., '\n');
+		}
 	}
 }
 

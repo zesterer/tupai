@@ -26,8 +26,6 @@
 #include <tupai/util/cpp.hpp>
 #include <tupai/panic.hpp>
 
-#include <tupai/util/out.hpp>
-
 // Standard
 #include <stddef.h>
 #include <stdint.h>

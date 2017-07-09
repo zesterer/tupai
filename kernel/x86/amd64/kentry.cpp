@@ -25,9 +25,6 @@
 #include <tupai/x86/amd64/gdt.hpp>
 #include <tupai/x86/amd64/idt.hpp>
 
-#include <tupai/util/out.hpp>
-#include <tupai/interrupt.hpp>
-
 // Standard
 #include <stddef.h>
 #include <stdint.h>

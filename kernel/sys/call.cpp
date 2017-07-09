@@ -23,10 +23,7 @@
 #include <tupai/vfs/vfs.hpp>
 #include <tupai/vfs/fd.hpp>
 #include <tupai/util/mutex.hpp>
-#include <tupai/util/out.hpp>
 #include <tupai/interrupt.hpp>
-
-#include <tupai/x86/textmode.hpp>
 
 namespace tupai
 {

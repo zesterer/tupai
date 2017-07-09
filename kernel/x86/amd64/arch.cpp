@@ -19,7 +19,7 @@
 
 // Tupai
 #include <tupai/arch.hpp>
-#include <tupai/util/out.hpp>
+#include <tupai/util/log.hpp>
 
 namespace tupai
 {
@@ -61,30 +61,30 @@ namespace tupai
 
 	void arch_display_reg_state(arch_reg_state* state)
 	{
-		util::println("--- Register Dump ---");
-		util::println("Execution registers:");
-		util::println("  RIP    = ", util::fmt_int<uint64_t>(state->rip, 16, 16));
-		util::println("  RFLAGS = ", util::fmt_int<uint64_t>(state->rflags, 16, 16));
-		util::println("  CS     = ", util::fmt_int<uint64_t>(state->cs, 16, 16));
-		util::println("  RSP    = ", util::fmt_int<uint64_t>((uint64_t)state + 8, 16, 16)); // Location of reg block + 8
+		util::logln("--- Register Dump ---");
+		util::logln("Execution registers:");
+		util::logln("  RIP    = ", util::fmt_int<uint64_t>(state->rip, 16, 16));
+		util::logln("  RFLAGS = ", util::fmt_int<uint64_t>(state->rflags, 16, 16));
+		util::logln("  CS     = ", util::fmt_int<uint64_t>(state->cs, 16, 16));
+		util::logln("  RSP    = ", util::fmt_int<uint64_t>((uint64_t)state + 8, 16, 16)); // Location of reg block + 8
 
-		util::println("General-purpose registers:");
-		util::println("  RAX    = ", util::fmt_int<uint64_t>(state->rax, 16, 16));
-		util::println("  RBX    = ", util::fmt_int<uint64_t>(state->rbx, 16, 16));
-		util::println("  RCX    = ", util::fmt_int<uint64_t>(state->rcx, 16, 16));
-		util::println("  RDX    = ", util::fmt_int<uint64_t>(state->rdx, 16, 16));
-		util::println("  RSI    = ", util::fmt_int<uint64_t>(state->rsi, 16, 16));
-		util::println("  RDI    = ", util::fmt_int<uint64_t>(state->rdi, 16, 16));
-		util::println("  RBP    = ", util::fmt_int<uint64_t>(state->rbp, 16, 16));
+		util::logln("General-purpose registers:");
+		util::logln("  RAX    = ", util::fmt_int<uint64_t>(state->rax, 16, 16));
+		util::logln("  RBX    = ", util::fmt_int<uint64_t>(state->rbx, 16, 16));
+		util::logln("  RCX    = ", util::fmt_int<uint64_t>(state->rcx, 16, 16));
+		util::logln("  RDX    = ", util::fmt_int<uint64_t>(state->rdx, 16, 16));
+		util::logln("  RSI    = ", util::fmt_int<uint64_t>(state->rsi, 16, 16));
+		util::logln("  RDI    = ", util::fmt_int<uint64_t>(state->rdi, 16, 16));
+		util::logln("  RBP    = ", util::fmt_int<uint64_t>(state->rbp, 16, 16));
 
-		util::println("Other registers:");
-		util::println("  R8     = ", util::fmt_int<uint64_t>(state->r8, 16, 16));
-		util::println("  R9     = ", util::fmt_int<uint64_t>(state->r9, 16, 16));
-		util::println("  R10    = ", util::fmt_int<uint64_t>(state->r10, 16, 16));
-		util::println("  R11    = ", util::fmt_int<uint64_t>(state->r11, 16, 16));
-		util::println("  R12    = ", util::fmt_int<uint64_t>(state->r12, 16, 16));
-		util::println("  R13    = ", util::fmt_int<uint64_t>(state->r13, 16, 16));
-		util::println("  R14    = ", util::fmt_int<uint64_t>(state->r14, 16, 16));
-		util::println("  R15    = ", util::fmt_int<uint64_t>(state->r15, 16, 16));
+		util::logln("Other registers:");
+		util::logln("  R8     = ", util::fmt_int<uint64_t>(state->r8, 16, 16));
+		util::logln("  R9     = ", util::fmt_int<uint64_t>(state->r9, 16, 16));
+		util::logln("  R10    = ", util::fmt_int<uint64_t>(state->r10, 16, 16));
+		util::logln("  R11    = ", util::fmt_int<uint64_t>(state->r11, 16, 16));
+		util::logln("  R12    = ", util::fmt_int<uint64_t>(state->r12, 16, 16));
+		util::logln("  R13    = ", util::fmt_int<uint64_t>(state->r13, 16, 16));
+		util::logln("  R14    = ", util::fmt_int<uint64_t>(state->r14, 16, 16));
+		util::logln("  R15    = ", util::fmt_int<uint64_t>(state->r15, 16, 16));
 	}
 }

@@ -25,7 +25,6 @@
 #include <tupai/sys/thread.hpp>
 #include <tupai/sys/pipe.hpp>
 #include <tupai/debug.hpp>
-#include <tupai/util/out.hpp>
 
 #if defined(ARCH_FAMILY_x86)
 	#include <tupai/x86/textmode.hpp>
@@ -48,7 +47,6 @@ namespace tupai
 		static sys::pipe_t inpipe;
 		static sys::pipe_t outpipe;
 
-		static void tty_in_thread(int argc, char* argv[]);
 		static void tty_out_thread(int argc, char* argv[]);
 
 		void tty_init()
@@ -90,10 +88,7 @@ namespace tupai
 
 				// Create the TTY I/O threads
 				if (sys::threading_enabled())
-				{
-					sys::thread_create(tty_in_thread, 0, nullptr, "tty-in");
 					sys::thread_create(tty_out_thread, 0, nullptr, "tty-out");
-				}
 
 				tty_initiated = true;
 			}
@@ -127,22 +122,6 @@ namespace tupai
 			hwlock.lock(); // Begin critical section
 			inpipe.write_unsafe(c);
 			hwlock.unlock(); // End critical section
-		}
-
-		void tty_in_thread(int argc, char* argv[])
-		{
-			(void)argc;
-			(void)argv;
-
-			/*
-			while (true)
-			{
-				unsigned char c = dev::serial_read(tty_serial_port);
-
-				if (c != 0)
-					inpipe.write_unsafe(c); // Unsafe call to avoid interrupt locking
-			}
-			*/
 		}
 
 		void tty_out_thread(int argc, char* argv[])

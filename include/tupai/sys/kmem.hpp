@@ -32,7 +32,7 @@ namespace tupai
 		void* kmem_alloc(size_t n);
 		void  kmem_dealloc(void* ptr);
 		void  kmem_info();
-		void  kmem_display();
+		void  kmem_log();
 	}
 }
 

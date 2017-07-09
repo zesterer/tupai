@@ -20,7 +20,7 @@
 // Tupai
 #include <tupai/vfs/fd.hpp>
 #include <tupai/vfs/vtable.hpp>
-#include <tupai/sys/proc.hpp>
+#include <tupai/proc/proc.hpp>
 
 namespace tupai
 {
@@ -40,7 +40,7 @@ namespace tupai
 				int result = vtable->open(inode);
 
 				if (result == 0)
-					return sys::proc_create_fd(sys::proc_get_current(), inode);
+					return proc::proc_get_current().create_fd(inode);
 				else
 					return ID_INVALID;
 			}
@@ -48,13 +48,13 @@ namespace tupai
 
 		int fd_close(id_t lfd)
 		{
-			id_t cproc = sys::proc_get_current();
+			proc::proc_ptr_t cproc = proc::proc_get_current();
 
 			if (cproc == ID_INVALID)
 				return 1;
 			else
 			{
-				fd_ptr_t fd = sys::proc_get_fd(cproc, lfd);
+				fd_ptr_t fd = cproc.get_fd(lfd);
 				vtable_t* vtable;
 				fd.get_inode().get_vtable(&vtable);
 
@@ -71,7 +71,7 @@ namespace tupai
 					else
 					{
 						vfs_delete_fd(fd);
-						sys::proc_remove_fd(cproc, lfd);
+						cproc.delete_fd(lfd);
 						return 0;
 					}
 				}
@@ -80,13 +80,13 @@ namespace tupai
 
 		ssize_t fd_read(id_t lfd, void* rbuff, size_t n)
 		{
-			id_t cproc = sys::proc_get_current();
+			proc::proc_ptr_t cproc = proc::proc_get_current();
 
 			if (cproc == ID_INVALID)
 				return 1;
 			else
 			{
-				fd_ptr_t fd = sys::proc_get_fd(cproc, lfd);
+				fd_ptr_t fd = cproc.get_fd(lfd);
 				vtable_t* vtable;
 				fd.get_inode().get_vtable(&vtable);
 
@@ -101,13 +101,13 @@ namespace tupai
 
 		ssize_t fd_write(id_t lfd, const void* buff, size_t n)
 		{
-			id_t cproc = sys::proc_get_current();
+			proc::proc_ptr_t cproc = proc::proc_get_current();
 
 			if (cproc == ID_INVALID)
 				return 1;
 			else
 			{
-				fd_ptr_t fd = sys::proc_get_fd(cproc, lfd);
+				fd_ptr_t fd = cproc.get_fd(lfd);
 				vtable_t* vtable;
 				fd.get_inode().get_vtable(&vtable);
 

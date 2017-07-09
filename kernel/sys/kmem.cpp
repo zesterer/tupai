@@ -20,11 +20,10 @@
 // Tupai
 #include <tupai/sys/kmem.hpp>
 #include <tupai/sys/pool.hpp>
+#include <tupai/util/hwlock.hpp>
+#include <tupai/util/log.hpp>
 #include <tupai/arch.hpp>
 #include <tupai/panic.hpp>
-#include <tupai/util/out.hpp>
-#include <tupai/util/hwlock.hpp>
-#include <tupai/debug.hpp>
 
 namespace tupai
 {
@@ -42,8 +41,6 @@ namespace tupai
 			hwlock.lock(); // Begin critical section
 
 			void* pool = arch_kernel_alloc(KMEM_SIZE);
-
-			debug_println("KMem Pool = ", pool, " : ", (void*)((size_t)pool + KMEM_SIZE));
 
 			if (pool == nullptr)
 				panic("Could not allocate kernel memory pool");
@@ -80,7 +77,7 @@ namespace tupai
 
 		void kmem_info()
 		{
-			util::print("Kernel memory info:\n",
+			util::log("Kernel memory info:\n",
 				"  blocks     -> ", kmem_pool.block_count, '\n',
 				"  pool_map   -> ", (void*)kmem_pool.map, '\n',
 				"  pool_body  -> ", (void*)kmem_pool.body, '\n',
@@ -88,7 +85,7 @@ namespace tupai
 			);
 		}
 
-		void kmem_display()
+		void kmem_log()
 		{
 			hwlock.lock(); // Begin critical section
 

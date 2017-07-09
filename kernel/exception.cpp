@@ -19,16 +19,12 @@
 
 // Tupai
 #include <tupai/exception.hpp>
-#include <tupai/arch.hpp>
 #include <tupai/sys/thread.hpp>
 #include <tupai/sys/call.hpp>
+#include <tupai/util/log.hpp>
+#include <tupai/arch.hpp>
 #include <tupai/interrupt.hpp>
 #include <tupai/panic.hpp>
-#include <tupai/util/out.hpp>
-
-#if defined(ARCH_FAMILY_x86)
-	#include <tupai/x86/textmode.hpp>
-#endif
 
 namespace tupai
 {
@@ -88,7 +84,7 @@ namespace tupai
 			panic(exceptions_msg[code]);
 		else
 		{
-			util::println("Exception in thread '", thread_name, "' (", thread_id, "): ", exceptions_msg[code], " [", util::fmt_int<size_t>(error, 16), ']');
+			util::logln("Exception in thread '", thread_name, "' (", thread_id, "): ", exceptions_msg[code], " [", util::fmt_int<size_t>(error, 16), ']');
 
 			#if defined(DEBUG_ENABLED)
 				arch_display_reg_state((arch_reg_state*)stack);

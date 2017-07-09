@@ -20,7 +20,7 @@
 // Tupai
 #include <tupai/panic.hpp>
 #include <tupai/interrupt.hpp>
-#include <tupai/util/out.hpp>
+#include <tupai/util/fmt.hpp>
 
 #if defined(ARCH_FAMILY_x86)
 	#include <tupai/x86/textmode.hpp>

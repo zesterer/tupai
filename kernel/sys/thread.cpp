@@ -22,7 +22,6 @@
 #include <tupai/sys/kmem.hpp>
 #include <tupai/sys/call.hpp>
 #include <tupai/interrupt.hpp>
-#include <tupai/util/out.hpp>
 #include <tupai/util/hwlock.hpp>
 #include <tupai/util/str.hpp>
 #include <tupai/panic.hpp>

@@ -1,5 +1,5 @@
 //
-// file : path.hpp
+// file : thread.hpp
 //
 // This file is part of Tupai.
 //
@@ -17,11 +17,11 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_FS_PATH_HPP
-#define TUPAI_FS_PATH_HPP
+#ifndef TUPAI_PROC_THREAD_HPP
+#define TUPAI_PROC_THREAD_HPP
 
 // Tupai
-#include <tupai/fs/com.hpp>
+#include <tupai/proc/proc.hpp>
 
 // Standard
 #include <stddef.h>
@@ -29,10 +29,17 @@
 
 namespace tupai
 {
-	namespace fs
+	namespace proc
 	{
-		size_t path_element_count(const char* path);
-		bool   path_element_get(const char* path, char(&buff)[FILENAME_SIZE], size_t index);
+		struct thread_t
+		{
+			id_t id;
+			thread_state state;
+
+			void* entry;
+			void* stack;
+			void* stack_block;
+		};
 	}
 }
 

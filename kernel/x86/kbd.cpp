@@ -23,9 +23,7 @@
 #include <tupai/x86/port.hpp>
 #include <tupai/x86/ps2_8042.hpp>
 #include <tupai/interrupt.hpp>
-#include <tupai/util/out.hpp>
 #include <tupai/dev/tty.hpp>
-#include <tupai/debug.hpp>
 
 #include <tupai/x86/textmode.hpp>
 
