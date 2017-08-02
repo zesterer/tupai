@@ -39,6 +39,8 @@ namespace tupai
 		static proc_ptr_t   cproc = ID_INVALID;
 		static thread_ptr_t cthreads = ID_INVALID;
 
+		thread_ptr_t proc_create_thread(proc_ptr_t proc, void (*entry)(int argc, char* argv[]));
+
 		/* Process control functions */
 
 		proc_ptr_t proc_get_current()
@@ -103,15 +105,58 @@ namespace tupai
 			proc_t* proc = proc_table[this->id];
 
 			vfs::fd_ptr_t val = ID_INVALID;
-			if (proc != nullptr)
-				val = *proc->fds[lfd];
+			if (proc != nullptr && lfd != ID_INVALID)
+			{
+				vfs::fd_ptr_t* ptr = proc->fds[lfd];
+				if (ptr != nullptr)
+					val = *ptr;
+			}
 
 			hwlock.unlock(); // End critical section
 			return val;
 		}
 
-		// TODO
-		//thread_ptr_t proc_ptr_t::spawn_thread(void (*entry)(int argc, char* argv[]));
+		thread_ptr_t proc_ptr_t::spawn_thread(void (*entry)(int argc, char* argv[]))
+		{
+			hwlock.lock(); // Begin critical section
+
+			proc_t* proc = proc_table[this->id];
+
+			thread_ptr_t val = ID_INVALID;
+			if (proc != nullptr)
+			{
+				id_t nid = proc->thread_counter ++;
+
+				thread_ptr_t nthread = proc_create_thread(this->id, entry);
+				proc->threads.add(nid, nthread);
+
+				val = nid;
+			}
+
+			hwlock.unlock(); // End critical section
+			return val;
+		}
+
+		thread_ptr_t proc_create_thread(proc_ptr_t parent_proc, void (*entry)(int argc, char* argv[]))
+		{
+			hwlock.lock(); // Begin critical section
+
+			id_t nid = thread_counter ++;
+			thread_t nthread;
+			nthread.id = nid;
+			nthread.proc = parent_proc;
+			nthread.state = thread_state::NEW;
+			nthread.entry = (void*)entry;
+
+			// TODO : Allocate thread stack!
+			nthread.stack = nullptr;
+			nthread.stack_block = nullptr;
+
+			thread_table.add(nid, nthread);
+
+			hwlock.unlock(); // End critical section
+			return nid;
+		}
 
 		id_t proc_ptr_t::create_fd(vfs::inode_ptr_t inode)
 		{

@@ -91,9 +91,9 @@ namespace tupai
 				fd.get_inode().get_vtable(&vtable);
 
 				if (vtable == nullptr)
-					return 1;
+					return 0;
 				else if (vtable->read == nullptr)
-					return 1;
+					return 0;
 				else
 					return vtable->read(fd, rbuff, n);
 			}
