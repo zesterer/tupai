@@ -22,8 +22,8 @@
 #include <tupai/dev/serial.hpp>
 #include <tupai/util/mutex.hpp>
 #include <tupai/util/hwlock.hpp>
-#include <tupai/sys/thread.hpp>
 #include <tupai/sys/pipe.hpp>
+#include <tupai/proc/proc.hpp>
 #include <tupai/debug.hpp>
 
 #if defined(ARCH_FAMILY_x86)
@@ -86,9 +86,8 @@ namespace tupai
 						debug_print("Could not find port for serial tty output!\n");
 				}
 
-				// Create the TTY I/O threads
-				if (sys::threading_enabled())
-					sys::thread_create(tty_out_thread, 0, nullptr, "tty-out");
+				// Create the TTY I/O thread
+				proc::proc_get_current().spawn_thread(tty_out_thread);
 
 				tty_initiated = true;
 			}

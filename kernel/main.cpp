@@ -25,7 +25,6 @@
 // Core system environment
 #include <tupai/sys/kmem.hpp>
 #include <tupai/sys/pipe.hpp>
-#include <tupai/sys/thread.hpp>
 #include <tupai/sys/initrd.hpp>
 #include <tupai/sys/call.hpp>
 #include <tupai/vfs/vfs.hpp>
@@ -60,7 +59,6 @@ namespace tupai
 		// The methods through which this is done are platform-dependent.
 		// Now, however, it's relatively safe to run most code.
 
-		sys::threading_init(); // Initiate multi-threading
 		vfs::vfs_init();  // Init virtual filesystem
 
 		proc::proc_init(); // Initiate processes
@@ -72,11 +70,11 @@ namespace tupai
 		dev::serial_init();
 		dev::tty_init();
 
-		// Run the kernel shell
-		sys::thread_create(shell_main, 0, nullptr, "shell");
+		// Spawn a kernel shell thread
+		proc::proc_get_current().spawn_thread(shell_main);
 
 		interrupt_enable(true); // Enable interrupts
 
-		sys::thread_kill(sys::thread_get_id());
+		while (true);
 	}
 }

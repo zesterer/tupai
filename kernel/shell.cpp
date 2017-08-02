@@ -26,7 +26,6 @@
 #include <tupai/dev/clock.hpp>
 
 #include <tupai/sys/kmem.hpp>
-#include <tupai/sys/thread.hpp>
 #include <tupai/sys/call.hpp>
 
 #include <tupai/util/in.hpp>
@@ -124,7 +123,6 @@ namespace tupai
 				print(
 					"Available commands:\n",
 					"  help    -> Show this help text\n",
-					"  threads -> Show running threads\n",
 					"  fs      -> Show filesystem tree\n",
 					"  cat     -> Display the contents of a file\n",
 					"  echo    -> Echo the typed text to stdout\n",
@@ -135,17 +133,6 @@ namespace tupai
 					"  info    -> Show system info\n",
 					"  time    -> Show the system time\n"
 				);
-			}
-			else if (util::str_equal(argv[0], "threads"))
-			{
-				size_t n = sys::threads_count();
-				for (size_t i = 0; i < n; i ++)
-				{
-					char name[64];
-					sys::id_t id = sys::thread_get_id(i);
-					sys::thread_get_name(id, name);
-					print(i, ' ', id, ' ', name, '\n');
-				}
 			}
 			else if (util::str_equal(argv[0], "fs"))
 			{

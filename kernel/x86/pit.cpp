@@ -21,10 +21,8 @@
 #include <tupai/x86/pit.hpp>
 #include <tupai/x86/port.hpp>
 #include <tupai/interrupt.hpp>
+#include <tupai/proc/scheduler.hpp>
 #include <tupai/debug.hpp>
-
-// Multithreading
-#include <tupai/sys/thread.hpp>
 
 // Standard
 #include <stddef.h>
@@ -93,9 +91,9 @@ namespace tupai
 
 			// Switch threads
 
-			if (sys::threading_enabled())
-				stack_ptr = sys::thread_next_stack(stack_ptr);
-			return stack_ptr;
+			//if (sys::threading_enabled())
+			//	stack_ptr = sys::thread_next_stack(stack_ptr);
+			return proc::scheduler_preempt(stack_ptr);
 		}
 	}
 }

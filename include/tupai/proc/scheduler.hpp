@@ -1,5 +1,5 @@
 //
-// file : thread.hpp
+// file : scheduler.hpp
 //
 // This file is part of Tupai.
 //
@@ -17,8 +17,8 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_PROC_THREAD_HPP
-#define TUPAI_PROC_THREAD_HPP
+#ifndef TUPAI_PROC_SCHEDULER_HPP
+#define TUPAI_PROC_SCHEDULER_HPP
 
 // Tupai
 #include <tupai/proc/proc.hpp>
@@ -31,16 +31,11 @@ namespace tupai
 {
 	namespace proc
 	{
-		struct thread_t
-		{
-			id_t id;
-			proc_ptr_t proc;
-			thread_state state;
-
-			size_t entry;
-			size_t stack;
-			size_t stack_block;
-		};
+		void         scheduler_init();
+		void         scheduler_schedule(thread_ptr_t thread, int priority = 0);
+		void         scheduler_increment();
+		thread_ptr_t scheduler_current();
+		size_t       scheduler_preempt(size_t old_stack);
 	}
 }
 

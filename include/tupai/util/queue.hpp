@@ -1,5 +1,5 @@
 //
-// file : thread.hpp
+// file : queue.hpp
 //
 // This file is part of Tupai.
 //
@@ -17,11 +17,8 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_PROC_THREAD_HPP
-#define TUPAI_PROC_THREAD_HPP
-
-// Tupai
-#include <tupai/proc/proc.hpp>
+#ifndef TUPAI_UTIL_QUEUE_HPP
+#define TUPAI_UTIL_QUEUE_HPP
 
 // Standard
 #include <stddef.h>
@@ -29,17 +26,49 @@
 
 namespace tupai
 {
-	namespace proc
+	namespace util
 	{
-		struct thread_t
+		template <typename T, size_t N>
+		struct queue_t
 		{
-			id_t id;
-			proc_ptr_t proc;
-			thread_state state;
+		public:
+			T items[N];
+			size_t head = 0;
+			size_t tail = 0;
+			size_t length = 0;
 
-			size_t entry;
-			size_t stack;
-			size_t stack_block;
+		public:
+			void push(T& item)
+			{
+				if (this->length != 0)
+				{
+					this->head = (this->head + 1) % N;
+					if (this->head == this->tail)
+						this->tail = (this->tail + 1) % N;
+				}
+
+				this->items[this->head] = item;
+
+				if (this->length < N)
+					this->length ++;
+			}
+
+			T pop()
+			{
+				this->length --;
+
+				T item = this->items[this->tail];
+
+				if (this->length != 0)
+					this->tail = (this->tail + 1) % N;
+
+				return item;
+			}
+
+			size_t len()
+			{
+				return this->length;
+			}
 		};
 	}
 }

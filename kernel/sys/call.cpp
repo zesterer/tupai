@@ -19,7 +19,8 @@
 
 // Tupai
 #include <tupai/sys/call.hpp>
-#include <tupai/sys/thread.hpp>
+#include <tupai/proc/proc.hpp>
+#include <tupai/proc/scheduler.hpp>
 #include <tupai/vfs/vfs.hpp>
 #include <tupai/vfs/fd.hpp>
 #include <tupai/util/mutex.hpp>
@@ -55,10 +56,10 @@ namespace tupai
 			switch (call)
 			{
 			case CALL::YIELD:
-				stack_ptr = sys::thread_next_stack(stack_ptr);
+				stack_ptr = proc::scheduler_preempt(stack_ptr);
 				break;
 
-			case CALL::LMUTEX:
+			/*case CALL::LMUTEX:
 				{
 					util::mutex_t* mutex = (util::mutex_t*)arg0;
 					if (mutex->locked) // The mutex is already locked
@@ -82,7 +83,7 @@ namespace tupai
 					mutex->locked = false;
 					sys::thread_update_mutex(mutex);
 				}
-				break;
+				break;*/
 
 			case CALL::OPEN:
 				{

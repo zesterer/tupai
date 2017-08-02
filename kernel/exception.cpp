@@ -19,9 +19,10 @@
 
 // Tupai
 #include <tupai/exception.hpp>
-#include <tupai/sys/thread.hpp>
 #include <tupai/sys/call.hpp>
 #include <tupai/util/log.hpp>
+#include <tupai/proc/proc.hpp>
+#include <tupai/proc/scheduler.hpp>
 #include <tupai/arch.hpp>
 #include <tupai/interrupt.hpp>
 #include <tupai/panic.hpp>
@@ -76,26 +77,21 @@ namespace tupai
 
 	size_t exception_handle(size_t stack, size_t code, size_t error)
 	{
-		sys::id_t thread_id = sys::thread_get_id();
-		char thread_name[256];
-		sys::thread_get_name(thread_id, thread_name);
+		proc::thread_ptr_t cthread = proc::proc_get_current_thread();
 
 		if (exception_panic[code])
 			panic(exceptions_msg[code]);
 		else
 		{
-			util::logln("Exception in thread '", thread_name, "' (", thread_id, "): ", exceptions_msg[code], " [", util::fmt_int<size_t>(error, 16), ']');
+			util::logln("Exception in thread '", cthread, "' : ", exceptions_msg[code], " [", util::fmt_int<size_t>(error, 16), ']');
 
 			#if defined(DEBUG_ENABLED)
 				arch_display_reg_state((arch_reg_state*)stack);
 			#endif
 
-			sys::thread_kill(thread_id);
+			cthread.kill();
 		}
 
-		if (sys::threading_enabled())
-			stack = sys::thread_next_stack(stack);
-
-		return stack;
+		return proc::scheduler_preempt(stack);
 	}
 }

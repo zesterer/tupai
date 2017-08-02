@@ -21,6 +21,7 @@
 #include <tupai/proc/proc.hpp>
 #include <tupai/proc/thread.hpp>
 #include <tupai/proc/process.hpp>
+#include <tupai/proc/scheduler.hpp>
 #include <tupai/util/str.hpp>
 #include <tupai/util/hwlock.hpp>
 
@@ -37,7 +38,9 @@ namespace tupai
 		static util::hwlock_t hwlock;
 
 		static proc_ptr_t   cproc = ID_INVALID;
-		static thread_ptr_t cthreads = ID_INVALID;
+		static thread_ptr_t cthread = ID_INVALID;
+
+		static const size_t THREAD_STACK_SIZE = 2048;
 
 		thread_ptr_t proc_create_thread(proc_ptr_t proc, void (*entry)(int argc, char* argv[]));
 
@@ -52,6 +55,35 @@ namespace tupai
 			hwlock.unlock(); // End critical section
 
 			return val;
+		}
+
+		thread_ptr_t proc_get_current_thread()
+		{
+			hwlock.lock(); // Begin critical section
+
+			thread_ptr_t val = cthread;
+
+			hwlock.unlock(); // End critical section
+
+			return val;
+		}
+
+		void proc_set_current(proc_ptr_t proc)
+		{
+			hwlock.lock(); // Begin critical section
+
+			cproc = proc;
+
+			hwlock.unlock(); // End critical section
+		}
+
+		void proc_set_current_thread(thread_ptr_t thread)
+		{
+			hwlock.lock(); // Begin critical section
+
+			cthread = thread;
+
+			hwlock.unlock(); // End critical section
 		}
 
 		void proc_init()
@@ -77,6 +109,94 @@ namespace tupai
 
 			hwlock.unlock(); // End critical section
 			return nproc.id;
+		}
+
+		/* Thread functions */
+
+		thread_state thread_ptr_t::get_state()
+		{
+			hwlock.lock(); // Begin critical section
+
+			thread_t* thread = thread_table[this->id];
+
+			thread_state val = thread_state::DEAD;
+			if (thread != nullptr)
+				val = thread->state;
+
+			hwlock.unlock(); // End critical section
+			return val;
+		}
+
+		proc_ptr_t thread_ptr_t::get_process()
+		{
+			hwlock.lock(); // Begin critical section
+
+			thread_t* thread = thread_table[this->id];
+
+			proc_ptr_t val = ID_INVALID;
+			if (thread != nullptr)
+				val = thread->proc;
+
+			hwlock.unlock(); // End critical section
+			return val;
+		}
+
+		size_t thread_ptr_t::get_entry()
+		{
+			hwlock.lock(); // Begin critical section
+
+			thread_t* thread = thread_table[this->id];
+
+			size_t val = 0;
+			if (thread != nullptr)
+				val = thread->entry;
+
+			hwlock.unlock(); // End critical section
+			return val;
+		}
+
+		size_t thread_ptr_t::get_stack()
+		{
+			hwlock.lock(); // Begin critical section
+
+			thread_t* thread = thread_table[this->id];
+
+			size_t val = 0;
+			if (thread != nullptr)
+				val = thread->stack;
+
+			hwlock.unlock(); // End critical section
+			return val;
+		}
+
+		void thread_ptr_t::set_state(thread_state state)
+		{
+			hwlock.lock(); // Begin critical section
+
+			thread_t* thread = thread_table[this->id];
+
+			if (thread != nullptr)
+				thread->state = state;
+
+			hwlock.unlock(); // End critical section
+		}
+
+		void thread_ptr_t::set_stack(size_t stack)
+		{
+			hwlock.lock(); // Begin critical section
+
+			thread_t* thread = thread_table[this->id];
+
+			if (thread != nullptr)
+				thread->stack = stack;
+
+			hwlock.unlock(); // End critical section
+		}
+
+		int thread_ptr_t::kill()
+		{
+			this->set_state(thread_state::DEAD);
+			return 0;
 		}
 
 		/* Process functions */
@@ -130,6 +250,8 @@ namespace tupai
 				thread_ptr_t nthread = proc_create_thread(this->id, entry);
 				proc->threads.add(nid, nthread);
 
+				scheduler_schedule(nthread);
+
 				val = nid;
 			}
 
@@ -146,11 +268,12 @@ namespace tupai
 			nthread.id = nid;
 			nthread.proc = parent_proc;
 			nthread.state = thread_state::NEW;
-			nthread.entry = (void*)entry;
+			nthread.entry = (size_t)entry;
 
 			// TODO : Allocate thread stack!
-			nthread.stack = nullptr;
-			nthread.stack_block = nullptr;
+			size_t nstack = (size_t)new uint8_t[THREAD_STACK_SIZE];
+			nthread.stack = (size_t)((size_t)nstack + THREAD_STACK_SIZE);
+			nthread.stack_block = nstack;
 
 			thread_table.add(nid, nthread);
 

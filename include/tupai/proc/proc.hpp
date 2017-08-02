@@ -53,6 +53,8 @@ namespace tupai
 			DEAD,
 		};
 
+		struct proc_ptr_t; // Forward declaration
+
 		struct thread_ptr_t
 		{
 			id_t id;
@@ -61,6 +63,12 @@ namespace tupai
 			thread_ptr_t(id_t id) { this->id = id; }
 			operator id_t() { return this->id; }
 
+			thread_state get_state();
+			proc_ptr_t get_process();
+			size_t get_entry();
+			size_t get_stack();
+			void set_state(thread_state state);
+			void set_stack(size_t stack);
 			int kill();
 		};
 
@@ -83,6 +91,9 @@ namespace tupai
 		};
 
 		proc_ptr_t proc_get_current();
+		thread_ptr_t proc_get_current_thread();
+		void       proc_set_current(proc_ptr_t proc);
+		void       proc_set_current_thread(thread_ptr_t thread);
 
 		void       proc_init();
 		proc_ptr_t proc_create(const char* name, vfs::inode_ptr_t dir);
