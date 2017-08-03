@@ -26,25 +26,33 @@ namespace tupai
 {
 	namespace proc
 	{
-		static util::queue_t<thread_ptr_t, 256> schedule;
-		static thread_ptr_t ctask = ID_INVALID;
+		struct task_t
+		{
+			thread_ptr_t thread = ID_INVALID;
+			short priority = ID_INVALID;
+			short cpriority = ID_INVALID;
+		};
+
+		static util::queue_t<task_t, 256> schedule;
+		static task_t ctask;
 
 		static util::hwlock_t hwlock;
 
 		void scheduler_bootstrap_task(size_t entry, size_t stack, int argc = 0, char* argv[] = nullptr);
 		extern "C" void proc_thread_finish();
 
-		void scheduler_init()
-		{
-			// Nothing yet
-		}
-
 		void scheduler_schedule(thread_ptr_t thread, int priority)
 		{
 			(void)priority;
 
 			hwlock.lock(); // Begin critical section
-			schedule.push(thread);
+
+			task_t ntask;
+			ntask.thread = thread;
+			ntask.priority = priority;
+			ntask.cpriority = priority;
+			schedule.push(ntask);
+
 			hwlock.unlock(); // End critical section
 		}
 
@@ -52,13 +60,27 @@ namespace tupai
 		{
 			hwlock.lock(); // Begin critical section
 
-			if (ctask.get_state() != thread_state::DEAD)
+			if (ctask.thread != ID_INVALID && ctask.thread.get_state() != thread_state::DEAD)
+			{
+				ctask.cpriority = ctask.priority;
 				schedule.push(ctask);
+			}
 
-			ctask = schedule.pop();
+			while (true)
+			{
+				ctask = schedule.pop();
 
-			proc_set_current(ctask.get_process());
-			proc_set_current_thread(ctask);
+				if (ctask.cpriority <= 0)
+					break;
+				else
+				{
+					ctask.cpriority --;
+					schedule.push(ctask);
+				}
+			}
+
+			proc_set_current(ctask.thread.get_process());
+			proc_set_current_thread(ctask.thread);
 
 			hwlock.unlock(); // End critical section
 		}
@@ -66,7 +88,7 @@ namespace tupai
 		thread_ptr_t scheduler_current()
 		{
 			hwlock.lock(); // Begin critical section
-			thread_ptr_t val = ctask;
+			thread_ptr_t val = ctask.thread;
 			hwlock.unlock(); // End critical section
 
 			return val;
@@ -74,16 +96,18 @@ namespace tupai
 
 		size_t scheduler_preempt(size_t old_stack)
 		{
-			ctask.set_stack(old_stack);
-			scheduler_increment();
-			size_t new_stack = ctask.get_stack();
+			if (ctask.thread != ID_INVALID)
+				ctask.thread.set_stack(old_stack);
 
-			switch (ctask.get_state())
+			scheduler_increment();
+			size_t new_stack = ctask.thread.get_stack();
+
+			switch (ctask.thread.get_state())
 			{
 			case thread_state::NEW:
 				{
-					ctask.set_state(thread_state::ACTIVE);
-					scheduler_bootstrap_task(ctask.get_entry(), ctask.get_stack());
+					ctask.thread.set_state(thread_state::ACTIVE);
+					scheduler_bootstrap_task(ctask.thread.get_entry(), ctask.thread.get_stack());
 				}
 				break;
 			default:

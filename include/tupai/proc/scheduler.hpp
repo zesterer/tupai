@@ -31,7 +31,6 @@ namespace tupai
 {
 	namespace proc
 	{
-		void         scheduler_init();
 		void         scheduler_schedule(thread_ptr_t thread, int priority = 0);
 		void         scheduler_increment();
 		thread_ptr_t scheduler_current();
