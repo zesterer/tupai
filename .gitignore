@@ -1,3 +1,7 @@
 # Ignore build directories
 build
 build-*
+
+# Ignore bochs configuration
+bochsrc.txt
+bx_enh_dbg.ini

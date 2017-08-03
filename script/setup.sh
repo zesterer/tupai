@@ -26,4 +26,4 @@ else
 	exit
 fi
 
-echo "Now run 'tup ${BUILD_DIR}' to build the project"
+echo "Now run 'tup init' to initialise the tup tree and then 'tup ${BUILD_DIR}' to build the project"

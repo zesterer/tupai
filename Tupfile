@@ -12,7 +12,7 @@ INITRD_ITEMS=sysroot/lib/include/*
 
 # Create ISO
 ifeq ($(TARGET_FAMILY),x86)
-	: grub/isodir/boot/$(P_EXEC)-kernel.elf grub/isodir/mod/initrd.tar grub/isodir/boot/grub/grub.cfg |> sh create-iso.sh |> tupai.iso
+	: grub/isodir/boot/$(P_EXEC)-kernel.elf grub/isodir/mod/initrd.tar grub/isodir/boot/grub/grub.cfg |> sh script/create-iso.sh |> tupai.iso
 endif
 
 # Generate symbols
