@@ -78,7 +78,7 @@ namespace tupai
 		void kmem_info()
 		{
 			util::log("Kernel memory info:\n",
-				"  blocks     -> ", kmem_pool.block_count, '\n',
+				"  blocks     -> ", (long)kmem_pool.block_count, '\n',
 				"  pool_map   -> ", (void*)kmem_pool.map, '\n',
 				"  pool_body  -> ", (void*)kmem_pool.body, '\n',
 				"  block_size -> ", (void*)kmem_pool.block_size, '\n'

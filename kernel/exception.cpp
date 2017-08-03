@@ -85,7 +85,7 @@ namespace tupai
 			panic(exceptions_msg[code]);
 		else
 		{
-			util::logln("Exception in thread '", cthread, "' of process '", pname, "' : ", exceptions_msg[code], " [", util::fmt_int<size_t>(error, 16), ']');
+			util::logln("Exception in thread '", (long)cthread, "' of process '", pname, "' : ", exceptions_msg[code], " [", util::fmt_int<long>(error, 16), ']');
 
 			#if defined(DEBUG_ENABLED)
 				arch_display_reg_state((arch_reg_state*)stack);

@@ -54,6 +54,8 @@ namespace tupai
 		{
 			#if defined(ARCH_FAMILY_x86)
 				return x86::ps2_8042_count_ports();
+			#else
+				return 0;
 			#endif
 		}
 
@@ -112,6 +114,8 @@ namespace tupai
 
 			#if defined(ARCH_FAMILY_x86)
 				return x86::ps2_8042_read(port_id);
+			#else
+				return 0;
 			#endif
 		}
 

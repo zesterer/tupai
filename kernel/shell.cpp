@@ -205,7 +205,7 @@ namespace tupai
 			{
 				print(
 					"System Info:\n",
-					"  address_size -> ", sizeof(void*) * 8, " bits\n",
+					"  address_size -> ", (long)sizeof(void*) * 8, " bits\n",
 					"  kernel_start -> ", (void*)arch_get_kernel_start(), '\n',
 					"  kernel_end   -> ", (void*)arch_get_kernel_end(), '\n',
 					'\n'

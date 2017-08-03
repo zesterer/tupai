@@ -119,10 +119,10 @@ namespace tupai
 			for (size_t i = 0; i < proc_table.size(); i ++)
 			{
 				proc_t* proc = proc_table.nth(i);
-				util::logln(i, " -> ", proc->name, " (", proc->id, ")");
+				util::logln((long)i, " -> ", proc->name, " (", (long)proc->id, ")");
 
 				for (size_t j = 0; j < proc->threads.size(); j ++)
-					util::logln("    ", j, " -> Thread ", (*proc->threads.nth(j)).get_lid());
+					util::logln("    ", (long)j, " -> Thread ", (long)(*proc->threads.nth(j)).get_lid());
 			}
 		}
 
