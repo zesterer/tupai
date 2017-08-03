@@ -92,10 +92,10 @@ namespace tupai
 		void initrd_create(initrd_t* initrd, const char* name)
 		{
 			// Create a filesystem for the initrd
-			vfs::fs_ptr_t fs = vfs::vfs_create_fs(name);
+			vfs::fs_ptr_t fs = vfs::create_fs(name);
 
 			// Set the VFS's root to the initrd fs
-			vfs::vfs_set_root(fs.get_root());
+			vfs::set_root(fs.get_root());
 
 			initrd->fs = fs;
 
@@ -108,7 +108,7 @@ namespace tupai
 				const char* filename = cheader->filename;
 				size_t n = vfs::path_element_count(filename);
 
-				vfs::inode_ptr_t cinode = vfs::vfs_get_root();
+				vfs::inode_ptr_t cinode = vfs::get_root();
 
 				for (size_t i = 0; i < n; i ++)
 				{
@@ -150,7 +150,7 @@ namespace tupai
 							}
 						}
 
-						vfs::inode_ptr_t ninode = vfs::vfs_create_inode(type);
+						vfs::inode_ptr_t ninode = vfs::create_inode(type);
 						ninode.set_fs(fs);
 						cinode.mount_child(ninode, buff);
 
@@ -210,7 +210,7 @@ namespace tupai
 		/*
 		id_t initrd_open_call(id_t pid, fs::inode_t* inode)
 		{
-			return proc_create_desc(pid, inode);
+			return create_desc(pid, inode);
 		}
 
 		int initrd_close_call(id_t pid, fs::desc_t* desc)

@@ -46,7 +46,7 @@ namespace tupai
 
 		/* VFS Functions */
 
-		inode_ptr_t vfs_get_root()
+		inode_ptr_t get_root()
 		{
 			spinlock.lock(); // Begin critical section
 
@@ -56,7 +56,7 @@ namespace tupai
 			return val;
 		}
 
-		inode_ptr_t vfs_get_inode(const char* path)
+		inode_ptr_t get_inode(const char* path)
 		{
 			spinlock.lock(); // Begin critical section
 
@@ -89,7 +89,7 @@ namespace tupai
 			return cinode;
 		}
 
-		int vfs_set_root(inode_ptr_t root)
+		int set_root(inode_ptr_t root)
 		{
 			spinlock.lock(); // Begin critical section
 
@@ -99,7 +99,7 @@ namespace tupai
 			return 0;
 		}
 
-		int vfs_mount(inode_ptr_t inode, const char* path)
+		int mount(inode_ptr_t inode, const char* path)
 		{
 			spinlock.lock(); // Begin critical section
 
@@ -151,7 +151,7 @@ namespace tupai
 			return err;
 		}
 
-		void vfs_init()
+		void init()
 		{
 			spinlock.lock(); // Begin critical section
 
@@ -188,7 +188,7 @@ namespace tupai
 			}
 		}
 
-		void vfs_display()
+		void display()
 		{
 			util::logln("--- Virtual Filesystem ---");
 
@@ -203,10 +203,10 @@ namespace tupai
 			*/
 		}
 
-		fs_ptr_t vfs_create_fs(const char* name)
+		fs_ptr_t create_fs(const char* name)
 		{
 			// Create a root inode for the filesystem
-			inode_ptr_t fsroot = vfs_create_inode(inode_type::DIRECTORY);
+			inode_ptr_t fsroot = create_inode(inode_type::DIRECTORY);
 
 			spinlock.lock(); // Begin critical section
 
@@ -226,7 +226,7 @@ namespace tupai
 			return nid;
 		}
 
-		inode_ptr_t vfs_create_inode(inode_type type)
+		inode_ptr_t create_inode(inode_type type)
 		{
 			spinlock.lock(); // Begin critical section
 
@@ -242,7 +242,7 @@ namespace tupai
 			return nid;
 		}
 
-		fd_ptr_t vfs_create_fd(inode_ptr_t inode)
+		fd_ptr_t create_fd(inode_ptr_t inode)
 		{
 			spinlock.lock(); // Begin critical section
 
@@ -257,7 +257,7 @@ namespace tupai
 			return nid;
 		}
 
-		int vfs_delete_fs(fs_ptr_t fd)
+		int delete_fs(fs_ptr_t fd)
 		{
 			spinlock.lock(); // Begin critical section
 
@@ -271,7 +271,7 @@ namespace tupai
 			return err;
 		}
 
-		int vfs_delete_inode(inode_ptr_t inode)
+		int delete_inode(inode_ptr_t inode)
 		{
 			spinlock.lock(); // Begin critical section
 
@@ -285,7 +285,7 @@ namespace tupai
 			return err;
 		}
 
-		int vfs_delete_fd(fd_ptr_t fd)
+		int delete_fd(fd_ptr_t fd)
 		{
 			spinlock.lock(); // Begin critical section
 

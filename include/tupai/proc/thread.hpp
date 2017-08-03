@@ -34,6 +34,7 @@ namespace tupai
 		struct thread_t
 		{
 			id_t id;
+			id_t lid;
 			proc_ptr_t proc;
 			thread_state state;
 

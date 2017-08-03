@@ -41,6 +41,11 @@ namespace tupai
 		void scheduler_bootstrap_task(size_t entry, size_t stack, int argc = 0, char* argv[] = nullptr);
 		extern "C" void proc_thread_finish();
 
+		void scheduler_init()
+		{
+			// Nothing yet
+		}
+
 		void scheduler_schedule(thread_ptr_t thread, int priority)
 		{
 			(void)priority;
@@ -79,8 +84,7 @@ namespace tupai
 				}
 			}
 
-			proc_set_current(ctask.thread.get_process());
-			proc_set_current_thread(ctask.thread);
+			set_current_thread(ctask.thread);
 
 			hwlock.unlock(); // End critical section
 		}
@@ -119,7 +123,7 @@ namespace tupai
 
 		void proc_thread_finish()
 		{
-			proc_get_current_thread().kill();
+			get_current_thread().kill();
 			while (true);
 		}
 
@@ -129,9 +133,9 @@ namespace tupai
 			{
 				asm volatile (
 					"mov %0, %%esp \n\
-					 sti \n \
 					 push %1 \n \
 					 push %2 \n \
+					 sti \n \
 					 call *%3 \n \
 					 call proc_thread_finish \n"
 					 : : "r" (stack), "m" (argv), "m" (argc), "r" (entry)
@@ -141,9 +145,9 @@ namespace tupai
 			{
 				asm volatile (
 					"mov %0, %%rsp \n \
-					 sti \n \
 					 mov %1, %%rdi \n \
 					 mov %2, %%rsi \n \
+					 sti \n \
 					 call *%3 \n \
 					 call proc_thread_finish \n"
 					 : : "r" (stack), "m" (argc), "m" (argv), "r" (entry)

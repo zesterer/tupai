@@ -48,9 +48,9 @@ namespace tupai
 
 		vfs::inode_ptr_t mount_pipe(pipe_t* pipe, const char* path)
 		{
-			vfs::inode_ptr_t ninode = vfs::vfs_create_inode(vfs::inode_type::PIPE);
+			vfs::inode_ptr_t ninode = vfs::create_inode(vfs::inode_type::PIPE);
 			ninode.set_vtable(&pipe_vtable);
-			vfs::vfs_mount(ninode, path);
+			vfs::mount(ninode, path);
 
 			vfs::vtable_t* nv;
 			ninode.get_vtable(&nv);

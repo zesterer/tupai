@@ -25,6 +25,8 @@
 #include <tupai/util/str.hpp>
 #include <tupai/util/hwlock.hpp>
 
+#include <tupai/util/log.hpp>
+
 namespace tupai
 {
 	namespace proc
@@ -42,11 +44,11 @@ namespace tupai
 
 		static const size_t THREAD_STACK_SIZE = 2048;
 
-		thread_ptr_t proc_create_thread(proc_ptr_t proc, void (*entry)(int argc, char* argv[]));
+		thread_ptr_t create_thread(proc_ptr_t proc, void (*entry)(int argc, char* argv[]));
 
 		/* Process control functions */
 
-		proc_ptr_t proc_get_current()
+		proc_ptr_t get_current()
 		{
 			hwlock.lock(); // Begin critical section
 
@@ -57,7 +59,7 @@ namespace tupai
 			return val;
 		}
 
-		thread_ptr_t proc_get_current_thread()
+		thread_ptr_t get_current_thread()
 		{
 			hwlock.lock(); // Begin critical section
 
@@ -68,7 +70,7 @@ namespace tupai
 			return val;
 		}
 
-		void proc_set_current(proc_ptr_t proc)
+		void set_current(proc_ptr_t proc)
 		{
 			hwlock.lock(); // Begin critical section
 
@@ -77,26 +79,27 @@ namespace tupai
 			hwlock.unlock(); // End critical section
 		}
 
-		void proc_set_current_thread(thread_ptr_t thread)
+		void set_current_thread(thread_ptr_t thread)
 		{
 			hwlock.lock(); // Begin critical section
 
 			cthread = thread;
+			cproc = thread.get_process();
 
 			hwlock.unlock(); // End critical section
 		}
 
-		void proc_init()
+		void init()
 		{
 			hwlock.lock(); // Begin critical section
 
 			// Create the initial kernel process
-			cproc = proc_create("kernel", vfs::vfs_get_root());
+			cproc = create("kernel", vfs::get_root());
 
 			hwlock.unlock(); // End critical section
 		}
 
-		proc_ptr_t proc_create(const char* name, vfs::inode_ptr_t dir)
+		proc_ptr_t create(const char* name, vfs::inode_ptr_t dir)
 		{
 			hwlock.lock(); // Begin critical section
 
@@ -111,7 +114,33 @@ namespace tupai
 			return nproc.id;
 		}
 
+		void display()
+		{
+			for (size_t i = 0; i < proc_table.size(); i ++)
+			{
+				proc_t* proc = proc_table.nth(i);
+				util::logln(i, " -> ", proc->name, " (", proc->id, ")");
+
+				for (size_t j = 0; j < proc->threads.size(); j ++)
+					util::logln("    ", j, " -> Thread ", (*proc->threads.nth(j)).get_lid());
+			}
+		}
+
 		/* Thread functions */
+
+		id_t thread_ptr_t::get_lid()
+		{
+			hwlock.lock(); // Begin critical section
+
+			thread_t* thread = thread_table[this->id];
+
+			id_t val = ID_INVALID;
+			if (thread != nullptr)
+				val = thread->lid;
+
+			hwlock.unlock(); // End critical section
+			return val;
+		}
 
 		thread_state thread_ptr_t::get_state()
 		{
@@ -167,6 +196,18 @@ namespace tupai
 
 			hwlock.unlock(); // End critical section
 			return val;
+		}
+
+		void thread_ptr_t::set_lid(id_t lid)
+		{
+			hwlock.lock(); // Begin critical section
+
+			thread_t* thread = thread_table[this->id];
+
+			if (thread != nullptr)
+				thread->lid = lid;
+
+			hwlock.unlock(); // End critical section
 		}
 
 		void thread_ptr_t::set_state(thread_state state)
@@ -247,7 +288,8 @@ namespace tupai
 			{
 				id_t nid = proc->thread_counter ++;
 
-				thread_ptr_t nthread = proc_create_thread(this->id, entry);
+				thread_ptr_t nthread = create_thread(this->id, entry);
+				nthread.set_lid(nid);
 				proc->threads.add(nid, nthread);
 
 				scheduler_schedule(nthread);
@@ -259,13 +301,14 @@ namespace tupai
 			return val;
 		}
 
-		thread_ptr_t proc_create_thread(proc_ptr_t parent_proc, void (*entry)(int argc, char* argv[]))
+		thread_ptr_t create_thread(proc_ptr_t parent_proc, void (*entry)(int argc, char* argv[]))
 		{
 			hwlock.lock(); // Begin critical section
 
 			id_t nid = thread_counter ++;
 			thread_t nthread;
 			nthread.id = nid;
+			nthread.lid = ID_INVALID;
 			nthread.proc = parent_proc;
 			nthread.state = thread_state::NEW;
 			nthread.entry = (size_t)entry;
@@ -292,7 +335,7 @@ namespace tupai
 			{
 				id_t nid = proc->lfd_counter++;
 
-				vfs::fd_ptr_t nfd = vfs::vfs_create_fd(inode);
+				vfs::fd_ptr_t nfd = vfs::create_fd(inode);
 				proc->fds.add(nid, nfd);
 
 				val = nid;

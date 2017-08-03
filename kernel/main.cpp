@@ -29,6 +29,7 @@
 #include <tupai/sys/call.hpp>
 #include <tupai/vfs/vfs.hpp>
 #include <tupai/proc/proc.hpp>
+#include <tupai/proc/scheduler.hpp>
 
 // Virtual devices
 #include <tupai/dev/serial.hpp>
@@ -59,9 +60,10 @@ namespace tupai
 		// The methods through which this is done are platform-dependent.
 		// Now, however, it's relatively safe to run most code.
 
-		vfs::vfs_init();  // Init virtual filesystem
+		proc::scheduler_init();
+		vfs::init();  // Init virtual filesystem
 
-		proc::proc_init(); // Initiate processes
+		proc::init(); // Initiate processes
 		sys::call_bind();      // Initiate SYSCALL routine
 
 		sys::initrd_init(); // Initiate initrd filesystems
@@ -70,8 +72,8 @@ namespace tupai
 		dev::serial_init();
 		dev::tty_init();
 
-		// Spawn a kernel shell thread
-		proc::proc_get_current().spawn_thread(shell_main);
+		// Spawn a shell process
+		proc::create("shell", vfs::get_root()).spawn_thread(shell_main);
 
 		interrupt_enable(true); // Enable interrupts
 

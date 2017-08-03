@@ -77,13 +77,15 @@ namespace tupai
 
 	size_t exception_handle(size_t stack, size_t code, size_t error)
 	{
-		proc::thread_ptr_t cthread = proc::proc_get_current_thread();
+		proc::thread_ptr_t cthread = proc::get_current_thread();
+		char pname[proc::PROC_NAME_MAX];
+		cthread.get_process().get_name(pname, proc::PROC_NAME_MAX);
 
 		if (exception_panic[code])
 			panic(exceptions_msg[code]);
 		else
 		{
-			util::logln("Exception in thread '", cthread, "' : ", exceptions_msg[code], " [", util::fmt_int<size_t>(error, 16), ']');
+			util::logln("Exception in thread '", cthread, "' of process '", pname, "' : ", exceptions_msg[code], " [", util::fmt_int<size_t>(error, 16), ']');
 
 			#if defined(DEBUG_ENABLED)
 				arch_display_reg_state((arch_reg_state*)stack);

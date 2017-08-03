@@ -51,6 +51,9 @@ namespace tupai
 			(void)arg2;
 			(void)arg3;
 
+			// Re-enable interrupts since the kernel is re-entrant!
+			interrupt_enable();
+
 			CALL call = (CALL)arg0;
 
 			switch (call)
@@ -90,7 +93,7 @@ namespace tupai
 					const char* path  = (const char*)arg1;
 					id_t*       rdesc = (id_t*)arg2;
 
-					vfs::inode_ptr_t inode = vfs::vfs_get_inode(path);
+					vfs::inode_ptr_t inode = vfs::get_inode(path);
 					if (inode == ID_INVALID)
 						*rdesc = 0;
 					else

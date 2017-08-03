@@ -32,7 +32,7 @@ namespace tupai
 {
 	namespace util
 	{
-		static size_t hash(id_t x) { return x ^ 0xF37E2A92F37E2A92; }
+		static size_t hash(id_t x) { return x; } //^ 0xF37E2A92F37E2A92; }
 
 		const size_t HASHTABLE_CAPACITY = 256;
 

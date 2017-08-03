@@ -20,6 +20,9 @@
 #ifndef TUPAI_UTIL_QUEUE_HPP
 #define TUPAI_UTIL_QUEUE_HPP
 
+// Tupai
+#include <tupai/util/mutex.hpp>
+
 // Standard
 #include <stddef.h>
 #include <stdint.h>
@@ -28,17 +31,32 @@ namespace tupai
 {
 	namespace util
 	{
-		template <typename T, size_t N>
-		struct queue_t
+		template <typename T, typename S, S N>
+		struct _queue_t
 		{
 		public:
 			T items[N];
-			size_t head = 0;
-			size_t tail = 0;
-			size_t length = 0;
+			S head = 0;
+			S tail = 0;
+			S length = 0;
 
 		public:
-			void push(T& item)
+			void push(T item)
+			{
+				if (this->length != 0)
+				{
+					this->head = (this->head + 1) % N;
+					if (this->head == this->tail)
+						this->tail = (this->tail + 1) % N;
+				}
+
+				this->items[this->head] = item;
+
+				if (this->length < N)
+					this->length ++;
+			}
+
+			void push(T item) volatile
 			{
 				if (this->length != 0)
 				{
@@ -65,11 +83,27 @@ namespace tupai
 				return item;
 			}
 
-			size_t len()
+			T pop() volatile
 			{
-				return this->length;
+				this->length --;
+
+				T item = this->items[this->tail];
+
+				if (this->length != 0)
+					this->tail = (this->tail + 1) % N;
+
+				return item;
 			}
+
+			S len() { return this->length; }
+			S len() volatile { return this->length; }
 		};
+
+		template <typename T, size_t N>
+		using queue_t = _queue_t<T, size_t, N>;
+
+		template <typename T, size_t N>
+		using unsafe_queue_t = _queue_t<volatile T, volatile size_t, N>;
 	}
 }
 

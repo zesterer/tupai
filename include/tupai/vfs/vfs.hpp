@@ -117,21 +117,21 @@ namespace tupai
 			int set_offset(fd_offset offset);
 		};
 
-		inode_ptr_t vfs_get_root();
-		inode_ptr_t vfs_get_inode(const char* path);
-		int         vfs_set_root(inode_ptr_t root);
-		int         vfs_mount(inode_ptr_t inode, const char* path);
+		inode_ptr_t get_root();
+		inode_ptr_t get_inode(const char* path);
+		int         set_root(inode_ptr_t root);
+		int         mount(inode_ptr_t inode, const char* path);
 
-		void vfs_init();
-		void vfs_display();
+		void init();
+		void display();
 
-		fs_ptr_t    vfs_create_fs(const char* name);
-		inode_ptr_t vfs_create_inode(inode_type type);
-		fd_ptr_t    vfs_create_fd(inode_ptr_t inode);
+		fs_ptr_t    create_fs(const char* name);
+		inode_ptr_t create_inode(inode_type type);
+		fd_ptr_t    create_fd(inode_ptr_t inode);
 
-		int vfs_delete_fs(fs_ptr_t fd);
-		int vfs_delete_inode(inode_ptr_t inode);
-		int vfs_delete_fd(fd_ptr_t fd);
+		int delete_fs(fs_ptr_t fd);
+		int delete_inode(inode_ptr_t inode);
+		int delete_fd(fd_ptr_t fd);
 	}
 }
 

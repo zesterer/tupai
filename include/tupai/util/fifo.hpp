@@ -21,6 +21,7 @@
 #define TUPAI_UTIL_FIFO_HPP
 
 // Tupai
+#include <tupai/util/queue.hpp>
 #include <tupai/util/mutex.hpp>
 #include <tupai/util/spinlock.hpp>
 
@@ -32,6 +33,55 @@ namespace tupai
 {
 	namespace util
 	{
+		template <typename T, size_t N>
+		struct fifo_t
+		{
+			unsafe_queue_t<T, N> _internal;
+			mutex_t _mutex;
+
+			void write_unsafe(T item) volatile { this->_internal.push(item); }
+			void write(T item) volatile
+			{
+				this->_mutex.lock(); // Begin critical section
+				this->_internal.push(item);
+				this->_mutex.unlock(); // End critical section
+			}
+
+			T read_unsafe() volatile
+			{
+				while (this->_internal.len() == 0);
+				return this->_internal.pop();
+			}
+
+			T read() volatile
+			{
+				while (true)
+				{
+					while (this->_internal.len() == 0);
+					this->_mutex.lock();
+					if (this->_internal.len() > 0)
+						break;
+					else
+						this->_mutex.unlock();
+				}
+
+				T item = this->_internal.pop();
+
+				this->_mutex.unlock(); // End critical section
+				return item;
+			}
+
+			size_t len_unsafe() volatile { return this->_internal.len(); }
+			size_t len() volatile
+			{
+				this->_mutex.lock(); // Begin critical section
+				size_t val = this->_internal.len();
+				this->_mutex.unlock(); // End critical section
+				return val;
+			}
+		};
+
+		/*
 		template <typename T, size_t SIZE>
 		struct fifo_t;
 
@@ -159,6 +209,7 @@ namespace tupai
 
 			return len;
 		}
+		*/
 	}
 }
 

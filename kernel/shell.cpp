@@ -24,9 +24,9 @@
 #include <tupai/panic.hpp>
 
 #include <tupai/dev/clock.hpp>
-
 #include <tupai/sys/kmem.hpp>
 #include <tupai/sys/call.hpp>
+#include <tupai/proc/proc.hpp>
 
 #include <tupai/util/in.hpp>
 #include <tupai/util/fmt.hpp>
@@ -124,6 +124,7 @@ namespace tupai
 					"Available commands:\n",
 					"  help    -> Show this help text\n",
 					"  fs      -> Show filesystem tree\n",
+					"  proc    -> Show running processes\n",
 					"  cat     -> Display the contents of a file\n",
 					"  echo    -> Echo the typed text to stdout\n",
 					"  pool    -> Show kernel memory pool\n",
@@ -136,7 +137,11 @@ namespace tupai
 			}
 			else if (util::str_equal(argv[0], "fs"))
 			{
-				vfs::vfs_display();
+				vfs::display();
+			}
+			else if (util::str_equal(argv[0], "proc"))
+			{
+				proc::display();
 			}
 			else if (util::str_equal(argv[0], "cat"))
 			{

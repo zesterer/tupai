@@ -87,7 +87,7 @@ namespace tupai
 				}
 
 				// Create the TTY I/O thread
-				proc::proc_get_current().spawn_thread(tty_out_thread);
+				proc::get_current().spawn_thread(tty_out_thread);
 
 				tty_initiated = true;
 			}

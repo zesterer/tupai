@@ -63,10 +63,12 @@ namespace tupai
 			thread_ptr_t(id_t id) { this->id = id; }
 			operator id_t() { return this->id; }
 
+			id_t get_lid();
 			thread_state get_state();
 			proc_ptr_t get_process();
 			size_t get_entry();
 			size_t get_stack();
+			void set_lid(id_t lid);
 			void set_state(thread_state state);
 			void set_stack(size_t stack);
 			int kill();
@@ -90,17 +92,18 @@ namespace tupai
 			int kill();
 		};
 
-		proc_ptr_t proc_get_current();
-		thread_ptr_t proc_get_current_thread();
-		void       proc_set_current(proc_ptr_t proc);
-		void       proc_set_current_thread(thread_ptr_t thread);
+		proc_ptr_t   get_current();
+		thread_ptr_t get_current_thread();
+		void         set_current(proc_ptr_t proc);
+		void         set_current_thread(thread_ptr_t thread);
 
-		void       proc_init();
-		proc_ptr_t proc_create(const char* name, vfs::inode_ptr_t dir);
+		void       init();
+		proc_ptr_t create(const char* name, vfs::inode_ptr_t dir);
+		void       display();
 
 		/*
 		vfs::fd_ptr_t proc_get_fd(proc_ptr_t proc_ptr, id_t lfd);
-		id_t          proc_create_fd(proc_ptr_t proc_ptr, vfs::inode_ptr_t inode);
+		id_t          create_fd(proc_ptr_t proc_ptr, vfs::inode_ptr_t inode);
 		int           proc_remove_fd(proc_ptr_t proc_ptr, id_t lfd);
 		*/
 	}
