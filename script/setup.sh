@@ -1,6 +1,6 @@
 #!/bin/sh
 
-BUILD_DIR=build-default
+BUILD_DIR=build
 
 COL_GREEN='\033[0;32m'
 COL_RED='\033[0;31m'
