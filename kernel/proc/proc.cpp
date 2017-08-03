@@ -39,14 +39,27 @@ namespace tupai
 
 		static util::hwlock_t hwlock;
 
-		static proc_ptr_t   cproc = ID_INVALID;
-		static thread_ptr_t cthread = ID_INVALID;
+		static proc_ptr_t   cproc = ID_INVALID;   // The current running process
+		static proc_ptr_t   kproc = ID_INVALID;   // The kernel process
+		static thread_ptr_t cthread = ID_INVALID; // The current running thread
 
+		// TODO : Do something more with this
 		static const size_t THREAD_STACK_SIZE = 2048;
 
 		thread_ptr_t create_thread(proc_ptr_t proc, void (*entry)(int argc, char* argv[]));
 
 		/* Process control functions */
+
+		proc_ptr_t get_kernel()
+		{
+			hwlock.lock(); // Begin critical section
+
+			proc_ptr_t val = kproc;
+
+			hwlock.unlock(); // End critical section
+
+			return val;
+		}
 
 		proc_ptr_t get_current()
 		{
@@ -94,7 +107,8 @@ namespace tupai
 			hwlock.lock(); // Begin critical section
 
 			// Create the initial kernel process
-			cproc = create("kernel", vfs::get_root());
+			kproc = create("kernel", vfs::get_root());
+			cproc = kproc;
 
 			hwlock.unlock(); // End critical section
 		}
@@ -237,6 +251,7 @@ namespace tupai
 		int thread_ptr_t::kill()
 		{
 			this->set_state(thread_state::DEAD);
+
 			return 0;
 		}
 
@@ -299,6 +314,24 @@ namespace tupai
 
 			hwlock.unlock(); // End critical section
 			return val;
+		}
+
+		int proc_ptr_t::delete_thread(thread_ptr_t thread)
+		{
+			hwlock.lock(); // Begin critical section
+
+			proc_t* proc = proc_table[this->id];
+
+			int err = 1;
+			if (proc != nullptr)
+			{
+				proc->threads.remove(thread.get_lid());
+				thread_table.remove(thread);
+				err = 0;
+			}
+
+			hwlock.unlock(); // End critical section
+			return err;
 		}
 
 		thread_ptr_t create_thread(proc_ptr_t parent_proc, void (*entry)(int argc, char* argv[]))

@@ -42,15 +42,18 @@
 
 namespace tupai
 {
+	void init(int argc, char* argv[]);
+
 	void early()
 	{
-		// Core system environment
+		// *** WARNING ***
+		// Code executed here should not rely on constructed states
+
+		// Core setup
+		// ----------
+		// These are things that are required to properly execute code
 
 		sys::kmem_init(); // Initiate kernel memory allocation
-		//sys::mmap_init(); // Initiate page map & frame allocation
-
-		// Map kernel memory
-		//sys::mmap_reserve(0, arch_get_kernel_end() - arch_get_offset(), sys::KERNEL_PROC_ID);
 	}
 
 	void main()
@@ -60,23 +63,38 @@ namespace tupai
 		// The methods through which this is done are platform-dependent.
 		// Now, however, it's relatively safe to run most code.
 
-		proc::scheduler_init();
-		vfs::init();  // Init virtual filesystem
+		// Core systems
+		// ------------
+		// These are things required to run kernel threads, processes, manipulate files, etc.
 
-		proc::init(); // Initiate processes
-		sys::call_bind();      // Initiate SYSCALL routine
+		vfs::init();            // Initiate virtual filesystem
+		proc::init();           // Initiate processes
+		proc::scheduler_init(); // Initiate the system scheduler
+		sys::call_init();       // Initiate SYSCALL routine
+
+		// Essential systems
+		// -----------------
+		// These are things that are essential to the running of userland systems
 
 		sys::initrd_init(); // Initiate initrd filesystems
 
-		// Initiate virtual devices
-		dev::serial_init();
-		dev::tty_init();
+		// Interfaces
+		// ----------
+		// These are non-essential interfaces to system devices
 
-		// Spawn a shell process
-		proc::create("shell", vfs::get_root()).spawn_thread(shell_main);
+		dev::serial_init(); // Initiate the kernel's serial driver
+		dev::tty_init();    // Initiate the kernel's tty
 
+		// We're finally ready to start the init process.
+		proc::get_kernel().spawn_thread(init);
+
+		// Enable interrupts and wait for the scheduler to kick in
 		interrupt_enable(true); // Enable interrupts
+	}
 
-		while (true);
+	void init(int argc, char* argv[])
+	{
+		// Spawn a kernel shell process
+		proc::create("shell", vfs::get_root()).spawn_thread(shell_main);
 	}
 }

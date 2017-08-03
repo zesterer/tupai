@@ -86,12 +86,14 @@ namespace tupai
 			vfs::fd_ptr_t get_fd(id_t lfd);
 
 			thread_ptr_t spawn_thread(void (*entry)(int argc, char* argv[]));
+			int          delete_thread(thread_ptr_t);
 			id_t         create_fd(vfs::inode_ptr_t inode);
 			int          delete_fd(id_t lfd);
 
 			int kill();
 		};
 
+		proc_ptr_t   get_kernel();
 		proc_ptr_t   get_current();
 		thread_ptr_t get_current_thread();
 		void         set_current(proc_ptr_t proc);

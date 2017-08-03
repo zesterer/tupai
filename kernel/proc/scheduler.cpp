@@ -65,10 +65,15 @@ namespace tupai
 		{
 			hwlock.lock(); // Begin critical section
 
-			if (ctask.thread != ID_INVALID && ctask.thread.get_state() != thread_state::DEAD)
+			if (ctask.thread != ID_INVALID)
 			{
-				ctask.cpriority = ctask.priority;
-				schedule.push(ctask);
+				if (ctask.thread.get_state() == thread_state::DEAD)
+					ctask.thread.get_process().delete_thread(ctask.thread);
+				else
+				{
+					ctask.cpriority = ctask.priority;
+					schedule.push(ctask);
+				}
 			}
 
 			while (true)

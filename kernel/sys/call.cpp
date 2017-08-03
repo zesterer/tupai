@@ -41,7 +41,7 @@ namespace tupai
 
 		void call_init()
 		{
-			// Do nothing yet
+			call_bind();
 		}
 
 		size_t syscall_isr_main(size_t stack_ptr, size_t arg0, size_t arg1, size_t arg2, size_t arg3)
