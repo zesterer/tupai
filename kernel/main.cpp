@@ -19,20 +19,25 @@
 
 // Tupai
 #include <tupai/main.hpp>
+
+// Low-level utilities
 #include <tupai/arch.hpp>
 #include <tupai/cpu.hpp>
 #include <tupai/irq.hpp>
 
-// Core system environment
+// Core setup
 #include <tupai/sys/kmem.hpp>
-#include <tupai/sys/pipe.hpp>
-#include <tupai/sys/initrd.hpp>
-#include <tupai/sys/call.hpp>
+
+// Core systems
 #include <tupai/vfs/vfs.hpp>
 #include <tupai/proc/proc.hpp>
 #include <tupai/proc/scheduler.hpp>
+#include <tupai/sys/call.hpp>
 
-// Virtual devices
+// Essential systems
+#include <tupai/sys/initrd.hpp>
+
+// Interfaces
 #include <tupai/dev/serial.hpp>
 #include <tupai/dev/ps2.hpp>
 #include <tupai/dev/kbd.hpp>
@@ -53,7 +58,6 @@ namespace tupai
 		// Core setup
 		// ----------
 		// These are things that are required to properly execute code
-
 		sys::kmem_init(); // Initiate kernel memory allocation
 	}
 
@@ -67,7 +71,6 @@ namespace tupai
 		// Core systems
 		// ------------
 		// These are things required to run kernel threads, processes, manipulate files, etc.
-
 		vfs::init();            // Initiate virtual filesystem
 		proc::init();           // Initiate processes
 		proc::scheduler_init(); // Initiate the system scheduler
@@ -76,13 +79,11 @@ namespace tupai
 		// Essential systems
 		// -----------------
 		// These are things that are essential to the running of userland systems
-
 		sys::initrd_init(); // Initiate initrd filesystems
 
 		// Interfaces
 		// ----------
 		// These are non-essential interfaces to system devices
-
 		dev::serial_init(); // Initiate the kernel's serial driver
 		dev::tty_init();    // Initiate the kernel's tty
 
