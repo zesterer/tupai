@@ -24,7 +24,7 @@
 #include <tupai/proc/proc.hpp>
 #include <tupai/proc/scheduler.hpp>
 #include <tupai/arch.hpp>
-#include <tupai/interrupt.hpp>
+#include <tupai/irq.hpp>
 #include <tupai/panic.hpp>
 
 namespace tupai

@@ -19,9 +19,10 @@
 
 // Tupai
 #include <tupai/panic.hpp>
-#include <tupai/interrupt.hpp>
-#include <tupai/util/fmt.hpp>
+#include <tupai/cpu.hpp>
+#include <tupai/irq.hpp>
 
+#include <tupai/util/fmt.hpp>
 #if defined(ARCH_FAMILY_x86)
 	#include <tupai/x86/textmode.hpp>
 #endif
@@ -30,7 +31,7 @@ namespace tupai
 {
 	void panic(const char* msg)
 	{
-		interrupt_enable(false);
+		irq::disable();
 
 		char str[1024];
 
@@ -48,6 +49,6 @@ namespace tupai
 				x86::textmode_write(str[i]);
 		#endif
 
-		hang();
+		cpu::hang();
 	}
 }

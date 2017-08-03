@@ -20,7 +20,7 @@
 // Tupai
 #include <tupai/x86/pit.hpp>
 #include <tupai/x86/port.hpp>
-#include <tupai/interrupt.hpp>
+#include <tupai/irq.hpp>
 #include <tupai/proc/scheduler.hpp>
 #include <tupai/debug.hpp>
 
@@ -50,7 +50,7 @@ namespace tupai
 		void pit_bind()
 		{
 			// Bind the interrupt
-			interrupt_bind(0, (void*)isr_pit, true);
+			irq::bind(0, (void*)isr_pit, true);
 		}
 
 		void pit_init()
@@ -59,7 +59,7 @@ namespace tupai
 			pit_set_rate(1000);
 
 			// Unmask the interrupt
-			interrupt_mask(0, true);
+			irq::mask(0, true);
 
 			debug_print(
 				"PIT initiated with properties:", '\n',
@@ -85,7 +85,7 @@ namespace tupai
 		size_t pit_isr_main(size_t stack_ptr)
 		{
 			// ACK the interrupt
-			interrupt_ack(0);
+			irq::ack(0);
 
 			pit_time += 1000000 / pit_rate; // Nanoseconds / rate
 

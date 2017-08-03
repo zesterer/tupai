@@ -26,7 +26,6 @@
 
 namespace tupai
 {
-	extern "C" void hang() __attribute__((__noreturn__));
 	extern "C" void panic(const char* msg = "[NO ERROR MESSAGE]") __attribute__((__noreturn__));
 }
 

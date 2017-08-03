@@ -1,5 +1,5 @@
 //
-// file : interrupt.hpp
+// file : cpu.hpp
 //
 // This file is part of Tupai.
 //
@@ -17,20 +17,17 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_INTERRUPT_HPP
-#define TUPAI_INTERRUPT_HPP
-
-// Standard
-#include <stddef.h>
-#include <stdint.h>
+#ifndef TUPAI_CPU_HPP
+#define TUPAI_CPU_HPP
 
 namespace tupai
 {
-	void interrupt_enable(bool enable = true);
-	bool interrupt_enabled();
-	void interrupt_bind(uint8_t irq, void* address, bool hardware = false);
-	void interrupt_ack(uint8_t irq);
-	void interrupt_mask(uint8_t irq, bool enable);
+	namespace cpu
+	{
+		void wait();
+		void halt();
+		void hang();
+	}
 }
 
 #endif

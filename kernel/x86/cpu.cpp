@@ -1,5 +1,5 @@
 //
-// file : mutex.cpp
+// file : cpu.cpp
 //
 // This file is part of Tupai.
 //
@@ -18,44 +18,30 @@
 //
 
 // Tupai
-#include <tupai/util/hwlock.hpp>
+#include <tupai/cpu.hpp>
 #include <tupai/irq.hpp>
 
 namespace tupai
 {
-	namespace util
+	namespace cpu
 	{
-		static volatile bool hw_int_enabled;
-		static volatile bool hw_locked = false;
-
-		bool hwlock_t::is_locked() volatile
+		void wait()
 		{
-			return hw_locked;
+			asm volatile ("hlt");
 		}
 
-		void hwlock_t::lock() volatile
+		void halt()
 		{
-			if (!hw_locked)
-			{
-				hw_int_enabled = irq::are_enabled();
-
-				if (hw_int_enabled)
-					irq::disable();
-
-				hw_locked = true;
-			}
+			while (true)
+				wait();
 		}
 
-		void hwlock_t::unlock() volatile
+		void hang()
 		{
-			if (hw_locked)
+			while (true)
 			{
-				if (hw_int_enabled)
-					irq::enable();
-
-				hw_int_enabled = irq::are_enabled();
-
-				hw_locked = false;
+				irq::disable();
+				wait();
 			}
 		}
 	}

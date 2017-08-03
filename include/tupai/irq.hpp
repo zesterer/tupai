@@ -1,5 +1,5 @@
 //
-// file : mutex.cpp
+// file : irq.hpp
 //
 // This file is part of Tupai.
 //
@@ -17,46 +17,27 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-// Tupai
-#include <tupai/util/hwlock.hpp>
-#include <tupai/irq.hpp>
+#ifndef TUPAI_IRQ_HPP
+#define TUPAI_IRQ_HPP
+
+// Standard
+#include <stdint.h>
+#include <stddef.h>
 
 namespace tupai
 {
-	namespace util
+	namespace irq
 	{
-		static volatile bool hw_int_enabled;
-		static volatile bool hw_locked = false;
+		bool are_enabled();
 
-		bool hwlock_t::is_locked() volatile
-		{
-			return hw_locked;
-		}
+		void enable();
+		void disable();
 
-		void hwlock_t::lock() volatile
-		{
-			if (!hw_locked)
-			{
-				hw_int_enabled = irq::are_enabled();
+		void ack(uint8_t irq);
+		void mask(uint8_t irq, bool enable);
 
-				if (hw_int_enabled)
-					irq::disable();
-
-				hw_locked = true;
-			}
-		}
-
-		void hwlock_t::unlock() volatile
-		{
-			if (hw_locked)
-			{
-				if (hw_int_enabled)
-					irq::enable();
-
-				hw_int_enabled = irq::are_enabled();
-
-				hw_locked = false;
-			}
-		}
+		void bind(uint8_t irq, void* address, bool hardware = false);
 	}
 }
+
+#endif

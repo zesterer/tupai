@@ -50,7 +50,7 @@ namespace tupai
 
 		struct inode_child_t
 		{
-			id_t inode;
+			inode_ptr_t inode;
 			char name[FILENAME_MAX] = { '\0', };
 		};
 

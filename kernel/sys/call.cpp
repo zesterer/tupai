@@ -24,7 +24,7 @@
 #include <tupai/vfs/vfs.hpp>
 #include <tupai/vfs/fd.hpp>
 #include <tupai/util/mutex.hpp>
-#include <tupai/interrupt.hpp>
+#include <tupai/irq.hpp>
 
 namespace tupai
 {
@@ -36,7 +36,7 @@ namespace tupai
 		void call_bind()
 		{
 			// Bind the interrupt
-			interrupt_bind(CALL_IRQ, (void*)isr_syscall);
+			irq::bind(CALL_IRQ, (void*)isr_syscall);
 		}
 
 		void call_init()
@@ -52,7 +52,7 @@ namespace tupai
 			(void)arg3;
 
 			// Re-enable interrupts since the kernel is re-entrant!
-			interrupt_enable();
+			irq::enable();
 
 			CALL call = (CALL)arg0;
 

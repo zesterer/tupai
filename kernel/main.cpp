@@ -20,7 +20,8 @@
 // Tupai
 #include <tupai/main.hpp>
 #include <tupai/arch.hpp>
-#include <tupai/interrupt.hpp>
+#include <tupai/cpu.hpp>
+#include <tupai/irq.hpp>
 
 // Core system environment
 #include <tupai/sys/kmem.hpp>
@@ -86,10 +87,11 @@ namespace tupai
 		dev::tty_init();    // Initiate the kernel's tty
 
 		// We're finally ready to start the init process.
-		proc::get_kernel().spawn_thread(init);
+		proc::create("init", vfs::get_root()).spawn_thread(init);
 
 		// Enable interrupts and wait for the scheduler to kick in
-		interrupt_enable(true); // Enable interrupts
+		irq::enable();
+		cpu::halt();
 	}
 
 	void init(int argc, char* argv[])

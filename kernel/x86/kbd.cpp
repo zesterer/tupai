@@ -22,8 +22,8 @@
 #include <tupai/x86/pic.hpp>
 #include <tupai/x86/port.hpp>
 #include <tupai/x86/ps2_8042.hpp>
-#include <tupai/interrupt.hpp>
 #include <tupai/dev/tty.hpp>
+#include <tupai/irq.hpp>
 
 #include <tupai/x86/textmode.hpp>
 
@@ -43,7 +43,7 @@ namespace tupai
 		void kbd_bind()
 		{
 			// Bind the interrupt
-			interrupt_bind(1, (void*)isr_kbd, true);
+			irq::bind(1, (void*)isr_kbd, true);
 		}
 
 		void kbd_init()
@@ -62,13 +62,13 @@ namespace tupai
 			}*/
 
 			// Unmask the interrupt
-			interrupt_mask(1, true);
+			irq::mask(1, true);
 		}
 
 		size_t kbd_isr_main(size_t stack)
 		{
 			// Acknowledge the interrupt
-			interrupt_ack(1);
+			irq::ack(1);
 
 			// TEMPORARY
 			while (true)

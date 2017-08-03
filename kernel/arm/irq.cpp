@@ -18,43 +18,20 @@
 //
 
 // Tupai
-#include <tupai/interrupt.hpp>
-#include <tupai/debug.hpp>
-#include <tupai/x86/pic.hpp>
+#include <tupai/irq.hpp>
 
 namespace tupai
 {
-	void interrupt_enable(bool enable)
+	namespace irq
 	{
-		if (enable)
+		void enable()
+		{
 			asm volatile ("cpsie i");
-		else
+		}
+
+		void disable()
+		{
 			asm volatile ("cpsid i");
+		}
 	}
-
-	void interrupt_bind(uint8_t irq, void* address, bool hardware) {} // TODO : Fix this
-	/*
-	void interrupt_bind(uint8_t irq, void* address, bool hardware)
-	{
-		#if defined(ARCH_amd64)
-			x86::amd64::idt_set_entry(hardware ? x86::PIC_REMAP_OFFSET : 0 + irq, address);
-		#elif defined(ARCH_i386)
-			x86::i386::idt_set_entry(hardware ? x86::PIC_REMAP_OFFSET : 0 + irq, address);
-		#endif
-	}
-	*/
-
-	/*
-	void interrupt_ack(uint8_t irq)
-	{
-		x86::pic_ack(irq);
-	}
-	*/
-
-	/*
-	void interrupt_mask(uint8_t irq, bool enable)
-	{
-		x86::pic_mask(irq, enable);
-	}
-	*/
 }
