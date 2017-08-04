@@ -86,13 +86,13 @@ namespace tupai
 						debug_print("Could not find port for serial tty output!\n");
 				}
 
-				// Create the TTY I/O thread
-				proc::get_current().spawn_thread(tty_out_thread);
-
 				tty_initiated = true;
 			}
 
 			spinlock.unlock(); // End critical section
+
+			// Create the TTY I/O thread
+			proc::get_current().spawn_thread(tty_out_thread);
 		}
 
 		void tty_write(char c)

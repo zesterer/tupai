@@ -44,6 +44,12 @@ namespace tupai
 			id_t    keys[HASHTABLE_CAPACITY];
 			size_t  item_count = 0;
 
+			hashtable_t()
+			{
+				for (size_t i = 0; i < HASHTABLE_CAPACITY; i ++)
+					this->used[i] = false;
+			}
+
 			size_t size()
 			{
 				return this->item_count;
@@ -117,7 +123,25 @@ namespace tupai
 							count ++;
 					}
 				}
+
 				return nullptr;
+			}
+
+			id_t nth_key(size_t index)
+			{
+				size_t count = 0;
+				for (size_t i = 0; i < HASHTABLE_CAPACITY; i ++)
+				{
+					if (this->used[i])
+					{
+						if (count == index)
+							return this->keys[i];
+						else
+							count ++;
+					}
+				}
+
+				return ID_INVALID;
 			}
 		};
 	}

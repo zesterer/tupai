@@ -81,6 +81,14 @@ namespace tupai
 				this->lock.unlock(); // End critical section
 				return val;
 			}
+
+			id_t nth_key(size_t i)
+			{
+				this->lock.lock(); // Begin critical section
+				id_t val = this->hashtable.nth_key(i);
+				this->lock.unlock(); // End critical section
+				return val;
+			}
 		};
 	}
 }

@@ -32,11 +32,11 @@ namespace tupai
 	namespace proc
 	{
 		static proc_ptr_t   cproc = ID_INVALID;   // The current running process
-		static proc_ptr_t   kproc = 1;            // The kernel process
+		static proc_ptr_t   kproc = 0;            // The kernel process
 		static thread_ptr_t cthread = ID_INVALID; // The current running thread
 
 		static util::hashtable_t<proc_t> proc_table;
-		static id_t proc_counter = (id_t)kproc - 1;
+		static id_t proc_counter = (id_t)kproc;
 
 		static util::hashtable_t<thread_t> thread_table;
 		static id_t thread_counter = 0;
@@ -118,7 +118,7 @@ namespace tupai
 			hwlock.lock(); // Begin critical section
 
 			proc_t nproc;
-			nproc.id = ++proc_counter;
+			nproc.id = proc_counter ++;
 			util::str_cpy_n(name, nproc.name);
 			nproc.dir = dir;
 
@@ -136,7 +136,7 @@ namespace tupai
 				util::logln((long)i, " -> ", proc->name, " (", (long)proc->id, ")");
 
 				for (size_t j = 0; j < proc->threads.size(); j ++)
-					util::logln("    ", (long)j, " -> Thread ", (long)(*proc->threads.nth(j)).get_lid());
+					util::logln("    ", (long)j, " -> Thread ", (long)proc->threads.nth(j)->get_lid());
 			}
 		}
 
