@@ -25,8 +25,8 @@ namespace tupai
 	namespace cpu
 	{
 		void wait();
-		void halt();
-		void hang();
+		void halt() __attribute__((__noreturn__));
+		void hang() __attribute__((__noreturn__));
 	}
 }
 

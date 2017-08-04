@@ -101,6 +101,9 @@ namespace tupai
 
 	void init(int argc, char* argv[])
 	{
+		(void)argc;
+		(void)argv;
+		
 		// Spawn a kernel shell process
 		proc::create("shell", vfs::get_root()).spawn_thread(shell_main);
 	}
