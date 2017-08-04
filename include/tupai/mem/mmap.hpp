@@ -20,6 +20,9 @@
 #ifndef TUPAI_MEM_MMAP_HPP
 #define TUPAI_MEM_MMAP_HPP
 
+// Tupai
+#include <proc/proc.hpp>
+
 // Standard
 #include <stddef.h>
 #include <stdint.h>
@@ -30,13 +33,22 @@ namespace tupai
 	{
 		namespace mmap
 		{
-			/*
-			void  kmem_init();
-			void* kmem_alloc(size_t n);
-			void  kmem_dealloc(void* ptr);
-			void  kmem_info();
-			void  kmem_log();
-			*/
+			enum class page_flags : uint8_t
+			{
+				STATIC = 1 << 0,
+			}
+
+			struct page_t
+			{
+				proc::proc_ptr_t owner;
+				uint8_t flags;
+			};
+
+			void    init();
+			page_t& get(void* phys_addr);
+			int     alloc(void** phys_addr, proc::proc_ptr_t owner, uint8_t flags);
+			int     reserve(void* phys_addr, proc::proc_ptr_t owner, uint8_t flags);
+			int     dealloc(void* phys_addr);
 		}
 	}
 }

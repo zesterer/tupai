@@ -97,6 +97,6 @@
 .section .bss.boot
 	.align 4096
 	p2_table:
-		.skip 1024 * 4
+		.skip 4 * 1024
 	p1_table:
-		.skip 1024 * 4 * 128
+		.skip 4 * 1024 * 128 // 4K * 1024 * 128 = 512M of memory

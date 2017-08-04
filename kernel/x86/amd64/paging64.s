@@ -63,7 +63,7 @@
 
 			// Iterate the loop
 			inc %rcx
-			cmp $(128), %rcx
+			cmp $256, %rcx
 			jne map_p2_lo_loop
 
 		// Map P1 table entries
@@ -82,7 +82,7 @@
 
 			// Iterate the loop
 			inc %rcx
-			cmp $(512 * 128), %rcx
+			cmp $(512 * 256), %rcx
 			jne map_p1_lo_loop
 
 		ret
@@ -106,4 +106,4 @@
 	p2_lo_table:
 		.skip 512 * 8
 	p1_lo_tables:
-		.skip 512 * 8 * 128 // Enough to cover 4K * 512 * 128 = 256M of memory
+		.skip 512 * 8 * 256 // Enough to cover 4K * 512 * 256 = 512M of memory

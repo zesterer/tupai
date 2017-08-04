@@ -146,8 +146,6 @@ namespace tupai
 			{
 				util::logln("--- Memory pool map ---");
 
-				this->_spinlock.lock(); // Begin critical section
-
 				size_t max = 0;
 				for (size_t i = 0; i < n; i ++)
 				{
@@ -181,8 +179,6 @@ namespace tupai
 					}
 				}
 				util::log('\n');
-
-				this->_spinlock.unlock(); // End critical section
 			}
 
 			block_status pool_get(pool_t* pool, size_t index)
