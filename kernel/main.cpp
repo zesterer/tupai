@@ -64,7 +64,7 @@ namespace tupai
 			(void*)arch_get_kernel_start(),
 			arch_get_kernel_end() - arch_get_kernel_start(),
 			proc::get_kernel(),
-			(uint8_t)mem::mmap::page_flags::STATIC
+			(uint8_t)mem::mmap::page_flags::NONE
 		);
 		mem::kmem::init(); // Initiate kernel memory allocation
 	}

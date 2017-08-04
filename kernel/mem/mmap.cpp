@@ -160,7 +160,10 @@ namespace tupai
 						char name[proc::PROC_NAME_MAX] = "FREE";
 						nproc.get_name(name, proc::PROC_NAME_MAX);
 
-						util::logln("[", index_to_physical(i), "] -> ", name, " (", nproc.id, ") flags = ", util::fmt_int<uint8_t>(nflags, 2, 8));
+						util::log("[", index_to_physical(i), "] -> ", name, " (", nproc.id, ")");
+						if (nflags & (uint8_t)page_flags::STATIC)
+							util::log(" static");
+						util::log('\n');
 
 						cproc = nproc;
 						cflags = nflags;
