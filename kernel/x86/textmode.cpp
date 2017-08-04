@@ -20,6 +20,8 @@
 // Tupai
 #include <tupai/x86/textmode.hpp>
 #include <tupai/x86/port.hpp>
+#include <tupai/mem/mmap.hpp>
+#include <tupai/proc/proc.hpp>
 #include <tupai/arch.hpp>
 #include <tupai/util/mutex.hpp>
 
@@ -42,6 +44,14 @@ namespace tupai
 
 		void textmode_init()
 		{
+			// Reserve buffer
+			mem::mmap::reserve_region(
+				(void*)buffer,
+				col_max * row_max * 16,
+				proc::get_kernel(),
+				(uint8_t)mem::mmap::page_flags::STATIC
+			);
+
 			// Add the virtual kernel offset
 			buffer = (uint16_t*)((size_t)buffer + arch_get_offset());
 

@@ -26,6 +26,9 @@
 #include <tupai/vfs/path.hpp>
 #include <tupai/util/tar.hpp>
 #include <tupai/util/hashtable.hpp>
+#include <tupai/arch.hpp>
+
+#include <tupai/util/log.hpp>
 
 namespace tupai
 {
@@ -56,8 +59,6 @@ namespace tupai
 
 		void initrd_add(void* start, size_t size, const char* args)
 		{
-			mem::mmap::reserve_region(start, size, proc::get_kernel(), 0b00000000); // Reserve the initrd region
-
 			// Search for empty cache
 			for (size_t i = 0; i < INITRD_MAX; i ++)
 			{
@@ -88,6 +89,8 @@ namespace tupai
 
 		void initrd_create(initrd_t* initrd, const char* name)
 		{
+			mem::mmap::reserve_region((void*)((size_t)initrd->start - arch_get_offset()), initrd->size, proc::get_kernel(), 0b00000000); // Reserve the initrd region
+
 			// Create a filesystem for the initrd
 			vfs::fs_ptr_t fs = vfs::create_fs(name);
 

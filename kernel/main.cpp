@@ -60,9 +60,13 @@ namespace tupai
 		// ----------
 		// These are things that are required to properly execute code
 		mem::mmap::init(); // Initiate memory maps
+		mem::mmap::reserve_region( // Reserve kernel memory
+			(void*)arch_get_kernel_start(),
+			arch_get_kernel_end() - arch_get_kernel_start(),
+			proc::get_kernel(),
+			(uint8_t)mem::mmap::page_flags::STATIC
+		);
 		mem::kmem::init(); // Initiate kernel memory allocation
-
-		mem::mmap::reserve_region(0x0, arch_get_kernel_end(), proc::get_kernel(), 0b00000000); // Reserve kernel memory
 	}
 
 	void main()
@@ -103,7 +107,7 @@ namespace tupai
 	{
 		(void)argc;
 		(void)argv;
-		
+
 		// Spawn a kernel shell process
 		proc::create("shell", vfs::get_root()).spawn_thread(shell_main);
 	}

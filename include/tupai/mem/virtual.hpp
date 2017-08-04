@@ -1,5 +1,5 @@
 //
-// file : mmap.hpp
+// file : virtual.hpp
 //
 // This file is part of Tupai.
 //
@@ -17,11 +17,11 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_MEM_MMAP_HPP
-#define TUPAI_MEM_MMAP_HPP
+#ifndef TUPAI_MEM_VIRTUAL_HPP
+#define TUPAI_MEM_VIRTUAL_HPP
 
 // Tupai
-#include <tupai/proc/proc.hpp>
+#include <tupai/util/vector.hpp>
 
 // Standard
 #include <stddef.h>
@@ -31,27 +31,18 @@ namespace tupai
 {
 	namespace mem
 	{
-		namespace mmap
+		namespace virtual
 		{
-			enum class page_flags : uint8_t
-			{
-				STATIC = 1 << 0,
-
-				NONE = 0,
-			};
-
 			struct page_t
 			{
-				proc::proc_ptr_t _owner;
-				uint8_t          _flags;
-			};
+				size_t phys_index;
+				size_t virt_index;
+			}
 
-			void init();
-			int  alloc(void** phys_addr, proc::proc_ptr_t owner, uint8_t flags);
-			int  reserve(void* phys_addr, proc::proc_ptr_t owner, uint8_t flags);
-			int  reserve_region(void* phys_addr, size_t size, proc::proc_ptr_t owner, uint8_t flags);
-			int  dealloc(void* phys_addr);
-			void display();
+			struct space_t
+			{
+				util::vector_t<page_t> _pages;
+			};
 		}
 	}
 }

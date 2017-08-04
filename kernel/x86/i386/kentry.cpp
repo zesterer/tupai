@@ -60,16 +60,16 @@ namespace tupai
 				idt_init();
 				idt_install();
 
-				// x86 initiation
-				arch_init();
-
-				debug_print("Finished i386 initiation\n");
-
 				early(); // Core system setup
 			}
 
 			extern "C" void kmain()
 			{
+				// x86 initiation
+				arch_init();
+
+				debug_print("Finished i386 initiation\n");
+
 				main(); // Main kernel entry
 			}
 		}

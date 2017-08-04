@@ -52,8 +52,8 @@ namespace tupai
 
 				for (size_t i = 0; i < PAGE_COUNT; i ++)
 				{
-					pages[i].owner = ID_INVALID;
-					pages[i].flags = (uint8_t)page_flags::NONE;
+					pages[i]._owner = ID_INVALID;
+					pages[i]._flags = (uint8_t)page_flags::NONE;
 				}
 
 				mutex.unlock(); // End critical section
@@ -66,10 +66,10 @@ namespace tupai
 				int err = 1;
 				for (size_t i = 0; i < PAGE_COUNT; i ++)
 				{
-					if (pages[i].owner == ID_INVALID)
+					if (pages[i]._owner == ID_INVALID)
 					{
-						pages[i].owner = owner;
-						pages[i].flags = flags;
+						pages[i]._owner = owner;
+						pages[i]._flags = flags;
 						*phys_addr = index_to_physical(i);
 						err = 0;
 						break;
@@ -90,10 +90,10 @@ namespace tupai
 				size_t index = physical_to_index(phys_addr);
 
 				int err = 1;
-				if (pages[index].owner == ID_INVALID)
+				if (pages[index]._owner == ID_INVALID)
 				{
-					pages[index].owner = owner;
-					pages[index].flags = flags;
+					pages[index]._owner = owner;
+					pages[index]._flags = flags;
 					err = 0;
 				}
 
@@ -111,15 +111,16 @@ namespace tupai
 				int err = 0;
 				for (size_t i = sindex; i <= eindex; i ++)
 				{
-					if (pages[i].owner == ID_INVALID)
-					{
-						pages[i].owner = owner;
-						pages[i].flags = flags;
-					}
-					else
-					{
+					if (pages[i]._owner != ID_INVALID)
 						err = 1;
-						break;
+				}
+
+				if (err == 0)
+				{
+					for (size_t i = sindex; i <= eindex; i ++)
+					{
+						pages[i]._owner = owner;
+						pages[i]._flags = flags;
 					}
 				}
 
@@ -134,10 +135,10 @@ namespace tupai
 				mutex.lock(); // Begin critical section
 
 				int err = 1;
-				if (pages[index].owner != ID_INVALID)
+				if (pages[index]._owner != ID_INVALID)
 				{
-					pages[index].owner = ID_INVALID;
-					pages[index].flags = (uint8_t)page_flags::NONE;
+					pages[index]._owner = ID_INVALID;
+					pages[index]._flags = (uint8_t)page_flags::NONE;
 					err = 0;
 				}
 
@@ -148,16 +149,21 @@ namespace tupai
 			void display()
 			{
 				proc::proc_ptr_t cproc = ID_INVALID;
+				uint8_t cflags = 0x0;
 				for (size_t i = 0; i < PAGE_COUNT; i ++)
 				{
-					proc::proc_ptr_t nproc = pages[i].owner;
+					proc::proc_ptr_t nproc = pages[i]._owner;
+					uint8_t nflags = pages[i]._flags;
 
-					if (cproc != nproc || i == 0)
+					if (cproc != nproc || cflags != nflags || i == 0)
 					{
 						char name[proc::PROC_NAME_MAX] = "FREE";
 						nproc.get_name(name, proc::PROC_NAME_MAX);
-						util::logln("[", index_to_physical(i), "] = ", name, " (", nproc.id, ")");
+
+						util::logln("[", index_to_physical(i), "] -> ", name, " (", nproc.id, ") flags = ", util::fmt_int<uint8_t>(nflags, 2, 8));
+
 						cproc = nproc;
+						cflags = nflags;
 					}
 				}
 			}

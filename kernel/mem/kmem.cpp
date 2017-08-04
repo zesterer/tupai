@@ -19,7 +19,9 @@
 
 // Tupai
 #include <tupai/mem/kmem.hpp>
+#include <tupai/mem/mmap.hpp>
 #include <tupai/mem/pool.hpp>
+#include <tupai/proc/proc.hpp>
 #include <tupai/util/hwlock.hpp>
 #include <tupai/util/log.hpp>
 #include <tupai/arch.hpp>
@@ -43,6 +45,8 @@ namespace tupai
 				hwlock.lock(); // Begin critical section
 
 				void* pool_area = arch_kernel_alloc(KMEM_SIZE);
+				//mmap::alloc(&pool_area, proc::get_kernel(), 0);
+				//pool_area = (void*)((size_t)pool_area + arch_get_offset());
 
 				if (pool_area == nullptr)
 					panic("Could not allocate kernel memory pool");
