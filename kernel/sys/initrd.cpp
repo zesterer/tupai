@@ -47,13 +47,6 @@ namespace tupai
 
 		void initrd_create(initrd_t* initrd, const char* name);
 
-		/*
-		id_t    initrd_open_call (id_t pid, fs::inode_t* inode);
-		int     initrd_close_call(id_t pid, fs::desc_t* desc);
-		ssize_t initrd_read_call (id_t pid, fs::desc_t* desc, size_t n, void* ret_buff);
-		ssize_t initrd_write_call(id_t pid, fs::desc_t* desc, const void* buff, size_t n);
-		*/
-
 		int     initrd_open_call (vfs::inode_ptr_t inode);
 		int     initrd_close_call(vfs::fd_ptr_t fd);
 		ssize_t initrd_read_call (vfs::fd_ptr_t fd, void* rbuff, size_t n);

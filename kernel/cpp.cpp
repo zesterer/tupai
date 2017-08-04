@@ -18,7 +18,7 @@
 //
 
 // Tupai
-#include <tupai/sys/kmem.hpp>
+#include <tupai/mem/kmem.hpp>
 
 // Standard
 #include <stddef.h>
@@ -40,32 +40,32 @@ extern "C" void* memcpy(void* dest, const void* src, size_t n)
 
 void* operator new(size_t n)
 {
-	return tupai::sys::kmem_alloc(n);
+	return tupai::mem::kmem::alloc(n);
 }
 
 void* operator new[](size_t n)
 {
-	return tupai::sys::kmem_alloc(n);
+	return tupai::mem::kmem::alloc(n);
 }
 
 void operator delete(void* ptr)
 {
-	tupai::sys::kmem_dealloc(ptr);
+	tupai::mem::kmem::dealloc(ptr);
 }
 
 void operator delete[](void* ptr)
 {
-	tupai::sys::kmem_dealloc(ptr);
+	tupai::mem::kmem::dealloc(ptr);
 }
 
 void operator delete(void* ptr, size_t size __attribute__ ((unused)))
 {
-	tupai::sys::kmem_dealloc(ptr);
+	tupai::mem::kmem::dealloc(ptr);
 }
 
 void operator delete[](void* ptr, size_t size __attribute__ ((unused)))
 {
-	tupai::sys::kmem_dealloc(ptr);
+	tupai::mem::kmem::dealloc(ptr);
 }
 
 void* __dso_handle;

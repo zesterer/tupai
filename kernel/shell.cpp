@@ -24,7 +24,7 @@
 #include <tupai/panic.hpp>
 
 #include <tupai/dev/clock.hpp>
-#include <tupai/sys/kmem.hpp>
+#include <tupai/mem/kmem.hpp>
 #include <tupai/sys/call.hpp>
 #include <tupai/proc/proc.hpp>
 
@@ -187,7 +187,7 @@ namespace tupai
 			}
 			else if (util::str_equal(argv[0], "pool"))
 			{
-				sys::kmem_log();
+				mem::kmem::log();
 			}
 			else if (util::str_equal(argv[0], "motd"))
 			{
@@ -210,7 +210,7 @@ namespace tupai
 					"  kernel_end   -> ", (void*)arch_get_kernel_end(), '\n',
 					'\n'
 				);
-				sys::kmem_info();
+				mem::kmem::info();
 				//sys::mmap_display();
 			}
 			else if (util::str_equal(argv[0], "time"))

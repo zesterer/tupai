@@ -26,7 +26,7 @@
 #include <tupai/irq.hpp>
 
 // Core setup
-#include <tupai/sys/kmem.hpp>
+#include <tupai/mem/kmem.hpp>
 
 // Core systems
 #include <tupai/vfs/vfs.hpp>
@@ -58,7 +58,7 @@ namespace tupai
 		// Core setup
 		// ----------
 		// These are things that are required to properly execute code
-		sys::kmem_init(); // Initiate kernel memory allocation
+		mem::kmem::init(); // Initiate kernel memory allocation
 	}
 
 	void main()

@@ -1,5 +1,5 @@
 //
-// file : kmem.hpp
+// file : pool.hpp
 //
 // This file is part of Tupai.
 //
@@ -17,8 +17,12 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_SYS_KMEM_HPP
-#define TUPAI_SYS_KMEM_HPP
+#ifndef TUPAI_MEM_POOL_HPP
+#define TUPAI_MEM_POOL_HPP
+
+// Tupai
+#include <tupai/util/mutex.hpp>
+#include <tupai/util/spinlock.hpp>
 
 // Standard
 #include <stddef.h>
@@ -26,13 +30,25 @@
 
 namespace tupai
 {
-	namespace sys
+	namespace mem
 	{
-		void  kmem_init();
-		void* kmem_alloc(size_t n);
-		void  kmem_dealloc(void* ptr);
-		void  kmem_info();
-		void  kmem_log();
+		namespace pool
+		{
+			struct pool_t
+			{
+				size_t _map;
+				size_t _body;
+				size_t _block_size;
+				size_t _block_count;
+				util::spinlock_t _spinlock;
+
+				void* alloc(size_t n);
+				void  dealloc(void* ptr);
+				void  display(size_t n = 32);
+			};
+
+			bool create(pool_t* pool, void* start, size_t size, size_t block_size = 64);
+		}
 	}
 }
 
