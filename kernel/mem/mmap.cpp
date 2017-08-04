@@ -1,5 +1,5 @@
 //
-// file : log.cpp
+// file : kmem.cpp
 //
 // This file is part of Tupai.
 //
@@ -18,39 +18,30 @@
 //
 
 // Tupai
+#include <tupai/mem/mmap.hpp>
 #include <tupai/util/log.hpp>
-#include <tupai/util/hwlock.hpp>
-#include <tupai/util/vector.hpp>
-#include <tupai/dev/tty.hpp>
+#include <tupai/arch.hpp>
+#include <tupai/panic.hpp>
 
 namespace tupai
 {
-	namespace util
+	namespace mem
 	{
-		typedef vector_t<char> log_t;
-
-		vector_t<log_t> logs;
-		hwlock_t        hwlock;
-		log_t           clog;
-
-		void __log_ostream::end()
+		namespace mmap
 		{
-			if (clog.size() > 0)
+			static const size_t MEM_SIZE = 512 * 1024 * 1024;
+			static const size_t PAGE_COUNT = MEM_SIZE / ARCH_PAGE_SIZE;
+			page_t pages[PAGE_COUNT];
+
+			void init()
 			{
-				logs.push(clog);
-				clog = log_t();
+				// Nothing yet
 			}
-		}
 
-		void __log_ostream::write(char c)
-		{
-			hwlock.lock(); // Begin critical section
-
-			// TODO : Uncomment this!
-			//clog.push(c);
-			dev::tty_write(c);
-
-			hwlock.unlock(); // End critical section
+			int  alloc(void** phys_addr, proc::proc_ptr_t owner, uint8_t flags);
+			int  reserve(void* phys_addr, proc::proc_ptr_t owner, uint8_t flags);
+			int  dealloc(void* phys_addr);
+			void display();
 		}
 	}
 }

@@ -21,7 +21,7 @@
 #define TUPAI_MEM_MMAP_HPP
 
 // Tupai
-#include <proc/proc.hpp>
+#include <tupai/proc/proc.hpp>
 
 // Standard
 #include <stddef.h>
@@ -36,7 +36,7 @@ namespace tupai
 			enum class page_flags : uint8_t
 			{
 				STATIC = 1 << 0,
-			}
+			};
 
 			struct page_t
 			{
@@ -44,11 +44,11 @@ namespace tupai
 				uint8_t flags;
 			};
 
-			void    init();
-			page_t& get(void* phys_addr);
-			int     alloc(void** phys_addr, proc::proc_ptr_t owner, uint8_t flags);
-			int     reserve(void* phys_addr, proc::proc_ptr_t owner, uint8_t flags);
-			int     dealloc(void* phys_addr);
+			void init();
+			int  alloc(void** phys_addr, proc::proc_ptr_t owner, uint8_t flags);
+			int  reserve(void* phys_addr, proc::proc_ptr_t owner, uint8_t flags);
+			int  dealloc(void* phys_addr);
+			void display();
 		}
 	}
 }
