@@ -26,6 +26,7 @@
 #include <tupai/irq.hpp>
 
 // Core setup
+#include <tupai/mem/mmap.hpp>
 #include <tupai/mem/kmem.hpp>
 
 // Core systems
@@ -58,7 +59,10 @@ namespace tupai
 		// Core setup
 		// ----------
 		// These are things that are required to properly execute code
+		mem::mmap::init(); // Initiate memory maps
 		mem::kmem::init(); // Initiate kernel memory allocation
+
+		mem::mmap::reserve_region(0x0, arch_get_kernel_end(), proc::get_kernel(), 0b00000000); // Reserve kernel memory
 	}
 
 	void main()

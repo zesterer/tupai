@@ -23,8 +23,9 @@
 #include <tupai/arch.hpp>
 #include <tupai/panic.hpp>
 
-#include <tupai/dev/clock.hpp>
 #include <tupai/mem/kmem.hpp>
+#include <tupai/mem/mmap.hpp>
+#include <tupai/dev/clock.hpp>
 #include <tupai/sys/call.hpp>
 #include <tupai/proc/proc.hpp>
 
@@ -125,6 +126,7 @@ namespace tupai
 					"  help    -> Show this help text\n",
 					"  fs      -> Show filesystem tree\n",
 					"  proc    -> Show running processes\n",
+					"  mmap    -> Show the memory map\n",
 					"  cat     -> Display the contents of a file\n",
 					"  echo    -> Echo the typed text to stdout\n",
 					"  pool    -> Show kernel memory pool\n",
@@ -142,6 +144,10 @@ namespace tupai
 			else if (util::str_equal(argv[0], "proc"))
 			{
 				proc::display();
+			}
+			else if (util::str_equal(argv[0], "mmap"))
+			{
+				mem::mmap::display();
 			}
 			else if (util::str_equal(argv[0], "cat"))
 			{
