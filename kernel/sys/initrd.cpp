@@ -19,6 +19,8 @@
 
 // Tupai
 #include <tupai/sys/initrd.hpp>
+#include <tupai/mem/mmap.hpp>
+#include <tupai/proc/proc.hpp>
 #include <tupai/vfs/vfs.hpp>
 #include <tupai/vfs/vtable.hpp>
 #include <tupai/vfs/path.hpp>
@@ -54,6 +56,8 @@ namespace tupai
 
 		void initrd_add(void* start, size_t size, const char* args)
 		{
+			mem::mmap::reserve_region(start, size, proc::get_kernel(), 0b00000000); // Reserve the initrd region
+
 			// Search for empty cache
 			for (size_t i = 0; i < INITRD_MAX; i ++)
 			{
