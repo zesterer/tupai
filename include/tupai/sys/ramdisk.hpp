@@ -1,5 +1,5 @@
 //
-// file : initrd.hpp
+// file : ramdisk.hpp
 //
 // This file is part of Tupai.
 //
@@ -17,8 +17,8 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_SYS_INITRD_HPP
-#define TUPAI_SYS_INITRD_HPP
+#ifndef TUPAI_SYS_RAMDISK_HPP
+#define TUPAI_SYS_RAMDISK_HPP
 
 // Standard
 #include <stddef.h>
@@ -28,8 +28,8 @@ namespace tupai
 {
 	namespace sys
 	{
-		void initrd_add(void* start, size_t size, const char* args);
-		void initrd_init();
+		void ramdisk_add(void* start, size_t size, const char* args);
+		void ramdisk_init();
 	}
 }
 

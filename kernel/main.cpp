@@ -36,7 +36,7 @@
 #include <tupai/sys/call.hpp>
 
 // Essential systems
-#include <tupai/sys/initrd.hpp>
+#include <tupai/sys/ramdisk.hpp>
 
 // Interfaces
 #include <tupai/dev/serial.hpp>
@@ -87,7 +87,7 @@ namespace tupai
 		// Essential systems
 		// -----------------
 		// These are things that are essential to the running of userland systems
-		sys::initrd_init(); // Initiate initrd filesystems
+		sys::ramdisk_init(); // Initiate initrd filesystems
 
 		// Interfaces
 		// ----------

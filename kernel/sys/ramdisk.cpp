@@ -1,5 +1,5 @@
 //
-// file : initrd.cpp
+// file : ramdisk.cpp
 //
 // This file is part of Tupai.
 //
@@ -18,7 +18,7 @@
 //
 
 // Tupai
-#include <tupai/sys/initrd.hpp>
+#include <tupai/sys/ramdisk.hpp>
 #include <tupai/mem/mmap.hpp>
 #include <tupai/proc/proc.hpp>
 #include <tupai/vfs/vfs.hpp>
@@ -34,7 +34,7 @@ namespace tupai
 {
 	namespace sys
 	{
-		struct initrd_t
+		struct ramdisk_t
 		{
 			void*       start = nullptr;
 			size_t      size = 0;
@@ -43,66 +43,66 @@ namespace tupai
 			id_t fs;
 		};
 
-		static const size_t INITRD_MAX = 32;
-		static initrd_t initrds[INITRD_MAX];
+		static const size_t RAMDISK_MAX = 32;
+		static ramdisk_t ramdisks[RAMDISK_MAX];
 
-		static vfs::vtable_t initrd_vtable;
+		static vfs::vtable_t ramdisk_vtable;
 
 		static util::hashtable_t<util::tar_header_t*> inodes;
 
-		void initrd_create(initrd_t* initrd, const char* name);
+		void ramdisk_create(ramdisk_t* ramdisk, const char* name);
 
-		int     initrd_open_call (vfs::inode_ptr_t inode);
-		int     initrd_close_call(vfs::fd_ptr_t fd);
-		ssize_t initrd_read_call (vfs::fd_ptr_t fd, void* rbuff, size_t n);
-		ssize_t initrd_write_call(vfs::fd_ptr_t fd, const void* buff, size_t n);
+		int     ramdisk_open_call (vfs::inode_ptr_t inode);
+		int     ramdisk_close_call(vfs::fd_ptr_t fd);
+		ssize_t ramdisk_read_call (vfs::fd_ptr_t fd, void* rbuff, size_t n);
+		ssize_t ramdisk_write_call(vfs::fd_ptr_t fd, const void* buff, size_t n);
 
-		void initrd_add(void* start, size_t size, const char* args)
+		void ramdisk_add(void* start, size_t size, const char* args)
 		{
 			// Search for empty cache
-			for (size_t i = 0; i < INITRD_MAX; i ++)
+			for (size_t i = 0; i < RAMDISK_MAX; i ++)
 			{
-				if (initrds[i].size == 0)
+				if (ramdisks[i].size == 0)
 				{
-					initrds[i] = initrd_t();
+					ramdisks[i] = ramdisk_t();
 
-					initrds[i].start = start;
-					initrds[i].size  = size;
-					initrds[i].args  = args;
+					ramdisks[i].start = start;
+					ramdisks[i].size  = size;
+					ramdisks[i].args  = args;
 					break;
 				}
 			}
 		}
 
-		void initrd_init()
+		void ramdisk_init()
 		{
-			initrd_vtable.open  = initrd_open_call;
-			initrd_vtable.close = initrd_close_call;
-			initrd_vtable.read  = initrd_read_call;
+			ramdisk_vtable.open  = ramdisk_open_call;
+			ramdisk_vtable.close = ramdisk_close_call;
+			ramdisk_vtable.read  = ramdisk_read_call;
 
-			for (size_t i = 0; i < INITRD_MAX; i ++)
+			for (size_t i = 0; i < RAMDISK_MAX; i ++)
 			{
-				if (initrds[i].size != 0)
-					initrd_create(&initrds[i], "initrd");
+				if (ramdisks[i].size != 0)
+					ramdisk_create(&ramdisks[i], "initrd");
 			}
 		}
 
-		void initrd_create(initrd_t* initrd, const char* name)
+		void ramdisk_create(ramdisk_t* ramdisk, const char* name)
 		{
-			mem::mmap::reserve_region((void*)((size_t)initrd->start - arch_get_offset()), initrd->size, proc::get_kernel(), 0b00000000); // Reserve the initrd region
+			mem::mmap::reserve_region((void*)((size_t)ramdisk->start - arch_get_offset()), ramdisk->size, proc::get_kernel(), 0b00000000); // Reserve the ramdisk region
 
-			// Create a filesystem for the initrd
+			// Create a filesystem for the ramdisk
 			vfs::fs_ptr_t fs = vfs::create_fs(name);
 
-			// Set the VFS's root to the initrd fs
+			// Set the VFS's root to the ramdisk fs
 			vfs::set_root(fs.get_root());
 
-			initrd->fs = fs;
+			ramdisk->fs = fs;
 
 			// TODO : re-add this
-			//mmap_reserve((size_t)initrd->start, (size_t)initrd->size, KERNEL_PROC_ID); // Reserve the memory
+			//mmap_reserve((size_t)ramdisk->start, (size_t)ramdisk->size, KERNEL_PROC_ID); // Reserve the memory
 
-			util::tar_header_t* cheader = (util::tar_header_t*)initrd->start;
+			util::tar_header_t* cheader = (util::tar_header_t*)ramdisk->start;
 			while (cheader != nullptr)
 			{
 				const char* filename = cheader->filename;
@@ -156,7 +156,7 @@ namespace tupai
 
 						if (type == vfs::inode_type::NORMAL_FILE && i + 1 == n)
 						{
-							ninode.set_vtable(&initrd_vtable);
+							ninode.set_vtable(&ramdisk_vtable);
 							inodes.add(ninode, cheader);
 						}
 						else
@@ -170,17 +170,17 @@ namespace tupai
 			}
 		}
 
-		int initrd_open_call (vfs::inode_ptr_t inode)
+		int ramdisk_open_call (vfs::inode_ptr_t inode)
 		{
 			return (inode == ID_INVALID) ? 1 : 0;
 		}
 
-		int initrd_close_call(vfs::fd_ptr_t fd)
+		int ramdisk_close_call(vfs::fd_ptr_t fd)
 		{
 			return (fd == ID_INVALID) ? 1 : 0;
 		}
 
-		ssize_t initrd_read_call (vfs::fd_ptr_t fd, void* rbuff, size_t n)
+		ssize_t ramdisk_read_call (vfs::fd_ptr_t fd, void* rbuff, size_t n)
 		{
 			util::tar_header_t** header = inodes[fd.get_inode()];
 
@@ -205,20 +205,20 @@ namespace tupai
 				return -1;
 		}
 
-		ssize_t       initrd_write_call(vfs::fd_ptr_t desc, const void* buff, size_t n);
+		ssize_t       ramdisk_write_call(vfs::fd_ptr_t desc, const void* buff, size_t n);
 
 		/*
-		id_t initrd_open_call(id_t pid, fs::inode_t* inode)
+		id_t ramdisk_open_call(id_t pid, fs::inode_t* inode)
 		{
 			return create_desc(pid, inode);
 		}
 
-		int initrd_close_call(id_t pid, fs::desc_t* desc)
+		int ramdisk_close_call(id_t pid, fs::desc_t* desc)
 		{
 			return proc_close_desc(pid, desc->id);
 		}
 
-		ssize_t initrd_read_call(id_t pid, fs::desc_t* desc, size_t n, void* ret_buff)
+		ssize_t ramdisk_read_call(id_t pid, fs::desc_t* desc, size_t n, void* ret_buff)
 		{
 			util::tar_header_t* header = *inodes[desc->inode];
 

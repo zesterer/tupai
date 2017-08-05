@@ -22,7 +22,7 @@
 #include <tupai/util/math.hpp>
 #include <tupai/util/mem.hpp>
 #include <tupai/util/str.hpp>
-#include <tupai/sys/initrd.hpp>
+#include <tupai/sys/ramdisk.hpp>
 #include <tupai/arch.hpp>
 #include <tupai/debug.hpp>
 
@@ -122,7 +122,7 @@ namespace tupai
 
 			// If the module is an initrd, add it to the cache
 			if (util::str_equal((const char*)&module->args_start, "initrd"))
-				sys::initrd_add((void*)((size_t)module->start + arch_get_offset()), (size_t)(module->end - module->start + 1), (const char*)&module->args_start);
+				sys::ramdisk_add((void*)((size_t)module->start + arch_get_offset()), (size_t)(module->end - module->start + 1), (const char*)&module->args_start);
 		}
 
 		mb_meminfo_t multiboot_get_meminfo()
