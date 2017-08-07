@@ -61,6 +61,7 @@ namespace tupai
 
 				#if defined(ARCH_FAMILY_x86)
 					x86::textmode_init();
+					x86::textmode_cursor_enable();
 				#endif
 
 				// Open a serial port

@@ -59,6 +59,29 @@ namespace tupai
 			row = 0;
 
 			textmode_clear();
+			textmode_cursor_enable();
+			textmode_cursor_move(col, row);
+		}
+
+		void textmode_cursor_enable()
+		{
+			outb(0x3D4, 0x0A);
+			outb(0x3D5, 0x00);
+		}
+
+		void textmode_cursor_disable()
+		{
+			outb(0x3D4, 0x0A);
+			outb(0x3D5, 0x3F);
+		}
+
+		void textmode_cursor_move(int col, int row)
+		{
+			uint16_t pos = col_max * row + col;
+			outb(0x3D4, 0x0F);
+			outb(0x3D5, (uint8_t)(pos & 0xFF));
+			outb(0x3D4, 0x0E);
+			outb(0x3D5, (uint8_t)((pos >> 8) & 0xFF));
 		}
 
 		void textmode_move(int ncol, int nrow)
@@ -66,7 +89,7 @@ namespace tupai
 			col = ncol;
 			row = nrow;
 
-			textmode_cursor(col, row);
+			textmode_cursor_move(col, row);
 		}
 
 		void textmode_write(char c)
@@ -113,16 +136,7 @@ namespace tupai
 				row --;
 			}
 
-			textmode_cursor(col, row);
-		}
-
-		void textmode_cursor(int col, int row)
-		{
-			uint16_t pos = col_max * row + col;
-			outb(0x3D4, 0x0F);
-			outb(0x3D5, (uint8_t)(pos & 0xFF));
-			outb(0x3D4, 0x0E);
-			outb(0x3D5, (uint8_t)((pos >> 8) & 0xFF));
+			textmode_cursor_move(col, row);
 		}
 
 		void textmode_clear()

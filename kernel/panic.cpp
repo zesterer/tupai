@@ -44,6 +44,7 @@ namespace tupai
 
 		#if defined(ARCH_FAMILY_x86)
 			x86::textmode_clear();
+			x86::textmode_cursor_disable();
 			x86::textmode_move(0, 0);
 			for (size_t i = 0; str[i] != '\0'; i ++)
 				x86::textmode_write(str[i]);
