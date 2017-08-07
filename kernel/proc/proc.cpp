@@ -128,21 +128,6 @@ namespace tupai
 			return nproc.id;
 		}
 
-		int destroy(proc_ptr_t proc)
-		{
-			hwlock.lock(); // Begin critical section
-
-			int err = 1;
-			if (proc_table[proc] != nullptr)
-			{
-				proc_table.remove(proc);
-				err = 0;
-			}
-
-			hwlock.unlock(); // End critical section
-			return err;
-		}
-
 		void display()
 		{
 			for (size_t i = 0; i < proc_table.size(); i ++)
@@ -344,7 +329,7 @@ namespace tupai
 				thread_table.remove(thread);
 
 				if (proc->threads.size() <= 0)
-					destroy(*this);
+					this->kill();
 
 				err = 0;
 			}
@@ -410,6 +395,21 @@ namespace tupai
 
 				if (removed)
 					err = 0;
+			}
+
+			hwlock.unlock(); // End critical section
+			return err;
+		}
+
+		int proc_ptr_t::kill()
+		{
+			hwlock.lock(); // Begin critical section
+
+			int err = 1;
+			if (proc_table[this->id] != nullptr)
+			{
+				proc_table.remove(this->id);
+				err = 0;
 			}
 
 			hwlock.unlock(); // End critical section

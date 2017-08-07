@@ -101,7 +101,6 @@ namespace tupai
 
 		void       init();
 		proc_ptr_t create(const char* name, vfs::inode_ptr_t dir);
-		int        destroy(proc_ptr_t proc);
 		void       display();
 
 		/*
