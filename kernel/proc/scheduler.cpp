@@ -68,7 +68,7 @@ namespace tupai
 			if (ctask.thread != ID_INVALID)
 			{
 				if (ctask.thread.get_state() == thread_state::DEAD)
-					ctask.thread.get_process().delete_thread(ctask.thread);
+					ctask.thread.get_process().destroy_thread(ctask.thread);
 				else
 				{
 					ctask.cpriority = ctask.priority;

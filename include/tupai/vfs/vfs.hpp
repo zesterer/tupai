@@ -115,6 +115,8 @@ namespace tupai
 			int set_inode (inode_ptr_t inode);
 			int set_mode  (fd_mode_t mode);
 			int set_offset(fd_offset offset);
+
+			int destroy();
 		};
 
 		inode_ptr_t get_root();

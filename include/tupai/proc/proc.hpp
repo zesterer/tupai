@@ -86,7 +86,7 @@ namespace tupai
 			vfs::fd_ptr_t get_fd(id_t lfd);
 
 			thread_ptr_t spawn_thread(void (*entry)(int argc, char* argv[]));
-			int          delete_thread(thread_ptr_t);
+			int          destroy_thread(thread_ptr_t);
 			id_t         create_fd(vfs::inode_ptr_t inode);
 			int          delete_fd(id_t lfd);
 
@@ -101,6 +101,7 @@ namespace tupai
 
 		void       init();
 		proc_ptr_t create(const char* name, vfs::inode_ptr_t dir);
+		int        destroy(proc_ptr_t proc);
 		void       display();
 
 		/*

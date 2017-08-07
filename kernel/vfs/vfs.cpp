@@ -650,5 +650,22 @@ namespace tupai
 			spinlock.unlock(); // End critical section
 			return err;
 		}
+
+		int fd_ptr_t::destroy()
+		{
+			spinlock.lock(); // Begin critical section
+
+			fd_t* fd = fd_table[this->id];
+
+			int err = 1;
+			if (fd != nullptr)
+			{
+				fd_table.remove(this->id);
+				err = 0;
+			}
+
+			spinlock.unlock(); // End critical section
+			return err;
+		}
 	}
 }

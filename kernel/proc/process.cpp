@@ -1,5 +1,5 @@
 //
-// file : process.hpp
+// file : process.cpp
 //
 // This file is part of Tupai.
 //
@@ -17,37 +17,20 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_PROC_PROCESS_HPP
-#define TUPAI_PROC_PROCESS_HPP
-
 // Tupai
-#include <tupai/proc/proc.hpp>
-#include <tupai/vfs/vfs.hpp>
-
-// Standard
-#include <stddef.h>
-#include <stdint.h>
+#include <tupai/proc/process.hpp>
 
 namespace tupai
 {
 	namespace proc
 	{
-		struct proc_t
+		proc_t::~proc_t()
 		{
-			id_t id;                  // Process ID
-			char name[PROC_NAME_MAX]; // Process name
-			proc_state state;         // Process state
-			vfs::inode_ptr_t dir;     // Current directory
+			for (size_t i = 0; i < this->threads.size(); i ++)
+				this->threads.nth(i)->kill();
 
-			id_t thread_counter = 0;
-			util::hashtable_t<thread_ptr_t> threads; // Process threads
-
-			id_t lfd_counter = 0;
-			util::hashtable_t<vfs::fd_ptr_t> fds; // File descriptors
-
-			~proc_t();
-		};
+			for (size_t i = 0; i < this->fds.size(); i ++)
+				this->fds.nth(i)->destroy();
+		}
 	}
 }
-
-#endif
