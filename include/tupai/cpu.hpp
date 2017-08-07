@@ -20,6 +20,10 @@
 #ifndef TUPAI_CPU_HPP
 #define TUPAI_CPU_HPP
 
+// Standard
+#include <stddef.h>
+#include <stdint.h>
+
 namespace tupai
 {
 	namespace cpu
@@ -27,6 +31,9 @@ namespace tupai
 		void wait();
 		void halt() __attribute__((__noreturn__));
 		void hang() __attribute__((__noreturn__));
+
+		const char* get_exception_name(size_t code);
+		bool        get_exception_critical(size_t code);
 	}
 }
 
