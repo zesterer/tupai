@@ -82,8 +82,8 @@ namespace tupai
 			proc_ptr_t(id_t id) { this->id = id; }
 			operator id_t() { return this->id; }
 
-			template <size_t SIZE>
-			int get_name(char(&buff)[SIZE]) { return this->get_name(buff, SIZE); }
+			template <size_t SIZE> int get_name(char(&buff)[SIZE]) { return this->get_name(buff, SIZE); }
+
 			int           get_name(char* rbuff, size_t n);
 			vfs::fd_ptr_t get_fd(id_t lfd);
 
@@ -104,12 +104,6 @@ namespace tupai
 		void       init();
 		proc_ptr_t create(const char* name, vfs::inode_ptr_t dir);
 		void       display();
-
-		/*
-		vfs::fd_ptr_t proc_get_fd(proc_ptr_t proc_ptr, id_t lfd);
-		id_t          create_fd(proc_ptr_t proc_ptr, vfs::inode_ptr_t inode);
-		int           proc_remove_fd(proc_ptr_t proc_ptr, id_t lfd);
-		*/
 	}
 }
 

@@ -2,30 +2,26 @@
 
 What needs to be done, in order of priority:
 
+### Memory Management
+
 - Page frame allocator
 - Virtual memory manager
 - Virtual memory context switcher
+
+### The Road To Userland
+
 - Improve syscall API
 - Create an elf loader for userland programs & modules
-- Fix x86 keyboard driver
-- Fix TTY handling things
 - Create a TSS and handle use-space code
 
-## Page Frame Allocator
+### Drivers And Devices
 
-### Necessary Functions
+- Fix x86 keyboard driver
+- Fix x86 serial driver
+- Fix TTY handling things
 
-page_flags
-{
-	is_static
-}
+### Codebase
 
-page_entry
-{
-	owner
-	flags
-}
-
-find_page()
-test_page(address)
-reserve_page(address)
+- Switch to Make as the primary build system
+- Clean up code, use result<> and error<> more for error checking
+- Add vector_t<>-based exceptions to kernel

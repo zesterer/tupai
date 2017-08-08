@@ -26,4 +26,16 @@ Make sure you have the following things:
 
 - A GitHub account
 - [Optional] A system capable of building Tupai (A POSIX-like environment, the appropriate compilers, etc.)
-- [Optional] A machine to test Tupai (emulators such as QEMU, VirtualBox and Bochs work too)
+- [Optional] A machine to test Tupai (emulators such as QEMU, VirtualBox and Bochs work too, although regularly check your code works with real hardware)
+
+### Clone Tupai
+
+You can clone Tupai to your local machine like so:
+
+``
+git clone https://github.com/zesterer/tupai
+``
+
+### Building Tupai
+
+_See `docs/BUILDING.md`_
