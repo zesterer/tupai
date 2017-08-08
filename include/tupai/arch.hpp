@@ -29,8 +29,11 @@ namespace tupai
 	const size_t ARCH_PAGE_SIZE = 4096;
 	const size_t ARCH_PAGE_SIZE_P2 = 12;
 
-	extern "C" char kernel_start;
-	extern "C" char kernel_end;
+	extern "C" char kernel_start[];
+	extern "C" char kernel_end[];
+
+	extern "C" char kernel_heap_start[];
+	extern "C" char kernel_heap_end[];
 
 	struct arch_reg_state;
 	size_t arch_get_reg_state_size();
@@ -41,6 +44,9 @@ namespace tupai
 
 	size_t arch_get_kernel_start();
 	size_t arch_get_kernel_end();
+
+	void*  arch_get_kernel_heap();
+	size_t arch_get_kernel_heap_size();
 
 	void  arch_init();
 	void* arch_kernel_alloc(size_t bytes);

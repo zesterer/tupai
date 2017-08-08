@@ -6,6 +6,7 @@ SECTIONS
 	/* Start at LOADER_ADDR */
 	. = 0x8000;
 	KERNEL_VIRTUAL = 0x0;
+	KERNEL_HEAP = 16M; /* 16M heap */
 
 	kernel_start = .;
 
@@ -50,6 +51,12 @@ SECTIONS
 		__bss_start = .;
 		bss = .;
 		*(.bss)
+
+		. = ALIGN(4K);
+		kernel_heap_start = .;
+		. += KERNEL_HEAP;
+		kernel_heap_end = .;
+
 		__bss_end = .;
 	}
 

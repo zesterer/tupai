@@ -34,7 +34,7 @@ namespace tupai
 		namespace kmem
 		{
 			static const size_t KMEM_SIZE = 4096 * 4096; // 4096 4K pages (16M)
-			static const size_t KMEM_BLOCK_SIZE = 64;   // 16th of a 4K page (256B)
+			static const size_t KMEM_BLOCK_SIZE = 32;
 
 			static pool::pool_t pool;
 
@@ -44,7 +44,10 @@ namespace tupai
 			{
 				hwlock.lock(); // Begin critical section
 
+				//void* pool_area = arch_get_kernel_heap();
+				//size_t pool_size = arch_get_kernel_heap_size();
 				void* pool_area = arch_kernel_alloc(KMEM_SIZE);
+				//util::logln("AREA = ", arch_get_kernel_heap(), " SIZE = ", arch_get_kernel_heap_size());
 				//mmap::alloc(&pool_area, proc::get_kernel(), 0);
 				//pool_area = (void*)((size_t)pool_area + arch_get_offset());
 
@@ -66,7 +69,7 @@ namespace tupai
 				void* ptr = pool.alloc(n);
 
 				if (ptr == nullptr)
-					panic("Failed to allocate kernel blocks");
+					panic("Failed to allocate kernel memory pool block(s)");
 
 				hwlock.unlock(); // End critical section
 				return ptr;

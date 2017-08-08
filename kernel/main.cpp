@@ -81,8 +81,8 @@ namespace tupai
 		// These are things required to run kernel threads, processes, manipulate files, etc.
 		vfs::init();            // Initiate virtual filesystem
 		proc::init();           // Initiate processes
-		proc::scheduler_init(); // Initiate the system scheduler
-		sys::call_init();       // Initiate SYSCALL routine
+		proc::scheduler_init(); // Initiate scheduler
+		sys::call_init();       // Initiate syscalls
 
 		// Essential systems
 		// -----------------

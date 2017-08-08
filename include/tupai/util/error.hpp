@@ -1,5 +1,5 @@
 //
-// file : call.hpp
+// file : error.hpp
 //
 // This file is part of Tupai.
 //
@@ -17,10 +17,11 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_SYS_CALL_HPP
-#define TUPAI_SYS_CALL_HPP
+#ifndef TUPAI_UTIL_ERROR_HPP
+#define TUPAI_UTIL_ERROR_HPP
 
 // Tupai
+#include <tupai/panic.hpp>
 
 // Standard
 #include <stddef.h>
@@ -28,39 +29,30 @@
 
 namespace tupai
 {
-	namespace sys
+	static const bool ERROR_NONE = false;
+
+	template <typename Err>
+	class error
 	{
-		const uint8_t CALL_IRQ = 0x80;
+	private:
+		bool _is_err;
+		Err _err;
 
-		enum class CALL
+	public:
+		error(bool is_err)
 		{
-			// Process control
-			YIELD  = 0x100,
-			LMUTEX = 0x101, // temporary
-			UMUTEX = 0x102, // temporary
-			// and more...
+			this->_is_err = is_err;
+		}
 
-			// File descriptor creation
-			OPEN   = 0x200,
-			PIPE   = 0x201,
-			SOCKET = 0x202,
-			// and more...
+		error(Err err)
+		{
+			this->_is_err = true;
+			this->_err = err;
+		}
 
-			// File descriptor destruction
-			CLOSE = 0x300,
-			// and more...
-
-			// File manipulation
-			READ  = 0x400,
-			WRITE = 0x401,
-			SEEK  = 0x402,
-			// and more...
-		};
-
-		void call_init();
-
-		void call(CALL call, size_t arg0 = 0, size_t arg1 = 0, size_t arg2 = 0);
-	}
+		bool failed() { return this->_is_err; }
+		Err& get_error() { if (!this->_is_err) panic("No error occured, but code believes it did!"); return this->_err; }
+	};
 }
 
 #endif

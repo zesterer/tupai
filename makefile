@@ -5,8 +5,11 @@ TUP = tup
 
 all : iso
 
-run : all
+run-amd64 : all
 	sh ./script/qemu-amd64.sh
+
+run-i386 : all
+	sh ./script/qemu-i386.sh
 
 iso : $(BUILD_DIR)
 	$(TUP)

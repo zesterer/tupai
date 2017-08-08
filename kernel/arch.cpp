@@ -27,24 +27,34 @@ namespace tupai
 
 	size_t arch_get_kernel_start()
 	{
-		return (size_t)&kernel_start;
+		return (size_t)kernel_start;
 	}
 
 	size_t arch_get_kernel_end()
 	{
-		return (size_t)&kernel_end + kernel_end_offset;
+		return (size_t)kernel_end + kernel_end_offset;
+	}
+
+	void* arch_get_kernel_heap()
+	{
+		return (void*)kernel_heap_start;
+	}
+
+	size_t arch_get_kernel_heap_size()
+	{
+		return ((size_t)kernel_heap_end - (size_t)kernel_heap_start);
 	}
 
 	void* arch_kernel_alloc(size_t bytes)
 	{
 		// Make sure the kernel end is aligned with pages
-		size_t end = util::align_ceiling((size_t)&kernel_end + kernel_end_offset, ARCH_PAGE_SIZE);
-		kernel_end_offset += end - (size_t)&kernel_end;
+		size_t end = util::align_ceiling((size_t)kernel_end + kernel_end_offset, ARCH_PAGE_SIZE);
+		kernel_end_offset += end - (size_t)kernel_end;
 
 		// Round up the number of required bytes to the nearest page
 		bytes = util::align_ceiling(bytes, ARCH_PAGE_SIZE);
 
-		size_t old_end = (size_t)&kernel_end + kernel_end_offset;
+		size_t old_end = (size_t)kernel_end + kernel_end_offset;
 		kernel_end_offset += bytes; // Increment kernel end by allocated byte count
 
 		return (void*)(old_end + arch_get_offset());

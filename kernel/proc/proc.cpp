@@ -54,7 +54,7 @@ namespace tupai
 		{
 			hwlock.lock(); // Begin critical section
 
-			proc_ptr_t val = 1;
+			proc_ptr_t val = kproc;
 
 			hwlock.unlock(); // End critical section
 
@@ -406,7 +406,9 @@ namespace tupai
 			hwlock.lock(); // Begin critical section
 
 			int err = 1;
-			if (proc_table[this->id] != nullptr)
+			if (this->id == kproc) // Don't kill the kernel!
+				err = 0;
+			else if (proc_table[this->id] != nullptr)
 			{
 				proc_table.remove(this->id);
 				err = 0;

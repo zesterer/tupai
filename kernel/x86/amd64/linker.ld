@@ -5,6 +5,7 @@ SECTIONS
 {
 	. = 1M;
 	KERNEL_VIRTUAL = 0xFFFFFFFF80000000;
+	KERNEL_HEAP = 16M; /* 16M heap */
 
 	kernel_start = .;
 
@@ -53,6 +54,11 @@ SECTIONS
 	{
 		*(COMMON)
 		*(.bss)
+
+		. = ALIGN(4K);
+		kernel_heap_start = .;
+		. += KERNEL_HEAP;
+		kernel_heap_end = .;
 	}
 
 	. -= KERNEL_VIRTUAL;
