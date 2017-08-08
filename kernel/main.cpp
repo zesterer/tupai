@@ -31,8 +31,8 @@
 
 // Core systems
 #include <tupai/vfs/vfs.hpp>
-#include <tupai/proc/proc.hpp>
-#include <tupai/proc/scheduler.hpp>
+#include <tupai/task/task.hpp>
+#include <tupai/task/scheduler.hpp>
 #include <tupai/sys/call.hpp>
 
 // Essential systems
@@ -63,7 +63,7 @@ namespace tupai
 		mem::mmap::reserve_region( // Reserve kernel memory
 			(void*)arch_get_kernel_start(),
 			arch_get_kernel_end() - arch_get_kernel_start(),
-			proc::get_kernel(),
+			task::get_kernel(),
 			(uint8_t)mem::mmap::page_flags::NONE
 		);
 		mem::kmem::init(); // Initiate kernel memory allocation
@@ -80,8 +80,8 @@ namespace tupai
 		// ------------
 		// These are things required to run kernel threads, processes, manipulate files, etc.
 		vfs::init();            // Initiate virtual filesystem
-		proc::init();           // Initiate processes
-		proc::scheduler_init(); // Initiate scheduler
+		task::init();           // Initiate processes
+		task::scheduler_init(); // Initiate scheduler
 		sys::call_init();       // Initiate syscalls
 
 		// Essential systems
@@ -96,7 +96,7 @@ namespace tupai
 		dev::tty_init();    // Initiate the kernel's tty
 
 		// We're finally ready to start the init process.
-		proc::create("init", vfs::get_root()).spawn_thread(init);
+		task::create_process("init", vfs::get_root()).spawn_thread(init);
 
 		// Enable interrupts and wait for the scheduler to kick in
 		irq::enable();
@@ -109,6 +109,6 @@ namespace tupai
 		(void)argv;
 
 		// Spawn a kernel shell process
-		proc::create("shell", vfs::get_root()).spawn_thread(shell_main);
+		task::create_process("shell", vfs::get_root()).spawn_thread(shell_main);
 	}
 }

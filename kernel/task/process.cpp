@@ -1,5 +1,5 @@
 //
-// file : scheduler.hpp
+// file : process.cpp
 //
 // This file is part of Tupai.
 //
@@ -17,26 +17,20 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_PROC_SCHEDULER_HPP
-#define TUPAI_PROC_SCHEDULER_HPP
-
 // Tupai
-#include <tupai/proc/proc.hpp>
-
-// Standard
-#include <stddef.h>
-#include <stdint.h>
+#include <tupai/task/process.hpp>
 
 namespace tupai
 {
-	namespace proc
+	namespace task
 	{
-		void         scheduler_init();
-		void         scheduler_schedule(thread_ptr_t thread, int priority = 0);
-		void         scheduler_increment();
-		thread_ptr_t scheduler_current();
-		size_t       scheduler_preempt(size_t old_stack);
+		process_t::~process_t()
+		{
+			for (size_t i = 0; i < this->threads.size(); i ++)
+				this->threads.nth(i)->kill();
+
+			for (size_t i = 0; i < this->fds.size(); i ++)
+				this->fds.nth(i)->destroy();
+		}
 	}
 }
-
-#endif

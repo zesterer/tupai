@@ -1,5 +1,5 @@
 //
-// file : process.hpp
+// file : scheduler.hpp
 //
 // This file is part of Tupai.
 //
@@ -17,12 +17,11 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_PROC_PROCESS_HPP
-#define TUPAI_PROC_PROCESS_HPP
+#ifndef TUPAI_TASK_SCHEDULER_HPP
+#define TUPAI_TASK_SCHEDULER_HPP
 
 // Tupai
-#include <tupai/proc/proc.hpp>
-#include <tupai/vfs/vfs.hpp>
+#include <tupai/task/task.hpp>
 
 // Standard
 #include <stddef.h>
@@ -30,23 +29,13 @@
 
 namespace tupai
 {
-	namespace proc
+	namespace task
 	{
-		struct proc_t
-		{
-			id_t id;                  // Process ID
-			char name[PROC_NAME_MAX]; // Process name
-			proc_state state;         // Process state
-			vfs::inode_ptr_t dir;     // Current directory
-
-			id_t thread_counter = 0;
-			util::hashtable_t<thread_ptr_t> threads; // Process threads
-
-			id_t lfd_counter = 0;
-			util::hashtable_t<vfs::fd_ptr_t> fds; // File descriptors
-
-			~proc_t();
-		};
+		void         scheduler_init();
+		void         scheduler_schedule(thrd_ptr_t thread, int priority = 0);
+		void         scheduler_increment();
+		thrd_ptr_t scheduler_current();
+		size_t       scheduler_preempt(size_t old_stack);
 	}
 }
 

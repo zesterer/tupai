@@ -20,7 +20,7 @@
 // Tupai
 #include <tupai/sys/ramdisk.hpp>
 #include <tupai/mem/mmap.hpp>
-#include <tupai/proc/proc.hpp>
+#include <tupai/task/task.hpp>
 #include <tupai/vfs/vfs.hpp>
 #include <tupai/vfs/vtable.hpp>
 #include <tupai/vfs/path.hpp>
@@ -89,7 +89,7 @@ namespace tupai
 
 		void ramdisk_create(ramdisk_t* ramdisk, const char* name)
 		{
-			mem::mmap::reserve_region((void*)((size_t)ramdisk->start - arch_get_offset()), ramdisk->size, proc::get_kernel(), 0b00000000); // Reserve the ramdisk region
+			mem::mmap::reserve_region((void*)((size_t)ramdisk->start - arch_get_offset()), ramdisk->size, task::get_kernel(), 0b00000000); // Reserve the ramdisk region
 
 			// Create a filesystem for the ramdisk
 			vfs::fs_ptr_t fs = vfs::create_fs(name);

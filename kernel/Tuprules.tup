@@ -39,7 +39,7 @@ endif
 CC_FLAGS=$(CC_FLAGS) -std=c++14 -Wall -Wextra -pedantic -gdwarf-4 -O3 -nostdlib
 CC_FLAGS=$(CC_FLAGS) -ffreestanding -fno-exceptions -fno-rtti -fno-common -fno-builtin -fno-omit-frame-pointer
 
-OBJECTS=$(OBJECTS) *.o dev/*.o util/*.o mem/*.o sys/*.o proc/*.o vfs/*.o libk/*.o
+OBJECTS=$(OBJECTS) *.o dev/*.o util/*.o mem/*.o sys/*.o task/*.o vfs/*.o libk/*.o
 
 LINK_FLAGS=$(LINK_FLAGS) -lgcc
 #`$(LINKER) $(CC_FLAGS) $(LINK_FLAGS) -T $(LINK_SCRIPT) -print-file-name=crtbegin.o`

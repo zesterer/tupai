@@ -1,5 +1,5 @@
 //
-// file : proc.hpp
+// file : task.hpp
 //
 // This file is part of Tupai.
 //
@@ -17,8 +17,8 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_PROC_PROC_HPP
-#define TUPAI_PROC_PROC_HPP
+#ifndef TUPAI_TASK_PROC_HPP
+#define TUPAI_TASK_PROC_HPP
 
 // Tupai
 #include <tupai/vfs/vfs.hpp>
@@ -30,7 +30,7 @@
 
 namespace tupai
 {
-	namespace proc
+	namespace task
 	{
 		const id_t INVALID_PROC_ID = -2;
 		const id_t NO_PROC_ID      = -1;
@@ -38,7 +38,7 @@ namespace tupai
 
 		const size_t PROC_NAME_MAX = 256;
 
-		enum class proc_state
+		enum class process_state
 		{
 			ACTIVE,
 			SUSPENDED,
@@ -55,12 +55,12 @@ namespace tupai
 
 		struct proc_ptr_t; // Forward declaration
 
-		struct thread_ptr_t
+		struct thrd_ptr_t
 		{
 			id_t id;
 
-			thread_ptr_t() {}
-			thread_ptr_t(id_t id) { this->id = id; }
+			thrd_ptr_t() {}
+			thrd_ptr_t(id_t id) { this->id = id; }
 			operator id_t() { return this->id; }
 
 			id_t get_lid();
@@ -87,8 +87,8 @@ namespace tupai
 			int           get_name(char* rbuff, size_t n);
 			vfs::fd_ptr_t get_fd(id_t lfd);
 
-			thread_ptr_t spawn_thread(void (*entry)(int argc, char* argv[]));
-			int          destroy_thread(thread_ptr_t);
+			thrd_ptr_t spawn_thread(void (*entry)(int argc, char* argv[]));
+			int          destroy_thread(thrd_ptr_t);
 			id_t         create_fd(vfs::inode_ptr_t inode);
 			int          delete_fd(id_t lfd);
 
@@ -97,12 +97,12 @@ namespace tupai
 
 		proc_ptr_t   get_kernel();
 		proc_ptr_t   get_current();
-		thread_ptr_t get_current_thread();
+		thrd_ptr_t get_current_thread();
 		void         set_current(proc_ptr_t proc);
-		void         set_current_thread(thread_ptr_t thread);
+		void         set_current_thread(thrd_ptr_t thread);
 
 		void       init();
-		proc_ptr_t create(const char* name, vfs::inode_ptr_t dir);
+		proc_ptr_t create_process(const char* name, vfs::inode_ptr_t dir);
 		void       display();
 	}
 }

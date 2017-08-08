@@ -23,7 +23,7 @@
 #include <tupai/util/mutex.hpp>
 #include <tupai/util/hwlock.hpp>
 #include <tupai/sys/pipe.hpp>
-#include <tupai/proc/proc.hpp>
+#include <tupai/task/task.hpp>
 #include <tupai/debug.hpp>
 
 #if defined(ARCH_FAMILY_x86)
@@ -93,7 +93,7 @@ namespace tupai
 			spinlock.unlock(); // End critical section
 
 			// Create the TTY I/O thread
-			proc::get_current().spawn_thread(tty_out_thread);
+			task::get_current().spawn_thread(tty_out_thread);
 		}
 
 		void tty_write(char c)

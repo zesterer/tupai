@@ -19,8 +19,8 @@
 
 // Tupai
 #include <tupai/sys/call.hpp>
-#include <tupai/proc/proc.hpp>
-#include <tupai/proc/scheduler.hpp>
+#include <tupai/task/task.hpp>
+#include <tupai/task/scheduler.hpp>
 #include <tupai/vfs/vfs.hpp>
 #include <tupai/vfs/fd.hpp>
 #include <tupai/util/mutex.hpp>
@@ -59,7 +59,7 @@ namespace tupai
 			switch (call)
 			{
 			case CALL::YIELD:
-				stack_ptr = proc::scheduler_preempt(stack_ptr);
+				stack_ptr = task::scheduler_preempt(stack_ptr);
 				break;
 
 			/*case CALL::LMUTEX:

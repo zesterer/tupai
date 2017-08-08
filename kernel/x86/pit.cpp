@@ -21,7 +21,7 @@
 #include <tupai/x86/pit.hpp>
 #include <tupai/x86/port.hpp>
 #include <tupai/irq.hpp>
-#include <tupai/proc/scheduler.hpp>
+#include <tupai/task/scheduler.hpp>
 #include <tupai/debug.hpp>
 
 // Standard
@@ -93,7 +93,7 @@ namespace tupai
 
 			//if (sys::threading_enabled())
 			//	stack_ptr = sys::thread_next_stack(stack_ptr);
-			return proc::scheduler_preempt(stack_ptr);
+			return task::scheduler_preempt(stack_ptr);
 		}
 	}
 }

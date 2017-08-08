@@ -21,8 +21,8 @@
 #include <tupai/exception.hpp>
 #include <tupai/sys/call.hpp>
 #include <tupai/util/log.hpp>
-#include <tupai/proc/proc.hpp>
-#include <tupai/proc/scheduler.hpp>
+#include <tupai/task/task.hpp>
+#include <tupai/task/scheduler.hpp>
 #include <tupai/arch.hpp>
 #include <tupai/cpu.hpp>
 #include <tupai/irq.hpp>
@@ -35,8 +35,8 @@ namespace tupai
 		bool critical = cpu::get_exception_critical(code);
 		const char* except_name = cpu::get_exception_name(code);
 
-		proc::thread_ptr_t cthread = proc::get_current_thread();
-		char proc_name[proc::PROC_NAME_MAX];
+		task::thrd_ptr_t cthread = task::get_current_thread();
+		char proc_name[task::PROC_NAME_MAX];
 		cthread.get_process().get_name(proc_name);
 
 		if (critical)
@@ -64,6 +64,6 @@ namespace tupai
 			cthread.kill();
 		}
 
-		return proc::scheduler_preempt(stack);
+		return task::scheduler_preempt(stack);
 	}
 }

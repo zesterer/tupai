@@ -21,7 +21,7 @@
 #include <tupai/x86/textmode.hpp>
 #include <tupai/x86/port.hpp>
 #include <tupai/mem/mmap.hpp>
-#include <tupai/proc/proc.hpp>
+#include <tupai/task/task.hpp>
 #include <tupai/arch.hpp>
 #include <tupai/util/mutex.hpp>
 
@@ -48,7 +48,7 @@ namespace tupai
 			mem::mmap::reserve_region(
 				(void*)buffer,
 				col_max * row_max * 16,
-				proc::get_kernel(),
+				task::get_kernel(),
 				(uint8_t)mem::mmap::page_flags::STATIC
 			);
 

@@ -18,17 +18,17 @@
 //
 
 // Tupai
-#include <tupai/proc/scheduler.hpp>
+#include <tupai/task/scheduler.hpp>
 #include <tupai/util/queue.hpp>
 #include <tupai/util/hwlock.hpp>
 
 namespace tupai
 {
-	namespace proc
+	namespace task
 	{
 		struct task_t
 		{
-			thread_ptr_t thread = ID_INVALID;
+			thrd_ptr_t thread = ID_INVALID;
 			short priority = ID_INVALID;
 			short cpriority = ID_INVALID;
 		};
@@ -46,7 +46,7 @@ namespace tupai
 			// Nothing yet
 		}
 
-		void scheduler_schedule(thread_ptr_t thread, int priority)
+		void scheduler_schedule(thrd_ptr_t thread, int priority)
 		{
 			(void)priority;
 
@@ -94,10 +94,10 @@ namespace tupai
 			hwlock.unlock(); // End critical section
 		}
 
-		thread_ptr_t scheduler_current()
+		thrd_ptr_t scheduler_current()
 		{
 			hwlock.lock(); // Begin critical section
-			thread_ptr_t val = ctask.thread;
+			thrd_ptr_t val = ctask.thread;
 			hwlock.unlock(); // End critical section
 
 			return val;

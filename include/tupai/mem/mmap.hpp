@@ -21,7 +21,7 @@
 #define TUPAI_MEM_MMAP_HPP
 
 // Tupai
-#include <tupai/proc/proc.hpp>
+#include <tupai/task/task.hpp>
 
 // Standard
 #include <stddef.h>
@@ -42,14 +42,14 @@ namespace tupai
 
 			struct page_t
 			{
-				proc::proc_ptr_t _owner;
+				task::proc_ptr_t _owner;
 				uint8_t          _flags;
 			};
 
 			void init();
-			int  alloc(void** phys_addr, proc::proc_ptr_t owner, uint8_t flags);
-			int  reserve(void* phys_addr, proc::proc_ptr_t owner, uint8_t flags);
-			int  reserve_region(void* phys_addr, size_t size, proc::proc_ptr_t owner, uint8_t flags);
+			int  alloc(void** phys_addr, task::proc_ptr_t owner, uint8_t flags);
+			int  reserve(void* phys_addr, task::proc_ptr_t owner, uint8_t flags);
+			int  reserve_region(void* phys_addr, size_t size, task::proc_ptr_t owner, uint8_t flags);
 			int  dealloc(void* phys_addr);
 			void display();
 		}

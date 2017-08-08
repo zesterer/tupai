@@ -27,7 +27,7 @@
 #include <tupai/mem/mmap.hpp>
 #include <tupai/dev/clock.hpp>
 #include <tupai/sys/call.hpp>
-#include <tupai/proc/proc.hpp>
+#include <tupai/task/task.hpp>
 
 #include <tupai/util/in.hpp>
 #include <tupai/util/fmt.hpp>
@@ -143,7 +143,7 @@ namespace tupai
 			}
 			else if (util::str_equal(argv[0], "proc"))
 			{
-				proc::display();
+				task::display();
 			}
 			else if (util::str_equal(argv[0], "mmap"))
 			{

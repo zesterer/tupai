@@ -1,5 +1,5 @@
 //
-// file : process.cpp
+// file : thread.hpp
 //
 // This file is part of Tupai.
 //
@@ -17,20 +17,32 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+#ifndef TUPAI_TASK_THREAD_HPP
+#define TUPAI_TASK_THREAD_HPP
+
 // Tupai
-#include <tupai/proc/process.hpp>
+#include <tupai/task/task.hpp>
+
+// Standard
+#include <stddef.h>
+#include <stdint.h>
 
 namespace tupai
 {
-	namespace proc
+	namespace task
 	{
-		proc_t::~proc_t()
+		struct thread_t
 		{
-			for (size_t i = 0; i < this->threads.size(); i ++)
-				this->threads.nth(i)->kill();
+			id_t id;
+			id_t lid;
+			proc_ptr_t proc;
+			thread_state state;
 
-			for (size_t i = 0; i < this->fds.size(); i ++)
-				this->fds.nth(i)->destroy();
-		}
+			size_t entry;
+			size_t stack;
+			size_t stack_block;
+		};
 	}
 }
+
+#endif

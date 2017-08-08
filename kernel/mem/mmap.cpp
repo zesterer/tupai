@@ -59,7 +59,7 @@ namespace tupai
 				mutex.unlock(); // End critical section
 			}
 
-			int alloc(void** phys_addr, proc::proc_ptr_t owner, uint8_t flags)
+			int alloc(void** phys_addr, task::proc_ptr_t owner, uint8_t flags)
 			{
 				mutex.lock(); // Begin critical section
 
@@ -83,7 +83,7 @@ namespace tupai
 				return err;
 			}
 
-			int reserve(void* phys_addr, proc::proc_ptr_t owner, uint8_t flags)
+			int reserve(void* phys_addr, task::proc_ptr_t owner, uint8_t flags)
 			{
 				mutex.lock(); // Begin critical section
 
@@ -101,7 +101,7 @@ namespace tupai
 				return err;
 			}
 
-			int reserve_region(void* phys_addr, size_t size, proc::proc_ptr_t owner, uint8_t flags)
+			int reserve_region(void* phys_addr, size_t size, task::proc_ptr_t owner, uint8_t flags)
 			{
 				size_t sindex = physical_to_index(phys_addr);
 				size_t eindex = physical_to_index((void*)((size_t)phys_addr + size - 1));
@@ -148,17 +148,17 @@ namespace tupai
 
 			void display()
 			{
-				proc::proc_ptr_t cproc = ID_INVALID;
+				task::proc_ptr_t cproc = ID_INVALID;
 				uint8_t cflags = 0x0;
 				for (size_t i = 0; i < PAGE_COUNT; i ++)
 				{
-					proc::proc_ptr_t nproc = pages[i]._owner;
+					task::proc_ptr_t nproc = pages[i]._owner;
 					uint8_t nflags = pages[i]._flags;
 
 					if (cproc != nproc || cflags != nflags || i == 0)
 					{
-						char name[proc::PROC_NAME_MAX] = "FREE";
-						nproc.get_name(name, proc::PROC_NAME_MAX);
+						char name[task::PROC_NAME_MAX] = "FREE";
+						nproc.get_name(name, task::PROC_NAME_MAX);
 
 						util::log("[", index_to_physical(i), "] -> ", name, " (", nproc.id, ")");
 						if (nflags & (uint8_t)page_flags::STATIC)
