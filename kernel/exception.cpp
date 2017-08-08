@@ -37,7 +37,7 @@ namespace tupai
 
 		proc::thread_ptr_t cthread = proc::get_current_thread();
 		char proc_name[proc::PROC_NAME_MAX];
-		cthread.get_process().get_name(proc_name, proc::PROC_NAME_MAX);
+		cthread.get_process().get_name(proc_name);
 
 		if (critical)
 		{

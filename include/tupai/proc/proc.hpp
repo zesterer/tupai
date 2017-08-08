@@ -82,6 +82,8 @@ namespace tupai
 			proc_ptr_t(id_t id) { this->id = id; }
 			operator id_t() { return this->id; }
 
+			template <size_t SIZE>
+			int get_name(char(&buff)[SIZE]) { return this->get_name(buff, SIZE); }
 			int           get_name(char* rbuff, size_t n);
 			vfs::fd_ptr_t get_fd(id_t lfd);
 
