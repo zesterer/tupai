@@ -29,6 +29,7 @@ namespace tupai
 	namespace sys
 	{
 		void ramdisk_add(void* start, size_t size, const char* args);
+		void ramdisk_reserve();
 		void ramdisk_init();
 	}
 }

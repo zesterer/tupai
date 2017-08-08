@@ -30,7 +30,7 @@ namespace tupai
 	{
 		namespace mmap
 		{
-			static const size_t MEM_SIZE = 512 * 1024 * 1024;
+			static const uint64_t MEM_SIZE = 4L * 1024L * 1024L * 1024L; // 4G
 			static const size_t PAGE_COUNT = MEM_SIZE / ARCH_PAGE_SIZE;
 			page_t pages[PAGE_COUNT];
 
@@ -74,6 +74,44 @@ namespace tupai
 						err = 0;
 						break;
 					}
+				}
+
+				if (err == 1)
+					panic("Out of memory");
+
+				mutex.unlock(); // End critical section
+				return err;
+			}
+
+			int alloc_contiguous(void** phys_addr, size_t size, task::proc_ptr_t owner, uint8_t flags)
+			{
+				mutex.lock(); // Begin critical section
+
+				size_t page_num = util::align_ceiling(size, ARCH_PAGE_SIZE) / ARCH_PAGE_SIZE;
+
+				int err = 1;
+				for (size_t i = 0; i + page_num <= PAGE_COUNT; i ++)
+				{
+					// Search for empty block
+					bool failed = false;
+					for (size_t j = 0; j < page_num; j ++)
+					{
+						if (pages[i + j]._owner != ID_INVALID)
+							failed = true;
+					}
+
+					if (failed)
+						continue;
+
+					for (size_t j = 0; j < page_num && i + j < PAGE_COUNT; j ++)
+					{
+						pages[i + j]._owner = owner;
+						pages[i + j]._flags = flags;
+					}
+
+					*phys_addr = index_to_physical(i);
+					err = 0;
+					break;
 				}
 
 				if (err == 1)

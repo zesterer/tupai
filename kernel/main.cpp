@@ -66,6 +66,8 @@ namespace tupai
 			task::get_kernel(),
 			(uint8_t)mem::mmap::page_flags::NONE
 		);
+		sys::ramdisk_reserve(); // Reserve ramdisk memory
+
 		mem::kmem::init(); // Initiate kernel memory allocation
 	}
 

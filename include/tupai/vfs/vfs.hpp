@@ -76,6 +76,9 @@ namespace tupai
 			inode_ptr_t(id_t id) { this->id = id; }
 			operator id_t() { return this->id; }
 
+			template <size_t SIZE>
+			int get_child_name(inode_ptr_t child, char(&rname)[SIZE]) { return this->get_child_name(child, rname, SIZE); }
+
 			int         get_type      (inode_type* rtype);
 			int         get_vtable    (vtable_t** rvtable);
 			size_t      get_children  ();

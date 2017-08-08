@@ -74,6 +74,15 @@ namespace tupai
 			}
 		}
 
+		void ramdisk_reserve()
+		{
+			for (size_t i = 0; i < RAMDISK_MAX; i ++)
+			{
+				if (ramdisks[i].size != 0)
+					mem::mmap::reserve_region((void*)((size_t)ramdisks[i].start - arch_get_offset()), ramdisks[i].size, task::get_kernel(), 0xFF); // Reserve the ramdisk region
+			}
+		}
+
 		void ramdisk_init()
 		{
 			ramdisk_vtable.open  = ramdisk_open_call;
@@ -89,7 +98,7 @@ namespace tupai
 
 		void ramdisk_create(ramdisk_t* ramdisk, const char* name)
 		{
-			mem::mmap::reserve_region((void*)((size_t)ramdisk->start - arch_get_offset()), ramdisk->size, task::get_kernel(), 0b00000000); // Reserve the ramdisk region
+			util::logln("Found ramdisk at ", ramdisk->start, " of size ", ramdisk->size);
 
 			// Create a filesystem for the ramdisk
 			vfs::fs_ptr_t fs = vfs::create_fs(name);
@@ -98,9 +107,6 @@ namespace tupai
 			vfs::set_root(fs.get_root());
 
 			ramdisk->fs = fs;
-
-			// TODO : re-add this
-			//mmap_reserve((size_t)ramdisk->start, (size_t)ramdisk->size, KERNEL_PROC_ID); // Reserve the memory
 
 			util::tar_header_t* cheader = (util::tar_header_t*)ramdisk->start;
 			while (cheader != nullptr)

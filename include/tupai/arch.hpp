@@ -32,9 +32,6 @@ namespace tupai
 	extern "C" char kernel_start[];
 	extern "C" char kernel_end[];
 
-	extern "C" char kernel_heap_start[];
-	extern "C" char kernel_heap_end[];
-
 	struct arch_reg_state;
 	size_t arch_get_reg_state_size();
 
@@ -45,11 +42,8 @@ namespace tupai
 	size_t arch_get_kernel_start();
 	size_t arch_get_kernel_end();
 
-	void*  arch_get_kernel_heap();
-	size_t arch_get_kernel_heap_size();
-
 	void  arch_init();
-	void* arch_kernel_alloc(size_t bytes);
+
 	void  arch_display_reg_state(arch_reg_state* state);
 }
 

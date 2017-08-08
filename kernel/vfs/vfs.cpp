@@ -182,7 +182,7 @@ namespace tupai
 				inode_ptr_t ninode = inode.get_nth_child(i);
 
 				char name[FILENAME_MAX];
-				inode.get_child_name(ninode, name, FILENAME_MAX);
+				inode.get_child_name(ninode, name);
 
 				vfs_print_inode(ninode, name, depth + 1);
 			}

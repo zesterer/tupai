@@ -48,6 +48,7 @@ namespace tupai
 
 			void init();
 			int  alloc(void** phys_addr, task::proc_ptr_t owner, uint8_t flags);
+			int  alloc_contiguous(void** phys_addr, size_t size, task::proc_ptr_t owner, uint8_t flags);
 			int  reserve(void* phys_addr, task::proc_ptr_t owner, uint8_t flags);
 			int  reserve_region(void* phys_addr, size_t size, task::proc_ptr_t owner, uint8_t flags);
 			int  dealloc(void* phys_addr);
