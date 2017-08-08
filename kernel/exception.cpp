@@ -40,7 +40,14 @@ namespace tupai
 		cthread.get_process().get_name(proc_name, proc::PROC_NAME_MAX);
 
 		if (critical)
-			panic(except_name);
+		{
+			panic(
+				"Exception in thread '", (long)cthread,   // Thread ID
+				"' of process '", proc_name,              // Process name
+				"' : ", except_name,                      // Exception name
+				" [", util::fmt_int<long>(error, 16), ']' // Error code
+			);
+		}
 		else
 		{
 			util::logln(

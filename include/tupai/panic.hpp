@@ -20,13 +20,24 @@
 #ifndef TUPAI_PANIC_HPP
 #define TUPAI_PANIC_HPP
 
+// Tupai
+#include <tupai/util/fmt.hpp>
+
 // Standard
 #include <stddef.h>
 #include <stdint.h>
 
 namespace tupai
 {
-	extern "C" void panic(const char* msg = "[NO ERROR MESSAGE]") __attribute__((__noreturn__));
+	extern "C" void _panic(const char* msg) __attribute__((__noreturn__));
+
+	template <typename... Args>
+	void panic(Args&&... args)
+	{
+		char buff[1024];
+		util::fmt(buff, args ...);
+		_panic(buff);
+	}
 }
 
 #endif

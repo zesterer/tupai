@@ -29,7 +29,7 @@
 
 namespace tupai
 {
-	void panic(const char* msg)
+	void _panic(const char* msg)
 	{
 		irq::disable();
 
