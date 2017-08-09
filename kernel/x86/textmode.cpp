@@ -158,5 +158,18 @@ namespace tupai
 			for (int col = 0; col < col_max; col ++)
 				buffer[col_max * (row_max - 1) + col] = (color << 8) | ' ';
 		}
+
+		void textmode_apply(util::ansi_cmd_t cmd)
+		{
+			switch (cmd.type)
+			{
+			case util::ansi_cmd::PASS:
+				textmode_write(cmd.c);
+				break;
+
+			default:
+				break;
+			}
+		}
 	}
 }

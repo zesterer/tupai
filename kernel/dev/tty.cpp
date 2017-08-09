@@ -22,6 +22,7 @@
 #include <tupai/dev/serial.hpp>
 #include <tupai/util/mutex.hpp>
 #include <tupai/util/hwlock.hpp>
+#include <tupai/util/ansi.hpp>
 #include <tupai/sys/pipe.hpp>
 #include <tupai/task/task.hpp>
 #include <tupai/debug.hpp>
@@ -128,18 +129,25 @@ namespace tupai
 			(void)argc;
 			(void)argv;
 
+			util::ansi_t ansi;
+
 			while (true)
 			{
 				unsigned char c = outpipe.read(); // Unsafe call to avoid exception locking
 
+				util::ansi_cmd_t cmd = ansi.consume(c);
+
 				#if defined(ARCH_FAMILY_x86)
-					x86::textmode_write(c);
+					x86::textmode_apply(cmd);
 				#endif
 
-				dev::serial_write(tty_serial_port, c);
+				if (cmd.type == util::ansi_cmd::PASS)
+				{
+					dev::serial_write(tty_serial_port, cmd.c);
 
-				if (c == '\n')
-					dev::serial_write(tty_serial_port, '\r');
+					if (cmd.c == '\n')
+						dev::serial_write(tty_serial_port, '\r');
+				}
 			}
 		}
 	}
