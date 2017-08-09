@@ -104,6 +104,8 @@ namespace tupai
 		shell_motd();
 		print("Type 'help' for more info.\n\n");
 
+		print("This \e[31m should \e[0m be in \e[32m color\e[0m !\n");
+
 		bool halted = false;
 		while (!halted)
 		{

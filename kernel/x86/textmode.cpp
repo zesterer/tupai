@@ -38,7 +38,7 @@ namespace tupai
 		static volatile uint16_t* buffer = (uint16_t*)0xB8000;
 		static const int col_max = 80;
 		static const int row_max = 25;
-		static const unsigned char color = 0x0F;
+		static uint8_t color = 0x0F;
 
 		static int col, row;
 
@@ -167,9 +167,23 @@ namespace tupai
 				textmode_write(cmd.c);
 				break;
 
+			case util::ansi_cmd::SGR_PARAMETER:
+				textmode_apply_sgr(cmd.sgr_parameter.n);
+				break;
+
 			default:
 				break;
 			}
+		}
+
+		void textmode_apply_sgr(int n)
+		{
+			if (n == 0)
+				color = 0x0F;
+			else if (n >= 30 && n <= 37)
+				color = ((uint8_t)((n - 30) << 0) & 0x0F) | (color & 0xF0);
+			else if (n >= 40 && n <= 47)
+				color = ((uint8_t)((n - 40) << 4) & 0xF0) | (color & 0x0F);
 		}
 	}
 }

@@ -28,6 +28,8 @@ namespace tupai
 {
 	namespace util
 	{
+		bool is_newline(char c);
+
 		bool is_whitespace(char c)
 		{
 			return c == ' ' || c == '\n' || is_newline(c);
@@ -77,22 +79,22 @@ namespace tupai
 		{
 			return ((c >= '0' && c <= '9') ? (c - '0') :
 				((c >= 'a' && c <= 'f') ? (c - 'a' + 10) :
-				((c >= 'A' && c <= 'F') ? (c - 'A' + 10) : (0, false))));
+				((c >= 'A' && c <= 'F') ? (c - 'A' + 10) : 0xFF)));
 		}
 
 		char digit_to_num(char c)
 		{
-			return ((c >= '0' && c <= '9') ? (c - '0') : (0, false));
+			return ((c >= '0' && c <= '9') ? (c - '0') : 0xFF);
 		}
 
 		char num_to_hex(char n)
 		{
-			return ((n >= 0 && n <= 9) ? ('0' + n) : ((n >= 0xA && n <= 0xF) ? ('A' + n - 10) : ('0', false)));
+			return ((n >= 0 && n <= 9) ? ('0' + n) : ((n >= 0xA && n <= 0xF) ? ('A' + n - 10) : '!'));
 		}
 
 		char num_to_digit(char n)
 		{
-			return ((n >= 0 && n <= 9) ? ('0' + n) : ('0', false));
+			return ((n >= 0 && n <= 9) ? ('0' + n) : '!');
 		}
 
 		char to_lowercase(char c)

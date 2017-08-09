@@ -37,6 +37,7 @@ namespace tupai
 		void textmode_clear();
 
 		void textmode_apply(util::ansi_cmd_t cmd);
+		void textmode_apply_sgr(int n);
 	}
 }
 

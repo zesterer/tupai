@@ -122,7 +122,7 @@ namespace tupai
 		struct ansi_scroll_up_t   { int n; };
 		struct ansi_scroll_down_t { int n; };
 
-		struct ansi_sgr_parameter_t { int n; };
+		struct ansi_sgr_parameter_t { int n; ansi_sgr_parameter_t(int n) { this->n = n; } };
 
 		// Command struct
 
@@ -178,7 +178,7 @@ namespace tupai
 		struct ansi_t
 		{
 			int state = 0;
-			int num[2] = { 1, 1 };
+			int num[2] = { 0, 0 };
 
 			ansi_cmd_t consume(char c);
 		};

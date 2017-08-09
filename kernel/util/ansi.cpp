@@ -19,6 +19,7 @@
 
 // Tupai
 #include <tupai/util/ansi.hpp>
+#include <tupai/util/char.hpp>
 
 namespace tupai
 {
@@ -26,7 +27,70 @@ namespace tupai
 	{
 		ansi_cmd_t ansi_t::consume(char c)
 		{
-			return ansi_cmd_t(c);
+			ansi_cmd_t cmd;
+
+			switch (this->state)
+			{
+			case 0:
+				{
+					switch (c)
+					{
+					case '\x1B':
+						this->state = 1;
+						break;
+
+					default:
+						cmd = ansi_cmd_t(c);
+						break;
+					}
+				}
+				break;
+
+			case 1:
+				{
+					this->num[0] = 0;
+					this->num[1] = 0;
+
+					switch (c)
+					{
+					case '[':
+						this->state = 2;
+						break;
+
+					default:
+						cmd = ansi_cmd_t(c);
+						break;
+					}
+				}
+				break;
+
+			case 2:
+				{
+					if (is_digit(c))
+					{
+						this->num[0] *= 10;
+						this->num[0] += digit_to_num(c);
+					}
+					else
+					{
+						if (c == 'm')
+							cmd = ansi_cmd_t(ansi_sgr_parameter_t(num[0]));
+
+						this->state = 0;
+					}
+				}
+				break;
+
+			default:
+				{
+					this->state = 0;
+					this->num[0] = 0;
+					this->num[1] = 0;
+				}
+				break;
+			}
+
+			return cmd;
 		}
 	}
 }
