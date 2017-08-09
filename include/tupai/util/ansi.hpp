@@ -61,6 +61,50 @@ namespace tupai
 			AUX_OFF,       // Turn AUX port off
 		};
 
+		enum class ansi_sgr : int
+		{
+			RESET             = 0,  // All attributes off
+
+			INTENSITY_BOLD    = 1,  // Set bold intensity
+			INTENSITY_FAINT   = 2,  // Set faint intensity
+			INTENSITY_NORMAL  = 22, // Set normal intensity
+
+			STYLE_ITALIC      = 3,  // Set italic
+			STYLE_FRAKTUR     = 20, // Set fraktur font
+			STYLE_NONE        = 23, // Set no styling
+
+			FONT_PRIMARY      = 10, // Set primary font
+
+			UNDERLINE_SINGLE  = 4,  // Set underline single
+			UNDERLINE_DOUBLE  = 21, // Set bold off or underline double
+			UNDERLINE_NONE    = 24, // Set underline none
+
+			BLINK_SLOW        = 5,  // Set blink slow
+			BLINK_FAST        = 6,  // Set blink fast
+			BLINK_OFF         = 25, // Set blink off
+
+			IMAGE_REVERSE     = 7,  // Set reverse foreground and background color
+			IMAGE_POSITIVE    = 27, // Set colours to normal
+
+			CONCEAL_ON        = 8,  // Set conceal on
+			CONCEAL_OFF       = 28, // Set conceal off
+
+			STRIKETHROUGH_ON  = 9,  // Set strikethrough on
+			STRIKETHROUGH_OFF = 29, // Set strikethrough off
+
+			COLOR_FG_DEFAULT  = 39, // Set default text color
+			COLOR_BG_DEFAULT  = 49, // Set default background color
+
+			FRAME_SQUARE      = 51, // Set frame square
+			FRAME_CIRCLE      = 52, // Set frame circle
+			FRAME_OFF         = 54, // Set frame off
+
+			OVERLINED_ON      = 53, // Set overlined on
+			OVERLINED_OFF     = 55, // Set overlined off
+
+			// TODO : Add ideogram codes
+		};
+
 		// Command data
 
 		struct ansi_cursor_up_t     { int n; };
