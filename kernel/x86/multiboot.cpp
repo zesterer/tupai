@@ -23,6 +23,8 @@
 #include <tupai/util/mem.hpp>
 #include <tupai/util/str.hpp>
 #include <tupai/sys/ramdisk.hpp>
+#include <tupai/mem/mmap.hpp>
+#include <tupai/task/task.hpp>
 #include <tupai/arch.hpp>
 #include <tupai/debug.hpp>
 
@@ -116,9 +118,10 @@ namespace tupai
 			// Relocate the module to avoid conflicts
 			/*
 			size_t mod_size = module->end - module->start;
-			void* naddr = arch_kernel_alloc(mod_size);
-			util::mem_copy((void*)(size_t)module->start, naddr, mod_size);
-			module->start = (size_t)naddr - arch_get_offset();
+			void* naddr = nullptr;
+			mem::mmap::alloc_contiguous(&naddr, mod_size, task::get_kernel(), 0b00000000);
+			util::mem_copy((void*)(size_t)module->start, naddr + arch_get_offset(), mod_size);
+			module->start = (size_t)naddr + arch_get_offset();
 			module->end = module->start + mod_size;
 			*/
 

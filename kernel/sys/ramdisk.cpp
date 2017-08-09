@@ -79,7 +79,7 @@ namespace tupai
 			for (size_t i = 0; i < RAMDISK_MAX; i ++)
 			{
 				if (ramdisks[i].size != 0)
-					mem::mmap::reserve_region((void*)((size_t)ramdisks[i].start - arch_get_offset()), ramdisks[i].size, task::get_kernel(), 0xFF); // Reserve the ramdisk region
+					mem::mmap::reserve_region((void*)((size_t)ramdisks[i].start - arch_get_offset()), ramdisks[i].size, task::get_kernel(), 0x00); // Reserve the ramdisk region
 			}
 		}
 
@@ -109,6 +109,7 @@ namespace tupai
 			ramdisk->fs = fs;
 
 			util::tar_header_t* cheader = (util::tar_header_t*)ramdisk->start;
+			//cheader = nullptr;
 			while (cheader != nullptr)
 			{
 				const char* filename = cheader->filename;
@@ -159,6 +160,7 @@ namespace tupai
 						vfs::inode_ptr_t ninode = vfs::create_inode(type);
 						ninode.set_fs(fs);
 						cinode.mount_child(ninode, buff);
+						//util::logln("Mounted ", buff);
 
 						if (type == vfs::inode_type::NORMAL_FILE && i + 1 == n)
 						{
@@ -174,6 +176,9 @@ namespace tupai
 
 				cheader = tar_next(cheader);
 			}
+
+			//vfs::inode_ptr_t dev_ptr = vfs::create_inode(vfs::inode_type::DIRECTORY);
+			//vfs::get_root().mount_child(dev_ptr, "dev");
 		}
 
 		int ramdisk_open_call (vfs::inode_ptr_t inode)
@@ -211,41 +216,7 @@ namespace tupai
 				return -1;
 		}
 
-		ssize_t       ramdisk_write_call(vfs::fd_ptr_t desc, const void* buff, size_t n);
-
-		/*
-		id_t ramdisk_open_call(id_t pid, fs::inode_t* inode)
-		{
-			return create_desc(pid, inode);
-		}
-
-		int ramdisk_close_call(id_t pid, fs::desc_t* desc)
-		{
-			return proc_close_desc(pid, desc->id);
-		}
-
-		ssize_t ramdisk_read_call(id_t pid, fs::desc_t* desc, size_t n, void* ret_buff)
-		{
-			util::tar_header_t* header = *inodes[desc->inode];
-
-			if (header != nullptr)
-			{
-				size_t filesize = util::tar_size(header);
-				uint8_t* data = (uint8_t*)util::tar_data(header);
-
-				size_t i;
-				for (i = 0; i + 1 < n && desc->offset < filesize; i ++)
-				{
-					((uint8_t*)ret_buff)[i] = data[desc->offset];
-					desc->offset ++;
-				}
-				((uint8_t*)ret_buff)[i] = '\0';
-
-				return i;
-			}
-			else
-				return -1;
-		}
-		*/
+		// TODO : Implement this
+		ssize_t ramdisk_write_call(vfs::fd_ptr_t desc, const void* buff, size_t n);
 	}
 }

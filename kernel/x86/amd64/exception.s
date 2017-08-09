@@ -215,6 +215,7 @@
 
 		add $16, %rsp
 		PUSH_REGS // Preserve registers
+		movq $1, (in_irq) // We're now in an IRQ!
 
 		mov (tmp_exception_err), %rdx // Pass the exception error
 		mov (tmp_exception_code), %rsi // Pass the exception code
@@ -223,6 +224,7 @@
 		call exception_handle
 		mov %rax, %rsp // Restore the thread stack pointer
 
+		movq $0, (in_irq) // No longer in an IRQ
 		POP_REGS // Restore registers
 		iretq
 

@@ -31,11 +31,11 @@ namespace tupai
 {
 	namespace task
 	{
-		void         scheduler_init();
-		void         scheduler_schedule(thrd_ptr_t thread, int priority = 0);
-		void         scheduler_increment();
+		void       scheduler_init();
+		void       scheduler_schedule(thrd_ptr_t thread, int priority = 0);
+		void       scheduler_increment();
 		thrd_ptr_t scheduler_current();
-		size_t       scheduler_preempt(size_t old_stack);
+		size_t     scheduler_preempt(size_t old_stack);
 	}
 }
 

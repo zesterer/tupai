@@ -47,7 +47,7 @@ namespace tupai
 				void* pool_area = nullptr; // = arch_kernel_alloc(KMEM_SIZE);
 				//util::logln("AREA = ", arch_get_kernel_heap(), " SIZE = ", arch_get_kernel_heap_size());
 				int alloc_result = mmap::alloc_contiguous(&pool_area, KMEM_SIZE, task::get_kernel(), 0b00000000);
-				//pool_area = (void*)((size_t)pool_area + arch_get_offset());
+				pool_area = (void*)((size_t)pool_area + arch_get_offset());
 
 				if (pool_area == nullptr || alloc_result != 0)
 					panic("Could not allocate kernel memory pool");

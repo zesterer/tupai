@@ -179,6 +179,7 @@
 
 		add $8, %esp
 		pushal // Preserve registers
+		movl $1, (in_irq) // We're now in an IRQ!
 
 		mov %esp, %eax // Preserve ESP
 		push (tmp_exception_err) // Pass the exception error
@@ -188,6 +189,7 @@
 		call exception_handle
 		mov %eax, %esp // Restore the thread stack pointer
 
+		movl $0, (in_irq) // No longer in an IRQ
 		popal // Restore registers
 		iret
 
