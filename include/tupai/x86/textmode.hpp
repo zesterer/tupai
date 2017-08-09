@@ -28,13 +28,19 @@ namespace tupai
 	namespace x86
 	{
 		void textmode_init();
+
 		void textmode_cursor_enable();
 		void textmode_cursor_disable();
 		void textmode_cursor_move(int col, int row);
 		void textmode_move(int ncol, int nrow);
+
 		void textmode_write(char c);
+
 		void textmode_scroll(int n);
 		void textmode_clear();
+
+		void textmode_set_fg(uint8_t color);
+		void textmode_set_bg(uint8_t color);
 
 		void textmode_apply(util::ansi_cmd_t cmd);
 		void textmode_apply_sgr(int n);

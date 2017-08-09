@@ -38,9 +38,12 @@ namespace tupai
 		static volatile uint16_t* buffer = (uint16_t*)0xB8000;
 		static const int col_max = 80;
 		static const int row_max = 25;
-		static uint8_t color = 0x0F;
+		static const uint8_t default_color = 0x0F;
+		static uint8_t color = default_color;
 
 		static int col, row;
+
+		static uint8_t ansi_to_vga_color[] = { 0, 4, 2, 6, 1, 5, 3, 7, 8, 12, 10, 14, 9, 13, 11, 15 };
 
 		void textmode_init()
 		{
@@ -139,13 +142,6 @@ namespace tupai
 			textmode_cursor_move(col, row);
 		}
 
-		void textmode_clear()
-		{
-			for (int row = 0; row < row_max; row ++)
-				for (int col = 0; col < col_max; col ++)
-					buffer[col_max * row + col] = (color << 8) | ' ';
-		}
-
 		void textmode_scroll(int n)
 		{
 			if (n <= 0)
@@ -157,6 +153,25 @@ namespace tupai
 
 			for (int col = 0; col < col_max; col ++)
 				buffer[col_max * (row_max - 1) + col] = (color << 8) | ' ';
+		}
+
+		void textmode_clear()
+		{
+			for (int row = 0; row < row_max; row ++)
+				for (int col = 0; col < col_max; col ++)
+					buffer[col_max * row + col] = (color << 8) | ' ';
+		}
+
+		void textmode_set_fg(uint8_t ncolor)
+		{
+			ncolor = ansi_to_vga_color[ncolor & 0xF];
+			color = (ncolor & 0x0F) | (color & 0xF0);
+		}
+
+		void textmode_set_bg(uint8_t ncolor)
+		{
+			ncolor = ansi_to_vga_color[ncolor & 0xF];
+			color = ((ncolor << 4) & 0xF0) | (color & 0x0F);
 		}
 
 		void textmode_apply(util::ansi_cmd_t cmd)
@@ -179,11 +194,15 @@ namespace tupai
 		void textmode_apply_sgr(int n)
 		{
 			if (n == 0)
-				color = 0x0F;
+				color = default_color;
 			else if (n >= 30 && n <= 37)
-				color = ((uint8_t)((n - 30) << 0) & 0x0F) | (color & 0xF0);
+				textmode_set_fg(n - 30);
 			else if (n >= 40 && n <= 47)
-				color = ((uint8_t)((n - 40) << 4) & 0xF0) | (color & 0x0F);
+				textmode_set_bg(n - 40);
+			else if (n >= 90 && n <= 97)
+				textmode_set_fg(8 + n - 90);
+			else if (n >= 100 && n <= 107)
+				textmode_set_bg(8 + n - 100);
 		}
 	}
 }
