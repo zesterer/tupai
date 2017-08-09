@@ -38,11 +38,9 @@ namespace tupai
 
 			static pool::pool_t pool;
 
-			static util::hwlock_t hwlock;
-
 			void init()
 			{
-				hwlock.lock(); // Begin critical section
+				util::hwlock_acquire(); // Begin critical section
 
 				//void* pool_area = arch_get_kernel_heap();
 				//size_t pool_size = arch_get_kernel_heap_size();
@@ -59,29 +57,29 @@ namespace tupai
 				if (!result)
 					panic("Could not construct kernel memory pool");
 
-				hwlock.unlock(); // End critical section
+				util::hwlock_release(); // End critical section
 			}
 
 			void* alloc(size_t n)
 			{
-				hwlock.lock(); // Begin critical section
+				util::hwlock_acquire(); // Begin critical section
 
 				void* ptr = pool.alloc(n);
 
 				if (ptr == nullptr)
 					panic("Failed to allocate kernel memory pool block(s)");
 
-				hwlock.unlock(); // End critical section
+				util::hwlock_release(); // End critical section
 				return ptr;
 			}
 
 			void dealloc(void* ptr)
 			{
-				hwlock.lock(); // Begin critical section
+				util::hwlock_acquire(); // Begin critical section
 
 				pool.dealloc(ptr);
 
-				hwlock.unlock(); // End critical section
+				util::hwlock_release(); // End critical section
 			}
 
 			void info()
@@ -96,11 +94,11 @@ namespace tupai
 
 			void log()
 			{
-				hwlock.lock(); // Begin critical section
+				util::hwlock_acquire(); // Begin critical section
 
 				pool.display(KMEM_SIZE / KMEM_BLOCK_SIZE);
 
-				hwlock.unlock(); // End critical section
+				util::hwlock_release(); // End critical section
 			}
 		}
 	}

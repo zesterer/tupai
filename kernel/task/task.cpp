@@ -41,8 +41,6 @@ namespace tupai
 		static util::hashtable_t<thread_t> thread_table;
 		static id_t thread_counter = 0;
 
-		static util::hwlock_t hwlock;
-
 		// TODO : Do something more with this
 		static const size_t THREAD_STACK_SIZE = 2048;
 
@@ -52,70 +50,67 @@ namespace tupai
 
 		proc_ptr_t get_kernel()
 		{
-			hwlock.lock(); // Begin critical section
+			util::hwlock_acquire(); // Begin critical section
 
 			proc_ptr_t val = kproc;
 
-			hwlock.unlock(); // End critical section
-
+			util::hwlock_release(); // End critical section
 			return val;
 		}
 
 		proc_ptr_t get_current()
 		{
-			hwlock.lock(); // Begin critical section
+			util::hwlock_acquire(); // Begin critical section
 
 			proc_ptr_t val = cproc;
 
-			hwlock.unlock(); // End critical section
-
+			util::hwlock_release(); // End critical section
 			return val;
 		}
 
 		thrd_ptr_t get_current_thread()
 		{
-			hwlock.lock(); // Begin critical section
+			util::hwlock_acquire(); // Begin critical section
 
 			thrd_ptr_t val = cthread;
 
-			hwlock.unlock(); // End critical section
-
+			util::hwlock_release(); // End critical section
 			return val;
 		}
 
 		void set_current(proc_ptr_t proc)
 		{
-			hwlock.lock(); // Begin critical section
+			util::hwlock_acquire(); // Begin critical section
 
 			cproc = proc;
 
-			hwlock.unlock(); // End critical section
+			util::hwlock_release(); // End critical section
 		}
 
 		void set_current_thread(thrd_ptr_t thread)
 		{
-			hwlock.lock(); // Begin critical section
+			util::hwlock_acquire(); // Begin critical section
 
 			cthread = thread;
 			cproc = thread.get_process();
 
-			hwlock.unlock(); // End critical section
+			util::hwlock_release(); // End critical section
 		}
 
 		void init()
 		{
-			hwlock.lock(); // Begin critical section
+			util::hwlock_acquire(); // Begin critical section
 
 			// Create the initial kernel process
 			kproc = create_process("kernel", vfs::get_root());
 			cproc = kproc;
 
-			hwlock.unlock(); // End critical section
+			util::hwlock_release(); // End critical section
 		}
 
 		proc_ptr_t create_process(const char* name, vfs::inode_ptr_t dir)
 		{
-			hwlock.lock(); // Begin critical section
+			util::hwlock_acquire(); // Begin critical section
 
 			process_t nproc;
 			nproc.id = proc_counter ++;
@@ -124,7 +119,7 @@ namespace tupai
 
 			proc_table.add(nproc.id, nproc);
 
-			hwlock.unlock(); // End critical section
+			util::hwlock_release(); // End critical section
 			return nproc.id;
 		}
 
@@ -144,7 +139,7 @@ namespace tupai
 
 		id_t thrd_ptr_t::get_lid()
 		{
-			hwlock.lock(); // Begin critical section
+			util::hwlock_acquire(); // Begin critical section
 
 			thread_t* thread = thread_table[this->id];
 
@@ -152,13 +147,13 @@ namespace tupai
 			if (thread != nullptr)
 				val = thread->lid;
 
-			hwlock.unlock(); // End critical section
+			util::hwlock_release(); // End critical section
 			return val;
 		}
 
 		thread_state thrd_ptr_t::get_state()
 		{
-			hwlock.lock(); // Begin critical section
+			util::hwlock_acquire(); // Begin critical section
 
 			thread_t* thread = thread_table[this->id];
 
@@ -166,13 +161,13 @@ namespace tupai
 			if (thread != nullptr)
 				val = thread->state;
 
-			hwlock.unlock(); // End critical section
+			util::hwlock_release(); // End critical section
 			return val;
 		}
 
 		proc_ptr_t thrd_ptr_t::get_process()
 		{
-			hwlock.lock(); // Begin critical section
+			util::hwlock_acquire(); // Begin critical section
 
 			thread_t* thread = thread_table[this->id];
 
@@ -180,13 +175,13 @@ namespace tupai
 			if (thread != nullptr)
 				val = thread->proc;
 
-			hwlock.unlock(); // End critical section
+			util::hwlock_release(); // End critical section
 			return val;
 		}
 
 		size_t thrd_ptr_t::get_entry()
 		{
-			hwlock.lock(); // Begin critical section
+			util::hwlock_acquire(); // Begin critical section
 
 			thread_t* thread = thread_table[this->id];
 
@@ -194,13 +189,13 @@ namespace tupai
 			if (thread != nullptr)
 				val = thread->entry;
 
-			hwlock.unlock(); // End critical section
+			util::hwlock_release(); // End critical section
 			return val;
 		}
 
 		size_t thrd_ptr_t::get_stack()
 		{
-			hwlock.lock(); // Begin critical section
+			util::hwlock_acquire(); // Begin critical section
 
 			thread_t* thread = thread_table[this->id];
 
@@ -208,44 +203,44 @@ namespace tupai
 			if (thread != nullptr)
 				val = thread->stack;
 
-			hwlock.unlock(); // End critical section
+			util::hwlock_release(); // End critical section
 			return val;
 		}
 
 		void thrd_ptr_t::set_lid(id_t lid)
 		{
-			hwlock.lock(); // Begin critical section
+			util::hwlock_acquire(); // Begin critical section
 
 			thread_t* thread = thread_table[this->id];
 
 			if (thread != nullptr)
 				thread->lid = lid;
 
-			hwlock.unlock(); // End critical section
+			util::hwlock_release(); // End critical section
 		}
 
 		void thrd_ptr_t::set_state(thread_state state)
 		{
-			hwlock.lock(); // Begin critical section
+			util::hwlock_acquire(); // Begin critical section
 
 			thread_t* thread = thread_table[this->id];
 
 			if (thread != nullptr)
 				thread->state = state;
 
-			hwlock.unlock(); // End critical section
+			util::hwlock_release(); // End critical section
 		}
 
 		void thrd_ptr_t::set_stack(size_t stack)
 		{
-			hwlock.lock(); // Begin critical section
+			util::hwlock_acquire(); // Begin critical section
 
 			thread_t* thread = thread_table[this->id];
 
 			if (thread != nullptr)
 				thread->stack = stack;
 
-			hwlock.unlock(); // End critical section
+			util::hwlock_release(); // End critical section
 		}
 
 		int thrd_ptr_t::kill()
@@ -259,7 +254,7 @@ namespace tupai
 
 		int proc_ptr_t::get_name(char* rbuff, size_t n)
 		{
-			hwlock.lock(); // Begin critical section
+			util::hwlock_acquire(); // Begin critical section
 
 			process_t* proc = proc_table[this->id];
 
@@ -270,13 +265,13 @@ namespace tupai
 				err = 0;
 			}
 
-			hwlock.unlock(); // End critical section
+			util::hwlock_release(); // End critical section
 			return err;
 		}
 
 		vfs::fd_ptr_t proc_ptr_t::get_fd(id_t lfd)
 		{
-			hwlock.lock(); // Begin critical section
+			util::hwlock_acquire(); // Begin critical section
 
 			process_t* proc = proc_table[this->id];
 
@@ -288,13 +283,13 @@ namespace tupai
 					val = *ptr;
 			}
 
-			hwlock.unlock(); // End critical section
+			util::hwlock_release(); // End critical section
 			return val;
 		}
 
 		thrd_ptr_t proc_ptr_t::spawn_thread(void (*entry)(int argc, char* argv[]))
 		{
-			hwlock.lock(); // Begin critical section
+			util::hwlock_acquire(); // Begin critical section
 
 			process_t* proc = proc_table[this->id];
 
@@ -312,13 +307,13 @@ namespace tupai
 				val = nid;
 			}
 
-			hwlock.unlock(); // End critical section
+			util::hwlock_release(); // End critical section
 			return val;
 		}
 
 		int proc_ptr_t::destroy_thread(thrd_ptr_t thread)
 		{
-			hwlock.lock(); // Begin critical section
+			util::hwlock_acquire(); // Begin critical section
 
 			process_t* proc = proc_table[this->id];
 
@@ -334,13 +329,13 @@ namespace tupai
 				err = 0;
 			}
 
-			hwlock.unlock(); // End critical section
+			util::hwlock_release(); // End critical section
 			return err;
 		}
 
 		thrd_ptr_t create_thread(proc_ptr_t parent_proc, void (*entry)(int argc, char* argv[]))
 		{
-			hwlock.lock(); // Begin critical section
+			util::hwlock_acquire(); // Begin critical section
 
 			id_t nid = thread_counter ++;
 			thread_t nthread;
@@ -357,13 +352,13 @@ namespace tupai
 
 			thread_table.add(nid, nthread);
 
-			hwlock.unlock(); // End critical section
+			util::hwlock_release(); // End critical section
 			return nid;
 		}
 
 		id_t proc_ptr_t::create_fd(vfs::inode_ptr_t inode)
 		{
-			hwlock.lock(); // Begin critical section
+			util::hwlock_acquire(); // Begin critical section
 
 			process_t* proc = proc_table[this->id];
 
@@ -378,13 +373,13 @@ namespace tupai
 				val = nid;
 			}
 
-			hwlock.unlock(); // End critical section
+			util::hwlock_release(); // End critical section
 			return val;
 		}
 
 		int proc_ptr_t::delete_fd(id_t lfd)
 		{
-			hwlock.lock(); // Begin critical section
+			util::hwlock_acquire(); // Begin critical section
 
 			process_t* proc = proc_table[this->id];
 
@@ -397,13 +392,13 @@ namespace tupai
 					err = 0;
 			}
 
-			hwlock.unlock(); // End critical section
+			util::hwlock_release(); // End critical section
 			return err;
 		}
 
 		int proc_ptr_t::kill()
 		{
-			hwlock.lock(); // Begin critical section
+			util::hwlock_acquire(); // Begin critical section
 
 			int err = 1;
 			if (this->id == kproc) // Don't kill the kernel!
@@ -414,7 +409,7 @@ namespace tupai
 				err = 0;
 			}
 
-			hwlock.unlock(); // End critical section
+			util::hwlock_release(); // End critical section
 			return err;
 		}
 	}

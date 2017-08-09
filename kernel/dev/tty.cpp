@@ -42,7 +42,6 @@ namespace tupai
 		static volatile int tty_serial_port = -1;
 
 		static util::spinlock_t spinlock;
-		static util::hwlock_t   hwlock;
 
 		static sys::pipe_t inpipe;
 		static sys::pipe_t outpipe;
@@ -119,9 +118,9 @@ namespace tupai
 
 		void tty_write_in(char c)
 		{
-			hwlock.lock(); // Begin critical section
+			util::hwlock_acquire(); // Begin critical section
 			inpipe.write_unsafe(c);
-			hwlock.unlock(); // End critical section
+			util::hwlock_release(); // End critical section
 		}
 
 		void tty_out_thread(int argc, char* argv[])
@@ -131,7 +130,7 @@ namespace tupai
 
 			while (true)
 			{
-				unsigned char c = outpipe.read_unsafe(); // Unsafe call to avoid exception locking
+				unsigned char c = outpipe.read(); // Unsafe call to avoid exception locking
 
 				#if defined(ARCH_FAMILY_x86)
 					x86::textmode_write(c);

@@ -23,61 +23,68 @@
 .global isr_kbd
 .global isr_syscall
 .global isr_spurious
+.global in_irq
 
 .section .text
 
+	.macro BEGIN_IRQ // Begin IRQ
+		pushal
+		movl $1, (in_irq)
+		cld
+	.endm
+
+	.macro END_IRQ // End IRQ
+		movl $0, (in_irq)
+		popal
+	.endm
+
 	.align 4
 	isr_stub: // STUB IRQ (all)
-		pushal
-		cld
+		BEGIN_IRQ
 
 		push %esp // Pass the current stack pointer
 		call stub_isr_main
 		mov %eax, %esp // Restore the thread stack pointer
 
-		popal
+		END_IRQ
 		iret
 
 	.align 4
 	isr_pit: // PIT ISR (irq 0)
-		pushal
-		cld
+		BEGIN_IRQ
 
 		push %esp // Pass the current stack pointer
 		call pit_isr_main
 		mov %eax, %esp // Restore the thread stack pointer
 
-		popal
+		END_IRQ
 		iret
 
 	.align 4
 	isr_kbd: // KBD ISR (irq 1)
-		pushal
-		cld
+		BEGIN_IRQ
 
 		push %esp // Pass the current stack pointer
 		call kbd_isr_main
 		mov %eax, %esp // Restore the thread stack pointer
 
-		popal
+		END_IRQ
 		iret
 
 	.align 4
 	isr_spurious: // SPURIOUS ISR (irq 1)
-		pushal
-		cld
+		BEGIN_IRQ
 
 		push %esp // Pass the current stack pointer
 		call spurious_isr_main
 		mov %eax, %esp // Restore the thread stack pointer
 
-		popal
+		END_IRQ
 		iret
 
 	.align 4
 	isr_syscall: // SYSCALL ISR (irq 0x80)
-		pushal
-		cld
+		BEGIN_IRQ
 
 		push %edx // Arg 2
 		push %ecx // Arg 1
@@ -92,5 +99,10 @@
 		call syscall_isr_main
 		mov %eax, %esp // Restore the thread stack pointer
 
-		popal
+		END_IRQ
 		iret
+
+.section .data
+	.align 4
+	in_irq:
+		.long 0

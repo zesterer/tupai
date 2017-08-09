@@ -23,6 +23,7 @@
 .global isr_kbd
 .global isr_syscall
 .global isr_spurious
+.global in_irq
 
 .section .text
 
@@ -62,58 +63,64 @@
 		pop %rax
 	.endm
 
+	.macro BEGIN_IRQ // Begin IRQ
+		PUSH_REGS
+		movq $1, (in_irq)
+		cld
+	.endm
+
+	.macro END_IRQ // End IRQ
+		movq $0, (in_irq)
+		POP_REGS
+	.endm
+
 	.align 4
 	isr_stub: // STUB IRQ (all)
-		PUSH_REGS
-		cld
+		BEGIN_IRQ
 
 		mov %rsp, %rdi // Pass the current stack pointer
 		call stub_isr_main
 		mov %rax, %rsp // Restore the thread stack pointer
 
-		POP_REGS
+		END_IRQ
 		iretq
 
 	.align 4
 	isr_pit: // PIT ISR (irq 0)
-		PUSH_REGS
-		cld
+		BEGIN_IRQ
 
 		mov %rsp, %rdi // Pass the current stack pointer
 		call pit_isr_main
 		mov %rax, %rsp // Restore the thread stack pointer
 
-		POP_REGS
+		END_IRQ
 		iretq
 
 	.align 4
 	isr_kbd: // KBD ISR (irq 1)
-		PUSH_REGS
-		cld
+		BEGIN_IRQ
 
 		mov %rsp, %rdi // Pass the current stack pointer
 		call kbd_isr_main
 		mov %rax, %rsp // Restore the thread stack pointer
 
-		POP_REGS
+		END_IRQ
 		iretq
 
 	.align 4
 	isr_spurious: // SPURIOUS ISR (irq 7)
-		PUSH_REGS
-		cld
+		BEGIN_IRQ
 
 		mov %rsp, %rdi // Pass the current stack pointer
 		call spurious_isr_main
 		mov %rax, %rsp // Restore the thread stack pointer
 
-		POP_REGS
+		END_IRQ
 		iretq
 
 	.align 4
 	isr_syscall: // SYSCALL ISR (irq 0x80)
-		PUSH_REGS
-		cld
+		BEGIN_IRQ
 
 		push %rax // Preserve call ID
 		push %rbx // Preserve arg 0
@@ -129,5 +136,10 @@
 		call syscall_isr_main
 		mov %rax, %rsp // Restore the thread stack pointer
 
-		POP_REGS
+		END_IRQ
 		iretq
+
+.section .data
+	.align 4
+	in_irq:
+		.quad 0

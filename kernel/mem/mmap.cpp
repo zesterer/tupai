@@ -30,7 +30,7 @@ namespace tupai
 	{
 		namespace mmap
 		{
-			static const uint64_t MEM_SIZE = 4L * 1024L * 1024L * 1024L; // 4G
+			static const uint64_t MEM_SIZE = 4LL * 1024LL * 1024LL * 1024LL; // 4G
 			static const size_t PAGE_COUNT = MEM_SIZE / ARCH_PAGE_SIZE;
 			page_t pages[PAGE_COUNT];
 

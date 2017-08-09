@@ -106,5 +106,16 @@ namespace tupai
 			else
 				return true;
 		}
+
+		extern "C" size_t* in_irq;
+		bool is_irq()
+		{
+			return *in_irq;
+		}
+
+		void end_irq()
+		{
+			*in_irq = 1;
+		}
 	}
 }

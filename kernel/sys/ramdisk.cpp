@@ -98,7 +98,7 @@ namespace tupai
 
 		void ramdisk_create(ramdisk_t* ramdisk, const char* name)
 		{
-			util::logln("Found ramdisk at ", ramdisk->start, " of size ", ramdisk->size);
+			//util::logln("Found ramdisk at ", ramdisk->start, " of size ", ramdisk->size);
 
 			// Create a filesystem for the ramdisk
 			vfs::fs_ptr_t fs = vfs::create_fs(name);

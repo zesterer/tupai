@@ -54,8 +54,6 @@ namespace tupai
 
 		static const uint8_t PS2_RESET = 0xFF;
 
-		static util::hwlock_t hwlock;
-
 		static void ps2_8042_send_cmd(uint8_t code)
 		{
 			outb(PS28042_PORT_CMD, code);
@@ -84,12 +82,12 @@ namespace tupai
 
 		void ps2_8042_init()
 		{
+			util::hwlock_acquire(); // Begin critical section
+
 			if (ps2_8042_initiated)
 				return;
 
 			// TODO: Detect PS2 existence with ACPI
-
-			hwlock.lock(); // Begin critical section
 
 			// First, disable both PS2 ports
 			ps2_8042_send_cmd(PS28042_CMD_DISABLE1);
@@ -169,9 +167,9 @@ namespace tupai
 			if (ps2_8042_channel & (1 << 0)) debug_println("Detected 8042 PS/2 channel 2 device.");
 			debug_println("Finished 8042 PS/2 controller initiation");
 
-			hwlock.unlock(); // End critical section
-
 			ps2_8042_initiated = true;
+
+			util::hwlock_release(); // End critical section
 		}
 
 		size_t ps2_8042_count_ports()

@@ -24,13 +24,8 @@ namespace tupai
 {
 	namespace util
 	{
-		struct hwlock_t
-		{
-			bool is_locked() volatile;
-
-			void lock() volatile;
-			void unlock() volatile;
-		};
+		void hwlock_acquire();
+		void hwlock_release();
 	}
 }
 

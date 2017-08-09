@@ -20,42 +20,39 @@
 // Tupai
 #include <tupai/util/hwlock.hpp>
 #include <tupai/irq.hpp>
+#include <tupai/cpu.hpp>
 
 namespace tupai
 {
 	namespace util
 	{
-		static volatile bool hw_int_enabled;
-		static volatile bool hw_locked = false;
+		static volatile int hwlock_ref = 0;
+		static volatile bool irq_enabled = false;
 
-		bool hwlock_t::is_locked() volatile
+		void hwlock_acquire()
 		{
-			return hw_locked;
+			if (cpu::is_irq())
+				return;
+
+			bool irq = irq::are_enabled();
+			irq::disable();
+
+			if (hwlock_ref == 0)
+				irq_enabled = irq;
+			else if (irq_enabled)
+				hwlock_ref ++;
 		}
 
-		void hwlock_t::lock() volatile
+		void hwlock_release()
 		{
-			if (!hw_locked)
+			if (cpu::is_irq())
+				return;
+
+			if (irq_enabled)
 			{
-				hw_int_enabled = irq::are_enabled();
-
-				if (hw_int_enabled)
-					irq::disable();
-
-				hw_locked = true;
-			}
-		}
-
-		void hwlock_t::unlock() volatile
-		{
-			if (hw_locked)
-			{
-				if (hw_int_enabled)
+				hwlock_ref --;
+				if (hwlock_ref == 0)
 					irq::enable();
-
-				hw_int_enabled = irq::are_enabled();
-
-				hw_locked = false;
 			}
 		}
 	}

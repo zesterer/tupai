@@ -36,21 +36,23 @@ namespace tupai
 		static util::queue_t<task_t, 256> schedule;
 		static task_t ctask;
 
-		static util::hwlock_t hwlock;
-
 		void scheduler_bootstrap_task(size_t entry, size_t stack, int argc = 0, char* argv[] = nullptr);
 		extern "C" void proc_thread_finish();
 
 		void scheduler_init()
 		{
+			util::hwlock_acquire(); // Begin critical section
+
 			// Nothing yet
+
+			util::hwlock_release(); // End critical section
 		}
 
 		void scheduler_schedule(thrd_ptr_t thread, int priority)
 		{
 			(void)priority;
 
-			hwlock.lock(); // Begin critical section
+			util::hwlock_acquire(); // Begin critical section
 
 			task_t ntask;
 			ntask.thread = thread;
@@ -58,12 +60,12 @@ namespace tupai
 			ntask.cpriority = priority;
 			schedule.push(ntask);
 
-			hwlock.unlock(); // End critical section
+			util::hwlock_release(); // End critical section
 		}
 
 		void scheduler_increment()
 		{
-			hwlock.lock(); // Begin critical section
+			util::hwlock_acquire(); // Begin critical section
 
 			if (ctask.thread != ID_INVALID)
 			{
@@ -91,15 +93,16 @@ namespace tupai
 
 			set_current_thread(ctask.thread);
 
-			hwlock.unlock(); // End critical section
+			util::hwlock_release(); // End critical section
 		}
 
 		thrd_ptr_t scheduler_current()
 		{
-			hwlock.lock(); // Begin critical section
-			thrd_ptr_t val = ctask.thread;
-			hwlock.unlock(); // End critical section
+			util::hwlock_acquire(); // Begin critical section
 
+			thrd_ptr_t val = ctask.thread;
+
+			util::hwlock_release(); // End critical section
 			return val;
 		}
 
@@ -140,6 +143,7 @@ namespace tupai
 					"mov %0, %%esp \n\
 					 push %1 \n \
 					 push %2 \n \
+					 movl $0, (in_irq) \n \
 					 sti \n \
 					 call *%3 \n \
 					 call proc_thread_finish \n"
@@ -152,6 +156,7 @@ namespace tupai
 					"mov %0, %%rsp \n \
 					 mov %1, %%rdi \n \
 					 mov %2, %%rsi \n \
+					 movq $0, (in_irq) \n \
 					 sti \n \
 					 call *%3 \n \
 					 call proc_thread_finish \n"

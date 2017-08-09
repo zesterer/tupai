@@ -25,6 +25,7 @@
 #include <tupai/vfs/fd.hpp>
 #include <tupai/util/mutex.hpp>
 #include <tupai/irq.hpp>
+#include <tupai/cpu.hpp>
 
 namespace tupai
 {
@@ -53,6 +54,7 @@ namespace tupai
 
 			// Re-enable interrupts since the kernel is re-entrant!
 			irq::enable();
+			cpu::end_irq();
 
 			CALL call = (CALL)arg0;
 

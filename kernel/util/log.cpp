@@ -30,7 +30,6 @@ namespace tupai
 		typedef vector_t<char> log_t;
 
 		vector_t<log_t> logs;
-		hwlock_t        hwlock;
 		log_t           clog;
 
 		void __log_ostream::end()
@@ -44,13 +43,13 @@ namespace tupai
 
 		void __log_ostream::write(char c)
 		{
-			hwlock.lock(); // Begin critical section
+			util::hwlock_acquire(); // Begin critical section
 
 			// TODO : Uncomment this!
 			//clog.push(c);
 			dev::tty_write(c);
 
-			hwlock.unlock(); // End critical section
+			util::hwlock_release(); // End critical section
 		}
 	}
 }

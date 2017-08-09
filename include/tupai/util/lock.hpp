@@ -1,5 +1,5 @@
 //
-// file : cpu.hpp
+// file : lock.hpp
 //
 // This file is part of Tupai.
 //
@@ -17,8 +17,11 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_CPU_HPP
-#define TUPAI_CPU_HPP
+#ifndef TUPAI_UTIL_LOCK_HPP
+#define TUPAI_UTIL_LOCK_HPP
+
+// Tupai
+#include <tupai/task/task.hpp>
 
 // Standard
 #include <stddef.h>
@@ -26,17 +29,38 @@
 
 namespace tupai
 {
-	namespace cpu
+	namespace util
 	{
-		void wait();
-		void halt() __attribute__((__noreturn__));
-		void hang() __attribute__((__noreturn__));
+		class lock_t;
 
-		const char* get_exception_name(size_t code);
-		bool        get_exception_critical(size_t code);
+		class key_t
+		{
+			friend class lock_t;
+		private:
+			volatile lock_t* _lock;
 
-		bool is_irq();
-		void end_irq();
+			key_t(volatile lock_t* lock) { this->_lock = lock; }
+
+		public:
+			void release() volatile;
+			~key_t() { this->release(); }
+		};
+
+		class lock_t
+		{
+			friend class key_t;
+		private:
+			volatile size_t           _ref = 0;
+			volatile task::thrd_ptr_t _owner = ID_INVALID;
+			volatile size_t           _val = 0;
+
+			void lock() volatile;
+			void unlock() volatile;
+			void force_unref() volatile;
+
+		public:
+			key_t acquire() volatile;
+		};
 	}
 }
 
