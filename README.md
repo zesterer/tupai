@@ -4,7 +4,7 @@ Copyright 2016-2017, Joshua Barretto
 
 ---
 
-A simple monolithic operating system created for educational purposes.
+A modular POSIX-like operating system created for educational purposes 
 
 
 ![Tupai 0.6.0](doc/images/tupai-0-6-0-dev.png)
