@@ -22,7 +22,9 @@
 
 // Tupai
 #include <tupai/type.hpp>
+#include <tupai/util/cpp.hpp>
 #include <tupai/util/mem.hpp>
+#include <tupai/panic.hpp>
 
 // Standard
 #include <stddef.h>
@@ -34,7 +36,7 @@ namespace tupai
 	{
 		static size_t hash(id_t x) { return x; } //^ 0xF37E2A92F37E2A92; }
 
-		const size_t HASHTABLE_CAPACITY = 256;
+		const size_t HASHTABLE_CAPACITY = 512;
 
 		template <typename T>
 		struct hashtable_t
@@ -48,14 +50,68 @@ namespace tupai
 			{
 				for (size_t i = 0; i < HASHTABLE_CAPACITY; i ++)
 					this->used[i] = false;
+
+				//this->data = (T*)(new uint8_t[HASHTABLE_CAPACITY * sizeof(T)]);
 			}
+
+			/*
+			hashtable_t(const hashtable_t& other)
+			{
+				this->data = (T*)(new uint8_t[HASHTABLE_CAPACITY * sizeof(T)]);
+
+				util::mem_copy(other.used, this->used, sizeof(this->used));
+				util::mem_copy(other.keys, this->keys, sizeof(this->keys));
+				this->item_count = other.item_count;
+
+				for (size_t i = 0; i < HASHTABLE_CAPACITY; i ++)
+				{
+					if (this->used[i])
+						this->data[i] = other.data[i];
+				}
+			}
+
+			hashtable_t& operator=(const hashtable_t& other)
+			{
+				this->data = (T*)(new uint8_t[HASHTABLE_CAPACITY * sizeof(T)]);
+
+				util::mem_copy(other.used, this->used, sizeof(this->used));
+				util::mem_copy(other.keys, this->keys, sizeof(this->keys));
+				this->item_count = other.item_count;
+
+				for (size_t i = 0; i < HASHTABLE_CAPACITY; i ++)
+				{
+					if (this->used[i])
+						this->data[i] = other.data[i];
+				}
+
+				return *this;
+			}
+
+			hashtable_t(hashtable_t&& other)
+			{
+				util::mem_copy(other.data, this->data, sizeof(this->data));
+				util::mem_copy(other.used, this->used, sizeof(this->used));
+				util::mem_copy(other.keys, this->keys, sizeof(this->keys));
+				this->item_count = other.item_count;
+			}
+
+			hashtable_t& operator=(hashtable_t&& other)
+			{
+				util::mem_copy(other.data, this->data, sizeof(this->data));
+				util::mem_copy(other.used, this->used, sizeof(this->used));
+				util::mem_copy(other.keys, this->keys, sizeof(this->keys));
+				this->item_count = other.item_count;
+
+				return *this;
+			}
+			*/
 
 			size_t size()
 			{
 				return this->item_count;
 			}
 
-			bool add(id_t key, T item)
+			bool add(id_t key, T& item)
 			{
 				size_t offset = hash(key) % HASHTABLE_CAPACITY;
 				for (size_t i = 0; i < HASHTABLE_CAPACITY; i ++)
@@ -64,8 +120,8 @@ namespace tupai
 
 					if (!this->used[index])
 					{
-						this->used[index]        = true;
-						this->keys[index]        = key;
+						this->used[index]  = true;
+						this->keys[index]  = key;
 						((T*)this->data)[index]  = item;
 						this->item_count ++;
 						return true;
@@ -83,8 +139,9 @@ namespace tupai
 
 					if (this->keys[index] == key && this->used[index] == true)
 					{
-						this->used[index] = false;
 						((T*)this->data)[index].~T();
+						this->keys[index] = ID_INVALID;
+						this->used[index] = false;
 						this->item_count --;
 						return true;
 					}

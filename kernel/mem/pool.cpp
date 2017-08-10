@@ -127,17 +127,21 @@ namespace tupai
 
 				size_t index = (size_t)ptr - this->_body;
 
-				if (index % this->_block_size != 0)
-					panic("Attempting to deallocate invalid unaligned pointer");
-				else
+				if (index % this->_block_size == 0)
+				{
 					index /= this->_block_size;
 
-				if (pool_get(this, index) != block_status::HEAD)
-					panic("Attempting to deallocate invalid unallocated pointer");
-
-				pool_set(this, index, block_status::UNUSED);
-				for (size_t i = index + 1; pool_get(this, i) == block_status::TAIL && i < this->_block_count; i ++)
-					pool_set(this, i, block_status::UNUSED);
+					if (pool_get(this, index) == block_status::HEAD)
+					{
+						pool_set(this, index, block_status::UNUSED);
+						for (size_t i = index + 1; pool_get(this, i) == block_status::TAIL && i < this->_block_count; i ++)
+							pool_set(this, i, block_status::UNUSED);
+					}
+					//else
+					//	panic("Attempting to deallocate invalid unallocated pointer ", ptr);
+				}
+				//else
+				//	panic("Attempting to deallocate invalid unaligned pointer ", ptr);
 
 				this->_spinlock.unlock(); // End critical section
 			}

@@ -1,5 +1,5 @@
 //
-// file : thread.hpp
+// file : thread.cpp
 //
 // This file is part of Tupai.
 //
@@ -17,34 +17,21 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_TASK_THREAD_HPP
-#define TUPAI_TASK_THREAD_HPP
-
 // Tupai
-#include <tupai/task/task.hpp>
-
-// Standard
-#include <stddef.h>
-#include <stdint.h>
+#include <tupai/task/thread.hpp>
+#include <tupai/util/log.hpp>
 
 namespace tupai
 {
 	namespace task
 	{
-		struct thread_t
+		thread_t::~thread_t()
 		{
-			id_t id = ID_INVALID;
-			id_t lid = ID_INVALID;
-			proc_ptr_t proc;
-			thread_state state;
-
-			size_t entry = 0x0;
-			size_t stack = 0x0;
-			size_t stack_block = 0x0;
-
-			~thread_t();
-		};
+			if (this->stack_block != 0)
+			{
+				delete (uint8_t*)this->stack_block;
+				util::logln("Deleted ", this->stack_block);
+			}
+		}
 	}
 }
-
-#endif

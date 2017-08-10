@@ -79,7 +79,7 @@ namespace tupai
 			for (size_t i = 0; i < RAMDISK_MAX; i ++)
 			{
 				if (ramdisks[i].size != 0)
-					mem::mmap::reserve_region((void*)((size_t)ramdisks[i].start - arch_get_offset()), ramdisks[i].size, task::get_kernel(), 0x00); // Reserve the ramdisk region
+					mem::mmap::reserve_region((void*)((size_t)ramdisks[i].start - arch_get_offset()), ramdisks[i].size, task::get_kernel(), (uint8_t)mem::mmap::page_flags::STATIC); // Reserve the ramdisk region
 			}
 		}
 

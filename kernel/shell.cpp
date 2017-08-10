@@ -58,7 +58,7 @@ namespace tupai
 	{
 		print(util::TERM_FG_COLOR_CYAN, tupai_get_name_decorative(), " ",
 			tupai_get_version(), util::TERM_DEFAULT, " on ",
-			util::TERM_FG_COLOR_PINK, arch_get_family(), "/", arch_get_target(), util::TERM_DEFAULT, '\n',
+			util::TERM_FG_COLOR_GREEN, arch_get_family(), "/", arch_get_target(), util::TERM_DEFAULT, '\n',
 			util::TERM_FG_COLOR_LIGHT_GRAY, "Copyright 2017, ", P_MAINTAINER_NAME, util::TERM_DEFAULT, '\n');
 	}
 
@@ -108,7 +108,7 @@ namespace tupai
 		bool halted = false;
 		while (!halted)
 		{
-			print("[", util::TERM_FG_COLOR_GREEN, "kernel", util::TERM_DEFAULT, "] ");
+			print("[", util::TERM_FG_COLOR_RED, "kernel", util::TERM_DEFAULT, "] ");
 
 			char buff[64];
 			util::readline(buff);

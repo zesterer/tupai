@@ -177,6 +177,9 @@ namespace tupai
 			// Name
 			util::logln(name, (type == inode_type::DIRECTORY) ? "/" : "");
 
+			//if (depth >= 2)
+			//	return;
+
 			for (size_t i = 0; i < inode.get_children(); i ++)
 			{
 				inode_ptr_t ninode = inode.get_nth_child(i);

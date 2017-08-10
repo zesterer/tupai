@@ -19,6 +19,7 @@
 
 // Tupai
 #include <tupai/main.hpp>
+#include <tupai/panic.hpp>
 
 // Low-level utilities
 #include <tupai/arch.hpp>

@@ -23,6 +23,8 @@
 // Tupai
 #include <tupai/task/task.hpp>
 #include <tupai/vfs/vfs.hpp>
+#include <tupai/util/str.hpp>
+#include <tupai/util/mem.hpp>
 
 // Standard
 #include <stddef.h>
@@ -44,6 +46,62 @@ namespace tupai
 
 			id_t lfd_counter = 0;
 			util::hashtable_t<vfs::fd_ptr_t> fds; // File descriptors
+
+			/*
+			process_t() {}
+
+			process_t(const process_t& other)
+			{
+				this->id = other.id;
+				util::str_cpy_n(other.name, this->name, PROC_NAME_MAX);
+				this->state = other.state;
+				this->dir = other.dir;
+				this->thread_counter = other.thread_counter;
+				this->threads = other.threads;
+				this->lfd_counter = other.lfd_counter;
+				this->fds = other.fds;
+			}
+
+			process_t& operator=(const process_t& other)
+			{
+				this->id = other.id;
+				util::str_cpy_n(other.name, this->name, PROC_NAME_MAX);
+				this->state = other.state;
+				this->dir = other.dir;
+				this->thread_counter = other.thread_counter;
+				this->threads = other.threads;
+				this->lfd_counter = other.lfd_counter;
+				this->fds = other.fds;
+
+				return *this;
+			}
+
+			process_t(process_t&& other)
+			{
+				this->id = other.id;
+				util::str_cpy_n(other.name, this->name, PROC_NAME_MAX);
+				this->state = other.state;
+				this->dir = other.dir;
+				this->thread_counter = other.thread_counter;
+				this->threads = util::move(other.threads);
+				this->lfd_counter = other.lfd_counter;
+				this->fds = util::move(other.fds);
+			}
+
+			process_t& operator=(process_t&& other)
+			{
+				this->id = other.id;
+				util::str_cpy_n(other.name, this->name, PROC_NAME_MAX);
+				this->state = other.state;
+				this->dir = other.dir;
+				this->thread_counter = other.thread_counter;
+				this->threads = util::move(other.threads);
+				this->lfd_counter = other.lfd_counter;
+				this->fds = util::move(other.fds);
+
+				return *this;
+			}
+			*/
 
 			~process_t();
 		};

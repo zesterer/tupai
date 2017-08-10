@@ -23,6 +23,7 @@
 #include <tupai/task/process.hpp>
 #include <tupai/task/scheduler.hpp>
 #include <tupai/util/str.hpp>
+#include <tupai/util/mem.hpp>
 #include <tupai/util/hwlock.hpp>
 
 #include <tupai/util/log.hpp>
@@ -100,6 +101,9 @@ namespace tupai
 		void init()
 		{
 			util::hwlock_acquire(); // Begin critical section
+
+			//proc_table   = util::hashtable_t<process_t>();
+			//thread_table = util::hashtable_t<thread_t>();
 
 			// Create the initial kernel process
 			kproc = create_process("kernel", vfs::get_root());
@@ -311,6 +315,28 @@ namespace tupai
 			return val;
 		}
 
+		thrd_ptr_t create_thread(proc_ptr_t parent_proc, void (*entry)(int argc, char* argv[]))
+		{
+			util::hwlock_acquire(); // Begin critical section
+
+			id_t nid = thread_counter ++;
+			thread_t nthread;
+			nthread.id = nid;
+			nthread.lid = ID_INVALID;
+			nthread.proc = parent_proc;
+			nthread.state = thread_state::NEW;
+			nthread.entry = (size_t)entry;
+
+			size_t nstack = (size_t)new uint8_t[THREAD_STACK_SIZE];
+			nthread.stack = (size_t)((size_t)nstack + THREAD_STACK_SIZE);
+			nthread.stack_block = nstack;
+
+			thread_table.add(nid, nthread);
+
+			util::hwlock_release(); // End critical section
+			return nid;
+		}
+
 		int proc_ptr_t::destroy_thread(thrd_ptr_t thread)
 		{
 			util::hwlock_acquire(); // Begin critical section
@@ -331,29 +357,6 @@ namespace tupai
 
 			util::hwlock_release(); // End critical section
 			return err;
-		}
-
-		thrd_ptr_t create_thread(proc_ptr_t parent_proc, void (*entry)(int argc, char* argv[]))
-		{
-			util::hwlock_acquire(); // Begin critical section
-
-			id_t nid = thread_counter ++;
-			thread_t nthread;
-			nthread.id = nid;
-			nthread.lid = ID_INVALID;
-			nthread.proc = parent_proc;
-			nthread.state = thread_state::NEW;
-			nthread.entry = (size_t)entry;
-
-			// TODO : Allocate thread stack!
-			size_t nstack = (size_t)new uint8_t[THREAD_STACK_SIZE];
-			nthread.stack = (size_t)((size_t)nstack + THREAD_STACK_SIZE);
-			nthread.stack_block = nstack;
-
-			thread_table.add(nid, nthread);
-
-			util::hwlock_release(); // End critical section
-			return nid;
 		}
 
 		id_t proc_ptr_t::create_fd(vfs::inode_ptr_t inode)

@@ -21,6 +21,7 @@
 #include <tupai/mem/mmap.hpp>
 #include <tupai/util/spinlock.hpp>
 #include <tupai/util/log.hpp>
+#include <tupai/util/mem.hpp>
 #include <tupai/arch.hpp>
 #include <tupai/panic.hpp>
 
