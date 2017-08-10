@@ -37,106 +37,118 @@ namespace tupai
 		template <typename T>
 		struct vector_t
 		{
-			T* arr;
-			size_t ccapacity;
-			size_t csize;
+			T* _array;
+			size_t _capacity;
+			size_t _size;
 
 			void __copy(const vector_t<T>& other)
 			{
-				if (other.csize > 0)
+				if (other._size > 0)
 				{
-					this->csize     = other.csize;
-					this->ccapacity = other.ccapacity;
-					this->arr       = (T*)(new uint8_t[this->ccapacity * sizeof(T)]);
+					this->_size     = other._size;
+					this->_capacity = other._capacity;
+					this->_array    = (T*)(new uint8_t[this->_capacity * sizeof(T)]);
 				}
 				else
 				{
-					this->arr       = nullptr;
-					this->ccapacity = 0;
-					this->csize     = 0;
+					this->_array    = nullptr;
+					this->_capacity = 0;
+					this->_size     = 0;
 				}
 
-				for (size_t i = 0; i < this->csize; i ++)
-					this->arr[i] = other.arr[i];
+				for (size_t i = 0; i < this->_size; i ++)
+					this->_array[i] = other._array[i];
+			}
+
+			vector_t<T>& _copy(const vector_t<T>& other)
+			{
+				this->_size = other._size;
+				this->_capacity = other._capacity;
+
+				if (this->_size > 0)
+					this->_array = (T*)(new uint8_t[this->_capacity]);
+				else
+					this->_array = nullptr;
+
+				for (size_t i = 0; i < this->_size; i ++)
+					this->_array[i] = other._array[i];
+
+				return *this;
+			}
+
+			vector_t<T>& _move(vector_t<T>& other)
+			{
+				this->_array    = other._array;
+				this->_capacity = other._capacity;
+				this->_size     = other._size;
+
+				other._array    = nullptr;
+				other._capacity = 0;
+				other._size     = 0;
+
+				return *this;
 			}
 
 			// Default constructor
 			vector_t()
 			{
-				this->arr       = nullptr;
-				this->ccapacity = 0;
-				this->csize     = 0;
+				this->_array    = nullptr;
+				this->_capacity = 0;
+				this->_size     = 0;
 			}
 
 			// Copy constructor
 			vector_t(const vector_t<T>& other)
 			{
-				this->__copy(other);
-			}
-
-			// Move constructor
-			vector_t(vector_t<T>&& other)
-			{
-				this->arr       = other.arr;
-				this->ccapacity = other.ccapacity;
-				this->csize     = other.csize;
-
-				other.arr       = nullptr;
-				other.ccapacity = 0;
-				other.csize     = 0;
-			}
-
-			// Destructor
-			~vector_t() noexcept
-			{
-				for (size_t i = 0; i < this->csize; i ++)
-					this->arr[i].~T();
-
-				if (arr != nullptr)
-					delete (uint8_t*)this->arr;
+				this->_copy(other);
 			}
 
 			// Copy assignment operator
 			vector_t<T>& operator=(const vector_t<T>& other)
 			{
-				this->__copy(other);
-				return *this;
+				return this->_copy(other);
+			}
+
+			// Move constructor
+			vector_t(vector_t<T>&& other)
+			{
+				this->_move(other);
 			}
 
 			// Move assignment operator
 			vector_t<T>& operator=(vector_t<T>&& other) noexcept
 			{
-				delete (uint8_t*)this->arr;
+				return this->_move(other);
+			}
 
-				this->arr       = other.arr;
-				this->ccapacity = other.ccapacity;
-				this->csize     = other.csize;
+			// Destructor
+			~vector_t() noexcept
+			{
+				for (size_t i = 0; i < this->_size; i ++)
+					this->_array[i].~T();
 
-				other.arr       = nullptr;
-				other.ccapacity = 0;
-				other.csize     = 0;
-
-				return *this;
+				if (_array != nullptr)
+					delete (uint8_t*)this->_array;
 			}
 
 			size_t size() const
 			{
-				return this->csize;
+				return this->_size;
 			}
 
 			size_t capacity() const
 			{
-				return this->ccapacity;
+				return this->_capacity;
 			}
 
 			void resize(size_t size)
 			{
-				T* old = this->arr;
-				this->ccapacity = size;
-				this->arr = (T*)(new uint8_t[this->ccapacity * sizeof(T)]);
+				T* old = this->_array;
+				this->_capacity = size;
+				this->_array = (T*)(new uint8_t[this->_capacity * sizeof(T)]);
 
-				for (size_t i = 0; i < this->csize; i ++)
-					this->arr[i] = old[i];
+				for (size_t i = 0; i < this->_size; i ++)
+					this->_array[i] = old[i];
 
 				if (old != nullptr)
 					delete old;
@@ -144,33 +156,33 @@ namespace tupai
 
 			T& get(size_t i)
 			{
-				return this->arr[i];
+				return this->_array[i];
 			}
 
 			T& operator[](size_t i)
 			{
-				return this->arr[i];
+				return this->_array[i];
 			}
 
 			void push(const T& item)
 			{
-				if (this->csize >= this->ccapacity)
-					this->resize(util::max(this->ccapacity * 2, (size_t)1));
+				if (this->_size >= this->_capacity)
+					this->resize(util::max(this->_capacity * 2, (size_t)1));
 
-				this->arr[this->csize] = item;
-				this->csize ++;
+				this->_array[this->_size] = item;
+				this->_size ++;
 			}
 
 			T pop()
 			{
-				if (this->csize <= 0)
+				if (this->_size <= 0)
 					panic("Attempted to pop from empty vector");
 
-				T item = this->arr[this->csize - 1];
-				this->csize --;
+				T item = this->_array[this->_size - 1];
+				this->_size --;
 
-				if (this->csize <= this->ccapacity / 2)
-					this->resize(this->ccapacity / 2);
+				if (this->_size <= this->_capacity / 2)
+					this->resize(this->_capacity / 2);
 
 				return item;
 			}
