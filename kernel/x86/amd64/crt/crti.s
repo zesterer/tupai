@@ -1,5 +1,5 @@
 //
-// file : thread.cpp
+// file : crti.s
 //
 // This file is part of Tupai.
 //
@@ -17,18 +17,18 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-// Tupai
-#include <tupai/task/thread.hpp>
-#include <tupai/util/log.hpp>
+.section .init
+	.global _init
+	.type _init, @function
+	_init:
+		push %rbp
+		movq %rsp, %rbp
+		// GCC will nicely put the contents of crtbegin.o's init section here.
 
-namespace tupai
-{
-	namespace task
-	{
-		thread_t::~thread_t()
-		{
-			if (this->stack_block != 0)
-				delete (uint8_t*)this->stack_block;
-		}
-	}
-}
+.section .fini
+	.global _fini
+	.type _fini, @function
+	_fini:
+		push %rbp
+		movq %rsp, %rbp
+		// GCC will nicely put the contents of crtbegin.o's fini section here.

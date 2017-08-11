@@ -31,9 +31,14 @@ namespace tupai
 	{
 		namespace mmap
 		{
-			static const uint64_t MEM_SIZE = 4LL * 1024LL * 1024LL * 1024LL; // 4G
-			static const size_t PAGE_COUNT = MEM_SIZE / ARCH_PAGE_SIZE;
-			page_t pages[PAGE_COUNT];
+			extern "C" char start_mmap[];
+			extern "C" char end_mmap[];
+
+			static const uint64_t PAGE_COUNT = ((size_t)end_mmap - (size_t)start_mmap) / sizeof(page_t);
+			static const uint64_t MEM_SIZE = PAGE_COUNT * ARCH_PAGE_SIZE;
+			//static const uint64_t MEM_SIZE = 4LL * 1024LL * 1024LL * 1024LL; // 4G
+			//static const size_t PAGE_COUNT = MEM_SIZE / ARCH_PAGE_SIZE;
+			page_t* pages = (page_t*)start_mmap;
 
 			util::spinlock_t mutex;
 

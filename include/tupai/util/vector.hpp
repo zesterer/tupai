@@ -41,25 +41,6 @@ namespace tupai
 			size_t _capacity;
 			size_t _size;
 
-			void __copy(const vector_t<T>& other)
-			{
-				if (other._size > 0)
-				{
-					this->_size     = other._size;
-					this->_capacity = other._capacity;
-					this->_array    = (T*)(new uint8_t[this->_capacity * sizeof(T)]);
-				}
-				else
-				{
-					this->_array    = nullptr;
-					this->_capacity = 0;
-					this->_size     = 0;
-				}
-
-				for (size_t i = 0; i < this->_size; i ++)
-					this->_array[i] = other._array[i];
-			}
-
 			vector_t<T>& _copy(const vector_t<T>& other)
 			{
 				this->_size = other._size;

@@ -25,6 +25,7 @@
 #include <tupai/util/cpp.hpp>
 #include <tupai/util/mem.hpp>
 #include <tupai/panic.hpp>
+#include <tupai/util/log.hpp>
 
 // Standard
 #include <stddef.h>
@@ -34,7 +35,7 @@ namespace tupai
 {
 	namespace util
 	{
-		static size_t hash(id_t x) { return x; } //^ 0xF37E2A92F37E2A92; }
+		static __attribute__((unused)) size_t hash(id_t x) { return x; } //^ 0xF37E2A92F37E2A92; }
 
 		const size_t HASHTABLE_CAPACITY = 512;
 
@@ -42,6 +43,7 @@ namespace tupai
 		struct hashtable_t
 		{
 			uint8_t data[HASHTABLE_CAPACITY * sizeof(T)];
+			//T*      data = nullptr;
 			bool    used[HASHTABLE_CAPACITY];
 			id_t    keys[HASHTABLE_CAPACITY];
 			size_t  item_count = 0;
@@ -89,20 +91,30 @@ namespace tupai
 
 			hashtable_t(hashtable_t&& other)
 			{
-				util::mem_copy(other.data, this->data, sizeof(this->data));
+				this->data = other.data;
 				util::mem_copy(other.used, this->used, sizeof(this->used));
 				util::mem_copy(other.keys, this->keys, sizeof(this->keys));
 				this->item_count = other.item_count;
+
+				other.data = nullptr;
 			}
 
 			hashtable_t& operator=(hashtable_t&& other)
 			{
-				util::mem_copy(other.data, this->data, sizeof(this->data));
+				this->data = other.data;
 				util::mem_copy(other.used, this->used, sizeof(this->used));
 				util::mem_copy(other.keys, this->keys, sizeof(this->keys));
 				this->item_count = other.item_count;
 
+				other.data = nullptr;
+
 				return *this;
+			}
+
+			~hashtable_t()
+			{
+				if (this->data != nullptr)
+					delete[] this->data;
 			}
 			*/
 

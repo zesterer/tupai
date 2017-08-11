@@ -68,7 +68,7 @@ void operator delete[](void* ptr, size_t size __attribute__ ((unused)))
 	tupai::mem::kmem::dealloc(ptr);
 }
 
-void* __dso_handle;
+//void* __dso_handle;
 
 #if defined(ARCH_FAMILY_x86)
 	extern "C" int  __cxa_atexit(void (*destructor) (void*) __attribute__ ((unused)), void* arg __attribute__ ((unused)), void* dso __attribute__ ((unused))) { return 0; }

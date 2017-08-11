@@ -34,25 +34,39 @@ SECTIONS
 
 	.text ALIGN(4K) : AT(ADDR(.text) - KERNEL_VIRTUAL)
 	{
+		*(.init*)
+		*(.fini*)
+
 		*(.text)
-		*(.init)
-		*(.fini)
+		*(.gnu.linkonce.t*)
 	}
 
 	.rodata ALIGN(4K) : AT(ADDR(.rodata) - KERNEL_VIRTUAL)
 	{
 		*(.rodata)
+
+		start_ctors = .;
+		*(SORT(.ctors*))
+		end_ctors = .;
+
+		start_dtors = .;
+		*(SORT(.dtors*))
+		end_dtors = .;
+
+		*(.gnu.linkonce.r*)
 	}
 
 	.data ALIGN(4K) : AT(ADDR(.data) - KERNEL_VIRTUAL)
 	{
 		*(.data)
+		*(.gnu.linkonce.d*)
 	}
 
 	.bss ALIGN(4K) : AT(ADDR(.bss) - KERNEL_VIRTUAL)
 	{
 		*(COMMON)
 		*(.bss)
+		*(.gnu.linkonce.b*)
 	}
 
 	. -= KERNEL_VIRTUAL;

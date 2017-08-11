@@ -42,9 +42,6 @@ namespace tupai
 		static util::hashtable_t<thread_t> thread_table;
 		static id_t thread_counter = 0;
 
-		// TODO : Do something more with this
-		static const size_t THREAD_STACK_SIZE = 2048;
-
 		thrd_ptr_t create_thread(proc_ptr_t proc, void (*entry)(int argc, char* argv[]));
 
 		/* Process control functions */

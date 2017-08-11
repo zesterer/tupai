@@ -137,11 +137,11 @@ namespace tupai
 						for (size_t i = index + 1; pool_get(this, i) == block_status::TAIL && i < this->_block_count; i ++)
 							pool_set(this, i, block_status::UNUSED);
 					}
-					//else
-					//	panic("Attempting to deallocate invalid unallocated pointer ", ptr);
+					else
+						panic("Attempting to deallocate invalid unallocated pointer ", ptr);
 				}
-				//else
-				//	panic("Attempting to deallocate invalid unaligned pointer ", ptr);
+				else
+					panic("Attempting to deallocate invalid unaligned pointer ", ptr);
 
 				this->_spinlock.unlock(); // End critical section
 			}

@@ -109,7 +109,6 @@ namespace tupai
 			ramdisk->fs = fs;
 
 			util::tar_header_t* cheader = (util::tar_header_t*)ramdisk->start;
-			//cheader = nullptr;
 			while (cheader != nullptr)
 			{
 				const char* filename = cheader->filename;
@@ -160,7 +159,6 @@ namespace tupai
 						vfs::inode_ptr_t ninode = vfs::create_inode(type);
 						ninode.set_fs(fs);
 						cinode.mount_child(ninode, buff);
-						//util::logln("Mounted ", buff);
 
 						if (type == vfs::inode_type::NORMAL_FILE && i + 1 == n)
 						{

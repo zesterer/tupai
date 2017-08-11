@@ -57,7 +57,7 @@
 		push %eax // Multiboot magic
 
 		call kentry // Call the kernel's entry point
-		call _init  // Call global constructor code
+		call _init // Call the global constructors
 		call kmain  // Call kernel main procedure
 
 		// Hang the kernel

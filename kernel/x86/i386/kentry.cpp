@@ -35,8 +35,15 @@ namespace tupai
 	{
 		namespace i386
 		{
+			static uint32_t mb_magic_tmp;
+			static void* mb_header_tmp;
+
 			extern "C" void kentry(uint32_t mb_magic, void* mb_header, void* stack)
 			{
+				// Save Multiboot data
+				mb_magic_tmp = mb_magic;
+				mb_header_tmp = mb_header;
+
 				// Initiate debugging
 				debug_init();
 
@@ -49,8 +56,14 @@ namespace tupai
 					"  stack     -> ", stack, '\n'
 				);
 
+				// Core system setup
+				early();
+			}
+
+			extern "C" void kmain()
+			{
 				// Load multiboot information
-				multiboot_set_header(mb_magic, mb_header);
+				multiboot_set_header(mb_magic_tmp, mb_header_tmp);
 
 				// Initiate and install the GDT
 				gdt_init();
@@ -60,11 +73,6 @@ namespace tupai
 				idt_init();
 				idt_install();
 
-				early(); // Core system setup
-			}
-
-			extern "C" void kmain()
-			{
 				// x86 initiation
 				arch_init();
 

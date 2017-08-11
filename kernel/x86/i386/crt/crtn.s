@@ -1,5 +1,5 @@
 //
-// file : crt.s
+// file : crtn.s
 //
 // This file is part of Tupai.
 //
@@ -18,27 +18,11 @@
 //
 
 .section .init
-	.global _init
-	.type _init, @function
-	_init:
-		push %rbp
-		movq %rsp, %rbp
-		// GCC will nicely put the contents of crtbegin.o's init section here.
-
-.section .fini
-	.global _fini
-	.type _fini, @function
-	_fini:
-		push %rbp
-		movq %rsp, %rbp
-		// GCC will nicely put the contents of crtbegin.o's fini section here.
-
-.section .init
 	// GCC should place crtend.o init code here
-	popq %rbp
+	popl %ebp
 	ret
 
 .section .fini
 	// GCC should place crtend.o fini code here
-	popq %rbp
+	popl %ebp
 	ret
