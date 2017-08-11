@@ -32,7 +32,7 @@ namespace tupai
 	namespace task
 	{
 		// TODO : Do something more with this
-		static const size_t THREAD_STACK_SIZE = 2048;
+		static const size_t THREAD_STACK_SIZE = 8192;
 
 		struct thread_t
 		{

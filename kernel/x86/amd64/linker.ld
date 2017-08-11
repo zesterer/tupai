@@ -67,13 +67,17 @@ SECTIONS
 	{
 		*(COMMON)
 		*(.bss)
+		*(.gnu.linkonce.b*)
+	}
+
+	.bss.noload ALIGN(4K) (NOLOAD) : AT(ADDR(.bss.noload) - KERNEL_VIRTUAL)
+	{
+		*(.bss.noload)
 
 		. = ALIGN(4K);
 		start_mmap = .;
 		. += MMAP_SIZE;
 		end_mmap = .;
-
-		*(.gnu.linkonce.b*)
 	}
 
 	. -= KERNEL_VIRTUAL;

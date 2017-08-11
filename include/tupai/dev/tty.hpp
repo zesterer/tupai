@@ -28,6 +28,7 @@ namespace tupai
 {
 	namespace dev
 	{
+		void tty_construct();
 		void tty_init();
 
 		void tty_write(char c);

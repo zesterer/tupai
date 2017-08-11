@@ -44,10 +44,17 @@ namespace tupai
 
 		static util::spinlock_t spinlock;
 
-		static sys::pipe_t inpipe;
-		static sys::pipe_t outpipe;
+		// Unions are used here SPECIFICALLY to avoid global construction!
+		union In  { sys::pipe_t pipe;  In() {} } in;
+		union Out { sys::pipe_t pipe; Out() {} } out;
 
 		static void tty_out_thread(int argc, char* argv[]);
+
+		void tty_construct()
+		{
+			in.pipe  = sys::pipe_t();
+			out.pipe = sys::pipe_t();
+		}
 
 		void tty_init()
 		{
@@ -56,8 +63,8 @@ namespace tupai
 			if (!tty_initiated)
 			{
 				// Mount the pipes
-				sys::mount_pipe(&inpipe, "/dev/stdin");
-				sys::mount_pipe(&outpipe, "/dev/stdout");
+				sys::mount_pipe(&in.pipe, "/dev/stdin");
+				sys::mount_pipe(&out.pipe, "/dev/stdout");
 
 				#if defined(ARCH_FAMILY_x86)
 					x86::textmode_init();
@@ -99,7 +106,7 @@ namespace tupai
 		void tty_write(char c)
 		{
 			spinlock.lock(); // Begin critical section
-			outpipe.write_unsafe(c);
+			out.pipe.write_unsafe(c);
 			spinlock.unlock(); // End critical section
 		}
 
@@ -112,7 +119,7 @@ namespace tupai
 		char tty_read()
 		{
 			spinlock.lock(); // Begin critical section
-			char val = inpipe.read_unsafe();
+			char val = in.pipe.read_unsafe();
 			spinlock.unlock(); // End critical section
 			return val;
 		}
@@ -120,7 +127,7 @@ namespace tupai
 		void tty_write_in(char c)
 		{
 			util::hwlock_acquire(); // Begin critical section
-			inpipe.write_unsafe(c);
+			in.pipe.write_unsafe(c);
 			util::hwlock_release(); // End critical section
 		}
 
@@ -133,7 +140,7 @@ namespace tupai
 
 			while (true)
 			{
-				unsigned char c = outpipe.read(); // Unsafe call to avoid exception locking
+				unsigned char c = out.pipe.read(); // Unsafe call to avoid exception locking
 
 				util::ansi_cmd_t cmd = ansi.consume(c);
 

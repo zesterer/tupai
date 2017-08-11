@@ -57,6 +57,9 @@ namespace tupai
 		// *** WARNING ***
 		// Code executed here should not rely on constructed states
 
+		// Extremely early construction of static objects that must RETAIN state
+		dev::tty_construct();
+
 		// Core setup
 		// ----------
 		// These are things that are required to properly execute code

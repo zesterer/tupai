@@ -41,6 +41,13 @@ namespace tupai
 			S length = 0;
 
 		public:
+			_queue_t()
+			{
+				this->head = 0;
+				this->tail = 0;
+				this->length = 0;
+			}
+
 			void push(T item)
 			{
 				if (this->length != 0)
