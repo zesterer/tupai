@@ -20,7 +20,7 @@
 // Tupai
 #include <tupai/dev/kbd.hpp>
 
-#if defined(ARCH_FAMILY_x86)
+#if defined(ARCH_FAMILY_X86)
 	#include <tupai/x86/kbd.hpp>
 #else
 	#warning "Architecture provides no keyboard device!"
@@ -37,7 +37,7 @@ namespace tupai
 			if (kbd_initiated)
 				return;
 
-			#if defined(ARCH_FAMILY_x86)
+			#if defined(ARCH_FAMILY_X86)
 				x86::kbd_init();
 			#endif
 

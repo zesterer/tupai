@@ -23,9 +23,9 @@
 #include <tupai/util/mutex.hpp>
 #include <tupai/util/spinlock.hpp>
 
-#if defined(ARCH_FAMILY_x86)
+#if defined(ARCH_FAMILY_X86)
 	#include <tupai/x86/serial.hpp>
-#elif defined(ARCH_rpi2)
+#elif defined(ARCH_RPI2)
 	#include <tupai/arm/rpi2/serial.hpp>
 #else
 	#warning "Architecture provides no serial device!"
@@ -44,9 +44,9 @@ namespace tupai
 
 			if (!serial_initiated)
 			{
-				#if defined(ARCH_FAMILY_x86)
+				#if defined(ARCH_FAMILY_X86)
 					x86::serial_init();
-				#elif defined(ARCH_rpi2)
+				#elif defined(ARCH_RPI2)
 					arm::rpi2::serial_init();
 				#endif
 
@@ -60,9 +60,9 @@ namespace tupai
 		{
 			spinlock.lock(); // Begin critical section
 
-			#if defined(ARCH_FAMILY_x86)
+			#if defined(ARCH_FAMILY_X86)
 				size_t val = x86::serial_count_ports();
-			#elif defined(ARCH_rpi2)
+			#elif defined(ARCH_RPI2)
 				size_t val = arm::rpi2::serial_count_ports();
 			#endif
 
@@ -74,9 +74,9 @@ namespace tupai
 		{
 			spinlock.lock(); // Begin critical section
 
-			#if defined(ARCH_FAMILY_x86)
+			#if defined(ARCH_FAMILY_X86)
 				const char** val = x86::serial_list_ports();
-			#elif defined(ARCH_rpi2)
+			#elif defined(ARCH_RPI2)
 				const char** val = arm::rpi2::serial_list_ports();
 			#endif
 
@@ -106,9 +106,9 @@ namespace tupai
 			if (port_id != -1) // The port name was found
 			{
 				// It's valid, so attempt to open a port
-				#if defined(ARCH_FAMILY_x86)
+				#if defined(ARCH_FAMILY_X86)
 					success = x86::serial_open_port(port_id, baudrate, databits, stopbits, parity);
-				#elif defined(ARCH_rpi2)
+				#elif defined(ARCH_RPI2)
 					success = arm::rpi2::serial_open_port(port_id, baudrate, databits, stopbits, parity);
 				#endif
 			}
@@ -127,9 +127,9 @@ namespace tupai
 
 			if (port_id != -1) // Invalid port
 			{
-				#if defined(ARCH_FAMILY_x86)
+				#if defined(ARCH_FAMILY_X86)
 					x86::serial_write(port_id, val);
-				#elif defined(ARCH_rpi2)
+				#elif defined(ARCH_RPI2)
 					arm::rpi2::serial_write(port_id, val);
 				#endif
 			}
@@ -144,9 +144,9 @@ namespace tupai
 			uint8_t val = 0;
 			if (port_id != -1) // Invalid port, just return null data
 			{
-				#if defined(ARCH_FAMILY_x86)
+				#if defined(ARCH_FAMILY_X86)
 					val = x86::serial_read(port_id);
-				#elif defined(ARCH_rpi2)
+				#elif defined(ARCH_RPI2)
 					val = arm::rpi2::serial_read(port_id);
 				#endif
 			}

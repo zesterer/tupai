@@ -59,7 +59,7 @@ namespace tupai
 		print(util::TERM_FG_COLOR_CYAN, tupai_get_name_decorative(), " ",
 			tupai_get_version(), util::TERM_DEFAULT, " on ",
 			util::TERM_FG_COLOR_GREEN, arch_get_family(), "/", arch_get_target(), util::TERM_DEFAULT, '\n',
-			util::TERM_FG_COLOR_LIGHT_GRAY, "Copyright 2017, ", P_MAINTAINER_NAME, util::TERM_DEFAULT, '\n');
+			util::TERM_FG_COLOR_LIGHT_GRAY, "Copyright 2017, ", KMAINTAINER_NAME, util::TERM_DEFAULT, '\n');
 	}
 
 	size_t split_args(char* cmd, char* buff[], size_t size)

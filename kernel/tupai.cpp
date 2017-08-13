@@ -24,16 +24,16 @@ namespace tupai
 {
 	const char* tupai_get_name()
 	{
-		return P_NAME;
+		return KNAME;
 	}
 
 	const char* tupai_get_name_decorative()
 	{
-		return P_NAME_DECORATIVE;
+		return KNAME_DECORATIVE;
 	}
 
 	const char* tupai_get_version()
 	{
-		return P_VERSION_DECORATIVE;
+		return KVERSION_DECORATIVE;
 	}
 }
