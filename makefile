@@ -39,20 +39,18 @@ endif
 # Rules
 # -----
 
-.PHONY : all build rebuild clean run
+.PHONY : all build rebuild kernel clean run
 
 all : build
-
-build : $(ISO)
-
-rebuild : clean $(ISO)
+build : $(ISO) kernel
+rebuild : clean $(ISO) kernel
 
 clean :
 	@rm -r -f $(ISO) $(GRUB_BUILD_DIR) $(INITRD)
 	@cd $(KERNEL_SRC_DIR) && $(MAKE) clean $(KERNEL_MAKE_ARGS)
 	@echo "Cleaned all."
 
-run : $(ISO)
+run : $(ISO) kernel
 	@echo "Running '$(ISO)'..."
 	@$(QEMU) -cdrom $(ISO)
 
@@ -69,6 +67,7 @@ $(INITRD) : $(INITRD_DEPS)
 	@cd $(SYSROOT_SRC_DIR) && $(TAR) cf $(INITRD) --format=ustar *
 	@echo "[`date "+%H:%M:%S"`] Created '$@'."
 
-$(KERNEL) :
+$(KERNEL) : kernel
+kernel :
 	@cd $(KERNEL_SRC_DIR) && $(MAKE) all $(KERNEL_MAKE_ARGS)
 	@echo "[`date "+%H:%M:%S"`] Built '$@'."
