@@ -70,7 +70,7 @@ void operator delete[](void* ptr, size_t size __attribute__ ((unused)))
 
 //void* __dso_handle;
 
-#if defined(ARCH_FAMILY_x86)
+#if defined(ARCH_FAMILY_X86)
 	extern "C" int  __cxa_atexit(void (*destructor) (void*) __attribute__ ((unused)), void* arg __attribute__ ((unused)), void* dso __attribute__ ((unused))) { return 0; }
 	extern "C" void __cxa_finalize(void* f __attribute__ ((unused))) { }
 #endif

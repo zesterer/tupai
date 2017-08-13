@@ -21,7 +21,7 @@
 #include <tupai/dev/ps2.hpp>
 #include <tupai/util/str.hpp>
 
-#if defined(ARCH_FAMILY_x86)
+#if defined(ARCH_FAMILY_X86)
 	#include <tupai/x86/ps2_8042.hpp>
 #else
 	#warning "Architecture provides no PS/2 device!"
@@ -43,7 +43,7 @@ namespace tupai
 			if (ps2_initiated)
 				return;
 
-			#if defined(ARCH_FAMILY_x86)
+			#if defined(ARCH_FAMILY_X86)
 				x86::ps2_8042_init();
 			#endif
 
@@ -52,7 +52,7 @@ namespace tupai
 
 		size_t ps2_count_ports()
 		{
-			#if defined(ARCH_FAMILY_x86)
+			#if defined(ARCH_FAMILY_X86)
 				return x86::ps2_8042_count_ports();
 			#else
 				return 0;
@@ -61,7 +61,7 @@ namespace tupai
 
 		const char** ps2_list_ports()
 		{
-			#if defined(ARCH_FAMILY_x86)
+			#if defined(ARCH_FAMILY_X86)
 				return x86::ps2_8042_list_ports();
 			#endif
 		}
@@ -87,7 +87,7 @@ namespace tupai
 
 			// It's valid, so attempt to open a port
 			bool success = false;
-			#if defined(ARCH_FAMILY_x86)
+			#if defined(ARCH_FAMILY_X86)
 				success = x86::ps2_8042_open_port(port_id);
 			#endif
 
@@ -102,7 +102,7 @@ namespace tupai
 			if (port_id == -1) // Invalid port
 				return;
 
-			#if defined(ARCH_FAMILY_x86)
+			#if defined(ARCH_FAMILY_X86)
 				x86::ps2_8042_write(port_id, val);
 			#endif
 		}
@@ -112,7 +112,7 @@ namespace tupai
 			if (port_id == -1) // Invalid port, just return null data
 				return 0;
 
-			#if defined(ARCH_FAMILY_x86)
+			#if defined(ARCH_FAMILY_X86)
 				return x86::ps2_8042_read(port_id);
 			#else
 				return 0;

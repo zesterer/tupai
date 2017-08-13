@@ -27,7 +27,7 @@
 #include <tupai/task/task.hpp>
 #include <tupai/debug.hpp>
 
-#if defined(ARCH_FAMILY_x86)
+#if defined(ARCH_FAMILY_X86)
 	#include <tupai/x86/textmode.hpp>
 #endif
 
@@ -66,7 +66,7 @@ namespace tupai
 				sys::mount_pipe(&in.pipe, "/dev/stdin");
 				sys::mount_pipe(&out.pipe, "/dev/stdout");
 
-				#if defined(ARCH_FAMILY_x86)
+				#if defined(ARCH_FAMILY_X86)
 					x86::textmode_init();
 					x86::textmode_cursor_enable();
 				#endif
@@ -144,7 +144,7 @@ namespace tupai
 
 				util::ansi_cmd_t cmd = ansi.consume(c);
 
-				#if defined(ARCH_FAMILY_x86)
+				#if defined(ARCH_FAMILY_X86)
 					x86::textmode_apply(cmd);
 				#endif
 

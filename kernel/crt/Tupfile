@@ -1,8 +1,0 @@
-include_rules
-
-# Find crtbegin and crtend
-
-!CRT = |> cp `$(LINKER) $(CC_FLAGS) -print-file-name=%o` . |> %o
-
-: |> !CRT |> crtbegin.o
-: |> !CRT |> crtend.o

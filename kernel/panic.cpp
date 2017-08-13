@@ -23,7 +23,7 @@
 #include <tupai/irq.hpp>
 
 #include <tupai/util/fmt.hpp>
-#if defined(ARCH_FAMILY_x86)
+#if defined(ARCH_FAMILY_X86)
 	#include <tupai/x86/textmode.hpp>
 #endif
 
@@ -39,10 +39,10 @@ namespace tupai
 		 	"Kernel Panic!\n\n",
 			"Something went badly wrong and the following error was produced.\n\n",
 			msg, "\n\n",
-			"Please send this error and all other relevant details concerning\nthis crash to ", P_MAINTAINER_EMAIL, '.'
+			"Please send this error and all other relevant details concerning\nthis crash to ", KMAINTAINER_EMAIL, '.'
 		);
 
-		#if defined(ARCH_FAMILY_x86)
+		#if defined(ARCH_FAMILY_X86)
 			x86::textmode_clear();
 			x86::textmode_cursor_disable();
 			x86::textmode_move(0, 0);

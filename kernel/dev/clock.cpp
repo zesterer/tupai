@@ -20,7 +20,7 @@
 // Tupai
 #include <tupai/dev/clock.hpp>
 
-#if defined(ARCH_FAMILY_x86)
+#if defined(ARCH_FAMILY_X86)
 	#include <tupai/x86/cmos.hpp>
 #else
 	#warning "Architecture provides no clock device!"
@@ -37,7 +37,7 @@ namespace tupai
 			if (clock_initiated)
 				return;
 
-			#if defined(ARCH_FAMILY_x86)
+			#if defined(ARCH_FAMILY_X86)
 				x86::cmos_init();
 			#endif
 
@@ -46,7 +46,7 @@ namespace tupai
 
 		datetime_t clock_read()
 		{
-			#if defined(ARCH_FAMILY_x86)
+			#if defined(ARCH_FAMILY_X86)
 				return x86::cmos_read();
 			#else
 			{
