@@ -18,7 +18,7 @@ KMAINTAINER_EMAIL   = joshua.s.barretto@gmail.com
 # CFlags
 # -----
 
-INCS ?= $(SRC_ROOT)/include
+INCS += $(LIBC_INC) $(SRC_ROOT)/include
 
 INC_FLAGS = $(addprefix -I, $(INCS))
 
@@ -124,7 +124,7 @@ clean :
 
 $(KERNEL) : $(OBJS)
 	@$(LD) $(CFLAGS) -T $(LSCRIPT) -o $@ $(CRTBEGIN) $(OBJS) $(CRTEND) $(LFLAGS)
-	@echo "Linked '$@'."
+	@echo "[`date "+%H:%M:%S"`] Linked '$@'."
 
 $(OBJS) : | $(BDIRS)
 
@@ -137,14 +137,14 @@ $(BDIRS) :
 # Compile .s files
 $(BUILD_ROOT)/%.o : $(SRC_DIR)/%.s
 	@$(AS) -MMD -c -o $@ $< $(CFLAGS)
-	@echo "Compiled '$<'."
+	@echo "[`date "+%H:%M:%S"`] Compiled '$<'."
 
 # Compile .c files
 $(BUILD_ROOT)/%.o : $(SRC_DIR)/%.c
 	@$(CC) -MMD -c -o $@ $< $(CFLAGS)
-	@echo "Compiled '$<'."
+	@echo "[`date "+%H:%M:%S"`] Compiled '$<'."
 
 # Compile .cpp files
 $(BUILD_ROOT)/%.o : $(SRC_DIR)/%.cpp
 	@$(CPP) -MMD -c -o $@ $< $(CFLAGS)
-	@echo "Compiled '$<'."
+	@echo "[`date "+%H:%M:%S"`] Compiled '$<'."

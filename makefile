@@ -10,10 +10,11 @@ BUILD_ROOT ?= $(SRC_ROOT)/build
 KERNEL_SRC_DIR    = $(SRC_ROOT)/kernel
 KERNEL_BUILD_ROOT = $(BUILD_ROOT)/kernel
 KERNEL            = $(KERNEL_BUILD_ROOT)/tupai.elf
-KERNEL_MAKE_ARGS  = BUILD_ROOT=$(KERNEL_BUILD_ROOT) INCS=$(SRC_ROOT)/include KERNEL=$(KERNEL) TARGET_FAMILY=$(TARGET_FAMILY) TARGET_ARCH=$(TARGET_ARCH)
+KERNEL_MAKE_ARGS  = BUILD_ROOT=$(KERNEL_BUILD_ROOT) LIBC_INC=$(SRC_ROOT)/include KERNEL=$(KERNEL) TARGET_FAMILY=$(TARGET_FAMILY) TARGET_ARCH=$(TARGET_ARCH)
 
-INITRD          = $(BUILD_ROOT)/initrd.tar
 SYSROOT_SRC_DIR = $(SRC_ROOT)/sysroot
+INITRD          = $(BUILD_ROOT)/initrd.tar
+INITRD_DEPS     = $(shell find $(SYSROOT_SRC_DIR) -name '*')
 
 GRUB_BUILD_DIR = $(BUILD_ROOT)/grub
 GRUB_SRC_DIR   = grub/
@@ -40,14 +41,14 @@ endif
 
 .PHONY : all build rebuild clean run
 
-all : rebuild
+all : build
 
 build : $(ISO)
 
 rebuild : clean $(ISO)
 
 clean :
-	@rm -r -f $(ISO) $(GRUB_BUILD_DIR)
+	@rm -r -f $(ISO) $(GRUB_BUILD_DIR) $(INITRD)
 	@cd $(KERNEL_SRC_DIR) && $(MAKE) clean $(KERNEL_MAKE_ARGS)
 	@echo "Cleaned all."
 
@@ -64,10 +65,10 @@ $(ISO) : $(KERNEL) $(INITRD)
 	@grub-mkrescue -o $(ISO) $(GRUB_BUILD_DIR)/isodir
 	@echo "Created '$@'."
 
-$(INITRD) :
+$(INITRD) : $(INITRD_DEPS)
 	@cd $(SYSROOT_SRC_DIR) && $(TAR) cf $(INITRD) --format=ustar *
-	@echo "Built '$@'."
+	@echo "[`date "+%H:%M:%S"`] Created '$@'."
 
 $(KERNEL) :
 	@cd $(KERNEL_SRC_DIR) && $(MAKE) all $(KERNEL_MAKE_ARGS)
-	@echo "Built '$@'."
+	@echo "[`date "+%H:%M:%S"`] Built '$@'."
