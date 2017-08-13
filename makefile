@@ -26,14 +26,18 @@ ISO = $(BUILD_ROOT)/tupai.iso
 
 TAR = tar
 
+QEMU_ARGS = -d guest_errors -d cpu_reset --no-reboot --no-shutdown -m 256M
 ifeq ($(TARGET_ARCH), AMD64)
 	QEMU = qemu-system-x86_64
+	QEMU_ARGS +=
 endif
 ifeq ($(TARGET_ARCH), I386)
 	QEMU = qemu-system-i686
+	QEMU_ARGS +=
 endif
 ifeq ($(TARGET_ARCH), RPI2)
 	QEMU = qemu-system-arm
+	QEMU_ARGS += -M raspi2
 endif
 
 # Rules
@@ -52,7 +56,7 @@ clean :
 
 run : $(ISO) kernel
 	@echo "Running '$(ISO)'..."
-	@$(QEMU) -cdrom $(ISO)
+	@$(QEMU) $(QEMU_ARGS) -cdrom $(ISO)
 
 $(ISO) : $(KERNEL) $(INITRD)
 	@mkdir -p $(GRUB_BUILD_DIR)/isodir/boot/grub $(GRUB_BUILD_DIR)/isodir/mod
