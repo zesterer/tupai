@@ -70,37 +70,37 @@ LD  = x86_64-elf-g++
 
 SRC_DIR = $(abspath .)
 
-SRCS_REL += $(wildcard $(SRC_DIR)/*.s      $(SRC_DIR)/*.c      $(SRC_DIR)/*.cpp)
-SRCS_REL += $(wildcard $(SRC_DIR)/dev/*.s  $(SRC_DIR)/dev/*.c  $(SRC_DIR)/dev/*.cpp)
-SRCS_REL += $(wildcard $(SRC_DIR)/libk/*.s $(SRC_DIR)/libk/*.c $(SRC_DIR)/libk/*.cpp)
-SRCS_REL += $(wildcard $(SRC_DIR)/mem/*.s  $(SRC_DIR)/mem/*.c  $(SRC_DIR)/mem/*.cpp)
-SRCS_REL += $(wildcard $(SRC_DIR)/sys/*.s  $(SRC_DIR)/sys/*.c  $(SRC_DIR)/sys/*.cpp)
-SRCS_REL += $(wildcard $(SRC_DIR)/task/*.s $(SRC_DIR)/task/*.c $(SRC_DIR)/task/*.cpp)
-SRCS_REL += $(wildcard $(SRC_DIR)/util/*.s $(SRC_DIR)/util/*.c $(SRC_DIR)/util/*.cpp)
-SRCS_REL += $(wildcard $(SRC_DIR)/vfs/*.s  $(SRC_DIR)/vfs/*.c  $(SRC_DIR)/vfs/*.cpp)
+SRCS_REL += $(shell ls ./*.{s,c,cpp} 2> /dev/null)
+SRCS_REL += $(shell ls ./dev/*.{s,c,cpp}  2> /dev/null)
+SRCS_REL += $(shell ls ./libk/*.{s,c,cpp} 2> /dev/null)
+SRCS_REL += $(shell ls ./mem/*.{s,c,cpp}  2> /dev/null)
+SRCS_REL += $(shell ls ./sys/*.{s,c,cpp}  2> /dev/null)
+SRCS_REL += $(shell ls ./task/*.{s,c,cpp} 2> /dev/null)
+SRCS_REL += $(shell ls ./util/*.{s,c,cpp} 2> /dev/null)
+SRCS_REL += $(shell ls ./vfs/*.{s,c,cpp}  2> /dev/null)
 
 ifeq ($(TARGET_FAMILY), X86)
-	SRCS_REL += $(wildcard $(SRC_DIR)/x86/*.s $(SRC_DIR)/x86/*.c $(SRC_DIR)/x86/*.cpp)
+	SRCS_REL += $(shell ls ./x86/*.{s,c,cpp} 2> /dev/null)
 endif
 ifeq ($(TARGET_FAMILY), ARM)
-	SRCS_REL += $(wildcard $(SRC_DIR)/arm/*.s $(SRC_DIR)/arm/*.c $(SRC_DIR)/arm/*.cpp)
-	SRCS_REL += $(wildcard $(SRC_DIR)/arm/util/*.s $(SRC_DIR)/arm/util/*.c $(SRC_DIR)/arm/util/*.cpp)
+	SRCS_REL += $(shell ls ./arm/*.{s,c,cpp} 2> /dev/null)
+	SRCS_REL += $(shell ls ./arm/util/*.{s,c,cpp} 2> /dev/null)
 endif
 
 ifeq ($(TARGET_ARCH), AMD64)
-	SRCS_REL += $(wildcard $(SRC_DIR)/x86/amd64/*.s $(SRC_DIR)/x86/amd64/*.c $(SRC_DIR)/x86/amd64/*.cpp)
-	SRCS_REL += $(wildcard $(SRC_DIR)/x86/amd64/crt/*.s $(SRC_DIR)/x86/amd64/crt/*.c $(SRC_DIR)/x86/amd64/crt/*.cpp)
-	SRCS_REL += $(wildcard $(SRC_DIR)/x86/amd64/sys/*.s $(SRC_DIR)/x86/amd64/sys/*.c $(SRC_DIR)/x86/amd64/sys/*.cpp)
-	SRCS_REL += $(wildcard $(SRC_DIR)/x86/amd64/util/*.s $(SRC_DIR)/x86/amd64/util/*.c $(SRC_DIR)/x86/amd64/util/*.cpp)
+	SRCS_REL += $(shell ls ./x86/amd64/*.{s,c,cpp}      2> /dev/null)
+	SRCS_REL += $(shell ls ./x86/amd64/crt/*.{s,c,cpp}  2> /dev/null)
+	SRCS_REL += $(shell ls ./x86/amd64/sys/*.{s,c,cpp}  2> /dev/null)
+	SRCS_REL += $(shell ls ./x86/amd64/util/*.{s,c,cpp} 2> /dev/null)
 endif
 ifeq ($(TARGET_ARCH), I386)
-	SRCS_REL += $(wildcard $(SRC_DIR)/x86/i386/*.s $(SRC_DIR)/x86/i386/*.c $(SRC_DIR)/x86/i386/*.cpp)
-	SRCS_REL += $(wildcard $(SRC_DIR)/x86/i386/crt/*.s $(SRC_DIR)/x86/i386/crt/*.c $(SRC_DIR)/x86/i386/crt/*.cpp)
-	SRCS_REL += $(wildcard $(SRC_DIR)/x86/i386/sys/*.s $(SRC_DIR)/x86/i386/sys/*.c $(SRC_DIR)/x86/i386/sys/*.cpp)
-	SRCS_REL += $(wildcard $(SRC_DIR)/x86/i386/util/*.s $(SRC_DIR)/x86/i386/util/*.c $(SRC_DIR)/x86/i386/util/*.cpp)
+	SRCS_REL += $(shell ls ./x86/i386/*.{s,c,cpp}      2> /dev/null)
+	SRCS_REL += $(shell ls ./x86/i386/crt/*.{s,c,cpp}  2> /dev/null)
+	SRCS_REL += $(shell ls ./x86/i386/sys/*.{s,c,cpp}  2> /dev/null)
+	SRCS_REL += $(shell ls ./x86/i386/util/*.{s,c,cpp} 2> /dev/null)
 endif
 ifeq ($(TARGET_ARCH), RPI2)
-	SRCS_REL += $(wildcard $(SRC_DIR)/rpi2/*.s $(SRC_DIR)/rpi2/*.c $(SRC_DIR)/rpi2/*.cpp)
+	SRCS_REL += $(shell ls ./arm/rpi2/*.{s,c,cpp} 2> /dev/null)
 endif
 
 SRCS = $(abspath $(SRCS_REL))
