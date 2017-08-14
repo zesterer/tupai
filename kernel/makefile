@@ -79,6 +79,8 @@ ifeq ($(TARGET_ARCH), RPI2)
 	LD  = arm-none-eabi-g++
 endif
 
+TOOL_DIR ?= $(abspath $(dir $(shell which $(CC))))
+
 # Source files
 # ------------
 
@@ -138,7 +140,7 @@ clean :
 
 $(KERNEL) : $(OBJS)
 	@echo "[`date "+%H:%M:%S"`] Linking '$@'..."
-	@$(LD) $(CFLAGS) -T $(LSCRIPT) -o $@ $(CRTBEGIN) $(OBJS) $(CRTEND) $(LFLAGS)
+	@$(TOOL_DIR)/$(LD) $(CFLAGS) -T $(LSCRIPT) -o $@ $(CRTBEGIN) $(OBJS) $(CRTEND) $(LFLAGS)
 	@echo "[`date "+%H:%M:%S"`] Linked '$@'."
 
 $(OBJS) : | $(BDIRS)
@@ -152,17 +154,17 @@ $(BDIRS) :
 # Compile .s files
 $(BUILD_ROOT)/%.o : $(SRC_DIR)/%.s
 	@echo "[`date "+%H:%M:%S"`] Compiling '$<'..."
-	@$(AS) -MMD -c -o $@ $< $(CFLAGS)
+	@$(TOOL_DIR)/$(AS) -MMD -c -o $@ $< $(CFLAGS)
 	@echo "[`date "+%H:%M:%S"`] Compiled '$@'."
 
 # Compile .c files
 $(BUILD_ROOT)/%.o : $(SRC_DIR)/%.c
 	@echo "[`date "+%H:%M:%S"`] Compiling '$<'..."
-	@$(CC) -MMD -c -o $@ $< $(CFLAGS)
+	@$(TOOL_DIR)/$(CC) -MMD -c -o $@ $< $(CFLAGS)
 	@echo "[`date "+%H:%M:%S"`] Compiled '$@'."
 
 # Compile .cpp files
 $(BUILD_ROOT)/%.o : $(SRC_DIR)/%.cpp
 	@echo "[`date "+%H:%M:%S"`] Compiling '$<'..."
-	@$(CPP) -MMD -c -o $@ $< $(CFLAGS)
+	@$(TOOL_DIR)/$(CPP) -MMD -c -o $@ $< $(CFLAGS)
 	@echo "[`date "+%H:%M:%S"`] Compiled '$@'."
