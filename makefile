@@ -6,7 +6,7 @@
 # X86 / ARM
 TARGET_FAMILY = X86
 # I386 / AMD64
-TARGET_ARCH   = I386
+TARGET_ARCH   = AMD64
 
 SRC_ROOT    = $(abspath .)
 BUILD_ROOT ?= $(SRC_ROOT)/build
