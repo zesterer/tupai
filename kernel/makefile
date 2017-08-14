@@ -60,10 +60,24 @@ endif
 # Tools
 # -----
 
-AS  = x86_64-elf-g++
-CC  = x86_64-elf-g++
-CPP = x86_64-elf-g++
-LD  = x86_64-elf-g++
+ifeq ($(TARGET_ARCH), AMD64)
+	AS  = x86_64-elf-g++
+	CC  = x86_64-elf-g++
+	CPP = x86_64-elf-g++
+	LD  = x86_64-elf-g++
+endif
+ifeq ($(TARGET_ARCH), I386)
+	AS  = i686-elf-g++
+	CC  = i686-elf-g++
+	CPP = i686-elf-g++
+	LD  = i686-elf-g++
+endif
+ifeq ($(TARGET_ARCH), RPI2)
+	AS  = arm-none-eabi-g++
+	CC  = arm-none-eabi-g++
+	CPP = arm-none-eabi-g++
+	LD  = arm-none-eabi-g++
+endif
 
 # Source files
 # ------------

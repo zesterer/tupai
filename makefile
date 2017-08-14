@@ -1,21 +1,28 @@
 # Definitions
 # -----------
 
+# Architecture configuration
+
+# X86 / ARM
 TARGET_FAMILY = X86
-TARGET_ARCH   = AMD64
+# I386 / AMD64
+TARGET_ARCH   = I386
 
 SRC_ROOT    = $(abspath .)
 BUILD_ROOT ?= $(SRC_ROOT)/build
 
+# Kernel
 KERNEL_SRC_DIR    = $(SRC_ROOT)/kernel
 KERNEL_BUILD_ROOT = $(BUILD_ROOT)/kernel
 KERNEL            = $(KERNEL_BUILD_ROOT)/tupai.elf
 KERNEL_MAKE_ARGS  = BUILD_ROOT=$(KERNEL_BUILD_ROOT) LIBC_INC=$(SRC_ROOT)/include KERNEL=$(KERNEL) TARGET_FAMILY=$(TARGET_FAMILY) TARGET_ARCH=$(TARGET_ARCH)
 
+# Initrd
 SYSROOT_SRC_DIR = $(SRC_ROOT)/sysroot
 INITRD          = $(BUILD_ROOT)/initrd.tar
 INITRD_DEPS     = $(shell find $(SYSROOT_SRC_DIR) -name '*')
 
+# GRUB
 GRUB_BUILD_DIR = $(BUILD_ROOT)/grub
 GRUB_SRC_DIR   = grub/
 
@@ -32,7 +39,7 @@ ifeq ($(TARGET_ARCH), AMD64)
 	QEMU_ARGS +=
 endif
 ifeq ($(TARGET_ARCH), I386)
-	QEMU = qemu-system-i686
+	QEMU = qemu-system-i386
 	QEMU_ARGS +=
 endif
 ifeq ($(TARGET_ARCH), RPI2)
@@ -40,10 +47,12 @@ ifeq ($(TARGET_ARCH), RPI2)
 	QEMU_ARGS += -M raspi2
 endif
 
+BOCHS = bochs
+
 # Rules
 # -----
 
-.PHONY : all build rebuild kernel clean run
+.PHONY : all build rebuild kernel clean run debug
 
 all : build
 build : $(ISO) kernel
@@ -57,6 +66,10 @@ clean :
 run : $(ISO) kernel
 	@echo "Running '$(ISO)'..."
 	@$(QEMU) $(QEMU_ARGS) -cdrom $(ISO)
+
+debug : $(ISO) kernel
+	@echo "Debugging '$(ISO)'..."
+	@$(BOCHS)
 
 $(ISO) : $(KERNEL) $(INITRD)
 	@mkdir -p $(GRUB_BUILD_DIR)/isodir/boot/grub $(GRUB_BUILD_DIR)/isodir/mod
