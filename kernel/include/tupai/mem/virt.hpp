@@ -1,5 +1,5 @@
 //
-// file : pool.hpp
+// file : virt.hpp
 //
 // This file is part of Tupai.
 //
@@ -17,12 +17,12 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_MEM_POOL_HPP
-#define TUPAI_MEM_POOL_HPP
+#ifndef TUPAI_MEM_VIRTUAL_HPP
+#define TUPAI_MEM_VIRTUAL_HPP
 
 // Tupai
-#include <tupai/util/mutex.hpp>
-#include <tupai/util/spinlock.hpp>
+#include <tupai/task/task.hpp>
+#include <tupai/util/vector.hpp>
 
 // Standard
 #include <stddef.h>
@@ -32,22 +32,25 @@ namespace tupai
 {
 	namespace mem
 	{
-		namespace pool
+		namespace virt
 		{
-			struct pool_t
+			struct page_t
 			{
-				size_t _map;
-				size_t _body;
-				size_t _block_size;
-				size_t _block_count;
-				util::spinlock_t _spinlock;
-
-				void* alloc(size_t n, size_t align = 8);
-				void  dealloc(void* ptr);
-				void  display(size_t n = 32);
+				size_t phys_index;
+				size_t virt_index;
 			};
 
-			bool create(pool_t* pool, void* start, size_t size, size_t block_size = 64);
+			struct space_t
+			{
+				task::proc_ptr_t proc;
+				util::vector_t<page_t> _pages;
+
+				void* table = nullptr;
+
+				space_t();
+				int map_page(void* phys_addr, void* virt_addr);
+				int map_region(void* phys_addr, size_t size, void* virt_addr);
+			};
 		}
 	}
 }

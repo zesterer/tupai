@@ -60,11 +60,11 @@ namespace tupai
 				util::hwlock_release(); // End critical section
 			}
 
-			void* alloc(size_t n)
+			void* alloc(size_t n, size_t align)
 			{
 				util::hwlock_acquire(); // Begin critical section
 
-				void* ptr = pool.alloc(n);
+				void* ptr = pool.alloc(n, align);
 
 				if (ptr == nullptr)
 					panic("Failed to allocate kernel memory pool block(s)");

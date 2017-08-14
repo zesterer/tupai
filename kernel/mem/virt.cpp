@@ -1,5 +1,5 @@
 //
-// file : virtual.hpp
+// file : virt.cpp
 //
 // This file is part of Tupai.
 //
@@ -17,39 +17,24 @@
 // along with Tupai.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TUPAI_MEM_VIRTUAL_HPP
-#define TUPAI_MEM_VIRTUAL_HPP
-
 // Tupai
-#include <tupai/task/task.hpp>
-#include <tupai/util/vector.hpp>
-
-// Standard
-#include <stddef.h>
-#include <stdint.h>
+#include <tupai/mem/virt.hpp>
+#include <tupai/mem/kmem.hpp>
+#include <tupai/util/mem.hpp>
+#include <tupai/util/log.hpp>
+#include <tupai/arch.hpp>
 
 namespace tupai
 {
 	namespace mem
 	{
-		namespace virtual
+		namespace virt
 		{
-			struct page_t
+			space_t::space_t()
 			{
-				size_t phys_index;
-				size_t virt_index;
+				// TODO : Remove this and make it multi-arch
+				this->table = kmem::alloc(1024 * sizeof(void*), ARCH_PAGE_SIZE);
 			}
-
-			struct space_t
-			{
-				task::proc_ptr_t proc;
-				util::vector_t<page_t> _pages;
-
-				void map_page(void* phys_addr, void* virt_addr);
-				void map_region(void* phys_addr, size_t size, void* virt_addr);
-			};
 		}
 	}
 }
-
-#endif

@@ -59,8 +59,8 @@ build : $(ISO) kernel
 rebuild : clean $(ISO) kernel
 
 clean :
-	@rm -r -f $(ISO) $(GRUB_BUILD_DIR) $(INITRD)
 	@cd $(KERNEL_SRC_DIR) && $(MAKE) clean $(KERNEL_MAKE_ARGS)
+	@rm -r -f $(ISO) $(GRUB_BUILD_DIR) $(INITRD) $(BUILD_ROOT)
 	@echo "Cleaned all."
 
 run : $(ISO) kernel
@@ -76,15 +76,18 @@ $(ISO) : $(KERNEL) $(INITRD)
 	@cp $(KERNEL) $(GRUB_BUILD_DIR)/isodir/boot/.
 	@cp $(INITRD) $(GRUB_BUILD_DIR)/isodir/mod/.
 	@cp $(GRUB_SRC_DIR)/grub.cfg $(GRUB_BUILD_DIR)/isodir/boot/grub/
-	@echo "Copied all ISO components to '$(GRUB_BUILD_DIR)'."
+	@echo "Copied all image components to '$(GRUB_BUILD_DIR)'."
+	@echo "[`date "+%H:%M:%S"`] Creating '$<'..."
 	@grub-mkrescue -o $(ISO) $(GRUB_BUILD_DIR)/isodir
-	@echo "Created '$@'."
+	@echo "[`date "+%H:%M:%S"`] Created '$@'."
 
 $(INITRD) : $(INITRD_DEPS)
+	@echo "[`date "+%H:%M:%S"`] Creating '$@'..."
 	@cd $(SYSROOT_SRC_DIR) && $(TAR) cf $(INITRD) --format=ustar *
 	@echo "[`date "+%H:%M:%S"`] Created '$@'."
 
 $(KERNEL) : kernel
 kernel :
+	@echo "[`date "+%H:%M:%S"`] Building kernel..."
 	@cd $(KERNEL_SRC_DIR) && $(MAKE) all $(KERNEL_MAKE_ARGS)
-	@echo "[`date "+%H:%M:%S"`] Built '$@'."
+	@echo "[`date "+%H:%M:%S"`] Built kernel."

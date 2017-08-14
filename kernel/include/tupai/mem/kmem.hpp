@@ -31,7 +31,7 @@ namespace tupai
 		namespace kmem
 		{
 			void  init();
-			void* alloc(size_t n);
+			void* alloc(size_t n, size_t align = 8);
 			void  dealloc(void* ptr);
 			void  info();
 			void  log();

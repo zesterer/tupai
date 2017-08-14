@@ -71,7 +71,7 @@ namespace tupai
 				return success;
 			}
 
-			void* pool_t::alloc(size_t n)
+			void* pool_t::alloc(size_t n, size_t align)
 			{
 				this->_spinlock.lock(); // Begin critical section
 
@@ -81,7 +81,7 @@ namespace tupai
 				bool success = false;
 				for (size_t i = 0; i < this->_block_count; i ++)
 				{
-					if (pool_get(this, i) == block_status::UNUSED) // Found an unused block! keep searching to check size
+					if (pool_get(this, i) == block_status::UNUSED && (size_t)(this->_body + i * this->_block_size) % align == 0) // Found an unused block! keep searching to check size
 					{
 						start = i;
 
