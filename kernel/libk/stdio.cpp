@@ -29,6 +29,11 @@
 // Standard
 #include <stdint.h>
 
+// Standard streams
+FILE* stdin  = (FILE*)0;
+FILE* stdout = (FILE*)1;
+FILE* stderr = (FILE*)2;
+
 // File access
 FILE* fopen(const char* filename, const char* mode)
 {
@@ -45,7 +50,7 @@ FILE* fopen(const char* filename, const char* mode)
 
 int fclose(FILE* stream)
 {
-	tupai::id_t fd = (tupai::id_t)stream - 1;
+	tupai::id_t fd = (tupai::id_t)stream;
 	tupai::sys::call(tupai::sys::CALL::CLOSE, (size_t)fd);
 
 	return 0;
@@ -55,7 +60,7 @@ int fclose(FILE* stream)
 size_t fread (void* ptr, size_t size, size_t count, FILE* stream)
 {
 	size_t n = size * count;
-	tupai::id_t fd = (tupai::id_t)stream - 1;
+	tupai::id_t fd = (tupai::id_t)stream;
 	tupai::sys::call(tupai::sys::CALL::READ, (size_t)fd, (size_t)&n, (size_t)ptr);
 	return n;
 }
@@ -63,7 +68,7 @@ size_t fread (void* ptr, size_t size, size_t count, FILE* stream)
 size_t fwrite(const void* ptr, size_t size, size_t count, FILE* stream)
 {
 	size_t n = size * count;
-	tupai::id_t fd = (tupai::id_t)stream - 1;
+	tupai::id_t fd = (tupai::id_t)stream;
 	tupai::sys::call(tupai::sys::CALL::WRITE, (size_t)fd, (size_t)&n, (size_t)ptr);
 	return n;
 }

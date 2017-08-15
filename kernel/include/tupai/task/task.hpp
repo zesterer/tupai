@@ -89,7 +89,7 @@ namespace tupai
 
 			thrd_ptr_t spawn_thread(void (*entry)(int argc, char* argv[]));
 			int          destroy_thread(thrd_ptr_t);
-			id_t         create_fd(vfs::inode_ptr_t inode);
+			id_t         create_fd(vfs::inode_ptr_t inode, id_t lid = ID_INVALID);
 			int          delete_fd(id_t lfd);
 
 			int kill();

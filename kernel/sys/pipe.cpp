@@ -70,16 +70,16 @@ namespace tupai
 			return (fd == ID_INVALID) ? 1 : 0;
 		}
 
-		ssize_t pipe_read_call (vfs::fd_ptr_t fd, void* rbuff, size_t n)
+		ssize_t pipe_read_call(vfs::fd_ptr_t fd, void* rbuff, size_t n)
 		{
 			(void)n;
-			
+
 			pipe_t** pipe = pipes[fd.get_inode()];
 
 			if (pipe != nullptr)
 			{
 				// TODO : Fix this
-				((uint8_t*)rbuff)[0] = (*pipe)->read_unsafe();
+				((uint8_t*)rbuff)[0] = (*pipe)->read();
 				((uint8_t*)rbuff)[1] = '\0';
 				return 1;
 			}

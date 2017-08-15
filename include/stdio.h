@@ -32,9 +32,9 @@ typedef int64_t fpos_t;
 #define FILENAME_MAX 512
 
 // Standard streams
-const FILE stdin  = 0;
-const FILE stdout = 1;
-const FILE stderr = 2;
+extern FILE* stdin;
+extern FILE* stdout;
+extern FILE* stderr;
 
 // File access
 FILE* fopen(const char* filename, const char* mode);

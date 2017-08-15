@@ -356,7 +356,7 @@ namespace tupai
 			return err;
 		}
 
-		id_t proc_ptr_t::create_fd(vfs::inode_ptr_t inode)
+		id_t proc_ptr_t::create_fd(vfs::inode_ptr_t inode, id_t lid)
 		{
 			util::hwlock_acquire(); // Begin critical section
 
@@ -365,7 +365,9 @@ namespace tupai
 			vfs::fd_ptr_t val = ID_INVALID;
 			if (proc != nullptr)
 			{
-				id_t nid = proc->lfd_counter++;
+				id_t nid = lid;
+				if (nid == ID_INVALID)
+					nid = proc->lfd_counter++;
 
 				vfs::fd_ptr_t nfd = vfs::create_fd(inode);
 				proc->fds.add(nid, nfd);

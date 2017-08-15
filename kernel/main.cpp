@@ -32,6 +32,7 @@
 
 // Core systems
 #include <tupai/vfs/vfs.hpp>
+#include <tupai/sys/pipe.hpp>
 #include <tupai/task/task.hpp>
 #include <tupai/task/scheduler.hpp>
 #include <tupai/sys/call.hpp>
@@ -86,6 +87,7 @@ namespace tupai
 		// ------------
 		// These are things required to run kernel threads, processes, manipulate files, etc.
 		vfs::init();            // Initiate virtual filesystem
+		sys::pipe_init();       // Initiate pipes
 		task::init();           // Initiate processes
 		task::scheduler_init(); // Initiate scheduler
 		sys::call_init();       // Initiate syscalls
@@ -115,6 +117,14 @@ namespace tupai
 		(void)argv;
 
 		// Spawn a kernel shell process
-		task::create_process("shell", vfs::get_root()).spawn_thread(shell_main);
+		task::proc_ptr_t shell = task::create_process("shell", vfs::get_root());
+
+		// Give it appropriate stdio streams
+		shell.create_fd(vfs::get_inode("/dev/stdin"),  0);
+		shell.create_fd(vfs::get_inode("/dev/stdout"), 1);
+		shell.create_fd(vfs::get_inode("/dev/stdout"), 2);
+
+		// Spawn a kernel thread (note: execution may begin arbitrarily after this point!)
+		shell.spawn_thread(shell_main);
 	}
 }

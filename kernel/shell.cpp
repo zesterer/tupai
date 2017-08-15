@@ -23,15 +23,14 @@
 #include <tupai/arch.hpp>
 #include <tupai/panic.hpp>
 
+// Utility access
 #include <tupai/mem/kmem.hpp>
 #include <tupai/mem/mmap.hpp>
 #include <tupai/dev/clock.hpp>
 #include <tupai/sys/call.hpp>
 #include <tupai/task/task.hpp>
 
-#include <tupai/util/in.hpp>
 #include <tupai/util/fmt.hpp>
-#include <tupai/util/log.hpp>
 #include <tupai/util/str.hpp>
 #include <tupai/util/vector.hpp>
 #include <tupai/util/term.hpp>
@@ -43,15 +42,46 @@
 
 namespace tupai
 {
-	FILE* stdout;
-
 	char pbuff[2048];
 	template <typename... Args>
 	void print(Args&&... args)
 	{
-		util::log(args ...);
-		//util::fmt(pbuff, args ...);
-		//fwrite(pbuff, 1, util::str_len(pbuff), stdout);
+		util::fmt(pbuff, args ...);
+		fwrite(pbuff, 1, util::str_len(pbuff), stdout);
+	}
+
+	template <size_t SIZE>
+	void readline(char(&buff)[SIZE])
+	{
+		size_t i = 0;
+		while (i + 1 < SIZE)
+		{
+			char c;
+			fread(&c, sizeof(char), 1, stdin);
+
+			if (c == '\b')
+			{
+				if (i > 0)
+				{
+					i --;
+					print("\b \b");
+				}
+				continue;
+			}
+			//else if (c == '\0')
+			//	return;
+			else
+				print(c);
+
+			if (c == '\r' || c == '\n')
+				break;
+			else if (c != '\0')
+			{
+				buff[i] = c;
+				i ++;
+			}
+		}
+		buff[i] = '\0';
 	}
 
 	void shell_motd()
@@ -99,7 +129,7 @@ namespace tupai
 		(void)argc;
 		(void)argv;
 
-		stdout = fopen("/dev/stdout", "w");
+		//stdout = fopen("/dev/stdout", "w");
 
 		// Display information
 		shell_motd();
@@ -111,7 +141,7 @@ namespace tupai
 			print("[", util::TERM_FG_COLOR_RED, "kernel", util::TERM_DEFAULT, "] ");
 
 			char buff[64];
-			util::readline(buff);
+			readline(buff);
 
 			char* argv[64];
 			size_t argc = split_args(buff, argv, 64);

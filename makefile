@@ -5,7 +5,7 @@
 
 # X86 / ARM
 TARGET_FAMILY = X86
-# I386 / AMD64
+# I386 / AMD64 / RPI2
 TARGET_ARCH   = AMD64
 
 SRC_ROOT    = $(abspath .)
@@ -87,6 +87,7 @@ $(INITRD) : $(INITRD_DEPS)
 	@echo "[`date "+%H:%M:%S"`] Created '$@'."
 
 $(KERNEL) : kernel
+
 kernel :
 	@echo "[`date "+%H:%M:%S"`] Building kernel..."
 	@cd $(KERNEL_SRC_DIR) && $(MAKE) all $(KERNEL_MAKE_ARGS)
