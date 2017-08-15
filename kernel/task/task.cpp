@@ -209,6 +209,38 @@ namespace tupai
 			return val;
 		}
 
+		util::result<short> thrd_ptr_t::get_priority()
+		{
+			util::hwlock_acquire(); // Begin critical section
+			
+			thread_t* thread = thread_table[this->id];
+			
+			util::result<short> result;
+			if (thread != nullptr)
+				result = util::result<short>(thread->priority);
+			
+			util::hwlock_release(); // End critical section
+			return result;
+		}
+		
+		util::result<short> thrd_ptr_t::get_effective_priority()
+		{
+			util::hwlock_acquire(); // Begin critical section
+					
+			thread_t* thread = thread_table[this->id];
+					
+			util::result<short> result;
+			if (thread != nullptr)
+			{
+				process_t* proc = proc_table[thread->proc];
+				if (proc != nullptr)
+					result = util::result<short>(thread->priority + proc->priority);
+			}
+					
+			util::hwlock_release(); // End critical section
+			return result;
+		}
+
 		void thrd_ptr_t::set_lid(id_t lid)
 		{
 			util::hwlock_acquire(); // Begin critical section
@@ -287,6 +319,20 @@ namespace tupai
 
 			util::hwlock_release(); // End critical section
 			return val;
+		}
+
+		util::result<short> proc_ptr_t::get_priority()
+		{
+			util::hwlock_acquire(); // Begin critical section
+					
+			process_t* proc = proc_table[this->id];
+					
+			util::result<short> result;
+			if (proc != nullptr)
+				result = util::result<short>(proc->priority);
+			
+			util::hwlock_release(); // End critical section
+			return result;
 		}
 
 		thrd_ptr_t proc_ptr_t::spawn_thread(void (*entry)(int argc, char* argv[]))

@@ -42,6 +42,8 @@ namespace tupai
 			proc_ptr_t proc;
 			thread_state state;
 
+			short priority = 0;
+
 			size_t entry = 0x0;
 			size_t stack = 0x0;
 			size_t stack_block = 0x0;

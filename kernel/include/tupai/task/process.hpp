@@ -39,8 +39,10 @@ namespace tupai
 		{
 			id_t id;                  // Process ID
 			char name[PROC_NAME_MAX]; // Process name
-			process_state state;         // Process state
+			process_state state;      // Process state
 			vfs::inode_ptr_t dir;     // Current directory
+
+			short priority = 0;
 
 			id_t thread_counter = 0;
 			util::hashtable_t<thrd_ptr_t> threads; // Process threads

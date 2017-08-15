@@ -32,7 +32,7 @@ namespace tupai
 {
 	namespace util
 	{
-		template <typename Val, typename Err>
+		template <typename Val, typename Err = int>
 		class result
 		{
 		private:
@@ -43,17 +43,24 @@ namespace tupai
 			};
 
 		public:
+			result()
+			{
+				this->_is_err = true;
+			}
+
 			result(Val val)
 			{
 				this->_is_err = false;
 				this->_val = val;
 			}
 
+			/*
 			result(Err err)
 			{
 				this->_is_err = true;
 				this->_err = err;
 			}
+			*/
 
 			bool failed() { return this->_is_err; }
 			Val& get_value() { if (this->_is_err) panic("Attempted to realise an erroneous value!"); return this->_val; }

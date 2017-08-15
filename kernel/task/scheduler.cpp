@@ -31,7 +31,6 @@ namespace tupai
 		{
 			thrd_ptr_t thread = ID_INVALID;
 			short priority = ID_INVALID;
-			short cpriority = ID_INVALID;
 		};
 
 		static util::queue_t<task_t, 256> schedule;
@@ -58,7 +57,6 @@ namespace tupai
 			task_t ntask;
 			ntask.thread = thread;
 			ntask.priority = priority;
-			ntask.cpriority = priority;
 			schedule.push(ntask);
 
 			util::hwlock_release(); // End critical section
@@ -74,8 +72,14 @@ namespace tupai
 					ctask.thread.get_process().destroy_thread(ctask.thread);
 				else
 				{
-					ctask.cpriority = ctask.priority;
-					schedule.push(ctask);
+					auto priority = ctask.thread.get_effective_priority();
+					if (priority.failed())
+						panic("Attempted to reschedule task without an effective priority");
+					else
+					{
+						ctask.priority = priority.get_value();
+						schedule.push(ctask);
+					}
 				}
 			}
 
@@ -83,11 +87,11 @@ namespace tupai
 			{
 				ctask = schedule.pop();
 
-				if (ctask.cpriority <= 0)
+				if (ctask.priority <= 0)
 					break;
 				else
 				{
-					ctask.cpriority --;
+					ctask.priority --;
 					schedule.push(ctask);
 				}
 			}

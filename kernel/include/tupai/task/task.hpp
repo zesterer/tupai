@@ -24,6 +24,7 @@
 // Tupai
 #include <tupai/vfs/vfs.hpp>
 #include <tupai/util/hashtable.hpp>
+#include <tupai/util/result.hpp>
 
 // Standard
 #include <stddef.h>
@@ -69,6 +70,9 @@ namespace tupai
 			proc_ptr_t get_process();
 			size_t get_entry();
 			size_t get_stack();
+			util::result<short> get_priority();
+			util::result<short> get_effective_priority();
+			
 			void set_lid(id_t lid);
 			void set_state(thread_state state);
 			void set_stack(size_t stack);
@@ -85,13 +89,14 @@ namespace tupai
 
 			template <size_t SIZE> int get_name(char(&buff)[SIZE]) { return this->get_name(buff, SIZE); }
 
-			int           get_name(char* rbuff, size_t n);
+			int get_name(char* rbuff, size_t n);
 			vfs::fd_ptr_t get_fd(id_t lfd);
+			util::result<short> get_priority();
 
 			thrd_ptr_t spawn_thread(void (*entry)(int argc, char* argv[]));
-			int          destroy_thread(thrd_ptr_t);
-			id_t         create_fd(vfs::inode_ptr_t inode, id_t lid = ID_INVALID);
-			int          delete_fd(id_t lfd);
+			int destroy_thread(thrd_ptr_t);
+			id_t create_fd(vfs::inode_ptr_t inode, id_t lid = ID_INVALID);
+			int delete_fd(id_t lfd);
 
 			int kill();
 		};
