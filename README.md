@@ -4,7 +4,7 @@ Copyright 2016-2017, Joshua Barretto
 
 ---
 
-A modular POSIX-like operating system created for educational purposes 
+A modular POSIX-like operating system created for educational purposes
 
 
 ![Tupai 0.6.0](doc/images/tupai-0-6-0-dev.png)
@@ -59,12 +59,23 @@ _See `docs/BUILDING.md`_
 ## Licensing
 ---
 
-Tupai is currently licensed under the GNU project's General Public License
-version 3 and is copyrighted 2016-2017.
+Tupai is currently licensed under the ISC license and is copyrighted 2016-2017.
 
-_See `docs/LICENSE` or [GNU General Public License version 3](https://www.gnu.org/licenses/gpl-3.0.html)_
+```
+Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 
-![GNU GPLv3](https://www.gnu.org/graphics/gplv3-127x51.png)
+Permission to use, copy, modify, and distribute this software for any
+purpose with or without fee is hereby granted, provided that the above
+copyright notice and this permission notice appear in all copies.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+```
 
 ## Contributors
 ---
