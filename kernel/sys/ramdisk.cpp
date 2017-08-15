@@ -196,6 +196,9 @@ namespace tupai
 
 			if (header != nullptr)
 			{
+				if (fd.get_offset() >= util::tar_size(*header))
+					return 0;
+				
 				size_t filesize = util::tar_size(*header);
 				uint8_t* data = (uint8_t*)util::tar_data(*header);
 

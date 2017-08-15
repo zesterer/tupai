@@ -48,62 +48,66 @@ namespace tupai
 			id_t lfd_counter = 0;
 			util::hashtable_t<vfs::fd_ptr_t> fds; // File descriptors
 
-			// TODO : Finish this
-			/*
+			process_t& _move(process_t& other)
+			{
+				this->id = other.id;
+				util::str_cpy_n(other.name, this->name, PROC_NAME_MAX);
+				this->state = other.state;
+				this->dir = other.dir;
+				this->thread_counter = other.thread_counter;
+				this->threads = util::move(other.threads);
+				this->lfd_counter = other.lfd_counter;
+				this->fds = util::move(other.fds);
+				
+				other.id = ID_INVALID;
+				other.state = process_state::DEAD;
+				other.dir = ID_INVALID;
+				other.thread_counter = 0;
+				other.lfd_counter = 0;
+				
+				return *this;
+			}
+
+			process_t& _copy(const process_t& other)
+			{
+				this->id = other.id;
+				util::str_cpy_n(other.name, this->name, PROC_NAME_MAX);
+				this->state = other.state;
+				this->dir = other.dir;
+				this->thread_counter = other.thread_counter;
+				this->threads = other.threads;
+				this->lfd_counter = other.lfd_counter;
+				this->fds = other.fds;
+				
+				return *this;
+			}
+
+			// Default constructor
 			process_t() {}
 
+			// Copy constructor
 			process_t(const process_t& other)
 			{
-				this->id = other.id;
-				util::str_cpy_n(other.name, this->name, PROC_NAME_MAX);
-				this->state = other.state;
-				this->dir = other.dir;
-				this->thread_counter = other.thread_counter;
-				this->threads = other.threads;
-				this->lfd_counter = other.lfd_counter;
-				this->fds = other.fds;
+				this->_copy(other);
 			}
 
+			// Copy assignment operator
 			process_t& operator=(const process_t& other)
 			{
-				this->id = other.id;
-				util::str_cpy_n(other.name, this->name, PROC_NAME_MAX);
-				this->state = other.state;
-				this->dir = other.dir;
-				this->thread_counter = other.thread_counter;
-				this->threads = other.threads;
-				this->lfd_counter = other.lfd_counter;
-				this->fds = other.fds;
-
-				return *this;
+				return this->_copy(other);
 			}
 
+			// Move constructor
 			process_t(process_t&& other)
 			{
-				this->id = other.id;
-				util::str_cpy_n(other.name, this->name, PROC_NAME_MAX);
-				this->state = other.state;
-				this->dir = other.dir;
-				this->thread_counter = other.thread_counter;
-				this->threads = util::move(other.threads);
-				this->lfd_counter = other.lfd_counter;
-				this->fds = util::move(other.fds);
+				this->_move(other);
 			}
 
+			// Move assignment operator
 			process_t& operator=(process_t&& other)
 			{
-				this->id = other.id;
-				util::str_cpy_n(other.name, this->name, PROC_NAME_MAX);
-				this->state = other.state;
-				this->dir = other.dir;
-				this->thread_counter = other.thread_counter;
-				this->threads = util::move(other.threads);
-				this->lfd_counter = other.lfd_counter;
-				this->fds = util::move(other.fds);
-
-				return *this;
+				return this->_move(other);
 			}
-			*/
 
 			~process_t();
 		};

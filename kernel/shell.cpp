@@ -195,7 +195,7 @@ namespace tupai
 					char buff[2];
 					while (n > 0)
 					{
-						n = fread(&buff, 1, 2, f);
+						n = fread(buff, sizeof(char), 1, f);
 						if (n > 0)
 							print(buff[0]);
 					}
