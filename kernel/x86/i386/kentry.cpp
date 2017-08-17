@@ -36,14 +36,15 @@ namespace tupai
 	{
 		namespace i386
 		{
-			static uint32_t mb_magic_tmp;
-			static void* mb_header_tmp;
+			// Unions are used here SPECIFICALLY to avoid global construction!
+			union MBMagic  { uint32_t value; MBMagic()  {} } mb_magic_tmp;
+			union MBHeader { void* value;    MBHeader() {} } mb_header_tmp;
 
 			extern "C" void kentry(uint32_t mb_magic, void* mb_header, void* stack)
 			{
 				// Save Multiboot data
-				mb_magic_tmp = mb_magic;
-				mb_header_tmp = mb_header;
+				mb_magic_tmp.value = mb_magic;
+				mb_header_tmp.value = mb_header;
 
 				// Initiate debugging
 				debug_init();
@@ -64,7 +65,7 @@ namespace tupai
 			extern "C" void kmain()
 			{
 				// Load multiboot information
-				multiboot_set_header(mb_magic_tmp, mb_header_tmp);
+				multiboot_set_header(mb_magic_tmp.value, mb_header_tmp.value);
 
 				// Initiate and install the GDT
 				gdt_init();

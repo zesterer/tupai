@@ -84,6 +84,11 @@ namespace tupai
 		// The methods through which this is done are platform-dependent.
 		// Now, however, it's relatively safe to run most code.
 
+		// Core hardware
+		// -------------
+		// These are platform-dependent hardware components needed for a stable kernel
+		arch_init();
+
 		// Core systems
 		// ------------
 		// These are things required to run kernel threads, processes, manipulate files, etc.
