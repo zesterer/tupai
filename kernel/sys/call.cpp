@@ -97,8 +97,9 @@ namespace tupai
 					id_t*       rdesc = (id_t*)arg2;
 
 					vfs::inode_ptr_t inode = vfs::get_inode(path);
+
 					if (inode == ID_INVALID)
-						*rdesc = 0;
+						*rdesc = ID_INVALID;
 					else
 						*rdesc = vfs::fd_open(inode);
 				}
@@ -113,11 +114,14 @@ namespace tupai
 
 			case CALL::READ:
 				{
-					id_t     lfd   = (id_t)arg1;
-					ssize_t* rn    = (ssize_t*)arg2;
-					void*    rbuff = (void*)arg3;
+					vfs::fd_ptr_t lfd   = (id_t)arg1;
+					ssize_t*      rn    = (ssize_t*)arg2;
+					void*         rbuff = (void*)arg3;
 
-					*rn = vfs::fd_read(lfd, rbuff, *rn);
+					if (lfd.get_flag(vfs::fd_flag::EOF)) // If we're at the end of the file, we need not do anything else!
+						*rn = 0;
+					else
+						*rn = vfs::fd_read(lfd, rbuff, *rn);
 				}
 				break;
 

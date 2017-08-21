@@ -44,7 +44,7 @@ FILE* fopen(const char* filename, const char* mode)
 	if (fd == -1)
 		return NULL;
 	else
-		return (FILE*)(fd + 1);
+		return (FILE*)(fd);
 }
 
 int fclose(FILE* stream)

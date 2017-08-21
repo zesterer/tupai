@@ -188,14 +188,18 @@ namespace tupai
 					//const size_t BUFF_SIZE = 8192;
 					//char* rbuff = new char[BUFF_SIZE];
 
+					//util::logln("Opening...");
+
 					FILE* f = fopen(argv[1], "r");
 					//size_t n = fread(rbuff, 1, BUFF_SIZE - 1, f);
+
+					//util::logln("Reading...");
 
 					size_t n = 1;
 					char buff[2];
 					while (n > 0)
 					{
-						n = fread(buff, sizeof(char), 1, f);
+						n = fread(buff, sizeof(char), 2, f);
 						if (n > 0)
 							print(buff[0]);
 					}

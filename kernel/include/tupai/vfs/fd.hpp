@@ -40,6 +40,7 @@ namespace tupai
 			id_t      inode = ID_INVALID;
 			fd_mode_t mode;
 
+			fd_bitflags flags = 0x0000;
 			fd_offset offset = 0;
 		};
 

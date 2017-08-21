@@ -31,16 +31,19 @@ TARGET_ARCH   = AMD64
 SRC_ROOT    = $(abspath .)
 BUILD_ROOT ?= $(SRC_ROOT)/build
 
+INCLUDE_DIR = $(SRC_ROOT)/include
+
 # Kernel
 KERNEL_SRC_DIR    = $(SRC_ROOT)/kernel
 KERNEL_BUILD_ROOT = $(BUILD_ROOT)/kernel
 KERNEL            = $(KERNEL_BUILD_ROOT)/tupai.elf
-KERNEL_MAKE_ARGS  = BUILD_ROOT=$(KERNEL_BUILD_ROOT) LIBC_INC=$(SRC_ROOT)/include KERNEL=$(KERNEL) TARGET_FAMILY=$(TARGET_FAMILY) TARGET_ARCH=$(TARGET_ARCH)
+KERNEL_MAKE_ARGS  = BUILD_ROOT=$(KERNEL_BUILD_ROOT) LIBC_INC=$(INCLUDE_DIR) KERNEL=$(KERNEL) TARGET_FAMILY=$(TARGET_FAMILY) TARGET_ARCH=$(TARGET_ARCH)
 
 # Initrd
-SYSROOT_SRC_DIR = $(SRC_ROOT)/sysroot
-INITRD          = $(BUILD_ROOT)/initrd.tar
-INITRD_DEPS     = $(shell find $(SYSROOT_SRC_DIR) -name '*')
+SYSROOT_SRC_DIR   = $(SRC_ROOT)/sysroot
+SYSROOT_BUILD_DIR = $(BUILD_ROOT)/sysroot
+INITRD            = $(BUILD_ROOT)/initrd.tar
+INITRD_DEPS       = $(shell find $(SYSROOT_SRC_DIR) -name '*')
 
 # GRUB
 GRUB_BUILD_DIR = $(BUILD_ROOT)/grub
@@ -102,8 +105,13 @@ $(ISO) : $(KERNEL) $(INITRD)
 	@echo "[`date "+%H:%M:%S"`] Created '$@'."
 
 $(INITRD) : $(INITRD_DEPS)
+	@mkdir -p $(SYSROOT_BUILD_DIR)
+	@cp -r $(SYSROOT_SRC_DIR)/* $(SYSROOT_BUILD_DIR)/.
+	@echo "Moving headers to initrd..."
+	@mkdir -p $(SYSROOT_BUILD_DIR)/include
+	@cp -r $(INCLUDE_DIR)/* $(SYSROOT_BUILD_DIR)/include/.
 	@echo "[`date "+%H:%M:%S"`] Creating '$@'..."
-	@cd $(SYSROOT_SRC_DIR) && $(TAR) cf $(INITRD) --format=ustar *
+	@cd $(SYSROOT_BUILD_DIR) && $(TAR) cf $(INITRD) --format=ustar *
 	@echo "[`date "+%H:%M:%S"`] Created '$@'."
 
 $(KERNEL) : kernel

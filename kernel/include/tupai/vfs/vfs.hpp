@@ -104,6 +104,13 @@ namespace tupai
 			uint8_t flags = 0xFF; // All enabled by default
 		};
 
+		enum class fd_flag
+		{
+			EOF = (1 << 0), // End Of File
+		};
+
+		typedef uint16_t fd_bitflags;
+
 		struct fd_ptr_t
 		{
 			id_t id = ID_INVALID;
@@ -115,10 +122,12 @@ namespace tupai
 			inode_ptr_t get_inode ();
 			int         get_mode  (fd_mode_t* rmode);
 			fd_offset   get_offset();
+			bool        get_flag(fd_flag flag);
 
 			int set_inode (inode_ptr_t inode);
 			int set_mode  (fd_mode_t mode);
 			int set_offset(fd_offset offset);
+			int set_flag(fd_flag flag, bool enabled = true);
 
 			int destroy();
 		};

@@ -29,6 +29,8 @@ BUILD_ROOT ?= $(SRC_ROOT)/build
 
 KERNEL ?= $(BUILD_ROOT)/tupai.elf
 
+KSYMBOLS ?= $(BUILD_ROOT)/tupai.symb
+
 KNAME               = tupai
 KNAME_DECORATIVE    = Tupai
 KVERSION_DECORATIVE = 0.6.0
@@ -101,6 +103,8 @@ endif
 
 TOOL_DIR ?= $(abspath $(dir $(shell which $(CC))))
 
+KSYMBOL_GEN = objdump --wide --syms $(KERNEL) | grep -P '^[0-9A-Fa-f]+\s.*\s[a-zA-Z_][a-zA-Z0-9_]+$$' | sed -r 's/^(\S+)\s+.*\s+(\S+)$$/\1 \2/' | sort > $(KSYMBOLS)
+
 # Source files
 # ------------
 
@@ -153,7 +157,7 @@ CRTEND   = $(shell $(LD) $(CFLAGS) -print-file-name=crtend.o)
 
 .PHONY : all clean
 
-all : $(KERNEL)
+all : $(KERNEL) $(KSYMBOLS)
 
 clean :
 	@rm -r -f $(KERNEL) $(OBJS) $(DEPS) $(BDIRS)
@@ -162,6 +166,11 @@ $(KERNEL) : $(OBJS)
 	@echo "[`date "+%H:%M:%S"`] Linking '$@'..."
 	@$(TOOL_DIR)/$(LD) $(CFLAGS) -T $(LSCRIPT) -o $@ $(CRTBEGIN) $(OBJS) $(CRTEND) $(LFLAGS)
 	@echo "[`date "+%H:%M:%S"`] Linked '$@'."
+
+$(KSYMBOLS) : $(KERNEL)
+	@echo "Generating kernel symbols..."
+	@$(KSYMBOL_GEN)
+	@echo "Generated kernel symbols"
 
 $(OBJS) : | $(BDIRS)
 

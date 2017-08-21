@@ -28,6 +28,7 @@
 #include <tupai/util/hwlock.hpp>
 
 #include <tupai/util/log.hpp>
+#include <tupai/util/math.hpp>
 
 namespace tupai
 {
@@ -212,23 +213,23 @@ namespace tupai
 		util::result<short> thrd_ptr_t::get_priority()
 		{
 			util::hwlock_acquire(); // Begin critical section
-			
+
 			thread_t* thread = thread_table[this->id];
-			
+
 			util::result<short> result;
 			if (thread != nullptr)
 				result = util::result<short>(thread->priority);
-			
+
 			util::hwlock_release(); // End critical section
 			return result;
 		}
-		
+
 		util::result<short> thrd_ptr_t::get_effective_priority()
 		{
 			util::hwlock_acquire(); // Begin critical section
-					
+
 			thread_t* thread = thread_table[this->id];
-					
+
 			util::result<short> result;
 			if (thread != nullptr)
 			{
@@ -236,7 +237,7 @@ namespace tupai
 				if (proc != nullptr)
 					result = util::result<short>(thread->priority + proc->priority);
 			}
-					
+
 			util::hwlock_release(); // End critical section
 			return result;
 		}
@@ -324,13 +325,13 @@ namespace tupai
 		util::result<short> proc_ptr_t::get_priority()
 		{
 			util::hwlock_acquire(); // Begin critical section
-					
+
 			process_t* proc = proc_table[this->id];
-					
+
 			util::result<short> result;
 			if (proc != nullptr)
 				result = util::result<short>(proc->priority);
-			
+
 			util::hwlock_release(); // End critical section
 			return result;
 		}
@@ -415,6 +416,8 @@ namespace tupai
 				id_t nid = lid; // TODO : Overwrite previous!
 				if (nid == ID_INVALID)
 					nid = proc->lfd_counter++;
+				else
+					proc->lfd_counter = util::max(proc->lfd_counter, nid + 1); // Make sure subsequent fd ids come AFTER this lid to avoid conflicts!
 
 				vfs::fd_ptr_t nfd = vfs::create_fd(inode);
 				proc->fds.add(nid, nfd);

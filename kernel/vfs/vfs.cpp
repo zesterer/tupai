@@ -604,6 +604,20 @@ namespace tupai
 			return val;
 		}
 
+		bool fd_ptr_t::get_flag(fd_flag flag)
+		{
+			spinlock.lock(); // Begin critical section
+
+			fd_t* fd = fd_table[this->id];
+
+			bool val = false;
+			if (fd != nullptr)
+				val = (fd->flags & (fd_bitflags)flag) != 0;
+
+			spinlock.unlock(); // End critical section
+			return val;
+		}
+
 		int fd_ptr_t::set_inode(inode_ptr_t inode)
 		{
 			spinlock.lock(); // Begin critical section
@@ -648,6 +662,26 @@ namespace tupai
 			if (fd != nullptr)
 			{
 				fd->offset = offset;
+				err = 0;
+			}
+
+			spinlock.unlock(); // End critical section
+			return err;
+		}
+
+		int fd_ptr_t::set_flag(fd_flag flag, bool enabled)
+		{
+			spinlock.lock(); // Begin critical section
+
+			fd_t* fd = fd_table[this->id];
+
+			int err = 1;
+			if (fd != nullptr)
+			{
+				if (enabled)
+					fd->flags |= (fd_bitflags)flag;
+				else
+					fd->flags &= ~(fd_bitflags)flag;
 				err = 0;
 			}
 

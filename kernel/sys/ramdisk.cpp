@@ -89,6 +89,7 @@ namespace tupai
 			ramdisk_vtable.open  = ramdisk_open_call;
 			ramdisk_vtable.close = ramdisk_close_call;
 			ramdisk_vtable.read  = ramdisk_read_call;
+			//ramdisk_vtable.write = ramdisk_write_call;
 
 			for (size_t i = 0; i < RAMDISK_MAX; i ++)
 			{
@@ -175,9 +176,6 @@ namespace tupai
 
 				cheader = tar_next(cheader);
 			}
-
-			//vfs::inode_ptr_t dev_ptr = vfs::create_inode(vfs::inode_type::DIRECTORY);
-			//vfs::get_root().mount_child(dev_ptr, "dev");
 		}
 
 		int ramdisk_open_call (vfs::inode_ptr_t inode)
@@ -198,7 +196,7 @@ namespace tupai
 			{
 				if (fd.get_offset() >= util::tar_size(*header))
 					return 0;
-				
+
 				size_t filesize = util::tar_size(*header);
 				uint8_t* data = (uint8_t*)util::tar_data(*header);
 
@@ -210,6 +208,11 @@ namespace tupai
 					offset ++;
 				}
 				((uint8_t*)rbuff)[i] = '\0';
+
+				// Have we reached EOF?
+				if (i >= filesize)
+					fd.set_flag(vfs::fd_flag::EOF, true);
+
 				fd.set_offset(offset);
 
 				return i;
