@@ -417,7 +417,7 @@ namespace tupai
 				if (nid == ID_INVALID)
 					nid = proc->lfd_counter++;
 				else
-					proc->lfd_counter = util::max(proc->lfd_counter, nid + 1); // Make sure subsequent fd ids come AFTER this lid to avoid conflicts!
+					proc->lfd_counter = util::max(proc->lfd_counter, nid + 1); // HACK : Make sure subsequent fd ids come AFTER this lid to avoid conflicts!
 
 				vfs::fd_ptr_t nfd = vfs::create_fd(inode);
 				proc->fds.add(nid, nfd);

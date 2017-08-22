@@ -40,10 +40,11 @@ KERNEL            = $(KERNEL_BUILD_ROOT)/tupai.elf
 KERNEL_MAKE_ARGS  = BUILD_ROOT=$(KERNEL_BUILD_ROOT) LIBC_INC=$(INCLUDE_DIR) KERNEL=$(KERNEL) TARGET_FAMILY=$(TARGET_FAMILY) TARGET_ARCH=$(TARGET_ARCH)
 
 # Initrd
-SYSROOT_SRC_DIR   = $(SRC_ROOT)/sysroot
-SYSROOT_BUILD_DIR = $(BUILD_ROOT)/sysroot
-INITRD            = $(BUILD_ROOT)/initrd.tar
-INITRD_DEPS       = $(shell find $(SYSROOT_SRC_DIR) -name '*')
+SYSROOT_SRC_DIR     = $(SRC_ROOT)/sysroot
+SYSROOT_BUILD_DIR   = $(BUILD_ROOT)/sysroot
+SYSROOT_INCLUDE_DIR = $(SYSROOT_BUILD_DIR)/usr/include
+INITRD              = $(BUILD_ROOT)/initrd.tar
+INITRD_DEPS         = $(shell find $(SYSROOT_SRC_DIR) -name '*')
 
 # GRUB
 GRUB_BUILD_DIR = $(BUILD_ROOT)/grub
@@ -75,22 +76,23 @@ BOCHS = bochs
 # Rules
 # -----
 
-.PHONY : all build rebuild kernel clean run debug
+.PHONY : all build rebuild kernel iso clean run debug
 
 all : build
-build : $(ISO) kernel
-rebuild : clean $(ISO) kernel
+build : iso
+rebuild : clean iso
+iso : kernel $(ISO)
 
 clean :
 	@cd $(KERNEL_SRC_DIR) && $(MAKE) clean $(KERNEL_MAKE_ARGS)
 	@rm -r -f $(ISO) $(GRUB_BUILD_DIR) $(INITRD) $(BUILD_ROOT)
 	@echo "Cleaned all."
 
-run : $(ISO) kernel
+run : build
 	@echo "Running '$(ISO)'..."
 	@$(QEMU) $(QEMU_ARGS) -cdrom $(ISO)
 
-debug : $(ISO) kernel
+debug : build
 	@echo "Debugging '$(ISO)'..."
 	@$(BOCHS)
 
@@ -100,7 +102,7 @@ $(ISO) : $(KERNEL) $(INITRD)
 	@cp $(INITRD) $(GRUB_BUILD_DIR)/isodir/mod/.
 	@cp $(GRUB_SRC_DIR)/grub.cfg $(GRUB_BUILD_DIR)/isodir/boot/grub/
 	@echo "Copied all image components to '$(GRUB_BUILD_DIR)'."
-	@echo "[`date "+%H:%M:%S"`] Creating '$<'..."
+	@echo "[`date "+%H:%M:%S"`] Creating '$@'..."
 	@grub-mkrescue -o $(ISO) $(GRUB_BUILD_DIR)/isodir
 	@echo "[`date "+%H:%M:%S"`] Created '$@'."
 
@@ -108,8 +110,8 @@ $(INITRD) : $(INITRD_DEPS)
 	@mkdir -p $(SYSROOT_BUILD_DIR)
 	@cp -r $(SYSROOT_SRC_DIR)/* $(SYSROOT_BUILD_DIR)/.
 	@echo "Moving headers to initrd..."
-	@mkdir -p $(SYSROOT_BUILD_DIR)/include
-	@cp -r $(INCLUDE_DIR)/* $(SYSROOT_BUILD_DIR)/include/.
+	@mkdir -p $(SYSROOT_INCLUDE_DIR)
+	@cp -r $(INCLUDE_DIR)/* $(SYSROOT_INCLUDE_DIR)/.
 	@echo "[`date "+%H:%M:%S"`] Creating '$@'..."
 	@cd $(SYSROOT_BUILD_DIR) && $(TAR) cf $(INITRD) --format=ustar *
 	@echo "[`date "+%H:%M:%S"`] Created '$@'."

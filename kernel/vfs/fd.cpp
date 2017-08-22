@@ -84,19 +84,24 @@ namespace tupai
 			task::proc_ptr_t cproc = task::get_current();
 
 			if (cproc == ID_INVALID)
-				return 1;
+				return 0;
 			else
 			{
-				fd_ptr_t fd = cproc.get_fd(lfd);
-				vtable_t* vtable;
-				fd.get_inode().get_vtable(&vtable);
-
-				if (vtable == nullptr)
-					return 0;
-				else if (vtable->read == nullptr)
+				if (lfd == ID_INVALID)
 					return 0;
 				else
-					return vtable->read(fd, rbuff, n);
+				{
+					fd_ptr_t fd = cproc.get_fd(lfd);
+					vtable_t* vtable;
+					fd.get_inode().get_vtable(&vtable);
+
+					if (vtable == nullptr)
+						return 0;
+					else if (vtable->read == nullptr)
+						return 0;
+					else
+						return vtable->read(fd, rbuff, n);
+				}
 			}
 		}
 
@@ -105,19 +110,24 @@ namespace tupai
 			task::proc_ptr_t cproc = task::get_current();
 
 			if (cproc == ID_INVALID)
-				return 1;
+				return 0;
 			else
 			{
-				fd_ptr_t fd = cproc.get_fd(lfd);
-				vtable_t* vtable;
-				fd.get_inode().get_vtable(&vtable);
-
-				if (vtable == nullptr)
-					return 1;
-				else if (vtable->write == nullptr)
-					return 1;
+				if (lfd == ID_INVALID)
+					return 0;
 				else
-					return vtable->write(fd, buff, n);
+				{
+					fd_ptr_t fd = cproc.get_fd(lfd);
+					vtable_t* vtable;
+					fd.get_inode().get_vtable(&vtable);
+
+					if (vtable == nullptr)
+						return 0;
+					else if (vtable->write == nullptr)
+						return 0;
+					else
+						return vtable->write(fd, buff, n);
+				}
 			}
 		}
 	}
