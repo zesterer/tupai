@@ -151,123 +151,157 @@ namespace tupai
 			{
 				// Nothing
 			}
-			else if (util::str_equal(argv[0], "help"))
+			else
 			{
-				print(
-					"Available commands:\n",
-					"  help    -> Show this help text\n",
-					"  fs      -> Show filesystem tree\n",
-					"  proc    -> Show running processes\n",
-					"  mmap    -> Show the memory map\n",
-					"  cat     -> Display the contents of a file\n",
-					"  echo    -> Echo the typed text to stdout\n",
-					"  pool    -> Show kernel memory pool\n",
-					"  motd    -> Show the MOTD\n",
-					"  div     -> Trigger a divided-by-zero exception\n",
-					"  panic   -> Trigger a kernel panic\n",
-					"  info    -> Show system info\n",
-					"  time    -> Show the system time\n"
-				);
-			}
-			else if (util::str_equal(argv[0], "fs"))
-			{
-				vfs::display();
-			}
-			else if (util::str_equal(argv[0], "proc"))
-			{
-				task::display();
-			}
-			else if (util::str_equal(argv[0], "mmap"))
-			{
-				mem::mmap::display();
-			}
-			else if (util::str_equal(argv[0], "cat"))
-			{
-				if (argc > 1)
+				switch (util::str_hash(argv[0]))
 				{
-					//const size_t BUFF_SIZE = 8192;
-					//char* rbuff = new char[BUFF_SIZE];
-
-					//util::logln("Opening...");
-
-					FILE* f = fopen(argv[1], "r");
-					//size_t n = fread(rbuff, 1, BUFF_SIZE - 1, f);
-
-					//util::logln("Reading...");
-
-					size_t n = 1;
-					char buff[2];
-					while (n > 0)
+				case util::str_hash("help"):
 					{
-						n = fread(buff, sizeof(char), 2, f);
-						if (n > 0)
-							print(buff[0]);
+						print(
+							"Available commands:\n",
+							"  help    -> Show this help text\n",
+							"  fs      -> Show filesystem tree\n",
+							"  proc    -> Show running processes\n",
+							"  mmap    -> Show the memory map\n",
+							"  cat     -> Display the contents of a file\n",
+							"  echo    -> Echo the typed text to stdout\n",
+							"  pool    -> Show kernel memory pool\n",
+							"  motd    -> Show the MOTD\n",
+							"  div     -> Trigger a divided-by-zero exception\n",
+							"  panic   -> Trigger a kernel panic\n",
+							"  info    -> Show system info\n",
+							"  time    -> Show the system time\n"
+						);
+						break;
 					}
 
-					fclose(f);
-					//delete rbuff;
-				}
-				else
-					print("Usage: cat <file>\n");
-			}
-			else if (util::str_equal(argv[0], "echo"))
-			{
-				if (argc > 1)
-				{
-					FILE* f = fopen("/dev/stdout", "w");
-					for (size_t i = 1; i < argc; i ++)
+				case util::str_hash("fs"):
 					{
-						if (i != 1)
-							fwrite(" ", 1, 1, f);
-
-						fwrite(argv[i], 1, util::str_len(argv[i]), f);
+						vfs::display();
+						break;
 					}
-					fclose(f);
 
-					print('\n');
+				case util::str_hash("proc"):
+					{
+						task::display();
+						break;
+					}
+
+				case util::str_hash("mmap"):
+					{
+						mem::mmap::display();
+						break;
+					}
+
+				case util::str_hash("cat"):
+					{
+						if (argc > 1)
+						{
+							//const size_t BUFF_SIZE = 8192;
+							//char* rbuff = new char[BUFF_SIZE];
+
+							//util::logln("Opening...");
+
+							FILE* f = fopen(argv[1], "r");
+							//size_t n = fread(rbuff, 1, BUFF_SIZE - 1, f);
+
+							//util::logln("Reading...");
+
+							size_t n = 1;
+							char buff[2];
+							while (n > 0)
+							{
+								n = fread(buff, sizeof(char), 2, f);
+								if (n > 0)
+									print(buff[0]);
+							}
+
+							fclose(f);
+							//delete rbuff;
+						}
+						else
+							print("Usage: cat <file>\n");
+						break;
+					}
+
+				case util::str_hash("echo"):
+					{
+						if (argc > 1)
+						{
+							FILE* f = fopen("/dev/stdout", "w");
+							for (size_t i = 1; i < argc; i ++)
+							{
+								if (i != 1)
+									fwrite(" ", 1, 1, f);
+
+								fwrite(argv[i], 1, util::str_len(argv[i]), f);
+							}
+							fclose(f);
+
+							print('\n');
+						}
+						break;
+					}
+
+				case util::str_hash("pool"):
+					{
+						mem::kmem::log();
+						break;
+					}
+
+				case util::str_hash("motd"):
+					{
+						shell_motd();
+						break;
+					}
+
+				case util::str_hash("div"):
+					{
+						int volatile a = 5 / 0; //
+						break;
+					}
+
+				case util::str_hash("panic"):
+					{
+						panic("Panic triggered artificially");
+						break;
+					}
+
+				case util::str_hash("info"):
+					{
+						print(
+							"System Info:\n",
+							"  address_size -> ", (long)sizeof(void*) * 8, " bits\n",
+							"  kernel_start -> ", (void*)arch_get_kernel_start(), '\n',
+							"  kernel_end   -> ", (void*)arch_get_kernel_end(), '\n',
+							'\n'
+						);
+						mem::kmem::info();
+						//sys::mmap_display();
+						break;
+					}
+
+				case util::str_hash("time"):
+					{
+						datetime_t time = dev::clock_read();
+
+						print(
+							"The system time is ",
+							util::fmt_int<short        >(time.year, 10, 4), '-', util::fmt_int<unsigned char>(time.month, 10, 2), '-', util::fmt_int<unsigned char>(time.day, 10, 2), ' ',
+							util::fmt_int<unsigned char>(time.hour, 10, 2), ':', util::fmt_int<unsigned char>(time.min  , 10, 2), ':', util::fmt_int<unsigned char>(time.sec, 10, 2),
+							'\n'
+						);
+						break;
+					}
+
+				default:
+					{
+						if (util::str_len(argv[0]) > 0)
+							print("Command '", argv[0], "' not found!\n");
+						break;
+					}
 				}
 			}
-			else if (util::str_equal(argv[0], "pool"))
-			{
-				mem::kmem::log();
-			}
-			else if (util::str_equal(argv[0], "motd"))
-			{
-				shell_motd();
-			}
-			else if (util::str_equal(argv[0], "div"))
-			{
-				int volatile a = 5 / 0; //
-			}
-			else if (util::str_equal(argv[0], "panic"))
-			{
-				panic("Panic triggered artificially");
-			}
-			else if (util::str_equal(argv[0], "info"))
-			{
-				print(
-					"System Info:\n",
-					"  address_size -> ", (long)sizeof(void*) * 8, " bits\n",
-					"  kernel_start -> ", (void*)arch_get_kernel_start(), '\n',
-					"  kernel_end   -> ", (void*)arch_get_kernel_end(), '\n',
-					'\n'
-				);
-				mem::kmem::info();
-				//sys::mmap_display();
-			}
-			else if (util::str_equal(argv[0], "time"))
-			{
-				datetime_t time = dev::clock_read();
-
-				print(
-					"The system time is ",
-					util::fmt_int<short        >(time.year, 10, 4), '-', util::fmt_int<unsigned char>(time.month, 10, 2), '-', util::fmt_int<unsigned char>(time.day, 10, 2), ' ',
-					util::fmt_int<unsigned char>(time.hour, 10, 2), ':', util::fmt_int<unsigned char>(time.min  , 10, 2), ':', util::fmt_int<unsigned char>(time.sec, 10, 2),
-					'\n'
-				);
-			}
-			else if (util::str_len(argv[0]) > 0)
-				print("Command '", argv[0], "' not found!\n");
 		}
 
 		fclose(stdout);

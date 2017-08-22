@@ -29,39 +29,39 @@ namespace tupai
 {
 	namespace util
 	{
-		static inline size_t str_len(const char* str)
+		static constexpr size_t str_len(const char* str)
 		{
-			size_t i;
-			for (i = 0; str[i] != '\0'; i ++);
+			size_t i = 0;
+			for (; str[i] != '\0'; i ++);
 			return i;
 		}
 
-		static inline void str_cpy(const char* src, char* dest)
+		static constexpr void str_cpy(const char* src, char* dest)
 		{
-			size_t i;
-			for (i = 0; src[i] != '\0'; i ++)
+			size_t i = 0;
+			for (; src[i] != '\0'; i ++)
 				dest[i] = src[i];
 			dest[i] = '\0';
 		}
 
-		static inline void str_cpy_n(const char* src, char* dest, size_t n)
+		static constexpr void str_cpy_n(const char* src, char* dest, size_t n)
 		{
-			size_t i;
-			for (i = 0; src[i] != '\0' && i + 1 < n; i ++)
+			size_t i = 0;
+			for (; src[i] != '\0' && i + 1 < n; i ++)
 				dest[i] = src[i];
 			dest[i] = '\0';
 		}
 
 		template <size_t N>
-		static inline void str_cpy_n(const char* src, char(&dest)[N])
+		static constexpr void str_cpy_n(const char* src, char(&dest)[N])
 		{
-			size_t i;
-			for (i = 0; src[i] != '\0' && i + 1 < N; i ++)
+			size_t i = 0;
+			for (; src[i] != '\0' && i + 1 < N; i ++)
 				dest[i] = src[i];
 			dest[i] = '\0';
 		}
 
-		static inline bool str_equal(const char* str0, const char* str1)
+		static constexpr bool str_equal(const char* str0, const char* str1)
 		{
 			size_t i = 0;
 			do
@@ -72,6 +72,16 @@ namespace tupai
 			} while (str0[i] != '\0' || str1[i] != '\0');
 
 			return true;
+		}
+
+		static constexpr unsigned long str_hash(const char* str) // djb2
+		{
+			unsigned long hash = 5381;
+
+			for (size_t i = 0; str[i] != '\0'; i ++)
+				hash = ((hash << 5) + hash) + str[i];
+
+			return hash;
 		}
 	}
 }

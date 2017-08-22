@@ -57,7 +57,7 @@ ISO = $(BUILD_ROOT)/tupai.iso
 
 TAR = tar
 
-QEMU_ARGS = -d guest_errors -d cpu_reset --no-reboot --no-shutdown -m 256M
+QEMU_ARGS = -d guest_errors --no-reboot --no-shutdown -m 256M
 ifeq ($(TARGET_ARCH), AMD64)
 	QEMU = qemu-system-x86_64
 	QEMU_ARGS +=

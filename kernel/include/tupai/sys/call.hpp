@@ -58,6 +58,28 @@ namespace tupai
 			// and more...
 		};
 
+		enum class call
+		{
+			// File functions
+			FOPEN  = 0x000,
+			FREAD  = 0x001,
+			FWRITE = 0x002,
+			FCLOSE = 0x003,
+
+			// Thread functions
+			TCURRENT = 0x100,
+			TSPAWN   = 0x101,
+			TFORK    = 0x102,
+			TJOIN    = 0x103,
+			TKILL    = 0x104,
+
+			// Process functions
+			PFORK = 0x200,
+			PEXEC = 0x201,
+			PKILL = 0x202,
+			PEXIT = 0x203,
+		};
+
 		void call_init();
 
 		void call(CALL call, size_t arg0 = 0, size_t arg1 = 0, size_t arg2 = 0);

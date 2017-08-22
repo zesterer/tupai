@@ -1,0 +1,24 @@
+# Syscall API
+
+- All syscalls have one function number and 4 arguments.
+- All syscalls have a return status with 0 indicating success, 1-4096 indicating an error code, and 4097 indicating that no such syscall exists
+- Variables with a '_' suffix are pointers to return variables
+
+# File syscalls
+status fopen  (const char* file, int mode, fd_t* fd_, UNUSED) // Open a new file descriptor pointing to a specific file with a given mode
+status fread  (fd_t fd, size_t n, byte* buff_, size_t* n_)    // Read a maximum of n bytes of data from the file referenced by the specified file descriptor
+status fwrite (fd_t fd, byte* buff, size_t n, size_t* n_)     // Write a maximum of n bytes of data to the file referenced by the specified file descriptor
+status fclose (fd_t fd, UNUSED, UNUSED, UNUSED)               // Close the specified file descriptor
+
+# Thread syscalls
+status tcurrent (thread_t* thread_, UNUSED, UNUSED, UNUSED)     // Find the ID of the current thread
+status tspawn   (void* func, thread_t* thread_, UNUSED, UNUSED) // Spawn a new thread executing a certain function
+status tfork    (int* is_fork_, UNUSED, UNUSED, UNUSED)         // Fork the current thread, returning true if the currently executing thread is the fork
+status tjoin    (thread_t thread, UNUSED, UNUSED, UNUSED)       // Wait until the specified thread has finished execution
+status tkill    (thread_t thread, UNUSED, UNUSED, UNUSED)       // Kill the specified thread
+
+# Process syscalls
+status pfork (int* is_fork_, UNUSED, UNUSED, UNUSED)                         // Fork the current process, returning true if the currently executing process is the fork
+status pexec (const char* path, const char* args, const char* envar, UNUSED) // Replace the currently executing process with a new instance of the specified executable with specified arguments and environment variables
+status pkill (proc_t proc, UNUSED, UNUSED, UNUSED)                           // Attempt to kill the specified process
+status pexit (int status, UNUSED, UNUSED, UNUSED)                            // Exit the current process with a given status code
