@@ -1,5 +1,5 @@
 //
-// file : mem.hpp
+// file : file.hpp
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,8 +18,8 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#ifndef TUPAI_UTIL_MEM_HPP
-#define TUPAI_UTIL_MEM_HPP
+#ifndef TUPAI_CALL_FILE_HPP
+#define TUPAI_CALL_FILE_HPP
 
 // Standard
 #include <stddef.h>
@@ -27,26 +27,12 @@
 
 namespace tupai
 {
-	namespace util
+	namespace call
 	{
-		static constexpr size_t align_floor(size_t n, size_t align)
-		{
-			return n - n % align;
-		}
-
-		static constexpr size_t align_ceiling(size_t n, size_t align)
-		{
-			return (n == 0) ? align : (align + align * ((n - 1) / align));
-		}
-
-		static __attribute__ ((unused)) void mem_copy(const void* src, void* dest, size_t n)
-		{
-			for (size_t i = 0; i < n; i ++)
-				((uint8_t*)dest)[i] = ((uint8_t*)src)[i];
-		}
-
-		template <typename T, size_t N>
-		static constexpr size_t length(T (&arr)[N]) { (void)arr; return N; }
+		size_t open (size_t arg0, size_t arg1, size_t arg2, size_t arg3);
+		size_t read (size_t arg0, size_t arg1, size_t arg2, size_t arg3);
+		size_t write(size_t arg0, size_t arg1, size_t arg2, size_t arg3);
+		size_t close(size_t arg0, size_t arg1, size_t arg2, size_t arg3);
 	}
 }
 

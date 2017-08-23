@@ -64,6 +64,24 @@
 		pop %rax
 	.endm
 
+	.macro POP_REGS_CALL // Restore register states (special syscall variant that preserves rax)
+		pop %r15
+		pop %r14
+		pop %r13
+		pop %r12
+		pop %r11
+		pop %r10
+		pop %r9
+		pop %r8
+		pop %rbp
+		pop %rdi
+		pop %rsi
+		pop %rdx
+		pop %rcx
+		pop %rbx
+		add $8, %rsp // Pretend we popped rax
+	.endm
+
 	.macro BEGIN_IRQ // Begin IRQ
 		PUSH_REGS
 		movq $1, (in_irq)
@@ -73,6 +91,11 @@
 	.macro END_IRQ // End IRQ
 		movq $0, (in_irq)
 		POP_REGS
+	.endm
+
+	.macro END_IRQ_CALL // End IRQ (special syscall variant)
+		movq $0, (in_irq)
+		POP_REGS_CALL
 	.endm
 
 	.align 4
@@ -127,17 +150,25 @@
 		push %rbx // Preserve arg 0
 		push %rcx // Preserve arg 1
 		push %rdx // Preserve arg 2
+		push %rdi // Preserve arg 3
 
+		pop %r9  // Arg 3
 		pop %r8  // Arg 2
 		pop %rcx // Arg 1
 		pop %rdx // Arg 0
 		pop %rsi // Call ID
 
+		push $0 // Return status
+		push %rsp // Pointer to return status
+
 		mov %rsp, %rdi // Pass the current stack pointer
 		call syscall_isr_main
 		mov %rax, %rsp // Restore the thread stack pointer
 
-		END_IRQ
+		add $8, %rsp // Fake-Pop the pointer to return status
+		pop %rax // Pop the return status
+
+		END_IRQ_CALL
 		iretq
 
 .section .data

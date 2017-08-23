@@ -39,7 +39,7 @@ namespace tupai
 		const char scancode_table[] = "!!1234567890-=\b\tqwertyuiop[]\n!asdfghjkl;'#!\\zxcvbnm,./!!! !FFFFFFFFFF!";
 
 		extern "C" void isr_kbd();
-		extern "C" size_t kbd_isr_main(size_t stack);
+		extern "C" size_t kbd_isr_main(size_t sp);
 
 		void kbd_bind()
 		{
@@ -66,7 +66,7 @@ namespace tupai
 			irq::mask(1, true);
 		}
 
-		size_t kbd_isr_main(size_t stack)
+		size_t kbd_isr_main(size_t sp)
 		{
 			// Acknowledge the interrupt
 			irq::ack(1);
@@ -88,7 +88,7 @@ namespace tupai
 				dev::tty_write_in(c);
 			}
 
-			return stack;
+			return sp;
 		}
 	}
 }

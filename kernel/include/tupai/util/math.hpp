@@ -30,13 +30,13 @@ namespace tupai
 	namespace util
 	{
 		template <typename T, typename U>
-		T max(T a, U b) { return (a > b) ? a : b; }
+		constexpr T max(T a, U b) { return (a > b) ? a : b; }
 
 		template <typename T, typename U>
-		T min(T a, U b) { return (a < b) ? a : b; }
+		constexpr T min(T a, U b) { return (a < b) ? a : b; }
 
 		template <typename T>
-		T abs(T x) { return (x < 0) ? -x : x; }
+		constexpr T abs(T x) { return (x < 0) ? -x : x; }
 	}
 }
 

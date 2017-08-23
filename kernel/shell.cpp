@@ -28,7 +28,6 @@
 #include <tupai/mem/kmem.hpp>
 #include <tupai/mem/mmap.hpp>
 #include <tupai/dev/clock.hpp>
-#include <tupai/sys/call.hpp>
 #include <tupai/task/task.hpp>
 
 #include <tupai/util/fmt.hpp>

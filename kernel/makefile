@@ -118,6 +118,7 @@ SRCS_REL += $(shell ls ./sys/*.{s,c,cpp}  2> /dev/null)
 SRCS_REL += $(shell ls ./task/*.{s,c,cpp} 2> /dev/null)
 SRCS_REL += $(shell ls ./util/*.{s,c,cpp} 2> /dev/null)
 SRCS_REL += $(shell ls ./vfs/*.{s,c,cpp}  2> /dev/null)
+SRCS_REL += $(shell ls ./call/*.{s,c,cpp}  2> /dev/null)
 
 ifeq ($(TARGET_FAMILY), X86)
 	SRCS_REL += $(shell ls ./x86/*.{s,c,cpp} 2> /dev/null)
@@ -183,7 +184,7 @@ $(BDIRS) :
 # Compile .s files
 $(BUILD_ROOT)/%.o : $(SRC_DIR)/%.s
 	@echo "[`date "+%H:%M:%S"`] Compiling '$<'..."
-	@$(TOOL_DIR)/$(AS) -MMD -c -o $@ $< $(CFLAGS)
+	@$(TOOL_DIR)/$(AS) -c -o $@ $< $(CFLAGS)
 	@echo "[`date "+%H:%M:%S"`] Compiled '$@'."
 
 # Compile .c files

@@ -46,7 +46,7 @@ namespace tupai
 
 		static void pit_set_rate(int rate);
 		extern "C" void isr_pit();
-		extern "C" size_t pit_isr_main(size_t stack_ptr);
+		extern "C" size_t pit_isr_main(size_t sp);
 
 		void pit_bind()
 		{
@@ -83,7 +83,7 @@ namespace tupai
 			debug_println("PIT rate set to ", pit_rate);
 		}
 
-		size_t pit_isr_main(size_t stack_ptr)
+		size_t pit_isr_main(size_t sp)
 		{
 			// ACK the interrupt
 			irq::ack(0);
@@ -94,7 +94,7 @@ namespace tupai
 
 			//if (sys::threading_enabled())
 			//	stack_ptr = sys::thread_next_stack(stack_ptr);
-			return task::scheduler_preempt(stack_ptr);
+			return task::scheduler_preempt(sp);
 		}
 	}
 }

@@ -20,7 +20,6 @@
 
 // Tupai
 #include <tupai/exception.hpp>
-#include <tupai/sys/call.hpp>
 #include <tupai/util/log.hpp>
 #include <tupai/task/task.hpp>
 #include <tupai/task/scheduler.hpp>

@@ -36,7 +36,7 @@
 #include <tupai/sys/pipe.hpp>
 #include <tupai/task/task.hpp>
 #include <tupai/task/scheduler.hpp>
-#include <tupai/sys/call.hpp>
+#include <tupai/call.hpp>
 
 // Essential systems
 #include <tupai/sys/ramdisk.hpp>
@@ -96,7 +96,7 @@ namespace tupai
 		sys::pipe_init();       // Initiate pipes
 		task::init();           // Initiate processes
 		task::scheduler_init(); // Initiate scheduler
-		sys::call_init();       // Initiate syscalls
+		call::init();       // Initiate syscalls
 
 		// Essential systems
 		// -----------------

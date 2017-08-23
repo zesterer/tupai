@@ -20,7 +20,7 @@
 
 // Tupai
 #include <tupai/type.hpp>
-#include <tupai/sys/call.hpp>
+#include <tupai/call.hpp>
 
 // LibC
 #include <stdio.h>
@@ -39,7 +39,7 @@ FILE* fopen(const char* filename, const char* mode)
 	(void)mode;
 
 	tupai::id_t fd;
-	tupai::sys::call(tupai::sys::CALL::OPEN, (size_t)filename, (size_t)&fd);
+	tupai::call::call(tupai::call::OPEN, (size_t)filename, (size_t)&fd);
 
 	if (fd == -1)
 		return NULL;
@@ -50,7 +50,7 @@ FILE* fopen(const char* filename, const char* mode)
 int fclose(FILE* stream)
 {
 	tupai::id_t fd = (tupai::id_t)stream;
-	tupai::sys::call(tupai::sys::CALL::CLOSE, (size_t)fd);
+	tupai::call::call(tupai::call::CLOSE, (size_t)fd);
 
 	return 0;
 }
@@ -60,7 +60,7 @@ size_t fread (void* ptr, size_t size, size_t count, FILE* stream)
 {
 	size_t n = size * count;
 	tupai::id_t fd = (tupai::id_t)stream;
-	tupai::sys::call(tupai::sys::CALL::READ, (size_t)fd, (size_t)&n, (size_t)ptr);
+	tupai::call::call(tupai::call::READ, (size_t)fd, (size_t)ptr, (size_t)&n);
 	return n;
 }
 
@@ -68,7 +68,7 @@ size_t fwrite(const void* ptr, size_t size, size_t count, FILE* stream)
 {
 	size_t n = size * count;
 	tupai::id_t fd = (tupai::id_t)stream;
-	tupai::sys::call(tupai::sys::CALL::WRITE, (size_t)fd, (size_t)&n, (size_t)ptr);
+	tupai::call::call(tupai::call::WRITE, (size_t)fd, (size_t)ptr, (size_t)&n);
 	return n;
 }
 

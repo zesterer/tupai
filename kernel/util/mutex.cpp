@@ -20,7 +20,6 @@
 
 // Tupai
 #include <tupai/util/mutex.hpp>
-#include <tupai/sys/call.hpp>
 
 namespace tupai
 {
@@ -28,12 +27,14 @@ namespace tupai
 	{
 		void mutex_t::lock() volatile
 		{
-			sys::call(sys::CALL::LMUTEX, (size_t)this);
+			// TODO : Implement this
+			//call::call(call::LMUTEX, (size_t)this);
 		}
 
 		void mutex_t::unlock() volatile
 		{
-			sys::call(sys::CALL::UMUTEX, (size_t)this);
+			// TODO : Implement this
+			//call::call(call::UMUTEX, (size_t)this);
 		}
 	}
 }

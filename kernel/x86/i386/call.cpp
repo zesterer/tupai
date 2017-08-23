@@ -19,24 +19,28 @@
 //
 
 // Tupai
-#include <tupai/sys/call.hpp>
+#include <tupai/call.hpp>
 
 namespace tupai
 {
-	namespace sys
+	namespace call
 	{
-		void call(CALL call, size_t arg0, size_t arg1, size_t arg2)
+		size_t call(size_t func, size_t arg0, size_t arg1, size_t arg2, size_t arg3)
 		{
+			size_t status;
 			asm volatile (
-				"mov %0, %%rax \n\
-				 mov %1, %%rbx \n\
-				 mov %2, %%rcx \n\
-				 mov %3, %%rdx \n\
-				 int $0x80"
-				:
-				: "r"((size_t)call), "r"(arg0), "r"(arg1), "r"(arg2)
-				: "%rax", "%rbx", "%rcx", "%rdx"
+				"mov %1, %%eax \n\
+				 mov %2, %%ebx \n\
+				 mov %3, %%ecx \n\
+				 mov %4, %%edx \n\
+				 mov %5, %%edi \n\
+				 int $0x80     \n\
+				 mov %%eax, %0"
+				: "=m"(status)
+				: "m"(func), "m"(arg0), "m"(arg1), "m"(arg2), "m"(arg3)
+				: "%eax", "%ebx", "%ecx", "%edx", "%edi"
 			);
+			return status;
 		}
 	}
 }

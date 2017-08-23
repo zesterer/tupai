@@ -29,14 +29,40 @@
 .section .text
 
 	.macro BEGIN_IRQ // Begin IRQ
-		pushal
+		push %eax
+		push %ebx
+		push %ecx
+		push %edx
+		push %esp
+		push %ebp
+		push %esi
+		push %edi
 		movl $1, (in_irq)
 		cld
 	.endm
 
 	.macro END_IRQ // End IRQ
 		movl $0, (in_irq)
-		popal
+		pop %edi
+		pop %esi
+		pop %ebp
+		pop %esp
+		pop %edx
+		pop %ecx
+		pop %ebx
+		pop %eax
+	.endm
+
+	.macro END_IRQ_CALL // End IRQ (special syscall variant that preserves eax)
+		movl $0, (in_irq)
+		pop %edi
+		pop %esi
+		pop %ebp
+		pop %esp
+		pop %edx
+		pop %ecx
+		pop %ebx
+		add $4, %esp  // Pretend we popped eax
 	.endm
 
 	.align 4
@@ -87,6 +113,10 @@
 	isr_syscall: // SYSCALL ISR (irq 0x80)
 		BEGIN_IRQ
 
+		push $0 // Return status
+		push %esp // Pointer to return status
+
+		push %edi // Arg 3
 		push %edx // Arg 2
 		push %ecx // Arg 1
 		push %ebx // Arg 0
@@ -94,13 +124,15 @@
 
 		// Find old stack pointer
 		mov %esp, %eax
-		add $16, %eax
+		add $(6 * 4), %eax // number of args * 4 bytes
 
 		push %eax // Pass the old stack pointer
 		call syscall_isr_main
 		mov %eax, %esp // Restore the thread stack pointer
 
-		END_IRQ
+		pop %eax // Pop the return status
+
+		END_IRQ_CALL
 		iret
 
 .section .data
