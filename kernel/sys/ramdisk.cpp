@@ -27,6 +27,8 @@
 #include <tupai/vfs/path.hpp>
 #include <tupai/util/tar.hpp>
 #include <tupai/util/hashtable.hpp>
+#include <tupai/util/dbuffer.hpp>
+#include <tupai/util/mem.hpp>
 #include <tupai/arch.hpp>
 
 #include <tupai/util/log.hpp>
@@ -49,7 +51,7 @@ namespace tupai
 
 		static vfs::vtable_t ramdisk_vtable;
 
-		static util::hashtable_t<util::tar_header_t*> inodes;
+		static util::hashtable_t<util::dbuffer_t<uint8_t>> fbuffers;
 
 		void ramdisk_create(ramdisk_t* ramdisk, const char* name);
 
@@ -165,7 +167,11 @@ namespace tupai
 						if (type == vfs::inode_type::NORMAL_FILE && i + 1 == n)
 						{
 							ninode.set_vtable(&ramdisk_vtable);
-							inodes.add(ninode, cheader);
+
+							// Create a tmpfs file
+							util::dbuffer_t<uint8_t> fbuff;
+							fbuff.write((const uint8_t*)tar_data(cheader), tar_size(cheader), 0);
+							fbuffers.add(ninode, fbuff);
 						}
 						else
 							ninode.set_vtable(nullptr);
@@ -190,15 +196,15 @@ namespace tupai
 
 		ssize_t ramdisk_read_call (vfs::fd_ptr_t fd, void* rbuff, size_t n)
 		{
-			util::tar_header_t** header = inodes[fd.get_inode()];
+			util::dbuffer_t<uint8_t>* fbuffer = fbuffers[fd.get_inode()];
 
-			if (header != nullptr)
+			if (fbuffer != nullptr)
 			{
-				if (fd.get_offset() >= util::tar_size(*header))
+				if (fd.get_offset() >= fbuffer->size())
 					return 0;
 
-				size_t filesize = util::tar_size(*header);
-				uint8_t* data = (uint8_t*)util::tar_data(*header);
+				size_t filesize = fbuffer->size();
+				const uint8_t* data = fbuffer->data();
 
 				size_t i;
 				vfs::fd_offset offset = fd.get_offset();

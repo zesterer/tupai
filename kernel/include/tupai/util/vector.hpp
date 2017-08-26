@@ -25,6 +25,7 @@
 #include <tupai/util/math.hpp>
 #include <tupai/util/mem.hpp>
 #include <tupai/util/cpp.hpp>
+#include <tupai/util/spinlock.hpp>
 #include <tupai/panic.hpp>
 
 // Standard
@@ -38,28 +39,53 @@ namespace tupai
 		template <typename T>
 		struct vector_t
 		{
+		private:
+
 			T* _array;
 			size_t _capacity;
 			size_t _size;
+			spinlock_t _mutex;
 
-			vector_t<T>& _copy(const vector_t<T>& other)
+			void _resize(size_t size)
 			{
+				T* old = this->_array;
+				this->_capacity = size;
+				this->_array = (T*)(new uint8_t[this->_capacity * sizeof(T)]);
+
+				for (size_t i = 0; i < this->_size; i ++)
+					this->_array[i] = old[i];
+
+				if (old != nullptr)
+					delete (uint8_t*)old;
+			}
+
+			vector_t<T>& _copy(vector_t<T>& other)
+			{
+				this->_mutex.lock(); // Begin critical section
+				other._mutex.lock(); // Begin critical section
+
 				this->_size = other._size;
 				this->_capacity = other._capacity;
 
 				if (this->_size > 0)
-					this->_array = (T*)(new uint8_t[this->_capacity]);
+					this->_array = (T*)(new uint8_t[this->_capacity * sizeof(T)]);
 				else
 					this->_array = nullptr;
 
 				for (size_t i = 0; i < this->_size; i ++)
 					this->_array[i] = other._array[i];
 
+				other._mutex.unlock(); // End critical section
+				this->_mutex.unlock(); // End critical section
+
 				return *this;
 			}
 
 			vector_t<T>& _move(vector_t<T>& other)
 			{
+				this->_mutex.lock(); // Begin critical section
+				other._mutex.lock(); // Begin critical section
+
 				this->_array    = other._array;
 				this->_capacity = other._capacity;
 				this->_size     = other._size;
@@ -68,8 +94,13 @@ namespace tupai
 				other._capacity = 0;
 				other._size     = 0;
 
+				other._mutex.unlock(); // End critical section
+				this->_mutex.unlock(); // End critical section
+
 				return *this;
 			}
+
+		public:
 
 			// Default constructor
 			vector_t()
@@ -80,13 +111,13 @@ namespace tupai
 			}
 
 			// Copy constructor
-			vector_t(const vector_t<T>& other)
+			vector_t(vector_t<T>& other)
 			{
 				this->_copy(other);
 			}
 
 			// Copy assignment operator
-			vector_t<T>& operator=(const vector_t<T>& other)
+			vector_t<T>& operator=(vector_t<T>& other)
 			{
 				return this->_copy(other);
 			}
@@ -109,7 +140,7 @@ namespace tupai
 				for (size_t i = 0; i < this->_size; i ++)
 					this->_array[i].~T();
 
-				if (_array != nullptr)
+				if (this->_array != nullptr)
 					delete (uint8_t*)this->_array;
 			}
 
@@ -123,19 +154,6 @@ namespace tupai
 				return this->_capacity;
 			}
 
-			void resize(size_t size)
-			{
-				T* old = this->_array;
-				this->_capacity = size;
-				this->_array = (T*)(new uint8_t[this->_capacity * sizeof(T)]);
-
-				for (size_t i = 0; i < this->_size; i ++)
-					this->_array[i] = old[i];
-
-				if (old != nullptr)
-					delete old;
-			}
-
 			T& get(size_t i)
 			{
 				return this->_array[i];
@@ -146,17 +164,23 @@ namespace tupai
 				return this->_array[i];
 			}
 
-			void push(const T& item)
+			void push(T& item)
 			{
+				this->_mutex.lock(); // Begin critical section
+
 				if (this->_size >= this->_capacity)
-					this->resize(util::max(this->_capacity * 2, (size_t)1));
+					this->_resize(util::max(this->_capacity * 2, (size_t)1));
 
 				this->_array[this->_size] = item;
 				this->_size ++;
+
+				this->_mutex.unlock(); // End critical section
 			}
 
 			T pop()
 			{
+				this->_mutex.lock(); // Begin critical section
+
 				if (this->_size <= 0)
 					panic("Attempted to pop from empty vector");
 
@@ -164,7 +188,9 @@ namespace tupai
 				this->_size --;
 
 				if (this->_size <= this->_capacity / 2)
-					this->resize(this->_capacity / 2);
+					this->_resize(this->_capacity / 2);
+
+				this->_mutex.unlock(); // End critical section
 
 				return item;
 			}

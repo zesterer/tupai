@@ -38,7 +38,7 @@ namespace tupai
 		struct fifo_t
 		{
 			unsafe_queue_t<T, N> _internal;
-			mutex_t _mutex;
+			spinlock_t _mutex;
 
 			void write_unsafe(T item) volatile { this->_internal.push(item); }
 			void write(T item) volatile

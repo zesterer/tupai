@@ -38,9 +38,8 @@ namespace tupai
 			(void)arg0; (void)arg1; (void)arg2; (void)arg3; // Avoid warnings
 
 			const char* path = (const char*)arg0;
-			id_t* fd_  = (id_t*)arg1;
-
 			vfs::inode_ptr_t inode = vfs::get_inode(path);
+			id_t* fd_  = (id_t*)arg1;
 
 			vfs::vtable_t* vtable;
 			inode.get_vtable(&vtable);
@@ -59,7 +58,7 @@ namespace tupai
 				}
 			}
 
-			*fd_ = ID_INVALID;
+			*fd_ = ID_INVALID; // Error return value
 			return 1;
 		}
 
@@ -90,7 +89,7 @@ namespace tupai
 				}
 			}
 
-			*n_ = 0;
+			*n_ = 0; // Error return value
 			return 1;
 		}
 
@@ -121,7 +120,7 @@ namespace tupai
 				}
 			}
 
-			*n_ = 0;
+			*n_ = 0; // Error return value
 			return 1;
 		}
 
@@ -130,7 +129,7 @@ namespace tupai
 			(void)arg0; (void)arg1; (void)arg2; (void)arg3; // Avoid warnings
 
 			id_t lfd = (id_t)arg0;
-			
+
 			task::proc_ptr_t cproc = task::get_current();
 
 			vfs::fd_ptr_t fd = cproc.get_fd(lfd);
