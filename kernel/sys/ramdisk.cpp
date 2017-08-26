@@ -91,7 +91,7 @@ namespace tupai
 			ramdisk_vtable.open  = ramdisk_open_call;
 			ramdisk_vtable.close = ramdisk_close_call;
 			ramdisk_vtable.read  = ramdisk_read_call;
-			//ramdisk_vtable.write = ramdisk_write_call;
+			ramdisk_vtable.write = ramdisk_write_call;
 
 			for (size_t i = 0; i < RAMDISK_MAX; i ++)
 			{
@@ -227,7 +227,27 @@ namespace tupai
 				return -1;
 		}
 
-		// TODO : Implement this
-		ssize_t ramdisk_write_call(vfs::fd_ptr_t desc, const void* buff, size_t n);
+		ssize_t ramdisk_write_call(vfs::fd_ptr_t fd, const void* buff, size_t n)
+		{
+			util::dbuffer_t<uint8_t>* fbuffer = fbuffers[fd.get_inode()];
+
+			if (fbuffer != nullptr)
+			{
+				if (fd.get_offset() > fbuffer->size())
+					return 0;
+
+				fbuffer->write((const uint8_t*)buff, n, fd.get_offset());
+
+				fd.set_offset(fd.get_offset() + n);
+
+				// Have we reached EOF?
+				if (fd.get_offset() >= fbuffer->size())
+					fd.set_flag(vfs::fd_flag::EOF, true);
+
+				return n;
+			}
+			else
+				return -1;
+		}
 	}
 }

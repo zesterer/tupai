@@ -163,6 +163,7 @@ namespace tupai
 							"  proc    -> Show running processes\n",
 							"  mmap    -> Show the memory map\n",
 							"  cat     -> Display the contents of a file\n",
+							"  append  -> Append data to a file\n",
 							"  echo    -> Echo the typed text to stdout\n",
 							"  pool    -> Show kernel memory pool\n",
 							"  motd    -> Show the MOTD\n",
@@ -196,15 +197,7 @@ namespace tupai
 					{
 						if (argc > 1)
 						{
-							//const size_t BUFF_SIZE = 8192;
-							//char* rbuff = new char[BUFF_SIZE];
-
-							//util::logln("Opening...");
-
 							FILE* f = fopen(argv[1], "r");
-							//size_t n = fread(rbuff, 1, BUFF_SIZE - 1, f);
-
-							//util::logln("Reading...");
 
 							size_t n = 1;
 							char buff[2];
@@ -216,10 +209,25 @@ namespace tupai
 							}
 
 							fclose(f);
-							//delete rbuff;
 						}
 						else
 							print("Usage: cat <file>\n");
+						break;
+					}
+
+				case util::str_hash("append"):
+					{
+						if (argc > 2)
+						{
+							FILE* f = fopen(argv[1], "w");
+
+							const char* buff = argv[2];
+							fwrite(buff, sizeof(char), util::str_len(buff), f);
+
+							fclose(f);
+						}
+						else
+							print("Usage: append <file> <data>\n");
 						break;
 					}
 
