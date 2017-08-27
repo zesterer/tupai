@@ -19,7 +19,7 @@
 //
 
 // Tupai
-#include <tupai/call.hpp>
+#include <tupai/call/call.hpp>
 #include <tupai/irq.hpp>
 #include <tupai/cpu.hpp>
 #include <tupai/panic.hpp>
@@ -37,6 +37,7 @@ namespace tupai
 			[READ]  = read,
 			[WRITE] = write,
 			[CLOSE] = close,
+			[SEEK] = seek,
 		};
 
 		extern "C" void isr_syscall();
@@ -63,7 +64,7 @@ namespace tupai
 			irq::enable();
 
 			if (func < util::length(call_table)) // Is the call within the bounds of the call table?
-				call_table[func](arg0, arg1, arg2, arg3);
+				*status = call_table[func](arg0, arg1, arg2, arg3); // Then call it!
 			else
 				panic("Unknown syscall with id '", func, "'"); // No it is not
 

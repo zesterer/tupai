@@ -1,5 +1,5 @@
 //
-// file : call.hpp
+// file : call.cpp
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,29 +18,29 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#ifndef TUPAI_CALL_HPP
-#define TUPAI_CALL_HPP
-
-// Standard
-#include <stddef.h>
-#include <stdint.h>
+// Tupai
+#include <tupai/call/call.hpp>
 
 namespace tupai
 {
 	namespace call
 	{
-		enum
+		size_t call(size_t func, size_t arg0, size_t arg1, size_t arg2, size_t arg3)
 		{
-			// File calls
-			OPEN  = 0x000,
-			READ  = 0x001,
-			WRITE = 0x002,
-			CLOSE = 0x003,
-		};
-
-		void   init();
-		size_t call(size_t func, size_t arg0 = 0, size_t arg1 = 0, size_t arg2 = 0, size_t arg3 = 0);
+			size_t status;
+			asm volatile (
+				"mov %1, %%eax \n\
+				 mov %2, %%ebx \n\
+				 mov %3, %%ecx \n\
+				 mov %4, %%edx \n\
+				 mov %5, %%edi \n\
+				 int $0x80     \n\
+				 mov %%eax, %0"
+				: "=m"(status)
+				: "m"(func), "m"(arg0), "m"(arg1), "m"(arg2), "m"(arg3)
+				: "%eax", "%ebx", "%ecx", "%edx", "%edi"
+			);
+			return status;
+		}
 	}
 }
-
-#endif

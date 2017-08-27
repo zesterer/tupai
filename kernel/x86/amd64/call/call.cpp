@@ -19,7 +19,7 @@
 //
 
 // Tupai
-#include <tupai/call.hpp>
+#include <tupai/call/call.hpp>
 
 namespace tupai
 {
@@ -29,16 +29,16 @@ namespace tupai
 		{
 			size_t status;
 			asm volatile (
-				"mov %1, %%eax \n\
-				 mov %2, %%ebx \n\
-				 mov %3, %%ecx \n\
-				 mov %4, %%edx \n\
-				 mov %5, %%edi \n\
+				"mov %1, %%rax \n\
+				 mov %2, %%rbx \n\
+				 mov %3, %%rcx \n\
+				 mov %4, %%rdx \n\
+				 mov %5, %%rdi \n\
 				 int $0x80     \n\
-				 mov %%eax, %0"
+				 mov %%rax, %0"
 				: "=m"(status)
 				: "m"(func), "m"(arg0), "m"(arg1), "m"(arg2), "m"(arg3)
-				: "%eax", "%ebx", "%ecx", "%edx", "%edi"
+				: "%rax", "%rbx", "%rcx", "%rdx", "%rdi"
 			);
 			return status;
 		}

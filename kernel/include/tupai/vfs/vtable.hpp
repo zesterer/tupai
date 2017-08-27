@@ -35,10 +35,11 @@ namespace tupai
 	{
 		struct vtable_t
 		{
-			int      (*open) (inode_ptr_t inode)                         = nullptr;
-			int      (*close)(fd_ptr_t desc)                             = nullptr;
-			ssize_t  (*read) (fd_ptr_t desc, void* rbuff, size_t n)      = nullptr;
-			ssize_t  (*write)(fd_ptr_t desc, const void* buff, size_t n) = nullptr;
+			int      (*open) (inode_ptr_t inode)                           = nullptr;
+			int      (*close)(fd_ptr_t desc)                               = nullptr;
+			ssize_t  (*read) (fd_ptr_t desc, void* rbuff, size_t n)        = nullptr;
+			ssize_t  (*write)(fd_ptr_t desc, const void* buff, size_t n)   = nullptr;
+			int      (*seek) (fd_ptr_t desc, int origin, fd_offset offset) = nullptr;
 		};
 	}
 }

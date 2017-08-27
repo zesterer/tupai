@@ -20,7 +20,7 @@
 
 // Tupai
 #include <tupai/type.hpp>
-#include <tupai/call.hpp>
+#include <tupai/call/call.hpp>
 
 // LibC
 #include <stdio.h>
@@ -29,11 +29,13 @@
 #include <stdint.h>
 
 // Standard streams
+
 FILE* stdin  = (FILE*)0;
 FILE* stdout = (FILE*)1;
 FILE* stderr = (FILE*)2;
 
 // File access
+
 FILE* fopen(const char* filename, const char* mode)
 {
 	(void)mode;
@@ -56,6 +58,7 @@ int fclose(FILE* stream)
 }
 
 // File I/O
+
 size_t fread (void* ptr, size_t size, size_t count, FILE* stream)
 {
 	size_t n = size * count;
@@ -70,6 +73,14 @@ size_t fwrite(const void* ptr, size_t size, size_t count, FILE* stream)
 	tupai::id_t fd = (tupai::id_t)stream;
 	tupai::call::call(tupai::call::WRITE, (size_t)fd, (size_t)ptr, (size_t)&n);
 	return n;
+}
+
+// File positioning
+
+int fseek(FILE* stream, long offset, int origin)
+{
+	tupai::id_t fd = (tupai::id_t)stream;
+	return tupai::call::call(tupai::call::SEEK, (size_t)fd, (size_t)origin, (size_t)offset);
 }
 
 // TODO : Complete this

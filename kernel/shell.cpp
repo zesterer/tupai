@@ -220,9 +220,13 @@ namespace tupai
 						if (argc > 2)
 						{
 							FILE* f = fopen(argv[1], "w");
+							fseek(f, 0, 2); // Seek to end of file
 
-							const char* buff = argv[2];
-							fwrite(buff, sizeof(char), util::str_len(buff), f);
+							for (int i = 2; i < argc; i ++)
+							{
+								print("Appending '", argv[i], "'...");
+								fwrite(argv[i], sizeof(char), util::str_len(argv[i]), f);
+							}
 
 							fclose(f);
 						}

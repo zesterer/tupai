@@ -33,6 +33,7 @@ namespace tupai
 		size_t read (size_t arg0, size_t arg1, size_t arg2, size_t arg3);
 		size_t write(size_t arg0, size_t arg1, size_t arg2, size_t arg3);
 		size_t close(size_t arg0, size_t arg1, size_t arg2, size_t arg3);
+		size_t seek (size_t arg0, size_t arg1, size_t arg2, size_t arg3);
 	}
 }
 

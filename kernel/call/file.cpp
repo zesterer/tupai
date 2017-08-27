@@ -33,27 +33,41 @@ namespace tupai
 {
 	namespace call
 	{
+		enum class mode
+		{
+			READ   = (0 << 0),
+			WRITE  = (1 << 0),
+			APPEND = (2 << 0),
+
+			UPDATE = (1 << 2),
+		};
+
 		size_t open(size_t arg0, size_t arg1, size_t arg2, size_t arg3)
 		{
 			(void)arg0; (void)arg1; (void)arg2; (void)arg3; // Avoid warnings
 
 			const char* path = (const char*)arg0;
+			id_t*       fd_  = (id_t*)arg1;
+			uint8_t     mode = (uint8_t)arg2;
+
 			vfs::inode_ptr_t inode = vfs::get_inode(path);
-			id_t* fd_  = (id_t*)arg1;
 
-			vfs::vtable_t* vtable;
-			inode.get_vtable(&vtable);
-
-			if (vtable != nullptr)
+			if (inode != ID_INVALID)
 			{
-				if (vtable->open != nullptr)
-				{
-					int result = vtable->open(inode);
+				vfs::vtable_t* vtable;
+				inode.get_vtable(&vtable);
 
-					if (result == 0)
+				if (vtable != nullptr)
+				{
+					if (vtable->open != nullptr)
 					{
-						*fd_ = task::get_current().create_fd(inode);
-						return 0;
+						int result = vtable->open(inode);
+
+						if (result == 0)
+						{
+							*fd_ = task::get_current().create_fd(inode);
+							return 0;
+						}
 					}
 				}
 			}
@@ -66,9 +80,9 @@ namespace tupai
 		{
 			(void)arg0; (void)arg1; (void)arg2; (void)arg3; // Avoid warnings
 
-			id_t lfd = (id_t)arg0;
-			void* buff_ = (void*)arg1;
-			ssize_t* n_ = (ssize_t*)arg2;
+			id_t     lfd   = (id_t)arg0;
+			void*    buff_ = (void*)arg1;
+			ssize_t* n_    = (ssize_t*)arg2;
 
 			if (lfd != ID_INVALID)
 			{
@@ -97,9 +111,9 @@ namespace tupai
 		{
 			(void)arg0; (void)arg1; (void)arg2; (void)arg3; // Avoid warnings
 
-			id_t lfd = (id_t)arg0;
-			const void* buff_ = (const void*)arg1;
-			ssize_t* n_ = (ssize_t*)arg2;
+			id_t        lfd  = (id_t)arg0;
+			const void* buff = (const void*)arg1;
+			ssize_t*    n_   = (ssize_t*)arg2;
 
 			if (lfd != ID_INVALID)
 			{
@@ -114,7 +128,7 @@ namespace tupai
 				{
 					if (vtable->write != nullptr)
 					{
-						*n_ = vtable->write(fd, buff_, *n_);
+						*n_ = vtable->write(fd, buff, *n_);
 						return 0;
 					}
 				}
@@ -130,22 +144,56 @@ namespace tupai
 
 			id_t lfd = (id_t)arg0;
 
-			task::proc_ptr_t cproc = task::get_current();
-
-			vfs::fd_ptr_t fd = cproc.get_fd(lfd);
-			vfs::vtable_t* vtable;
-			fd.get_inode().get_vtable(&vtable);
-
-			if (vtable != nullptr)
+			if (lfd != ID_INVALID)
 			{
-				if (vtable->close != nullptr)
-				{
-					int result = vtable->close(fd);
+				task::proc_ptr_t cproc = task::get_current();
 
-					if (result == 0)
+				vfs::fd_ptr_t fd = cproc.get_fd(lfd);
+
+				vfs::vtable_t* vtable;
+				fd.get_inode().get_vtable(&vtable);
+
+				if (vtable != nullptr)
+				{
+					if (vtable->close != nullptr)
 					{
-						delete_fd(fd);
-						cproc.delete_fd(lfd);
+						int result = vtable->close(fd);
+
+						if (result == 0)
+						{
+							delete_fd(fd);
+							cproc.delete_fd(lfd);
+							return 0;
+						}
+					}
+				}
+			}
+
+			return 1;
+		}
+
+		size_t seek(size_t arg0, size_t arg1, size_t arg2, size_t arg3)
+		{
+			(void)arg0; (void)arg1; (void)arg2; (void)arg3; // Avoid warnings
+
+			id_t           lfd    = (id_t)arg0;
+			int            origin = arg1;
+			vfs::fd_offset offset = (vfs::fd_offset)arg2;
+
+			if (lfd != ID_INVALID)
+			{
+				task::proc_ptr_t cproc = task::get_current();
+
+				vfs::fd_ptr_t fd = cproc.get_fd(lfd);
+
+				vfs::vtable_t* vtable;
+				fd.get_inode().get_vtable(&vtable);
+
+				if (vtable != nullptr)
+				{
+					if (vtable->close != nullptr)
+					{
+						vtable->seek(fd, origin, offset);
 						return 0;
 					}
 				}

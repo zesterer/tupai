@@ -53,12 +53,13 @@ namespace tupai
 
 		static util::hashtable_t<util::dbuffer_t<uint8_t>> fbuffers;
 
-		void ramdisk_create(ramdisk_t* ramdisk, const char* name);
+		static void ramdisk_create(ramdisk_t* ramdisk, const char* name);
 
-		int     ramdisk_open_call (vfs::inode_ptr_t inode);
-		int     ramdisk_close_call(vfs::fd_ptr_t fd);
-		ssize_t ramdisk_read_call (vfs::fd_ptr_t fd, void* rbuff, size_t n);
-		ssize_t ramdisk_write_call(vfs::fd_ptr_t fd, const void* buff, size_t n);
+		static int     ramdisk_open_call (vfs::inode_ptr_t inode);
+		static int     ramdisk_close_call(vfs::fd_ptr_t fd);
+		static ssize_t ramdisk_read_call (vfs::fd_ptr_t fd, void* rbuff, size_t n);
+		static ssize_t ramdisk_write_call(vfs::fd_ptr_t fd, const void* buff, size_t n);
+		static int     ramdisk_seek_call (vfs::fd_ptr_t fd, int origin, vfs::fd_offset offset);
 
 		void ramdisk_add(void* start, size_t size, const char* args)
 		{
@@ -92,6 +93,7 @@ namespace tupai
 			ramdisk_vtable.close = ramdisk_close_call;
 			ramdisk_vtable.read  = ramdisk_read_call;
 			ramdisk_vtable.write = ramdisk_write_call;
+			ramdisk_vtable.seek  = ramdisk_seek_call;
 
 			for (size_t i = 0; i < RAMDISK_MAX; i ++)
 			{
@@ -100,7 +102,7 @@ namespace tupai
 			}
 		}
 
-		void ramdisk_create(ramdisk_t* ramdisk, const char* name)
+		static void ramdisk_create(ramdisk_t* ramdisk, const char* name)
 		{
 			//util::logln("Found ramdisk at ", ramdisk->start, " of size ", ramdisk->size);
 
@@ -184,17 +186,17 @@ namespace tupai
 			}
 		}
 
-		int ramdisk_open_call (vfs::inode_ptr_t inode)
+		static int ramdisk_open_call (vfs::inode_ptr_t inode)
 		{
 			return (inode == ID_INVALID) ? 1 : 0;
 		}
 
-		int ramdisk_close_call(vfs::fd_ptr_t fd)
+		static int ramdisk_close_call(vfs::fd_ptr_t fd)
 		{
 			return (fd == ID_INVALID) ? 1 : 0;
 		}
 
-		ssize_t ramdisk_read_call (vfs::fd_ptr_t fd, void* rbuff, size_t n)
+		static ssize_t ramdisk_read_call (vfs::fd_ptr_t fd, void* rbuff, size_t n)
 		{
 			util::dbuffer_t<uint8_t>* fbuffer = fbuffers[fd.get_inode()];
 
@@ -227,7 +229,7 @@ namespace tupai
 				return -1;
 		}
 
-		ssize_t ramdisk_write_call(vfs::fd_ptr_t fd, const void* buff, size_t n)
+		static ssize_t ramdisk_write_call(vfs::fd_ptr_t fd, const void* buff, size_t n)
 		{
 			util::dbuffer_t<uint8_t>* fbuffer = fbuffers[fd.get_inode()];
 
@@ -235,6 +237,8 @@ namespace tupai
 			{
 				if (fd.get_offset() > fbuffer->size())
 					return 0;
+
+				util::logln("Writing '", (const char*)buff, "' of size ", n);
 
 				fbuffer->write((const uint8_t*)buff, n, fd.get_offset());
 
@@ -248,6 +252,41 @@ namespace tupai
 			}
 			else
 				return -1;
+		}
+
+		static int ramdisk_seek_call(vfs::fd_ptr_t fd, int origin, vfs::fd_offset offset)
+		{
+			util::dbuffer_t<uint8_t>* fbuffer = fbuffers[fd.get_inode()];
+
+			if (fbuffer != nullptr)
+			{
+				switch (origin)
+				{
+				case 0:
+					fd.set_offset(offset);
+					break;
+
+				case 1:
+					fd.set_offset(fd.get_offset() + offset);
+					break;
+
+				case 2:
+					fd.set_offset(fbuffer->size() + offset);
+					break;
+
+				default:
+					return 1;
+					break;
+				};
+
+				// Have we reached EOF?
+				if (fd.get_offset() >= fbuffer->size())
+					fd.set_flag(vfs::fd_flag::EOF, true);
+
+				return 0;
+			}
+			else
+				return 1;
 		}
 	}
 }
