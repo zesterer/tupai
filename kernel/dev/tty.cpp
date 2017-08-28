@@ -46,15 +46,15 @@ namespace tupai
 		static util::spinlock_t spinlock;
 
 		// Unions are used here SPECIFICALLY to avoid global construction!
-		union In  { sys::pipe_t pipe;  In() {} } in;
-		union Out { sys::pipe_t pipe; Out() {} } out;
+		union In  { sys::pipe::pipe_t pipe;  In() {} } in;
+		union Out { sys::pipe::pipe_t pipe; Out() {} } out;
 
 		static void tty_out_thread(int argc, char* argv[]);
 
 		void tty_construct()
 		{
-			in.pipe  = sys::pipe_t();
-			out.pipe = sys::pipe_t();
+			in.pipe  = sys::pipe::pipe_t();
+			out.pipe = sys::pipe::pipe_t();
 		}
 
 		void tty_init()
@@ -64,8 +64,8 @@ namespace tupai
 			if (!tty_initiated)
 			{
 				// Mount the pipes
-				sys::mount_pipe(&in.pipe, "/dev/stdin");
-				sys::mount_pipe(&out.pipe, "/dev/stdout");
+				sys::pipe::mount(&in.pipe, "/dev/stdin", true);
+				sys::pipe::mount(&out.pipe, "/dev/stdout", true);
 
 				#if defined(ARCH_FAMILY_X86)
 					x86::textmode_init();

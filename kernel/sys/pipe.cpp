@@ -31,76 +31,79 @@ namespace tupai
 {
 	namespace sys
 	{
-		static util::hashtable_t<pipe_t*> pipes;
-		static vfs::vtable_t pipe_vtable;
-
-		int     pipe_open_call (vfs::inode_ptr_t inode);
-		int     pipe_close_call(vfs::fd_ptr_t fd);
-		ssize_t pipe_read_call (vfs::fd_ptr_t fd, void* rbuff, size_t n);
-		ssize_t pipe_write_call(vfs::fd_ptr_t fd, const void* buff, size_t n);
-
-		void pipe_init()
+		namespace pipe
 		{
-			pipe_vtable.open  = pipe_open_call;
-			pipe_vtable.close = pipe_close_call;
-			pipe_vtable.read  = pipe_read_call;
-			pipe_vtable.write = pipe_write_call;
-		}
+			static util::hashtable_t<pipe_t*> pipes;
+			static vfs::vtable_t vtable;
+			static vfs::fs_ptr_t fs;
 
-		vfs::inode_ptr_t mount_pipe(pipe_t* pipe, const char* path)
-		{
-			vfs::inode_ptr_t ninode = vfs::create_inode(vfs::inode_type::PIPE);
-			ninode.set_vtable(&pipe_vtable);
-			vfs::mount(ninode, path);
+			static int     open_call (vfs::inode_ptr_t inode);
+			static int     close_call(vfs::fd_ptr_t fd);
+			static ssize_t read_call (vfs::fd_ptr_t fd, void* rbuff, size_t n);
+			static ssize_t write_call(vfs::fd_ptr_t fd, const void* buff, size_t n);
 
-			vfs::vtable_t* nv;
-			ninode.get_vtable(&nv);
-
-			pipes.add(ninode, pipe);
-
-			return ninode;
-		}
-
-		int pipe_open_call (vfs::inode_ptr_t inode)
-		{
-			return (inode == ID_INVALID) ? 1 : 0;
-		}
-
-		int pipe_close_call(vfs::fd_ptr_t fd)
-		{
-			return (fd == ID_INVALID) ? 1 : 0;
-		}
-
-		ssize_t pipe_read_call(vfs::fd_ptr_t fd, void* rbuff, size_t n)
-		{
-			(void)n;
-
-			pipe_t** pipe = pipes[fd.get_inode()];
-
-			if (pipe != nullptr)
+			void init()
 			{
-				// TODO : Fix this
-				((uint8_t*)rbuff)[0] = (*pipe)->read();
-				((uint8_t*)rbuff)[1] = '\0';
-				return 1;
+				vtable.open  = open_call;
+				vtable.close = close_call;
+				vtable.read  = read_call;
+				vtable.write = write_call;
+
+				fs = vfs::create_fs("pipe");
 			}
-			else
-				return 0;
-		}
 
-		ssize_t pipe_write_call(vfs::fd_ptr_t fd, const void* buff, size_t n)
-		{
-			pipe_t** pipe = pipes[fd.get_inode()];
-
-			if (pipe != nullptr)
+			vfs::inode_ptr_t mount(pipe_t* pipe, const char* path, bool create)
 			{
-				size_t i;
-				for (i = 0; i < n; i ++)
-					(*pipe)->write(((uint8_t*)buff)[i]);
-				return i;
+				vfs::inode_ptr_t ninode = vfs::create_inode(vfs::inode_type::PIPE, fs);
+				ninode.set_vtable(&vtable);
+				vfs::mount(ninode, path, create);
+
+				pipes.add(ninode, pipe);
+
+				return ninode;
 			}
-			else
-				return 0;
+
+			static int open_call (vfs::inode_ptr_t inode)
+			{
+				return (inode == ID_INVALID) ? 1 : 0;
+			}
+
+			static int close_call(vfs::fd_ptr_t fd)
+			{
+				return (fd == ID_INVALID) ? 1 : 0;
+			}
+
+			static ssize_t read_call(vfs::fd_ptr_t fd, void* rbuff, size_t n)
+			{
+				(void)n;
+
+				pipe_t** pipe = pipes[fd.get_inode()];
+
+				if (pipe != nullptr)
+				{
+					// TODO : Fix this
+					((uint8_t*)rbuff)[0] = (*pipe)->read();
+					((uint8_t*)rbuff)[1] = '\0';
+					return 1;
+				}
+				else
+					return 0;
+			}
+
+			static ssize_t write_call(vfs::fd_ptr_t fd, const void* buff, size_t n)
+			{
+				pipe_t** pipe = pipes[fd.get_inode()];
+
+				if (pipe != nullptr)
+				{
+					size_t i;
+					for (i = 0; i < n; i ++)
+						(*pipe)->write(((uint8_t*)buff)[i]);
+					return i;
+				}
+				else
+					return 0;
+			}
 		}
 	}
 }

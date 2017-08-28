@@ -1,5 +1,5 @@
 //
-// file : pipe.hpp
+// file : fcntl.h : String and memory operations
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -17,31 +17,25 @@
 // ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
-
-#ifndef TUPAI_SYS_PIPE_HPP
-#define TUPAI_SYS_PIPE_HPP
-
-// Tupai
-#include <tupai/util/fifo.hpp>
-#include <tupai/vfs/vfs.hpp>
+// This file is part of the Tupai POSIX implementation.
+//
 
 // Standard
-#include <stddef.h>
-#include <stdint.h>
+#include <fcntl.h>
 
-namespace tupai
+// File access functions (TODO)
+
+int creat(const char* fpath, mode_t mode)
 {
-	namespace sys
-	{
-		namespace pipe
-		{
-			const size_t PIPE_SIZE = 4096;
-			using pipe_t = util::fifo_t<uint8_t, PIPE_SIZE>;
-
-			void             init();
-			vfs::inode_ptr_t mount(pipe_t* pipe, const char* path, bool create = false);
-		}
-	}
+	// Do something
 }
 
-#endif
+int fcntl(int fd, int cmd)
+{
+	// Do something
+}
+
+int open(const char* fpath, int flags)
+{
+	// Do something
+}

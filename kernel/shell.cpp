@@ -222,11 +222,8 @@ namespace tupai
 							FILE* f = fopen(argv[1], "w");
 							fseek(f, 0, 2); // Seek to end of file
 
-							for (int i = 2; i < argc; i ++)
-							{
-								print("Appending '", argv[i], "'...");
+							for (unsigned int i = 2; i < argc; i ++)
 								fwrite(argv[i], sizeof(char), util::str_len(argv[i]), f);
-							}
 
 							fclose(f);
 						}

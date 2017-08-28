@@ -1,5 +1,5 @@
 //
-// file : pipe.hpp
+// file : tmpfs.hpp
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,11 +18,10 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#ifndef TUPAI_SYS_PIPE_HPP
-#define TUPAI_SYS_PIPE_HPP
+#ifndef TUPAI_SYS_TMPFS_HPP
+#define TUPAI_SYS_TMPFS_HPP
 
 // Tupai
-#include <tupai/util/fifo.hpp>
 #include <tupai/vfs/vfs.hpp>
 
 // Standard
@@ -33,13 +32,10 @@ namespace tupai
 {
 	namespace sys
 	{
-		namespace pipe
+		namespace tmpfs
 		{
-			const size_t PIPE_SIZE = 4096;
-			using pipe_t = util::fifo_t<uint8_t, PIPE_SIZE>;
-
-			void             init();
-			vfs::inode_ptr_t mount(pipe_t* pipe, const char* path, bool create = false);
+			void init();
+			id_t create(const char* path, vfs::inode_type type, const uint8_t* data, size_t size);
 		}
 	}
 }

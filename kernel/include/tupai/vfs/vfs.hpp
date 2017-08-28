@@ -80,6 +80,7 @@ namespace tupai
 			template <size_t SIZE>
 			int get_child_name(inode_ptr_t child, char(&rname)[SIZE]) { return this->get_child_name(child, rname, SIZE); }
 
+			id_t        get_fs();
 			int         get_type      (inode_type* rtype);
 			int         get_vtable    (vtable_t** rvtable);
 			size_t      get_children  ();
@@ -87,10 +88,11 @@ namespace tupai
 			inode_ptr_t get_nth_child (size_t n);
 			int         get_child_name(inode_ptr_t child, char* rname, size_t n);
 
-			int set_type   (inode_type type);
-			int set_vtable (vtable_t* vtable);
-			int set_fs     (fs_ptr_t fs);
-			int mount_child(inode_ptr_t child, const char* name);
+			int set_type      (inode_type type);
+			int set_vtable    (vtable_t* vtable);
+			int set_fs        (fs_ptr_t fs);
+			int mount_child   (inode_ptr_t child, const char* name);
+			int mount_relative(inode_ptr_t child, const char* path, bool create = false);
 		};
 
 		enum class fd_mode : uint8_t
@@ -135,13 +137,13 @@ namespace tupai
 		inode_ptr_t get_root();
 		inode_ptr_t get_inode(const char* path);
 		int         set_root(inode_ptr_t root);
-		int         mount(inode_ptr_t inode, const char* path);
+		int         mount(inode_ptr_t inode, const char* path, bool create = false);
 
 		void init();
 		void display();
 
 		fs_ptr_t    create_fs(const char* name);
-		inode_ptr_t create_inode(inode_type type);
+		inode_ptr_t create_inode(inode_type type, fs_ptr_t fs);
 		fd_ptr_t    create_fd(inode_ptr_t inode);
 
 		int delete_fs(fs_ptr_t fd);

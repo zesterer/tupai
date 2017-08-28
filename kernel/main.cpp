@@ -34,6 +34,7 @@
 // Core systems
 #include <tupai/vfs/vfs.hpp>
 #include <tupai/sys/pipe.hpp>
+#include <tupai/sys/tmpfs.hpp>
 #include <tupai/task/task.hpp>
 #include <tupai/task/scheduler.hpp>
 #include <tupai/call/call.hpp>
@@ -72,7 +73,7 @@ namespace tupai
 			task::get_kernel(),
 			(uint8_t)mem::mmap::page_flags::NONE
 		);
-		sys::ramdisk_reserve(); // Reserve ramdisk memory
+		sys::ramdisk::reserve(); // Reserve ramdisk memory
 
 		mem::kmem::init(); // Initiate kernel memory allocation
 	}
@@ -93,7 +94,8 @@ namespace tupai
 		// ------------
 		// These are things required to run kernel threads, processes, manipulate files, etc.
 		vfs::init();            // Initiate virtual filesystem
-		sys::pipe_init();       // Initiate pipes
+		sys::tmpfs::init();     // Initiate temporary ram filesystem
+		sys::pipe::init();      // Initiate pipes
 		task::init();           // Initiate processes
 		task::scheduler_init(); // Initiate scheduler
 		call::init();       // Initiate syscalls
@@ -101,7 +103,7 @@ namespace tupai
 		// Essential systems
 		// -----------------
 		// These are things that are essential to the running of userland systems
-		sys::ramdisk_init(); // Initiate initrd filesystems
+		sys::ramdisk::load(); // Load initrd filesystems
 
 		// Interfaces
 		// ----------

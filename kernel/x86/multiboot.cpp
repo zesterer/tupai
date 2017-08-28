@@ -128,7 +128,7 @@ namespace tupai
 
 			// If the module is an initrd, add it to the cache
 			if (util::str_equal((const char*)&module->args_start, "initrd"))
-				sys::ramdisk_add((void*)((size_t)module->start + arch_get_offset()), (size_t)(module->end - module->start + 1), (const char*)&module->args_start);
+				sys::ramdisk::add((void*)((size_t)module->start + arch_get_offset()), (size_t)(module->end - module->start + 1), (const char*)&module->args_start);
 		}
 
 		mb_meminfo_t multiboot_get_meminfo()

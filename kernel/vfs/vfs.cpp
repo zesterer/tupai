@@ -43,7 +43,7 @@ namespace tupai
 		static id_t inode_counter = 0;
 		static id_t fd_counter    = 0;
 
-		static inode_ptr_t vfs_root;
+		static inode_ptr_t vfs_root = ID_INVALID;
 
 		/* VFS Functions */
 
@@ -100,67 +100,14 @@ namespace tupai
 			return 0;
 		}
 
-		int mount(inode_ptr_t inode, const char* path)
+		int mount(inode_ptr_t inode, const char* path, bool create)
 		{
-			spinlock.lock(); // Begin critical section
-
-			int err = 1;
-
-			size_t element_count = path_element_count(path);
-			inode_ptr_t cinode = vfs_root;
-			for (size_t i = 0; i < element_count - 1; i ++)
-			{
-				char element[FILENAME_MAX];
-				path_element_get(path, element, i);
-
-				inode_t* inode = inode_table[cinode];
-				cinode = ID_INVALID;
-				if (inode != nullptr)
-				{
-					for (size_t i = 0; i < inode->children.size(); i ++)
-					{
-						if (util::str_equal(inode->children[i].name, element))
-						{
-							cinode = inode->children[i].inode;
-							break;
-						}
-					}
-				}
-
-				if (cinode == ID_INVALID)
-					break;
-			}
-
-			if (cinode != ID_INVALID)
-			{
-				inode_t* dir = inode_table[cinode];
-				char filename[FILENAME_MAX];
-				path_element_get(path, filename, element_count - 1);
-
-				if (dir != nullptr)
-				{
-					inode_child_t nchild;
-					nchild.inode = inode;
-					util::str_cpy_n(filename, nchild.name, FILENAME_MAX);
-					dir->children.push(nchild);
-
-					err = 0;
-				}
-			}
-
-			spinlock.unlock(); // End critical section
-			return err;
+			return vfs_root.mount_relative(inode, path, create);
 		}
 
 		void init()
 		{
-			spinlock.lock(); // Begin critical section
-
-			//fs_table    = util::hashtable_t<fs_t>();
-			//inode_table = util::hashtable_t<inode_t>();
-			//fd_table    = util::hashtable_t<fd_t>();
-
-			spinlock.unlock(); // End critical section
+			// Nothing yet
 		}
 
 		void vfs_print_inode(inode_ptr_t inode, const char* name, size_t depth = 0)
@@ -177,9 +124,6 @@ namespace tupai
 
 			// Name
 			util::logln(name, (type == inode_type::DIRECTORY) ? "/" : "");
-
-			//if (depth >= 2)
-			//	return;
 
 			for (size_t i = 0; i < inode.get_children(); i ++)
 			{
@@ -198,19 +142,17 @@ namespace tupai
 
 			vfs_print_inode(vfs_root, "");
 
-			/*
-			util::print('\n');
+			util::log('\n');
 
-			util::println("--- Filesystem Devices ---");
+			util::logln("--- Filesystem Devices ---");
 			for (size_t i = 0; i < fs_table.size(); i ++)
-				util::println(fs_table.nth(i)->id, " : ", fs_table.nth(i)->name);
-			*/
+				util::logln(fs_table.nth(i)->id, " : ", fs_table.nth(i)->name);
 		}
 
 		fs_ptr_t create_fs(const char* name)
 		{
 			// Create a root inode for the filesystem
-			inode_ptr_t fsroot = create_inode(inode_type::DIRECTORY);
+			inode_ptr_t fsroot = create_inode(inode_type::DIRECTORY, ID_INVALID);
 
 			spinlock.lock(); // Begin critical section
 
@@ -230,7 +172,7 @@ namespace tupai
 			return nid;
 		}
 
-		inode_ptr_t create_inode(inode_type type)
+		inode_ptr_t create_inode(inode_type type, fs_ptr_t fs)
 		{
 			spinlock.lock(); // Begin critical section
 
@@ -238,6 +180,7 @@ namespace tupai
 
 			inode_t ninode;
 			ninode.id = nid;
+			ninode.fs = fs;
 			ninode.type = type;
 			ninode.vtable = nullptr;
 			inode_table.add(nid, ninode); // Add the new inode to the inode table
@@ -371,6 +314,20 @@ namespace tupai
 		}
 
 		/* Inode Functions */
+
+		id_t inode_ptr_t::get_fs()
+		{
+			spinlock.lock(); // Begin critical section
+
+			inode_t* inode = inode_table[this->id];
+
+			id_t val = ID_INVALID;
+			if (inode != nullptr)
+				val = inode->fs;
+
+			spinlock.unlock(); // End critical section
+			return val;
+		}
 
 		int inode_ptr_t::get_type(inode_type* rtype)
 		{
@@ -550,6 +507,72 @@ namespace tupai
 				inode->children.push(nchild);
 
 				err = 0;
+			}
+
+			spinlock.unlock(); // End critical section
+			return err;
+		}
+
+		int inode_ptr_t::mount_relative(inode_ptr_t child, const char* path, bool create)
+		{
+			spinlock.lock(); // Begin critical section
+
+			int err = 1;
+
+			size_t element_count = path_element_count(path);
+			inode_ptr_t cinode = *this;
+			for (size_t i = 0; i < element_count - 1; i ++)
+			{
+				char element[FILENAME_MAX];
+				path_element_get(path, element, i);
+
+				inode_t* inode = inode_table[cinode];
+				cinode = ID_INVALID;
+				if (inode != nullptr)
+				{
+					for (size_t i = 0; i < inode->children.size(); i ++)
+					{
+						if (util::str_equal(inode->children[i].name, element))
+						{
+							cinode = inode->children[i].inode;
+							break;
+						}
+					}
+				}
+
+				if (cinode == ID_INVALID)
+				{
+					if (create)
+					{
+						inode_ptr_t cparent = (inode_ptr_t)inode->id;
+
+						spinlock.unlock(); // End critical section
+						inode_ptr_t ndir = create_inode(inode_type::DIRECTORY, cparent.get_fs());
+						cparent.mount_child(ndir, element);
+						spinlock.lock(); // Re-begin critical section
+
+						cinode = ndir;
+					}
+					else
+						break;
+				}
+			}
+
+			if (cinode != ID_INVALID)
+			{
+				inode_t* dir = inode_table[cinode];
+				char filename[FILENAME_MAX];
+				path_element_get(path, filename, element_count - 1);
+
+				if (dir != nullptr)
+				{
+					inode_child_t nchild;
+					nchild.inode = child;
+					util::str_cpy_n(filename, nchild.name, FILENAME_MAX);
+					dir->children.push(nchild);
+
+					err = 0;
+				}
 			}
 
 			spinlock.unlock(); // End critical section
