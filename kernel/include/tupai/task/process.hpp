@@ -24,6 +24,7 @@
 // Tupai
 #include <tupai/task/task.hpp>
 #include <tupai/vfs/vfs.hpp>
+#include <tupai/mem/virt.hpp>
 #include <tupai/util/str.hpp>
 #include <tupai/util/mem.hpp>
 
@@ -42,7 +43,9 @@ namespace tupai
 			process_state state;      // Process state
 			vfs::inode_ptr_t dir;     // Current directory
 
-			short priority = 0;
+			short priority = 0; // Process priority
+
+			mem::virt::space_t space; // Process virtual memory space
 
 			id_t thread_counter = 0;
 			util::hashtable_t<thrd_ptr_t> threads; // Process threads
@@ -60,13 +63,13 @@ namespace tupai
 				this->threads = util::move(other.threads);
 				this->lfd_counter = other.lfd_counter;
 				this->fds = util::move(other.fds);
-				
+
 				other.id = ID_INVALID;
 				other.state = process_state::DEAD;
 				other.dir = ID_INVALID;
 				other.thread_counter = 0;
 				other.lfd_counter = 0;
-				
+
 				return *this;
 			}
 
@@ -80,7 +83,7 @@ namespace tupai
 				this->threads = other.threads;
 				this->lfd_counter = other.lfd_counter;
 				this->fds = other.fds;
-				
+
 				return *this;
 			}
 

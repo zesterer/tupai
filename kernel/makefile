@@ -47,7 +47,7 @@ INC_FLAGS = $(addprefix -I, $(INCS))
 CFLAGS  = -DKNAME=\"$(KNAME)\" -DKNAME_DECORATIVE=\"$(KNAME_DECORATIVE)\" -DKVERSION_DECORATIVE=\"$(KVERSION_DECORATIVE)\" -DKMAINTAINER_NAME="\"$(KMAINTAINER_NAME)\"" -DKMAINTAINER_EMAIL=\"$(KMAINTAINER_EMAIL)\"
 CFLAGS += -DARCH_FAMILY_$(TARGET_FAMILY)
 CFLAGS += $(INC_FLAGS)
-CFLAGS += -std=c++14 -Wall -Wextra -pedantic -gdwarf-4 -O3 -nostdlib
+CFLAGS += -std=c++14 -Wall -Wextra -Wno-unused-function -pedantic -gdwarf-4 -O3 -nostdlib
 CFLAGS += -ffreestanding -fno-exceptions -fno-rtti -fno-common -fno-builtin -fno-omit-frame-pointer
 
 ifeq ($(TARGET_ARCH), AMD64)
@@ -118,6 +118,7 @@ SRCS_REL += $(shell ls ./sys/*.{s,c,cpp}  2> /dev/null)
 SRCS_REL += $(shell ls ./task/*.{s,c,cpp} 2> /dev/null)
 SRCS_REL += $(shell ls ./util/*.{s,c,cpp} 2> /dev/null)
 SRCS_REL += $(shell ls ./vfs/*.{s,c,cpp}  2> /dev/null)
+SRCS_REL += $(shell ls ./vfs_new/*.{s,c,cpp}  2> /dev/null)
 SRCS_REL += $(shell ls ./call/*.{s,c,cpp}  2> /dev/null)
 
 ifeq ($(TARGET_FAMILY), X86)

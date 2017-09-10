@@ -1,5 +1,5 @@
 //
-// file : vtable.hpp
+// file : filesystem.hpp
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,27 +18,38 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#ifndef TUPAI_VFS_VTABLE_HPP
-#define TUPAI_VFS_VTABLE_HPP
+#ifndef TUPAI_VFS_NEW_FILESYSTEM_HPP
+#define TUPAI_VFS_NEW_FILESYSTEM_HPP
 
 // Tupai
 #include <tupai/type.hpp>
 
-// Standard
-#include <stddef.h>
-#include <stdint.h>
+#include <tupai/vfs_new/inode.hpp>
+#include <tupai/vfs_new/vtable.hpp>
+
+#include <tupai/util/ref.hpp>
+#include <tupai/util/vector.hpp>
+#include <tupai/util/string.hpp>
 
 namespace tupai
 {
-	namespace vfs
+	namespace vfs_new
 	{
-		struct vtable_t
+		class Inode;
+
+		class Filesystem
 		{
-			int      (*open) (inode_ptr_t inode)                           = nullptr;
-			int      (*close)(fd_ptr_t desc)                               = nullptr;
-			ssize_t  (*read) (fd_ptr_t desc, void* rbuff, size_t n)        = nullptr;
-			ssize_t  (*write)(fd_ptr_t desc, const void* buff, size_t n)   = nullptr;
-			int      (*seek) (fd_ptr_t desc, int origin, fd_offset offset) = nullptr;
+		public:
+			id_t id;
+
+			util::String name;
+
+			util::WRef<VTable> vtable;
+
+			util::Ref<Inode> root;
+			util::Vector<util::WRef<Inode>> inodes;
+
+			util::Ref<Inode> createInode(Inode::Type type);
 		};
 	}
 }

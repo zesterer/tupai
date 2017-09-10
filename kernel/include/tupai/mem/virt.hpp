@@ -22,7 +22,6 @@
 #define TUPAI_MEM_VIRTUAL_HPP
 
 // Tupai
-#include <tupai/task/task.hpp>
 #include <tupai/util/vector.hpp>
 
 // Standard
@@ -43,7 +42,6 @@ namespace tupai
 
 			struct space_t
 			{
-				task::proc_ptr_t proc;
 				util::vector_t<page_t> _pages;
 
 				void* table = nullptr;
@@ -51,6 +49,8 @@ namespace tupai
 				space_t();
 				int map_page(void* phys_addr, void* virt_addr);
 				int map_region(void* phys_addr, size_t size, void* virt_addr);
+
+				void display();
 			};
 		}
 	}

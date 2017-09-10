@@ -36,6 +36,19 @@ namespace tupai
 				// TODO : Remove this and make it multi-arch
 				this->table = kmem::alloc(1024 * sizeof(void*), ARCH_PAGE_SIZE);
 			}
+
+			void space_t::display()
+			{
+				util::logln("---- Virtual memory space ----");
+				for (size_t i = 0; i < this->_pages.size(); i ++)
+				{
+					util::logln("Physical page ",
+						(void*)(this->_pages[i].phys_index * ARCH_PAGE_SIZE),
+						" is mapped to ",
+						(void*)(this->_pages[i].virt_index * ARCH_PAGE_SIZE)
+					);
+				}
+			}
 		}
 	}
 }

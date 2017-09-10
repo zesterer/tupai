@@ -210,32 +210,32 @@ namespace tupai
 			return val;
 		}
 
-		util::result<short> thrd_ptr_t::get_priority()
+		short thrd_ptr_t::get_priority()
 		{
 			util::hwlock_acquire(); // Begin critical section
 
 			thread_t* thread = thread_table[this->id];
 
-			util::result<short> result;
+			short result = -1;
 			if (thread != nullptr)
-				result = util::result<short>(thread->priority);
+				result = thread->priority;
 
 			util::hwlock_release(); // End critical section
 			return result;
 		}
 
-		util::result<short> thrd_ptr_t::get_effective_priority()
+		short thrd_ptr_t::get_effective_priority()
 		{
 			util::hwlock_acquire(); // Begin critical section
 
 			thread_t* thread = thread_table[this->id];
 
-			util::result<short> result;
+			short result = -1;
 			if (thread != nullptr)
 			{
 				process_t* proc = proc_table[thread->proc];
 				if (proc != nullptr)
-					result = util::result<short>(thread->priority + proc->priority);
+					result = thread->priority + proc->priority;
 			}
 
 			util::hwlock_release(); // End critical section
@@ -322,15 +322,15 @@ namespace tupai
 			return val;
 		}
 
-		util::result<short> proc_ptr_t::get_priority()
+		short proc_ptr_t::get_priority()
 		{
 			util::hwlock_acquire(); // Begin critical section
 
 			process_t* proc = proc_table[this->id];
 
-			util::result<short> result;
+			short result = -1;
 			if (proc != nullptr)
-				result = util::result<short>(proc->priority);
+				result = proc->priority;
 
 			util::hwlock_release(); // End critical section
 			return result;

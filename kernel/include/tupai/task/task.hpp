@@ -70,9 +70,9 @@ namespace tupai
 			proc_ptr_t get_process();
 			size_t get_entry();
 			size_t get_stack();
-			util::result<short> get_priority();
-			util::result<short> get_effective_priority();
-			
+			short get_priority();
+			short get_effective_priority();
+
 			void set_lid(id_t lid);
 			void set_state(thread_state state);
 			void set_stack(size_t stack);
@@ -91,7 +91,7 @@ namespace tupai
 
 			int get_name(char* rbuff, size_t n);
 			vfs::fd_ptr_t get_fd(id_t lfd);
-			util::result<short> get_priority();
+			short get_priority();
 
 			thrd_ptr_t spawn_thread(void (*entry)(int argc, char* argv[]));
 			int destroy_thread(thrd_ptr_t);

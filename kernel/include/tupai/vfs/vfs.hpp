@@ -149,6 +149,15 @@ namespace tupai
 		int delete_fs(fs_ptr_t fd);
 		int delete_inode(inode_ptr_t inode);
 		int delete_fd(fd_ptr_t fd);
+
+		/*
+		class Inode;
+		enum class Inode::Type;
+
+		void init();
+
+		util::Ref<Inode> createFilesystem(const char* name);
+		*/
 	}
 }
 

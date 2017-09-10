@@ -33,7 +33,7 @@ namespace tupai
 	extern "C" void _panic(const char* msg) __attribute__((__noreturn__));
 
 	template <typename... Args>
-	void panic(Args&&... args)
+	__attribute__((__noreturn__)) void panic(Args&&... args)
 	{
 		char buff[1024];
 		util::fmt(buff, args ...);

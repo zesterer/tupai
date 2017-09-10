@@ -32,40 +32,58 @@ namespace tupai
 {
 	namespace util
 	{
-		template <typename Val, typename Err = int>
-		class result
+		template <typename Val>
+		class Result
 		{
 		private:
-			bool _is_err;
+			bool _okay;
 			union {
 				Val _val;
-				Err _err;
+				int _err;
 			};
 
 		public:
-			result()
+			Result(int err)
 			{
-				this->_is_err = true;
+				this->_okay = false;
+				this->_err = err;
 			}
 
-			result(Val val)
+			Result(bool okay, Val val)
 			{
-				this->_is_err = false;
+				this->_okay = okay;
 				this->_val = val;
 			}
 
-			/*
-			result(Err err)
+			bool failed() { return !this->_okay; }
+			Val& getValue() { if (!this->_okay) panic("Attempted to realise an erroneous value!"); return this->_val; }
+			int getError() { if (this->_okay) panic("No error occured, but code believes it did!"); return this->_err; }
+		};
+
+		class Status
+		{
+		private:
+			bool _okay;
+			int _err;
+
+		public:
+			Status(bool okay, int err)
 			{
-				this->_is_err = true;
+				this->_okay = okay;
 				this->_err = err;
 			}
-			*/
 
-			bool failed() { return this->_is_err; }
-			Val& get_value() { if (this->_is_err) panic("Attempted to realise an erroneous value!"); return this->_val; }
-			Err& get_error() { if (!this->_is_err) panic("No error occured, but code believes it did!"); return this->_err; }
+			operator bool() const { return _okay; }
+
+			bool failed() { return !this->_okay; }
+			int getError() { if (this->_okay) panic("No error occured, but code believes it did!"); return this->_err; }
 		};
+
+		static Status Success() { return Status(true, 0); }
+		static Status Failure(int err = 0) { return Status(false, err); }
+
+		template <typename Val> static Result<Val> Success(Val val) { return Result<Val>(true, val); }
+		template <typename Val> static Result<Val> Failure(int err = 0) { return Result<Val>(err); }
 	}
 }
 

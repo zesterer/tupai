@@ -72,14 +72,9 @@ namespace tupai
 					ctask.thread.get_process().destroy_thread(ctask.thread);
 				else
 				{
-					auto priority = ctask.thread.get_effective_priority();
-					if (priority.failed())
-						panic("Attempted to reschedule task without an effective priority");
-					else
-					{
-						ctask.priority = priority.get_value();
-						schedule.push(ctask);
-					}
+					short priority = ctask.thread.get_effective_priority();
+					ctask.priority = priority;
+					schedule.push(ctask);
 				}
 			}
 

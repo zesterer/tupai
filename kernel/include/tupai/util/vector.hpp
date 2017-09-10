@@ -37,7 +37,7 @@ namespace tupai
 	namespace util
 	{
 		template <typename T>
-		struct vector_t
+		struct Vector
 		{
 		private:
 
@@ -59,7 +59,7 @@ namespace tupai
 					delete (uint8_t*)old;
 			}
 
-			vector_t<T>& _copy(vector_t<T>& other)
+			Vector<T>& _copy(Vector<T>& other)
 			{
 				this->_mutex.lock(); // Begin critical section
 				other._mutex.lock(); // Begin critical section
@@ -81,7 +81,7 @@ namespace tupai
 				return *this;
 			}
 
-			vector_t<T>& _move(vector_t<T>& other)
+			Vector<T>& _move(Vector<T>& other)
 			{
 				this->_mutex.lock(); // Begin critical section
 				other._mutex.lock(); // Begin critical section
@@ -103,7 +103,7 @@ namespace tupai
 		public:
 
 			// Default constructor
-			vector_t()
+			Vector()
 			{
 				this->_array    = nullptr;
 				this->_capacity = 0;
@@ -111,31 +111,31 @@ namespace tupai
 			}
 
 			// Copy constructor
-			vector_t(vector_t<T>& other)
+			Vector(Vector<T>& other)
 			{
 				this->_copy(other);
 			}
 
 			// Copy assignment operator
-			vector_t<T>& operator=(vector_t<T>& other)
+			Vector<T>& operator=(Vector<T>& other)
 			{
 				return this->_copy(other);
 			}
 
 			// Move constructor
-			vector_t(vector_t<T>&& other)
+			Vector(Vector<T>&& other)
 			{
 				this->_move(other);
 			}
 
 			// Move assignment operator
-			vector_t<T>& operator=(vector_t<T>&& other) noexcept
+			Vector<T>& operator=(Vector<T>&& other) noexcept
 			{
 				return this->_move(other);
 			}
 
 			// Destructor
-			~vector_t() noexcept
+			~Vector() noexcept
 			{
 				for (size_t i = 0; i < this->_size; i ++)
 					this->_array[i].~T();
@@ -195,6 +195,9 @@ namespace tupai
 				return item;
 			}
 		};
+
+		template <typename T>
+		using vector_t = Vector<T>;
 	}
 }
 

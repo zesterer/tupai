@@ -18,27 +18,31 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#ifndef TUPAI_VFS_VTABLE_HPP
-#define TUPAI_VFS_VTABLE_HPP
+#ifndef TUPAI_VFS_NEW_VTABLE_HPP
+#define TUPAI_VFS_NEW_VTABLE_HPP
 
 // Tupai
 #include <tupai/type.hpp>
 
-// Standard
-#include <stddef.h>
-#include <stdint.h>
+#include <tupai/vfs_new/inode.hpp>
+
+#include <tupai/util/ref.hpp>
+#include <tupai/util/result.hpp>
+#include <tupai/util/str.hpp>
 
 namespace tupai
 {
-	namespace vfs
+	namespace vfs_new
 	{
-		struct vtable_t
+		class VTable
 		{
-			int      (*open) (inode_ptr_t inode)                           = nullptr;
-			int      (*close)(fd_ptr_t desc)                               = nullptr;
-			ssize_t  (*read) (fd_ptr_t desc, void* rbuff, size_t n)        = nullptr;
-			ssize_t  (*write)(fd_ptr_t desc, const void* buff, size_t n)   = nullptr;
-			int      (*seek) (fd_ptr_t desc, int origin, fd_offset offset) = nullptr;
+			// int      (*open) (inode_ptr_t inode)                           = nullptr;
+			// int      (*close)(fd_ptr_t desc)                               = nullptr;
+			// ssize_t  (*read) (fd_ptr_t desc, void* rbuff, size_t n)        = nullptr;
+			// ssize_t  (*write)(fd_ptr_t desc, const void* buff, size_t n)   = nullptr;
+			// int      (*seek) (fd_ptr_t desc, int origin, fd_offset offset) = nullptr;
+
+			util::Status (*open)(util::WRef<Inode> inode) = nullptr;
 		};
 	}
 }

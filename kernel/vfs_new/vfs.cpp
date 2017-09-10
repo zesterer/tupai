@@ -1,5 +1,5 @@
 //
-// file : vtable.hpp
+// file : vfs.cpp
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,29 +18,23 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#ifndef TUPAI_VFS_VTABLE_HPP
-#define TUPAI_VFS_VTABLE_HPP
-
 // Tupai
-#include <tupai/type.hpp>
-
-// Standard
-#include <stddef.h>
-#include <stdint.h>
+#include <tupai/vfs_new/vfs.hpp>
+#include <tupai/vfs_new/filesystem.hpp>
+#include <tupai/vfs_new/inode.hpp>
+#include <tupai/vfs_new/vtable.hpp>
 
 namespace tupai
 {
-	namespace vfs
+	namespace vfs_new
 	{
-		struct vtable_t
+		util::WRef<Inode> root_inode;
+
+		void init()
 		{
-			int      (*open) (inode_ptr_t inode)                           = nullptr;
-			int      (*close)(fd_ptr_t desc)                               = nullptr;
-			ssize_t  (*read) (fd_ptr_t desc, void* rbuff, size_t n)        = nullptr;
-			ssize_t  (*write)(fd_ptr_t desc, const void* buff, size_t n)   = nullptr;
-			int      (*seek) (fd_ptr_t desc, int origin, fd_offset offset) = nullptr;
-		};
+			util::logln("Started VFS...");
+
+			util::logln("VFS root .isValid() = ", root_inode.isValid());
+		}
 	}
 }
-
-#endif

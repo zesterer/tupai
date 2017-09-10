@@ -18,15 +18,17 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#ifndef TUPAI_VFS_INODE_HPP
-#define TUPAI_VFS_INODE_HPP
+#ifndef TUPAI_VFS_NEW_INODE_HPP
+#define TUPAI_VFS_NEW_INODE_HPP
 
 // Tupai
-#include <tupai/vfs/vfs.hpp>
-#include <tupai/vfs/vtable.hpp>
+#include <tupai/type.hpp>
 
+#include <tupai/vfs_new/filesystem.hpp>
+
+#include <tupai/util/ref.hpp>
 #include <tupai/util/vector.hpp>
-#include <tupai/util/str.hpp>
+#include <tupai/util/string.hpp>
 
 // Standard
 #include <stddef.h>
@@ -34,59 +36,19 @@
 
 namespace tupai
 {
-	namespace vfs
+	namespace vfs_new
 	{
-		enum class inode_mode : uint8_t
-		{
-			READ    = (1 << 0),
-			WRITE   = (1 << 1),
-			EXECUTE = (1 << 2),
-		};
-
-		struct inode_mode_t
-		{
-			uint8_t owner_flags = 0xFF; // Allow all by default
-			uint8_t group_flags = 0xFF; // Allow all by default
-			uint8_t other_flags = 0xFF; // Allow all by default
-		};
-
-		struct inode_child_t
-		{
-			inode_ptr_t inode;
-			char name[FILENAME_MAX] = { '\0', };
-		};
-
-		struct inode_t
-		{
-			id_t id = ID_INVALID;
-			id_t fs = ID_INVALID;
-
-			util::vector_t<inode_child_t> children;
-
-			inode_type type;
-			vtable_t*  vtable = nullptr;
-
-			id_t         owner = ID_INVALID;
-			id_t         group = ID_INVALID;
-			inode_mode_t mode;
-
-			uint64_t last_access = 0;
-			uint64_t last_modify = 0;
-
-			size_t refc = 0;
-		};
-
-		/*
 		class Inode;
+		class Filesystem;
 
 		class InodeChild
 		{
 			util::Ref<Inode> inode;
-			char name[FILENAME_MAX] = { '\0', };
+			util::String name;
 
-			InodeChild(util::Ref<Inode> inode, const char* name) : inode(inode)
+			InodeChild(util::Ref<Inode> inode, const util::String& name) : inode(inode)
 			{
-				util::str_cpy_n(name, this->name, FILENAME_MAX);
+				this->name = name;
 			}
 		};
 
@@ -114,22 +76,20 @@ namespace tupai
 			id_t id;
 			util::Ref<Filesystem> fs;
 
-			util::vector_t<InodeChild> children;
+			util::Vector<InodeChild> children;
 
 			Type type;
-			util::WRef<VTable> vtable;
 
 			uint8_t mode_owner;
 			uint8_t mode_group;
 			uint8_t mode_other;
 
-			//util::WRef<User>  owner; // TODO : Uncomment later!
-			//util::WRef<Group> group; // TODO : Uncomment later!
+			//util::WRef<User>  owner; // TODO : Uncomment this!
+			//util::WRef<Group> group; // TODO : Uncomment this!
 
 			uint64_t last_access;
 			uint64_t last_modify;
 		};
-		*/
 	}
 }
 

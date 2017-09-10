@@ -39,6 +39,9 @@
 #include <tupai/task/scheduler.hpp>
 #include <tupai/call/call.hpp>
 
+// NEW
+#include <tupai/vfs_new/vfs.hpp>
+
 // Essential systems
 #include <tupai/sys/ramdisk.hpp>
 
@@ -99,6 +102,9 @@ namespace tupai
 		task::init();           // Initiate processes
 		task::scheduler_init(); // Initiate scheduler
 		call::init();       // Initiate syscalls
+
+		// NEW
+		vfs_new::init();
 
 		// Essential systems
 		// -----------------
