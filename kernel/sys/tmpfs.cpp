@@ -24,6 +24,8 @@
 #include <tupai/util/hashtable.hpp>
 #include <tupai/util/dbuffer.hpp>
 
+#include <tupai/vfs_new/vfs.hpp>
+
 // Standard
 #include <stddef.h>
 #include <stdint.h>
@@ -46,6 +48,9 @@ namespace tupai
 			static ssize_t write_call(vfs::fd_ptr_t fd, const void* buff, size_t n);
 			static int     seek_call (vfs::fd_ptr_t fd, int origin, vfs::fd_offset offset);
 
+			// New VFS
+			static util::Ref<vfs_new::Filesystem>* filesystem;
+
 			void init()
 			{
 				vtable.open  = open_call;
@@ -56,6 +61,9 @@ namespace tupai
 
 				fs = vfs::create_fs("tmpfs");
 				vfs::set_root(fs.get_root());
+
+				// New VFS
+				//filesystem = new util::Ref<vfs_new::Filesystem>(vfs_new::createFilesystem("tmpfs"));
 			}
 
 			id_t create(const char* path, vfs::inode_type type, const uint8_t* data, size_t size)
@@ -73,7 +81,7 @@ namespace tupai
 				return ninode;
 			}
 
-			static int open_call (vfs::inode_ptr_t inode)
+			static int open_call(vfs::inode_ptr_t inode)
 			{
 				return (inode == ID_INVALID) ? 1 : 0;
 			}

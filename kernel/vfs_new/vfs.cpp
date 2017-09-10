@@ -28,13 +28,22 @@ namespace tupai
 {
 	namespace vfs_new
 	{
-		util::WRef<Inode> root_inode;
+		util::Vec<util::WRef<Filesystem>> fs_track;
+		util::WRef<Inode> root;
 
 		void init()
 		{
 			util::logln("Started VFS...");
 
-			util::logln("VFS root .isValid() = ", root_inode.isValid());
+			util::logln("VFS root valid = ", root.isValid());
+		}
+
+		util::Ref<Filesystem> createFilesystem(util::Str name)
+		{
+			util::Ref<Filesystem> nfs(name);
+			fs_track.push(~nfs);
+
+			return nfs;
 		}
 	}
 }

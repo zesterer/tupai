@@ -248,7 +248,7 @@ namespace tupai
 					this->_copy(other);
 				}
 
-				Ref& operator=(const Ref<T>& other)
+				Ref<T>& operator=(const Ref<T>& other)
 				{
 					return this->_copy(other);
 				}
@@ -258,7 +258,7 @@ namespace tupai
 					this->_move(other);
 				}
 
-				Ref& operator=(Ref<T>&& other)
+				Ref<T>& operator=(Ref<T>&& other)
 				{
 					return this->_move(other);
 				}
@@ -319,7 +319,12 @@ namespace tupai
 			public:
 				WRef() {}
 
-				WRef& operator=(const _BaseRef<T>& other)
+				WRef(const WRef<T>& other)
+				{
+					this->_copy(other);
+				}
+
+				WRef<T>& operator=(const WRef<T>& other)
 				{
 					return this->_copy(other);
 				}
@@ -329,7 +334,7 @@ namespace tupai
 					this->_move(other);
 				}
 
-				WRef& operator=(WRef<T>&& other)
+				WRef<T>& operator=(WRef<T>&& other)
 				{
 					return this->_move(other);
 				}

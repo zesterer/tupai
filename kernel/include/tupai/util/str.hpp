@@ -83,6 +83,82 @@ namespace tupai
 
 			return hash;
 		}
+
+		template <typename T>
+		class BasicStr
+		{
+			private:
+				T* _data = nullptr;
+				size_t _len= 0;
+
+				static size_t strLength(const T* data)
+				{
+					size_t i;
+					for (i = 0; data[i] != '\0'; i ++);
+					return i;
+				}
+
+				static void strCopy(const T* src, T* dest)
+				{
+					size_t i = 0;
+					do { dest[i] = src[i]; } while (src[i++] != '\0');
+				}
+
+				BasicStr<T>& _copy(const BasicStr<T>& other)
+				{
+					this->_len = other._len;
+					this->_data = new T[this->_len + 1];
+					BasicStr<T>::strCopy(other._data, this->_data);
+					return *this;
+				}
+
+				BasicStr<T>& _move(BasicStr<T>& other)
+				{
+					this->_len = other._len;
+					this->_data = other._data;
+					other._len = 0;
+					this->_data = nullptr;
+					return *this;
+				}
+
+			public:
+				BasicStr() {}
+
+				BasicStr(const T* data)
+				{
+					this->_len = BasicStr<T>::strLength(data);
+					this->_data = new T[this->_len + 1];
+					BasicStr<T>::strCopy(data, this->_data);
+				}
+
+				BasicStr(const BasicStr<T>& other)
+				{
+					this->_copy(other);
+				}
+
+				BasicStr<T>& operator=(const BasicStr<T>& other)
+				{
+					return this->_copy(other);
+				}
+
+				BasicStr(BasicStr<T>&& other)
+				{
+					this->_move(other);
+				}
+
+				BasicStr<T>& operator=(BasicStr<T>&& other)
+				{
+					return this->_move(other);
+				}
+
+				~BasicStr()
+				{
+					if (this->_data != nullptr)
+						delete this->_data;
+				}
+		};
+
+		typedef BasicStr<char> Str;
 	}
 }
 

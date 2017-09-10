@@ -26,12 +26,16 @@
 
 #include <tupai/util/ref.hpp>
 #include <tupai/util/result.hpp>
+#include <tupai/util/str.hpp>
+
+#include <tupai/vfs_new/filesystem.hpp>
 
 namespace tupai
 {
 	namespace vfs_new
 	{
 		void init();
+		util::Ref<Filesystem> createFilesystem(util::Str name);
 	}
 }
 

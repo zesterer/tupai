@@ -27,12 +27,8 @@
 #include <tupai/vfs_new/filesystem.hpp>
 
 #include <tupai/util/ref.hpp>
-#include <tupai/util/vector.hpp>
-#include <tupai/util/string.hpp>
-
-// Standard
-#include <stddef.h>
-#include <stdint.h>
+#include <tupai/util/vec.hpp>
+#include <tupai/util/str.hpp>
 
 namespace tupai
 {
@@ -44,9 +40,9 @@ namespace tupai
 		class InodeChild
 		{
 			util::Ref<Inode> inode;
-			util::String name;
+			util::Str name;
 
-			InodeChild(util::Ref<Inode> inode, const util::String& name) : inode(inode)
+			InodeChild(util::Ref<Inode> inode, const util::Str& name) : inode(inode)
 			{
 				this->name = name;
 			}
@@ -73,10 +69,11 @@ namespace tupai
 				UNKNOWN   = 6,
 			};
 
+		private:
 			id_t id;
 			util::Ref<Filesystem> fs;
 
-			util::Vector<InodeChild> children;
+			util::Vec<InodeChild> children;
 
 			Type type;
 

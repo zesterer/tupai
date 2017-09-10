@@ -28,8 +28,8 @@
 #include <tupai/vfs_new/vtable.hpp>
 
 #include <tupai/util/ref.hpp>
-#include <tupai/util/vector.hpp>
-#include <tupai/util/string.hpp>
+#include <tupai/util/vec.hpp>
+#include <tupai/util/str.hpp>
 
 namespace tupai
 {
@@ -39,16 +39,18 @@ namespace tupai
 
 		class Filesystem
 		{
-		public:
+		private:
 			id_t id;
 
-			util::String name;
+			util::Str name;
 
 			util::WRef<VTable> vtable;
 
 			util::Ref<Inode> root;
-			util::Vector<util::WRef<Inode>> inodes;
+			util::Vec<util::WRef<Inode>> inodes;
 
+		public:
+			Filesystem(util::Str name);
 			util::Ref<Inode> createInode(Inode::Type type);
 		};
 	}

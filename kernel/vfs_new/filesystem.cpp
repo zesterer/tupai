@@ -1,5 +1,5 @@
 //
-// file : string.hpp
+// file : filesystem.cpp
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,29 +18,16 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#ifndef TUPAI_UTIL_STRING_HPP
-#define TUPAI_UTIL_STRING_HPP
-
-// Standard
-#include <stddef.h>
-#include <stdint.h>
+// Tupai
+#include <tupai/vfs_new/filesystem.hpp>
 
 namespace tupai
 {
-	namespace util
+	namespace vfs_new
 	{
-		template <typename T>
-		class BasicString
+		Filesystem::Filesystem(util::Str name)
 		{
-			private:
-				T* data = nullptr;
-
-			public:
-				BasicString() {}
-		};
-
-		typedef BasicString<char> String;
+			this->name = name;
+		}
 	}
 }
-
-#endif
