@@ -34,7 +34,6 @@
 #include <tupai/util/str.hpp>
 #include <tupai/util/vector.hpp>
 #include <tupai/util/term.hpp>
-#include <tupai/util/ref.hpp>
 
 #include <tupai/vfs/vfs.hpp>
 
@@ -69,8 +68,6 @@ namespace tupai
 				}
 				continue;
 			}
-			//else if (c == '\0')
-			//	return;
 			else
 				print(c);
 
@@ -125,23 +122,23 @@ namespace tupai
 		return j;
 	}
 
-	struct MyStruct { int a, b; MyStruct(int a, int b) : a(a), b(b) {} };
+	// struct MyStruct { int a, b; MyStruct(int a, int b) : a(a), b(b) {} };
 
 	void shell_main(int argc, char* argv[])
 	{
 		(void)argc;
 		(void)argv;
 
-		util::Ref<MyStruct> ref0(14, 37);
-		util::Ref<MyStruct> ref1(42, 13);
-
-		util::WRef<MyStruct> wref0 = ~ref1;
-		util::WRef<MyStruct> wref1;
-
-		print("ref0.a = ", ref0->a, '\n');
-		print("ref0.b = ", ref0->b, '\n');
-		print("wref0.a = ", wref0->a, '\n');
-		print("wref0.b = ", wref0->b, '\n');
+		// util::Ref<MyStruct> ref0(14, 37);
+		// util::Ref<MyStruct> ref1(42, 13);
+		//
+		// util::WRef<MyStruct> wref0 = ~ref1;
+		// util::WRef<MyStruct> wref1;
+		//
+		// print("ref0.a = ", ref0->a, '\n');
+		// print("ref0.b = ", ref0->b, '\n');
+		// print("wref0.a = ", wref0->a, '\n');
+		// print("wref0.b = ", wref0->b, '\n');
 
 		//stdout = fopen("/dev/stdout", "w");
 
@@ -163,6 +160,7 @@ namespace tupai
 			if (argc == 0)
 			{
 				// Nothing
+				print("NO ARGS: ", buff, "!\n");
 			}
 			else
 			{

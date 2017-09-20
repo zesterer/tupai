@@ -21,6 +21,9 @@
 #ifndef TUPAI_UTIL_MEM_HPP
 #define TUPAI_UTIL_MEM_HPP
 
+// Tupai
+#include <tupai/mem/kmem.hpp>
+
 // Standard
 #include <stddef.h>
 #include <stdint.h>
@@ -47,7 +50,22 @@ namespace tupai
 
 		template <typename T, size_t N>
 		static constexpr size_t length(T (&arr)[N]) { (void)arr; return N; }
+
+		static void* mem_alloc(size_t n, size_t align = sizeof(size_t))
+		{
+			return mem::kmem::alloc(n, align);
+		}
+
+		static void mem_dealloc(void* ptr)
+		{
+			return mem::kmem::dealloc(ptr);
+		}
 	}
 }
+
+inline void *operator new(size_t, void *p)     throw() { return p; }
+inline void *operator new[](size_t, void *p)   throw() { return p; }
+inline void  operator delete  (void *, void *) throw() { }
+inline void  operator delete[](void *, void *) throw() { }
 
 #endif

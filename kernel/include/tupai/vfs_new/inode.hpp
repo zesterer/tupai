@@ -24,8 +24,6 @@
 // Tupai
 #include <tupai/type.hpp>
 
-#include <tupai/vfs_new/filesystem.hpp>
-
 #include <tupai/util/ref.hpp>
 #include <tupai/util/vec.hpp>
 #include <tupai/util/str.hpp>
@@ -70,22 +68,25 @@ namespace tupai
 			};
 
 		private:
-			id_t id;
-			util::Ref<Filesystem> fs;
+			id_t _id;
+			util::WRef<Filesystem> _fs;
 
-			util::Vec<InodeChild> children;
+			util::Vec<InodeChild> _children;
 
-			Type type;
+			Type _type;
 
-			uint8_t mode_owner;
-			uint8_t mode_group;
-			uint8_t mode_other;
+			uint8_t _mode_owner;
+			uint8_t _mode_group;
+			uint8_t _mode_other;
 
-			//util::WRef<User>  owner; // TODO : Uncomment this!
-			//util::WRef<Group> group; // TODO : Uncomment this!
+			//util::WRef<User>  _owner; // TODO : Uncomment this!
+			//util::WRef<Group> _group; // TODO : Uncomment this!
 
-			uint64_t last_access;
-			uint64_t last_modify;
+			uint64_t _last_access;
+			uint64_t _last_modify;
+
+		public:
+			Inode(Type type);
 		};
 	}
 }

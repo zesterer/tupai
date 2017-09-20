@@ -34,8 +34,18 @@ namespace tupai
 		void init()
 		{
 			util::logln("Started VFS...");
+		}
 
-			util::logln("VFS root valid = ", root.isValid());
+		void display()
+		{
+			for (size_t i = 0; i < fs_track.size(); i ++)
+			{
+				util::logln("Filesystem[", i, "] = ", fs_track[i]->getName());
+				util::logln("--> Root inode");
+
+				for (size_t i = 0; i < fs_track[i]->getInodes().size(); i ++)
+					util::logln("--> Inode");
+			}
 		}
 
 		util::Ref<Filesystem> createFilesystem(util::Str name)

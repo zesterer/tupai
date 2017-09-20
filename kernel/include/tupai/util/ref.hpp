@@ -35,6 +35,7 @@ namespace tupai
 {
 	namespace util
 	{
+		//struct thread_mutex { bool locked = false; void lock() { while (locked); locked = true; } void unlock() { locked = false; } }; // TODO : Replace this
 		struct thread_mutex { void lock() {} void unlock() {} }; // TODO : Replace this
 
 		template <typename T>
@@ -103,9 +104,7 @@ namespace tupai
 						this->strong --;
 
 						if (this->strong == 0) // Delete if strong references fall to 0
-						{
 							delete this->item;
-						}
 
 						this->lock.unlock(); // End critical section
 
@@ -132,11 +131,10 @@ namespace tupai
 							this->lock.unlock(); // End critical section (we're the last reference)
 
 							delete this;
+							return; // 'this' is now invalid. Return IMMEDIATELY
 						}
 						else
 							this->lock.unlock(); // End critical section
-
-						this->lock.unlock(); // End critical section
 					}
 
 					bool lockItem()
@@ -179,7 +177,7 @@ namespace tupai
 			protected:
 				_Count* _count;
 
-				_BaseRef() : _count(nullptr) {}
+				_BaseRef() {}
 
 				template <typename ... Args>
 				_BaseRef(Args ... args) : _count(new _Count(args ...)) {}
@@ -216,9 +214,6 @@ namespace tupai
 			private:
 				Ref<T>& _copy(const Ref<T>& other)
 				{
-					if (this->_count != nullptr)
-						this->_count->decStrong();
-
 					this->_count = other._count;
 					this->_count->incStrong();
 
@@ -227,9 +222,6 @@ namespace tupai
 
 				Ref<T>& _move(Ref<T>& other)
 				{
-					if (this->_count != nullptr)
-						this->_count->decStrong();
-
 					this->_count = other._count;
 					other._count = nullptr;
 
@@ -250,7 +242,14 @@ namespace tupai
 
 				Ref<T>& operator=(const Ref<T>& other)
 				{
-					return this->_copy(other);
+					typename _BaseRef<T>::_Count* ocount = this->_count;
+
+					Ref<T>& ret = this->_copy(other);
+
+					if (ocount != nullptr)
+						ocount->decStrong(); // Decrement reference afterwards to avoid accidental deletion of similarly referenced object
+
+					return ret;
 				}
 
 				Ref(Ref<T>&& other) : _BaseRef<T>()
@@ -260,7 +259,14 @@ namespace tupai
 
 				Ref<T>& operator=(Ref<T>&& other)
 				{
-					return this->_move(other);
+					typename _BaseRef<T>::_Count* ocount = this->_count;
+
+					Ref<T>& ret = this->_move(other);
+
+					if (ocount != nullptr && ocount != this->_count)
+						ocount->decStrong(); // Decrement reference afterwards to avoid accidental deletion of similarly referenced object
+
+					return ret;
 				}
 
 				~Ref()
@@ -291,9 +297,6 @@ namespace tupai
 			private:
 				WRef<T>& _copy(const _BaseRef<T>& other)
 				{
-					if (this->_count != nullptr)
-						this->_count->decWeak();
-
 					this->_count = other._count;
 					this->_count->incWeak();
 
@@ -302,9 +305,6 @@ namespace tupai
 
 				WRef<T>& _move(WRef<T>& other)
 				{
-					if (this->_count != nullptr)
-						this->_count->decWeak();
-
 					this->_count = other._count;
 					other._count = nullptr;
 
@@ -319,24 +319,38 @@ namespace tupai
 			public:
 				WRef() {}
 
-				WRef(const WRef<T>& other)
+				WRef(const WRef<T>& other) : _BaseRef<T>()
 				{
 					this->_copy(other);
 				}
 
 				WRef<T>& operator=(const WRef<T>& other)
 				{
-					return this->_copy(other);
+					typename _BaseRef<T>::_Count* ocount = this->_count;
+
+					WRef<T>& ret = this->_copy(other);
+
+					if (ocount != nullptr)
+						ocount->decWeak();
+
+					return ret;
 				}
 
-				WRef(WRef<T>&& other)
+				WRef(WRef<T>&& other) : _BaseRef<T>()
 				{
 					this->_move(other);
 				}
 
 				WRef<T>& operator=(WRef<T>&& other)
 				{
-					return this->_move(other);
+					typename _BaseRef<T>::_Count* ocount = this->_count;
+
+					WRef<T>& ret = this->_move(other);
+
+					if (ocount != nullptr && ocount != this->_count)
+						ocount->decWeak();
+
+					return ret;
 				}
 
 				~WRef()

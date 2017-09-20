@@ -93,22 +93,41 @@ namespace tupai
 
 				static size_t strLength(const T* data)
 				{
-					size_t i;
-					for (i = 0; data[i] != '\0'; i ++);
+					size_t i = 0;
+					for (; data[i] != '\0'; i ++);
 					return i;
 				}
 
 				static void strCopy(const T* src, T* dest)
 				{
-					size_t i = 0;
-					do { dest[i] = src[i]; } while (src[i++] != '\0');
+					size_t i;
+					for (i = 0; src[i] != '\0'; i ++)
+						dest[i] = src[i];
+					dest[i] = '\0';
+				}
+
+				void _free()
+				{
+					if (this->_data != nullptr)
+						delete[] this->_data;
 				}
 
 				BasicStr<T>& _copy(const BasicStr<T>& other)
 				{
-					this->_len = other._len;
-					this->_data = new T[this->_len + 1];
-					BasicStr<T>::strCopy(other._data, this->_data);
+					this->_free();
+
+					if (other._data == nullptr)
+					{
+						this->_len = 0;
+						this->_data = nullptr;
+					}
+					else
+					{
+						this->_len = other._len;
+						this->_data = new T[this->_len + 1];
+						BasicStr<T>::strCopy(other._data, this->_data);
+					}
+
 					return *this;
 				}
 
@@ -117,7 +136,7 @@ namespace tupai
 					this->_len = other._len;
 					this->_data = other._data;
 					other._len = 0;
-					this->_data = nullptr;
+					other._data = nullptr;
 					return *this;
 				}
 
@@ -153,8 +172,12 @@ namespace tupai
 
 				~BasicStr()
 				{
-					if (this->_data != nullptr)
-						delete this->_data;
+					this->_free();
+				}
+
+				operator const T*()
+				{
+					return this->_data;
 				}
 		};
 

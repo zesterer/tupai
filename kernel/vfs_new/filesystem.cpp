@@ -25,9 +25,17 @@ namespace tupai
 {
 	namespace vfs_new
 	{
-		Filesystem::Filesystem(util::Str name)
+		Filesystem::Filesystem(util::Str name) : _root(Inode::Type::DIRECTORY)
 		{
-			this->name = name;
+			this->_name = name;
+		}
+
+		util::Ref<Inode> Filesystem::createInode(Inode::Type type)
+		{
+			util::Ref<Inode> ninode(type);
+			this->_inodes.push(~ninode);
+
+			return ninode;
 		}
 	}
 }

@@ -20,11 +20,14 @@
 
 // Tupai
 #include <tupai/sys/tmpfs.hpp>
+
 #include <tupai/vfs/vtable.hpp>
-#include <tupai/util/hashtable.hpp>
-#include <tupai/util/dbuffer.hpp>
 
 #include <tupai/vfs_new/vfs.hpp>
+
+#include <tupai/util/hashtable.hpp>
+#include <tupai/util/dbuffer.hpp>
+#include <tupai/util/val.hpp>
 
 // Standard
 #include <stddef.h>
@@ -49,7 +52,7 @@ namespace tupai
 			static int     seek_call (vfs::fd_ptr_t fd, int origin, vfs::fd_offset offset);
 
 			// New VFS
-			static util::Ref<vfs_new::Filesystem>* filesystem;
+			static util::Val<util::Ref<vfs_new::Filesystem>> filesystem; // Value is used since Ref cannot be initialised as null
 
 			void init()
 			{
@@ -63,7 +66,8 @@ namespace tupai
 				vfs::set_root(fs.get_root());
 
 				// New VFS
-				//filesystem = new util::Ref<vfs_new::Filesystem>(vfs_new::createFilesystem("tmpfs"));
+				filesystem.set(vfs_new::createFilesystem("tmpfs"));
+				filesystem.get()->createInode(vfs_new::Inode::Type::NORMAL);
 			}
 
 			id_t create(const char* path, vfs::inode_type type, const uint8_t* data, size_t size)

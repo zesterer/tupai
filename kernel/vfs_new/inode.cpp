@@ -1,5 +1,5 @@
 //
-// file : vtable.hpp
+// file : inode.cpp
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,35 +18,17 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#ifndef TUPAI_VFS_NEW_VTABLE_HPP
-#define TUPAI_VFS_NEW_VTABLE_HPP
-
 // Tupai
-#include <tupai/type.hpp>
-
 #include <tupai/vfs_new/inode.hpp>
-
-#include <tupai/util/ref.hpp>
-#include <tupai/util/result.hpp>
-#include <tupai/util/str.hpp>
+#include <tupai/vfs_new/filesystem.hpp>
 
 namespace tupai
 {
 	namespace vfs_new
 	{
-		class Inode;
-
-		class VTable
+		Inode::Inode(Type type)
 		{
-			// int      (*open) (inode_ptr_t inode)                           = nullptr;
-			// int      (*close)(fd_ptr_t desc)                               = nullptr;
-			// ssize_t  (*read) (fd_ptr_t desc, void* rbuff, size_t n)        = nullptr;
-			// ssize_t  (*write)(fd_ptr_t desc, const void* buff, size_t n)   = nullptr;
-			// int      (*seek) (fd_ptr_t desc, int origin, fd_offset offset) = nullptr;
-
-			util::Status (*open)(util::WRef<Inode> inode) = nullptr;
-		};
+			this->_type = type;
+		}
 	}
 }
-
-#endif

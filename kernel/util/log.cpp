@@ -37,7 +37,7 @@ namespace tupai
 		{
 			if (clog.size() > 0)
 			{
-				logs.push(clog);
+				//logs.push(clog);
 				clog = log_t();
 			}
 		}

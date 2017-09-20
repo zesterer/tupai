@@ -26,7 +26,7 @@
 # X86 / ARM
 TARGET_FAMILY = X86
 # I386 / AMD64 / RPI2
-TARGET_ARCH   = AMD64
+TARGET_ARCH   = I386
 
 SRC_ROOT    = $(abspath .)
 BUILD_ROOT ?= $(SRC_ROOT)/build
@@ -58,6 +58,7 @@ ISO = $(BUILD_ROOT)/tupai.iso
 TAR = tar
 
 QEMU_ARGS = -d guest_errors --no-reboot --no-shutdown -m 256M
+QEMU_DBG_ARGS = -d int,in_asm -S -gdb tcp::9000
 ifeq ($(TARGET_ARCH), AMD64)
 	QEMU = qemu-system-x86_64
 	QEMU_ARGS +=
@@ -76,7 +77,7 @@ BOCHS = bochs
 # Rules
 # -----
 
-.PHONY : all build rebuild kernel iso clean run debug
+.PHONY : all build rebuild kernel iso clean run debug bochs
 
 all : build
 build : iso
@@ -93,6 +94,10 @@ run : build
 	@$(QEMU) $(QEMU_ARGS) -cdrom $(ISO)
 
 debug : build
+	@echo "Running '$(ISO)'..."
+	@$(QEMU) $(QEMU_ARGS) $(QEMU_DBG_ARGS) -cdrom $(ISO)
+
+bochs : build
 	@echo "Debugging '$(ISO)'..."
 	@$(BOCHS)
 

@@ -35,7 +35,7 @@ namespace tupai
 		namespace kmem
 		{
 			static const size_t KMEM_SIZE = 4096 * 4096; // 4096 4K pages (16M)
-			static const size_t KMEM_BLOCK_SIZE = 32;
+			static const size_t KMEM_BLOCK_SIZE = 256;
 
 			static pool::pool_t pool;
 

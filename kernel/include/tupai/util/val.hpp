@@ -1,5 +1,5 @@
 //
-// file : vtable.hpp
+// file : val.hpp
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,33 +18,57 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#ifndef TUPAI_VFS_NEW_VTABLE_HPP
-#define TUPAI_VFS_NEW_VTABLE_HPP
+#ifndef TUPAI_UTIL_VAL_HPP
+#define TUPAI_UTIL_VAL_HPP
 
 // Tupai
-#include <tupai/type.hpp>
+#include <tupai/panic.hpp>
 
-#include <tupai/vfs_new/inode.hpp>
-
-#include <tupai/util/ref.hpp>
-#include <tupai/util/result.hpp>
-#include <tupai/util/str.hpp>
+// Standard
+#include <stddef.h>
+#include <stdint.h>
 
 namespace tupai
 {
-	namespace vfs_new
+	namespace util
 	{
-		class Inode;
-
-		class VTable
+		template <typename T>
+		class Val
 		{
-			// int      (*open) (inode_ptr_t inode)                           = nullptr;
-			// int      (*close)(fd_ptr_t desc)                               = nullptr;
-			// ssize_t  (*read) (fd_ptr_t desc, void* rbuff, size_t n)        = nullptr;
-			// ssize_t  (*write)(fd_ptr_t desc, const void* buff, size_t n)   = nullptr;
-			// int      (*seek) (fd_ptr_t desc, int origin, fd_offset offset) = nullptr;
+		private:
+			bool _has_value;
+			union { T _val; };
 
-			util::Status (*open)(util::WRef<Inode> inode) = nullptr;
+		public:
+			Val()
+			{
+				this->_has_value = false;
+			}
+
+			Val(T val)
+			{
+				this->set(val);
+			}
+
+			~Val()
+			{
+				if (this->_has_value)
+					this->_val.~T();
+			}
+
+			T& get()
+			{
+				if (!this->_has_value)
+					panic("Attempted to realise value-less object");
+				else
+					return this->_val;
+			}
+
+			void set(T val)
+			{
+				this->_val = val;
+				this->_has_value = true;
+			}
 		};
 	}
 }

@@ -35,6 +35,8 @@ namespace tupai
 	namespace vfs_new
 	{
 		void init();
+		void display();
+
 		util::Ref<Filesystem> createFilesystem(util::Str name);
 	}
 }

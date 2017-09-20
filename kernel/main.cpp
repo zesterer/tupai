@@ -93,6 +93,9 @@ namespace tupai
 		// These are platform-dependent hardware components needed for a stable kernel
 		arch_init();
 
+		// NEW
+		vfs_new::init();
+
 		// Core systems
 		// ------------
 		// These are things required to run kernel threads, processes, manipulate files, etc.
@@ -103,8 +106,8 @@ namespace tupai
 		task::scheduler_init(); // Initiate scheduler
 		call::init();       // Initiate syscalls
 
-		// NEW
-		vfs_new::init();
+		// TESTING
+		vfs_new::display();
 
 		// Essential systems
 		// -----------------

@@ -30,27 +30,30 @@
 #include <tupai/util/ref.hpp>
 #include <tupai/util/vec.hpp>
 #include <tupai/util/str.hpp>
+#include <tupai/util/val.hpp>
 
 namespace tupai
 {
 	namespace vfs_new
 	{
-		class Inode;
-
 		class Filesystem
 		{
 		private:
-			id_t id;
+			id_t _id;
 
-			util::Str name;
+			util::Str _name;
 
-			util::WRef<VTable> vtable;
+			util::WRef<VTable> _vtable;
 
-			util::Ref<Inode> root;
-			util::Vec<util::WRef<Inode>> inodes;
+			util::Ref<Inode> _root;
+			util::Vec<util::WRef<Inode>> _inodes;
 
 		public:
 			Filesystem(util::Str name);
+
+			util::Str getName() { return this->_name; }
+			util::Vec<util::WRef<Inode>>& getInodes() { return this->_inodes; }
+
 			util::Ref<Inode> createInode(Inode::Type type);
 		};
 	}
