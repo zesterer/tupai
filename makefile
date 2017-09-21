@@ -23,10 +23,10 @@
 
 # Architecture configuration
 
-# X86 / ARM
-TARGET_FAMILY = X86
-# I386 / AMD64 / RPI2
-TARGET_ARCH   = AMD64
+# x86 / arm
+TARGET_FAMILY = x86
+# i386 / x86_64 / rpi3
+TARGET_ARCH   = i386
 
 SRC_ROOT    = $(abspath .)
 BUILD_ROOT ?= $(SRC_ROOT)/build
@@ -58,17 +58,17 @@ ISO = $(BUILD_ROOT)/tupai.iso
 TAR = tar
 
 QEMU_ARGS = -d guest_errors --no-reboot --no-shutdown -m 256M
-ifeq ($(TARGET_ARCH), AMD64)
+ifeq ($(TARGET_ARCH), x86_64)
 	QEMU = qemu-system-x86_64
 	QEMU_ARGS +=
 endif
-ifeq ($(TARGET_ARCH), I386)
+ifeq ($(TARGET_ARCH), i386)
 	QEMU = qemu-system-i386
 	QEMU_ARGS +=
 endif
-ifeq ($(TARGET_ARCH), RPI2)
+ifeq ($(TARGET_ARCH), rpi3)
 	QEMU = qemu-system-arm
-	QEMU_ARGS += -M raspi2
+	QEMU_ARGS += -M raspi3
 endif
 
 BOCHS = bochs

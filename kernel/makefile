@@ -21,8 +21,8 @@
 # Definitions
 # -----------
 
-TARGET_FAMILY ?= X86
-TARGET_ARCH   ?= AMD64
+TARGET_FAMILY ?= x86
+TARGET_ARCH   ?= i386
 
 SRC_ROOT    = $(abspath .)
 BUILD_ROOT ?= $(SRC_ROOT)/build
@@ -50,16 +50,16 @@ CFLAGS += $(INC_FLAGS)
 CFLAGS += -std=c++14 -Wall -Wextra -pedantic -gdwarf-4 -O3 -nostdlib
 CFLAGS += -ffreestanding -fno-exceptions -fno-rtti -fno-common -fno-builtin -fno-omit-frame-pointer
 
-ifeq ($(TARGET_ARCH), AMD64)
-	CFLAGS += -DARCH_amd64 -DARCH_ADDRESS_64 -DARCH_FAMILY_x86
+ifeq ($(TARGET_ARCH), x86_64)
+	CFLAGS += -DARCH_TARGET_x86_64 -DARCH_ADDRESS_64 -DARCH_FAMILY_x86
 	CFLAGS += -mcmodel=kernel -mno-red-zone -mno-mmx -mno-sse -mno-sse2
 endif
-ifeq ($(TARGET_ARCH), I386)
-	CFLAGS += -DARCH_i386 -DARCH_ADDRESS_32 -DARCH_FAMILY_x86
+ifeq ($(TARGET_ARCH), i386)
+	CFLAGS += -DARCH_TARGET_i386 -DARCH_ADDRESS_32 -DARCH_FAMILY_x86
 	CFLAGS +=
 endif
-ifeq ($(TARGET_ARCH), RPI2)
-	CFLAGS += -DARCH_rpi2 -DARCH_ADDRESS_32 -DARCH_FAMILY_arm
+ifeq ($(TARGET_ARCH), rpi3)
+	CFLAGS += -DARCH_TARGET_rpi3 -DARCH_ADDRESS_32 -DARCH_FAMILY_arm
 	CFLAGS += -mcpu=arm1176jzf-s
 endif
 
@@ -68,38 +68,36 @@ endif
 
 LFLAGS = -lgcc
 
-ifeq ($(TARGET_ARCH), AMD64)
+ifeq ($(TARGET_ARCH), x86_64)
 	LFLAGS += -z max-page-size=4096
-	LSCRIPT = $(SRC_DIR)/x86/amd64/linker.ld
+	LSCRIPT = $(SRC_DIR)/arch/x86/x86_64/link.ld
 endif
-ifeq ($(TARGET_ARCH), I386)
-	LSCRIPT = $(SRC_DIR)/x86/i386/linker.ld
+ifeq ($(TARGET_ARCH), i386)
+	LSCRIPT = $(SRC_DIR)/arch/x86/i386/link.ld
 endif
-ifeq ($(TARGET_ARCH), RPI2)
-	LSCRIPT = $(SRC_DIR)/arm/rpi2/linker.ld
+ifeq ($(TARGET_ARCH), rpi3)
+	LSCRIPT = $(SRC_DIR)/arch/arm/rpi3/link.ld
 endif
 
 # Tools
 # -----
 
-ifeq ($(TARGET_ARCH), AMD64)
-	AS  = x86_64-elf-g++
-	CC  = x86_64-elf-g++
-	CPP = x86_64-elf-g++
-	LD  = x86_64-elf-g++
+ifeq ($(TARGET_ARCH), x86_64)
+	ARCH_GCC_PREFIX = x86_64-elf-
 endif
-ifeq ($(TARGET_ARCH), I386)
-	AS  = i686-elf-g++
-	CC  = i686-elf-g++
-	CPP = i686-elf-g++
-	LD  = i686-elf-g++
+ifeq ($(TARGET_ARCH), i386)
+	ARCH_GCC_PREFIX = i686-elf-
 endif
-ifeq ($(TARGET_ARCH), RPI2)
-	AS  = arm-none-eabi-g++
-	CC  = arm-none-eabi-g++
-	CPP = arm-none-eabi-g++
-	LD  = arm-none-eabi-g++
+ifeq ($(TARGET_ARCH), rpi3)
+	ARCH_GCC_PREFIX = arm-none-eabi-
 endif
+
+AS  = $(ARCH_GCC_PREFIX)gcc
+CC  = $(ARCH_GCC_PREFIX)gcc
+CPP = $(ARCH_GCC_PREFIX)gcc
+LD  = $(ARCH_GCC_PREFIX)gcc
+
+TEST = $(shell echo $(AS))
 
 TOOL_DIR ?= $(abspath $(dir $(shell which $(CC))))
 
@@ -110,40 +108,23 @@ KSYMBOL_GEN = objdump --wide --syms $(KERNEL) | grep -P '^[0-9A-Fa-f]+\s.*\s[a-z
 
 SRC_DIR = $(abspath .)
 
-SRCS_REL += $(shell ls ./*.{s,c,cpp} 2> /dev/null)
-SRCS_REL += $(shell ls ./dev/*.{s,c,cpp}  2> /dev/null)
-SRCS_REL += $(shell ls ./libk/*.{s,c,cpp} 2> /dev/null)
-SRCS_REL += $(shell ls ./mem/*.{s,c,cpp}  2> /dev/null)
-SRCS_REL += $(shell ls ./sys/*.{s,c,cpp}  2> /dev/null)
-SRCS_REL += $(shell ls ./task/*.{s,c,cpp} 2> /dev/null)
-SRCS_REL += $(shell ls ./util/*.{s,c,cpp} 2> /dev/null)
-SRCS_REL += $(shell ls ./vfs/*.{s,c,cpp}  2> /dev/null)
-SRCS_REL += $(shell ls ./call/*.{s,c,cpp}  2> /dev/null)
+SRCS_REL += $(shell ls $(SRC_ROOT)/*.{s,S,c,cpp} 2> /dev/null)
 
-ifeq ($(TARGET_FAMILY), X86)
-	SRCS_REL += $(shell ls ./x86/*.{s,c,cpp} 2> /dev/null)
+ifeq ($(TARGET_FAMILY), x86)
+	SRCS_REL += $(shell ls $(SRC_ROOT)/arch/x86/*.{s,S,c,cpp} 2> /dev/null)
 endif
-ifeq ($(TARGET_FAMILY), ARM)
-	SRCS_REL += $(shell ls ./arm/*.{s,c,cpp} 2> /dev/null)
-	SRCS_REL += $(shell ls ./arm/util/*.{s,c,cpp} 2> /dev/null)
+ifeq ($(TARGET_FAMILY), arm)
+	SRCS_REL += $(shell ls $(SRC_ROOT)/arch/arm/*.{s,S,c,cpp} 2> /dev/null)
 endif
 
-ifeq ($(TARGET_ARCH), AMD64)
-	SRCS_REL += $(shell ls ./x86/amd64/*.{s,c,cpp}      2> /dev/null)
-	SRCS_REL += $(shell ls ./x86/amd64/crt/*.{s,c,cpp}  2> /dev/null)
-	SRCS_REL += $(shell ls ./x86/amd64/sys/*.{s,c,cpp}  2> /dev/null)
-	SRCS_REL += $(shell ls ./x86/amd64/util/*.{s,c,cpp} 2> /dev/null)
-	SRCS_REL += $(shell ls ./x86/amd64/call/*.{s,c,cpp}  2> /dev/null)
+ifeq ($(TARGET_ARCH), x86_64)
+	SRCS_REL += $(shell ls $(SRC_ROOT)/arch/x86/x86_64/*.{s,S,c,cpp} 2> /dev/null)
 endif
-ifeq ($(TARGET_ARCH), I386)
-	SRCS_REL += $(shell ls ./x86/i386/*.{s,c,cpp}      2> /dev/null)
-	SRCS_REL += $(shell ls ./x86/i386/crt/*.{s,c,cpp}  2> /dev/null)
-	SRCS_REL += $(shell ls ./x86/i386/sys/*.{s,c,cpp}  2> /dev/null)
-	SRCS_REL += $(shell ls ./x86/i386/util/*.{s,c,cpp} 2> /dev/null)
-	SRCS_REL += $(shell ls ./x86/i386/call/*.{s,c,cpp} 2> /dev/null)
+ifeq ($(TARGET_ARCH), i386)
+	SRCS_REL += $(shell ls $(SRC_ROOT)/arch/x86/i386/*.{s,S,c,cpp} 2> /dev/null)
 endif
-ifeq ($(TARGET_ARCH), RPI2)
-	SRCS_REL += $(shell ls ./arm/rpi2/*.{s,c,cpp} 2> /dev/null)
+ifeq ($(TARGET_ARCH), rpi3)
+	SRCS_REL += $(shell ls $(SRC_ROOT)/arch/arm/rpi3/*.{s,S,c,cpp} 2> /dev/null)
 endif
 
 SRCS = $(abspath $(SRCS_REL))
@@ -166,6 +147,7 @@ clean :
 	@rm -r -f $(KERNEL) $(OBJS) $(DEPS) $(BDIRS)
 
 $(KERNEL) : $(OBJS)
+	echo $(SRC_ROOT)
 	@echo "[`date "+%H:%M:%S"`] Linking '$@'..."
 	@$(TOOL_DIR)/$(LD) $(CFLAGS) -T $(LSCRIPT) -o $@ $(CRTBEGIN) $(OBJS) $(CRTEND) $(LFLAGS)
 	@echo "[`date "+%H:%M:%S"`] Linked '$@'."
@@ -185,6 +167,12 @@ $(BDIRS) :
 
 # Compile .s files
 $(BUILD_ROOT)/%.o : $(SRC_DIR)/%.s
+	@echo "[`date "+%H:%M:%S"`] Compiling '$<'..."
+	@$(TOOL_DIR)/$(AS) -c -o $@ $< $(CFLAGS)
+	@echo "[`date "+%H:%M:%S"`] Compiled '$@'."
+
+# Compile .S files
+$(BUILD_ROOT)/%.o : $(SRC_DIR)/%.S
 	@echo "[`date "+%H:%M:%S"`] Compiling '$<'..."
 	@$(TOOL_DIR)/$(AS) -c -o $@ $< $(CFLAGS)
 	@echo "[`date "+%H:%M:%S"`] Compiled '$@'."
