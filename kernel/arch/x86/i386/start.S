@@ -36,17 +36,27 @@
 		mov %eax, (_mb_magic.boot) // Preserve Multiboot magic value
 		mov %ebx, (_mb_struct.boot) // Preserve Multiboot structure
 
+		// Display early boot message
 		push $0x0F
-		push $_kstart_msg
-		call _print.boot
+		push $_start_str
+		call _vga_print.boot
 		add $8, %esp
 
 		call _check.boot // Perform initial CPU compatibility checks
-
 		call _info.boot // Display CPU info
+		call _init_paging.boot // Construct page tables
+		call _enable_paging.boot
 
-		//call _init_paging.boot // Initiate paging
+		// Display message before jumping to virtual kernel
+		push $0x0F
+		push $_virt_jump_str
+		call _vga_print.boot
+		add $8, %esp
 
+		// Jump to the higher half
+		jmp _start_virt
+
+		// If, by some ungodly miracle, the previous code returns, then hang the CPU
 		jmp _hang.boot
 
 	_hang.boot:
@@ -65,5 +75,7 @@
 		.skip 4
 
 .section .rodata.boot
-	_kstart_msg:
-		.ascii "[ OK ] Tupai early boot started\n\0"
+	_start_str:
+		.ascii "*** Tupai boot started ***\n\0"
+	_virt_jump_str:
+		.ascii "[INFO] Jumping to virtual kernel...\n\0"

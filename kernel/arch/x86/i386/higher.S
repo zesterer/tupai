@@ -1,5 +1,5 @@
 //
-// file : info.S
+// file : higher.S
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,50 +18,34 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-.global _info.boot
+.global _start_virt
+.global _hang
 
-.section .text.boot
+.global _stack_bottom
+.global _stack_top
 
-	_info.boot: // Check CPU compatibility
+.set virt_offset, 0xC0000000
 
-		call _info_vendor
+.section .text
 
-		ret
+	_start_virt: // Kernel virtual entry
+		mov $(_stack_bottom.boot + virt_offset), %esp // Reset stack, now with virtual offset
 
-	_info_vendor:
-
+		// Display higher boot message
 		push $0x0F
-		push $_info_vendor_start
+		push $_start_str
 		call _vga_print.boot
 		add $8, %esp
 
-		mov $0, %eax
-		cpuid
+		// Call the platform-specific kentry function
+		call kentry
 
-		push $0
-		push %ecx
-		push %edx
-		push %ebx
+		jmp _hang
 
-		mov %esp, %eax
+	_hang:
+		hlt
+		jmp _hang
 
-		push $0x0F
-		push %eax
-		call _vga_print.boot
-		add $8, %esp
-
-		add $16, %esp
-
-		push $0x0F
-		push $_info_vendor_end
-		call _vga_print.boot
-		add $8, %esp
-
-		ret
-
-
-.section .rodata.boot
-	_info_vendor_start:
-		.ascii "[ OK ] CPU vendor is '\0"
-	_info_vendor_end:
-		.ascii "'\n\0"
+.section .rodata
+	_start_str:
+		.ascii "[ OK ] Jump successful, welcome to the virtual kernel\n\0"

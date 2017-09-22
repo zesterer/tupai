@@ -1,5 +1,5 @@
 //
-// file : info.S
+// file : def.h
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,50 +18,11 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-.global _info.boot
+#ifndef TUPAI_X86_I386_DEF_H
+#define TUPAI_X86_I386_DEF_H
 
-.section .text.boot
+#include <tupai/type.h>
 
-	_info.boot: // Check CPU compatibility
+#define VIRT_OFFSET 0xC0000000
 
-		call _info_vendor
-
-		ret
-
-	_info_vendor:
-
-		push $0x0F
-		push $_info_vendor_start
-		call _vga_print.boot
-		add $8, %esp
-
-		mov $0, %eax
-		cpuid
-
-		push $0
-		push %ecx
-		push %edx
-		push %ebx
-
-		mov %esp, %eax
-
-		push $0x0F
-		push %eax
-		call _vga_print.boot
-		add $8, %esp
-
-		add $16, %esp
-
-		push $0x0F
-		push $_info_vendor_end
-		call _vga_print.boot
-		add $8, %esp
-
-		ret
-
-
-.section .rodata.boot
-	_info_vendor_start:
-		.ascii "[ OK ] CPU vendor is '\0"
-	_info_vendor_end:
-		.ascii "'\n\0"
+#endif

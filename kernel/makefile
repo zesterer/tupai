@@ -45,21 +45,21 @@ INCS += $(LIBC_INC) $(SRC_ROOT)/include
 INC_FLAGS = $(addprefix -I, $(INCS))
 
 CFLAGS  = -DKNAME=\"$(KNAME)\" -DKNAME_DECORATIVE=\"$(KNAME_DECORATIVE)\" -DKVERSION_DECORATIVE=\"$(KVERSION_DECORATIVE)\" -DKMAINTAINER_NAME="\"$(KMAINTAINER_NAME)\"" -DKMAINTAINER_EMAIL=\"$(KMAINTAINER_EMAIL)\"
-CFLAGS += -DARCH_FAMILY_$(TARGET_FAMILY)
+CFLAGS += -DARCH_FAMILY_$(TARGET_FAMILY) -DARCH_TARGET_$(TARGET_ARCH)
 CFLAGS += $(INC_FLAGS)
-CFLAGS += -std=c++14 -Wall -Wextra -pedantic -gdwarf-4 -O3 -nostdlib
-CFLAGS += -ffreestanding -fno-exceptions -fno-rtti -fno-common -fno-builtin -fno-omit-frame-pointer
+CFLAGS += -std=gnu11 -Wall -Wextra -pedantic -gdwarf-4 -O3 -nostdlib
+CFLAGS += -ffreestanding -fno-exceptions -fno-common -fno-builtin -fno-omit-frame-pointer
 
 ifeq ($(TARGET_ARCH), x86_64)
-	CFLAGS += -DARCH_TARGET_x86_64 -DARCH_ADDRESS_64 -DARCH_FAMILY_x86
+	CFLAGS += -DARCH_ADDRESS_64
 	CFLAGS += -mcmodel=kernel -mno-red-zone -mno-mmx -mno-sse -mno-sse2
 endif
 ifeq ($(TARGET_ARCH), i386)
-	CFLAGS += -DARCH_TARGET_i386 -DARCH_ADDRESS_32 -DARCH_FAMILY_x86
+	CFLAGS += -DARCH_ADDRESS_32
 	CFLAGS +=
 endif
 ifeq ($(TARGET_ARCH), rpi3)
-	CFLAGS += -DARCH_TARGET_rpi3 -DARCH_ADDRESS_32 -DARCH_FAMILY_arm
+	CFLAGS += -DARCH_ADDRESS_32
 	CFLAGS += -mcpu=arm1176jzf-s
 endif
 

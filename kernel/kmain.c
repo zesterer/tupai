@@ -1,5 +1,5 @@
 //
-// file : info.S
+// file : kmain.c
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,50 +18,10 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-.global _info.boot
+#include <tupai/x86/vga.h>
 
-.section .text.boot
-
-	_info.boot: // Check CPU compatibility
-
-		call _info_vendor
-
-		ret
-
-	_info_vendor:
-
-		push $0x0F
-		push $_info_vendor_start
-		call _vga_print.boot
-		add $8, %esp
-
-		mov $0, %eax
-		cpuid
-
-		push $0
-		push %ecx
-		push %edx
-		push %ebx
-
-		mov %esp, %eax
-
-		push $0x0F
-		push %eax
-		call _vga_print.boot
-		add $8, %esp
-
-		add $16, %esp
-
-		push $0x0F
-		push $_info_vendor_end
-		call _vga_print.boot
-		add $8, %esp
-
-		ret
-
-
-.section .rodata.boot
-	_info_vendor_start:
-		.ascii "[ OK ] CPU vendor is '\0"
-	_info_vendor_end:
-		.ascii "'\n\0"
+void kmain()
+{
+	vga_init();
+	vga_puts("Hello, World! This is C speaking!\n");
+}

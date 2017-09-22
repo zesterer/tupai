@@ -1,5 +1,5 @@
 //
-// file : util.S
+// file : vga.S
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,7 +18,11 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-.global _print.boot
+.global _vga_print.boot
+.global _vga_move.boot
+
+.global _vga_col_boot
+.global _vga_row_boot
 
 // Constants
 .set vga_buffer, 0xB8000
@@ -27,7 +31,7 @@
 
 .section .text.boot
 
-	_print.boot:
+	_vga_print.boot:
 		push %ebx
 
 		mov $0, %ecx
@@ -48,9 +52,9 @@
 			movb (%eax), %bl
 
 			// Find current VGA position
-			mov (_vga_row.boot), %edx
+			mov (_vga_row_boot), %edx
 			imul $vga_width, %edx
-			add (_vga_col.boot), %edx
+			add (_vga_col_boot), %edx
 			imul $2, %edx
 			add $vga_buffer, %edx
 
@@ -60,24 +64,58 @@
 			movb %bl, 1(%edx)
 
 			// Increment VGA position
-			mov (_vga_col.boot), %edx
+			mov (_vga_col_boot), %edx
 			inc %edx
-			mov %edx, (_vga_col.boot)
+			mov %edx, (_vga_col_boot)
 		2:
 
 			// Iterate the loop
 			add $1, %ecx
 			jmp 1b
 		3:
-			movl $0, (_vga_col.boot)
-			add $1, (_vga_row.boot)
+			movl $0, (_vga_col_boot)
+			add $1, (_vga_row_boot)
 			jmp 2b
 		4:
+			// Set cursor position
+			push (_vga_col_boot)
+			push (_vga_row_boot)
+			call _vga_move.boot
+			add $8, %esp
+
 			pop %ebx
 			ret
 
+	_vga_move.boot:
+
+		// Compute position
+		mov 4(%esp), %eax
+		imul $vga_width, %eax
+		add 8(%esp), %eax
+		push %eax
+
+		mov $0x3D4, %dx
+		mov $0x0F, %al
+		outb %al, %dx
+
+		mov $0x3D5, %dx
+		movb (%esp), %al
+		outb %al, %dx
+
+		mov $0x3D4, %dx
+		mov $0x0E, %al
+		outb %al, %dx
+
+		mov $0x3D5, %dx
+		pop %eax
+		shr $8, %eax
+		outb %al, %dx
+
+		ret
+
 .section .data.boot
-	_vga_col.boot:
+	// Different names, since must be accessed from C
+	_vga_col_boot:
 		.long 0
-	_vga_row.boot:
+	_vga_row_boot:
 		.long 0

@@ -28,10 +28,11 @@
 
 		call _check_mb
 		call _check_cpuid
+		call _check_paging
 
 		push $0x0F
 		push $_check_success_str
-		call _print.boot
+		call _vga_print.boot
 		add $8, %esp
 
 		ret
@@ -45,7 +46,7 @@
 		// Error occured
 		push $0x4F
 		push $_check_nomb_str
-		call _print.boot
+		call _vga_print.boot
 		add $8, %esp
 
 		jmp _hang.boot
@@ -54,7 +55,7 @@
 			// No error occured
 			push $0x0F
 			push $_check_mb_str
-			call _print.boot
+			call _vga_print.boot
 			add $8, %esp
 
 			ret
@@ -82,7 +83,7 @@
 		// Error occured
 		push $0x4F
 		push $_check_nocpuid_str
-		call _print.boot
+		call _vga_print.boot
 		add $8, %esp
 
 		// Hang
@@ -92,19 +93,50 @@
 			// No error occured
 			push $0x0F
 			push $_check_cpuid_str
-			call _print.boot
+			call _vga_print.boot
 			add $8, %esp
 
 			ret
 
+		_check_paging: // Check the CPU supports paging
+
+			mov $1, %eax
+			cpuid
+
+			and $0x1, %edx
+			cmp $0x1, %edx
+			je 1f
+
+			// Error occured
+			push $0x4F
+			push $_check_nopaging_str
+			call _vga_print.boot
+			add $8, %esp
+
+			// Hang
+			jmp _hang.boot
+
+			1:
+				// No error occured
+				push $0x0F
+				push $_check_paging_str
+				call _vga_print.boot
+				add $8, %esp
+
+				ret
+
 .section .rodata.boot
 	_check_success_str:
-		.ascii "[DONE] CPU compatibility checks passed\n\0"
+		.ascii "[ OK ] Compatibility checks passed\n\0"
 	_check_mb_str:
 		.ascii "[ OK ] Bootloader is Multiboot-compliant\n\0"
 	_check_nomb_str:
 		.ascii "[FAIL] Bootloader is not Multiboot-compliant\n\0"
 	_check_cpuid_str:
-		.ascii "[ OK ] CPU supports cpuid\n\0"
+		.ascii "[ OK ] CPUID is supported\n\0"
 	_check_nocpuid_str:
-		.ascii "[FAIL] CPU does not support cpuid\n\0"
+		.ascii "[FAIL] CPUID is unsupported\n\0"
+	_check_paging_str:
+		.ascii "[ OK ] Paging is supported\n\0"
+	_check_nopaging_str:
+		.ascii "[FAIL] Paging is unsupported\n\0"
