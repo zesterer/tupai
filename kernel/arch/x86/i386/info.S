@@ -1,5 +1,5 @@
 //
-// file : start.S
+// file : info.S
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,52 +18,50 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-.global _start.boot
-.global _hang.boot
-
-.global _stack_bottom.boot
-.global _stack_top.boot
-
-.global _mb_magic.boot
-.global _mb_struct.boot
+.global _info.boot
 
 .section .text.boot
 
-	_start.boot: // Kernel first entry point
+	_info.boot: // Check CPU compatibility
 
-		mov $_stack_top.boot, %esp // Set up initial stack
+		call _info_vendor
 
-		mov %eax, (_mb_magic.boot) // Preserve Multiboot magic value
-		mov %ebx, (_mb_struct.boot) // Preserve Multiboot structure
+		ret
+
+	_info_vendor:
 
 		push $0x0F
-		push $_kstart_msg
+		push $_info_vendor_start
 		call _print.boot
 		add $8, %esp
 
-		call _check.boot // Perform initial CPU compatibility checks
+		mov $0, %eax
+		cpuid
 
-		call _info.boot // Display CPU info
+		push $0
+		push %ecx
+		push %edx
+		push %ebx
 
-		//call _init_paging.boot // Initiate paging
+		mov %esp, %eax
 
-		jmp _hang.boot
+		push $0x0F
+		push %eax
+		call _print.boot
+		add $8, %esp
 
-	_hang.boot:
-		hlt
-		jmp _hang.boot
+		add $16, %esp
 
-.section .bss.boot
-	.align 16
-	_stack_bottom.boot:
-		.skip 1024
-	_stack_top.boot:
+		push $0x0F
+		push $_info_vendor_end
+		call _print.boot
+		add $8, %esp
 
-	_mb_magic.boot:
-		.skip 4
-	_mb_struct.boot:
-		.skip 4
+		ret
+
 
 .section .rodata.boot
-	_kstart_msg:
-		.ascii "[ OK ] Tupai early boot started\n\0"
+	_info_vendor_start:
+		.ascii "[ OK ] CPU vendor is '\0"
+	_info_vendor_end:
+		.ascii "'\n'\0"
