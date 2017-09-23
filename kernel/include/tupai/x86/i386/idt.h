@@ -1,5 +1,5 @@
 //
-// file : kentry.c
+// file : idt.h
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,23 +18,12 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#include <tupai/kmain.h>
+#ifndef TUPAI_X86_I386_IDT_H
+#define TUPAI_X86_I386_IDT_H
 
-#include <tupai/x86/i386/gdt.h>
+#define IDT_REMAP_OFFSET 32
 
-#include <tupai/x86/vga.h>
+void idt_init();
+void idt_install();
 
-void kentry()
-{
-	// Pre-initiation
-	vga_preinit();
-
-	// CPU setup
-	gdt_init();
-	idt_init();
-
-	vga_init();
-
-	// Call kernel main
-	kmain();
-}
+#endif

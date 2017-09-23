@@ -1,5 +1,5 @@
 //
-// file : kentry.c
+// file : str.h
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,23 +18,26 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#include <tupai/kmain.h>
+#ifndef TUPAI_UTIL_STR_H
+#define TUPAI_UTIL_STR_H
 
-#include <tupai/x86/i386/gdt.h>
-
-#include <tupai/x86/vga.h>
-
-void kentry()
+size_t str_copy(const char* src, char* tgt)
 {
-	// Pre-initiation
-	vga_preinit();
-
-	// CPU setup
-	gdt_init();
-	idt_init();
-
-	vga_init();
-
-	// Call kernel main
-	kmain();
+	size_t i = 0;
+	for (; src[i] != '\0'; i ++)
+		tgt[i] = src[i];
+	tgt[i] = '\0';
+	return i;
 }
+
+size_t str_cat(char* tgt, const char* src)
+{
+	size_t i, j;
+	for (i = 0; tgt[i] != '\0'; i ++);
+	for (j = 0; src[j] != '\0'; j ++)
+		tgt[i + j] = src[j];
+	tgt[i + j] = '\0';
+	return i + j;
+}
+
+#endif

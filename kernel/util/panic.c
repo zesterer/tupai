@@ -1,5 +1,5 @@
 //
-// file : kentry.c
+// file : panic.c
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,23 +18,23 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#include <tupai/kmain.h>
+#include <tupai/util/panic.h>
+#include <tupai/dev/console.h>
+#include <tupai/def.h>
 
-#include <tupai/x86/i386/gdt.h>
-
-#include <tupai/x86/vga.h>
-
-void kentry()
+void panic(const char* str)
 {
-	// Pre-initiation
-	vga_preinit();
+	console_puts(str);
+	hang();
+}
 
-	// CPU setup
-	gdt_init();
-	idt_init();
-
-	vga_init();
-
-	// Call kernel main
-	kmain();
+void hang()
+{
+	while (true)
+	{
+		asm volatile (
+			"1: cli\n"
+			"jmp 1b\n"
+		);
+	}
 }

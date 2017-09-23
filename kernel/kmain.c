@@ -23,4 +23,8 @@
 void kmain()
 {
 	log("Hello, World! Welcome to the kernel!\n");
+
+	volatile int a = 5 / 0;
+
+	log("...and we're back!");
 }
