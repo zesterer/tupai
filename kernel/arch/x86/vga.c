@@ -19,6 +19,7 @@
 //
 
 #include <tupai/def.h>
+#include <tupai/x86/port.h>
 
 static const int COLS = 80;
 static const int ROWS = 25;
@@ -34,13 +35,19 @@ static uint16_t* buffer = (uint16_t*)(VIRT_OFFSET + 0xB8000);
 extern uint32_t _vga_col_boot;
 extern uint32_t _vga_row_boot;
 
+static void vga_place_cursor(int col, int row);
 static uint16_t make_entry(char c, char fg, char bg);
 
-void vga_init()
+void vga_preinit()
 {
 	// Import column and row from boot VGA driver
 	col = _vga_col_boot;
 	row = _vga_row_boot;
+}
+
+void vga_init()
+{
+	// Nothing yet
 }
 
 void vga_putc(char c)
@@ -74,12 +81,37 @@ void vga_putc(char c)
 		row = 0;
 		col = 0;
 	}
+
+	vga_place_cursor(col, row);
 }
 
 void vga_puts(const char* str)
 {
 	for (size_t i = 0; str[i] != '\0'; i ++)
 		vga_putc(str[i]);
+}
+
+void vga_enable_cursor(bool enable)
+{
+	if (enable)
+	{
+		outb(0x3D4, 0x0A);
+		outb(0x3D5, 0x00);
+	}
+	else
+	{
+		outb(0x3D4, 0x0A);
+		outb(0x3D5, 0x3F);
+	}
+}
+
+void vga_place_cursor(int col, int row)
+{
+	uint16_t pos = COLS * row + col;
+	outb(0x3D4, 0x0F);
+	outb(0x3D5, (uint8_t)(pos & 0xFF));
+	outb(0x3D4, 0x0E);
+	outb(0x3D5, (uint8_t)((pos >> 8) & 0xFF));
 }
 
 uint16_t make_entry(char c, char fg, char bg)

@@ -21,6 +21,8 @@
 #ifndef TUPAI_DEF_H
 #define TUPAI_DEF_H
 
+#include <tupai/type.h>
+
 #ifdef ARCH_FAMILY_x86
 	#include <tupai/x86/def.h>
 #endif

@@ -18,10 +18,9 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#include <tupai/x86/vga.h>
+#include <tupai/util/log.h>
 
 void kmain()
 {
-	vga_init();
-	vga_puts("Hello, World! This is C speaking!\n");
+	log("Hello, World! Welcome to the kernel!\n");
 }

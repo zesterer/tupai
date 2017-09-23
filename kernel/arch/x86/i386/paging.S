@@ -18,12 +18,20 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-.global _init_paging.boot
-.global _enable_paging.boot
+.global _paging_init.boot
+.global _paging_enable.boot
 
 .section .text.boot
 
-	_init_paging.boot: // Initiate paging
+	_paging_init.boot: // Initiate paging
+
+		// Clear page tables first
+		mov $_p2_table.boot, %ecx
+		1:
+			movl $0, (%ecx)
+			inc %ecx
+			cmp $_table_end.boot, %ecx
+			jne 1b
 
 		// Map P2 table entries
 		mov $0, %ecx
@@ -55,7 +63,7 @@
 
 		// Map P1 table entries
 		mov $0, %ecx
-		1:
+		2:
 			// Map the ECX-th P1 entry to a page at address 4K * ecx
 			mov $4096, %eax     // 4K
 			imul %ecx, %eax     // Calculate 4K * ecx
@@ -69,7 +77,7 @@
 			// Iterate the loop
 			inc %ecx
 			cmp $512 * 128, %ecx
-			jne 1b
+			jne 2b
 
 		push $0x0F
 		push $_paging_init_str
@@ -78,7 +86,7 @@
 
 		ret
 
-	_enable_paging.boot:
+	_paging_enable.boot:
 		push %ebp // Save the state of EBP
 		mov %esp, %ebp // Save the state of ESP in EBP
 
@@ -111,6 +119,7 @@
 		.skip 4 * 1024
 	_p1_table.boot:
 		.skip 4 * 1024 * 128 // 4K * 1024 * 128 = 512M of memory
+	_table_end.boot:
 
 .section .rodata.boot
 	_paging_init_str:

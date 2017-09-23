@@ -21,8 +21,7 @@
 #ifndef TUPAI_X86_I386_DEF_H
 #define TUPAI_X86_I386_DEF_H
 
-#include <tupai/type.h>
-
 #define VIRT_OFFSET 0xC0000000
+#define PAGE_SIZE 0x1000
 
 #endif

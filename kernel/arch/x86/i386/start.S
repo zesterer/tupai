@@ -44,8 +44,8 @@
 
 		call _check.boot // Perform initial CPU compatibility checks
 		call _info.boot // Display CPU info
-		call _init_paging.boot // Construct page tables
-		call _enable_paging.boot
+		call _paging_init.boot // Construct page tables
+		call _paging_enable.boot
 
 		// Display message before jumping to virtual kernel
 		push $0x0F
@@ -78,4 +78,4 @@
 	_start_str:
 		.ascii "*** Tupai boot started ***\n\0"
 	_virt_jump_str:
-		.ascii "[INFO] Jumping to virtual kernel...\n\0"
+		.ascii "[ OK ] Reached virtual kernel jump\n\0"

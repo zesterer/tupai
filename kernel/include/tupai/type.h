@@ -24,4 +24,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
+typedef int bool;
+
+#define false (1 == 0)
+#define true (!false)
+
 #endif

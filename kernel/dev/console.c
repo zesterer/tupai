@@ -1,5 +1,5 @@
 //
-// file : vga.h
+// file : console.c
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,16 +18,15 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#ifndef TUPAI_X86_VGA_H
-#define TUPAI_X86_VGA_H
+#include <tupai/dev/console.h>
 
-#include <tupai/type.h>
-
-void vga_preinit();
-void vga_init();
-void vga_putc(char c);
-void vga_puts(const char* str);
-void vga_enable_cursor(bool enable);
-void vga_place_cursor(int col, int row);
-
+#ifdef ARCH_FAMILY_x86
+	#include <tupai/x86/vga.h>
 #endif
+
+void console_puts(const char* str)
+{
+	#ifdef ARCH_FAMILY_x86
+		vga_puts(str);
+	#endif
+}

@@ -47,7 +47,7 @@ INC_FLAGS = $(addprefix -I, $(INCS))
 CFLAGS  = -DKNAME=\"$(KNAME)\" -DKNAME_DECORATIVE=\"$(KNAME_DECORATIVE)\" -DKVERSION_DECORATIVE=\"$(KVERSION_DECORATIVE)\" -DKMAINTAINER_NAME="\"$(KMAINTAINER_NAME)\"" -DKMAINTAINER_EMAIL=\"$(KMAINTAINER_EMAIL)\"
 CFLAGS += -DARCH_FAMILY_$(TARGET_FAMILY) -DARCH_TARGET_$(TARGET_ARCH)
 CFLAGS += $(INC_FLAGS)
-CFLAGS += -std=gnu11 -Wall -Wextra -pedantic -gdwarf-4 -O3 -nostdlib
+CFLAGS += -std=gnu11 -Wall -Wextra -gdwarf-4 -O3 -nostdlib
 CFLAGS += -ffreestanding -fno-exceptions -fno-common -fno-builtin -fno-omit-frame-pointer
 
 ifeq ($(TARGET_ARCH), x86_64)
@@ -109,6 +109,8 @@ KSYMBOL_GEN = objdump --wide --syms $(KERNEL) | grep -P '^[0-9A-Fa-f]+\s.*\s[a-z
 SRC_DIR = $(abspath .)
 
 SRCS_REL += $(shell ls $(SRC_ROOT)/*.{s,S,c,cpp} 2> /dev/null)
+SRCS_REL += $(shell ls $(SRC_ROOT)/util/*.{s,S,c,cpp} 2> /dev/null)
+SRCS_REL += $(shell ls $(SRC_ROOT)/dev/*.{s,S,c,cpp} 2> /dev/null)
 
 ifeq ($(TARGET_FAMILY), x86)
 	SRCS_REL += $(shell ls $(SRC_ROOT)/arch/x86/*.{s,S,c,cpp} 2> /dev/null)

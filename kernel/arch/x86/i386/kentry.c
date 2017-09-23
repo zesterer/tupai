@@ -20,7 +20,15 @@
 
 #include <tupai/kmain.h>
 
+#include <tupai/x86/i386/gdt.h>
+
+#include <tupai/x86/vga.h>
+
 void kentry()
 {
-		kmain();
+	vga_preinit();
+	gdt_init();
+	vga_init();
+
+	kmain();
 }
