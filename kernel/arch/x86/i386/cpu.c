@@ -1,5 +1,5 @@
 //
-// file : kentry.c
+// file : cpu.c
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,29 +18,24 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#include <tupai/kmain.h>
-#include <tupai/x86/i386/gdt.h>
-#include <tupai/x86/i386/idt.h>
-#include <tupai/x86/pic.h>
-#include <tupai/x86/vga.h>
-#include <tupai/x86/kbd.h>
+#include <tupai/cpu.h>
 
-void kentry()
+void cpu_halt()
 {
-	// Pre-initiation
-	vga_preinit();
+	asm volatile ("hlt");
+}
 
-	// CPU setup
-	gdt_init();
-	idt_init();
+void cpu_enable_int()
+{
+	asm volatile ("sti");
+}
 
-	// Interrupt setup
-	pic_init();
+void cpu_disable_int()
+{
+	asm volatile ("cli");
+}
 
-	// Hardware setup
-	vga_init();
-	kbd_init();
-
-	// Call kernel main
-	kmain();
+void cpu_wait(int delay) // TODO : Make this ms
+{
+	for (volatile int i = 0; i < delay; i ++);
 }

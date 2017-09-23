@@ -18,8 +18,10 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#include <tupai/def.h>
+#include <tupai/x86/vga.h>
 #include <tupai/x86/port.h>
+#include <tupai/util/log.h>
+#include <tupai/def.h>
 
 static const int COLS = 80;
 static const int ROWS = 25;
@@ -35,7 +37,6 @@ static uint16_t* buffer = (uint16_t*)(VIRT_OFFSET + 0xB8000);
 extern uint32_t _vga_col_boot;
 extern uint32_t _vga_row_boot;
 
-static void vga_place_cursor(int col, int row);
 static uint16_t make_entry(char c, char fg, char bg);
 
 void vga_preinit()
@@ -43,6 +44,8 @@ void vga_preinit()
 	// Import column and row from boot VGA driver
 	col = _vga_col_boot;
 	row = _vga_row_boot;
+
+	log("[ OK ] VGA driver acquired early VGA parameters\n");
 }
 
 void vga_init()

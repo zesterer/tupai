@@ -23,11 +23,6 @@
 
 #include <tupai/type.h>
 
-static inline void wait(uint16_t cycles)
-{
-	for (volatile uint16_t i = 0; i < cycles; i ++);
-}
-
 static inline void outb(uint16_t port, uint8_t value)
 {
 	asm volatile ("outb %0, %1" :: "a"(value), "Nd"(port));

@@ -21,6 +21,7 @@
 #include <tupai/x86/i386/idt.h>
 
 #include <tupai/util/log.h>
+#include <tupai/util/panic.h>
 #include <tupai/def.h>
 
 enum
@@ -61,8 +62,6 @@ idt_desc_t idt[IDT_LEN] __attribute__((aligned(PAGE_SIZE)));
 
 // IDT pointer
 idt_ptr_t idt_ptr __attribute__((aligned(4)));
-
-static void idt_set(size_t irq, void* address, uint16_t selector_id);
 
 extern void _exception_0();
 extern void _exception_1();
@@ -148,11 +147,12 @@ void idt_set(size_t irq, void* address, uint16_t selector_id)
 
 size_t isr_default(size_t stack)
 {
+	panic("Unspecified interrupt occured!\n");
 	return stack;
 }
 
 size_t isr_spurious(size_t stack)
 {
-	log("Spurious interrupt occured\n");
+	panic("Spurious interrupt occured!\n");
 	return stack;
 }

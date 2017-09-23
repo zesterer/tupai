@@ -22,5 +22,7 @@
 #define TUPAI_DEV_CONSOLE_H
 
 void console_puts(const char* str);
+void console_putc(char c);
+void console_write_in(char c);
 
 #endif

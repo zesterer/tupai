@@ -1,5 +1,5 @@
 //
-// file : kentry.c
+// file : cpu.h
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,29 +18,14 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#include <tupai/kmain.h>
-#include <tupai/x86/i386/gdt.h>
-#include <tupai/x86/i386/idt.h>
-#include <tupai/x86/pic.h>
-#include <tupai/x86/vga.h>
-#include <tupai/x86/kbd.h>
+#ifndef TUPAI_CPU_H
+#define TUPAI_CPU_H
 
-void kentry()
-{
-	// Pre-initiation
-	vga_preinit();
+#include <tupai/type.h>
 
-	// CPU setup
-	gdt_init();
-	idt_init();
+void cpu_halt();
+void cpu_enable_int();
+void cpu_disable_int();
+void cpu_wait(int delay);
 
-	// Interrupt setup
-	pic_init();
-
-	// Hardware setup
-	vga_init();
-	kbd_init();
-
-	// Call kernel main
-	kmain();
-}
+#endif

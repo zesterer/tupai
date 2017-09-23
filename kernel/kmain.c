@@ -19,12 +19,14 @@
 //
 
 #include <tupai/util/log.h>
+#include <tupai/cpu.h>
 
 void kmain()
 {
 	log("Hello, World! Welcome to the kernel!\n");
 
-	volatile int a = 5 / 0;
+	cpu_enable_int();
 
-	log("...and we're back!");
+	while (true)
+		cpu_halt();
 }

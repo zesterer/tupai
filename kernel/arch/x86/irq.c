@@ -1,5 +1,5 @@
 //
-// file : kentry.c
+// file : irq.c
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,29 +18,15 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#include <tupai/kmain.h>
-#include <tupai/x86/i386/gdt.h>
-#include <tupai/x86/i386/idt.h>
+#include <tupai/x86/irq.h>
 #include <tupai/x86/pic.h>
-#include <tupai/x86/vga.h>
-#include <tupai/x86/kbd.h>
 
-void kentry()
+void irq_enable(uint8_t irq, bool enable)
 {
-	// Pre-initiation
-	vga_preinit();
+	pic_mask(irq, !enable);
+}
 
-	// CPU setup
-	gdt_init();
-	idt_init();
-
-	// Interrupt setup
-	pic_init();
-
-	// Hardware setup
-	vga_init();
-	kbd_init();
-
-	// Call kernel main
-	kmain();
+void irq_ack(uint8_t irq)
+{
+	pic_ack(irq);
 }

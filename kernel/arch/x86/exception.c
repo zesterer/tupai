@@ -52,6 +52,8 @@ size_t exception_handler(size_t stack, size_t code, size_t error)
 	(void)stack;
 	(void)error;
 
+	asm volatile ("xchg %bx, %bx");
+
 	char tmp[256] = { '\0', };
 
 	str_cat(tmp, "[FAIL] Panic: ");

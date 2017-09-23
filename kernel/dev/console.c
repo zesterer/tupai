@@ -30,3 +30,16 @@ void console_puts(const char* str)
 		vga_puts(str);
 	#endif
 }
+
+void console_putc(char c)
+{
+	#ifdef ARCH_FAMILY_x86
+		vga_putc(c);
+	#endif
+}
+
+void console_write_in(char c)
+{
+	// TODO : Replace this with proper I/O
+	console_putc(c);
+}

@@ -81,7 +81,7 @@
 		BEGIN_IRQ
 
 		push %esp // Pass the current stack pointer
-		//call pit_isr_main
+		//call isr_pit
 		mov %eax, %esp // Restore the thread stack pointer
 
 		END_IRQ
@@ -92,7 +92,7 @@
 		BEGIN_IRQ
 
 		push %esp // Pass the current stack pointer
-		//call kbd_isr_main
+		call isr_kbd
 		mov %eax, %esp // Restore the thread stack pointer
 
 		END_IRQ
@@ -127,7 +127,7 @@
 		add $(6 * 4), %eax // number of args * 4 bytes
 
 		push %eax // Pass the old stack pointer
-		//call syscall_isr_main
+		//call isr_syscall
 		mov %eax, %esp // Restore the thread stack pointer
 
 		pop %eax // Pop the return status

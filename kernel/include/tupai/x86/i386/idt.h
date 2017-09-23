@@ -21,9 +21,12 @@
 #ifndef TUPAI_X86_I386_IDT_H
 #define TUPAI_X86_I386_IDT_H
 
+#include <tupai/type.h>
+
 #define IDT_REMAP_OFFSET 32
 
 void idt_init();
 void idt_install();
+void idt_set(size_t irq, void* address, uint16_t selector_id);
 
 #endif
