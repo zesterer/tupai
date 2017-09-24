@@ -1,5 +1,5 @@
 //
-// file : console.c
+// file : fifo.h
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,57 +18,24 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#include <tupai/dev/console.h>
-#include <tupai/util/fifo.h>
-#include <tupai/util/log.h>
+#ifndef TUPAI_UTIL_FIFO_H
+#define TUPAI_UTIL_FIFO_H
 
-#ifdef ARCH_FAMILY_x86
-	#include <tupai/x86/vga.h>
+#include <tupai/type.h>
+
+typedef struct fifo
+{
+	size_t front;
+	size_t back;
+	size_t len;
+
+	uint8_t* data;
+	size_t size;
+} fifo_t;
+
+void fifo_init(fifo_t* fifo, uint8_t* data, size_t size);
+bool fifo_get(fifo_t* fifo, size_t index, uint8_t* ret);
+bool fifo_push(fifo_t* fifo, uint8_t byte);
+bool fifo_pop(fifo_t* fifo, uint8_t* ret);
+
 #endif
-
-#define BUFF_LEN 1024
-
-static fifo_t input;
-uint8_t input_buff[BUFF_LEN];
-
-static fifo_t output;
-uint8_t output_buff[BUFF_LEN];
-
-static bool initiated = false;
-
-void console_init()
-{
-	fifo_init(&input, input_buff, BUFF_LEN);
-	fifo_init(&output, output_buff, BUFF_LEN);
-	log("[ OK ] Initiated console buffers\n");
-
-	initiated = true;
-}
-
-void console_puts(const char* str)
-{
-	#ifdef ARCH_FAMILY_x86
-		vga_puts(str);
-	#endif
-}
-
-void console_putc(char c)
-{
-	#ifdef ARCH_FAMILY_x86
-		vga_putc(c);
-	#endif
-}
-
-void console_write_in(char c)
-{
-	/*
-	fifo_push(&input_buff, c);
-
-	char nc;
-	fifo_pop(&input_buff, &nc);
-	*/
-
-	#ifdef ARCH_FAMILY_x86
-		vga_putc(c);
-	#endif
-}

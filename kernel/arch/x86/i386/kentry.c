@@ -19,6 +19,7 @@
 //
 
 #include <tupai/kmain.h>
+#include <tupai/mem/kheap.h>
 #include <tupai/x86/i386/gdt.h>
 #include <tupai/x86/i386/idt.h>
 #include <tupai/x86/pic.h>
@@ -29,6 +30,9 @@ void kentry()
 {
 	// Pre-initiation
 	vga_preinit();
+
+	// Kernel heap
+	kheap_init();
 
 	// CPU setup
 	gdt_init();

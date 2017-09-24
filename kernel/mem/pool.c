@@ -1,5 +1,5 @@
 //
-// file : console.c
+// file : pool.c
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,57 +18,23 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#include <tupai/dev/console.h>
-#include <tupai/util/fifo.h>
-#include <tupai/util/log.h>
+#include <tupai/mem/pool.h>
+#include <tupai/util/mem.h>
+#include <tupai/def.h>
 
-#ifdef ARCH_FAMILY_x86
-	#include <tupai/x86/vga.h>
-#endif
-
-#define BUFF_LEN 1024
-
-static fifo_t input;
-uint8_t input_buff[BUFF_LEN];
-
-static fifo_t output;
-uint8_t output_buff[BUFF_LEN];
-
-static bool initiated = false;
-
-void console_init()
+int pool_init(pool_t* pool, size_t start, size_t size, size_t block_size)
 {
-	fifo_init(&input, input_buff, BUFF_LEN);
-	fifo_init(&output, output_buff, BUFF_LEN);
-	log("[ OK ] Initiated console buffers\n");
+	pool->start = align_up(start, PAGE_SIZE);
+	pool->size = size - (pool->start - start);
 
-	initiated = true;
-}
+	pool->block_size = block_size;
+	pool->block_count = (pool->size * 4) / (pool->block_size * 4 + 1);
 
-void console_puts(const char* str)
-{
-	#ifdef ARCH_FAMILY_x86
-		vga_puts(str);
-	#endif
-}
-
-void console_putc(char c)
-{
-	#ifdef ARCH_FAMILY_x86
-		vga_putc(c);
-	#endif
-}
-
-void console_write_in(char c)
-{
-	/*
-	fifo_push(&input_buff, c);
-
-	char nc;
-	fifo_pop(&input_buff, &nc);
-	*/
-
-	#ifdef ARCH_FAMILY_x86
-		vga_putc(c);
-	#endif
+	if (pool->block_count <= 0) // Is it large enough to even represent a valid pool?
+		return 1;
+	else
+	{
+		pool->map = (uint8_t*)((pool->start + pool->size) - align_up(pool->block_count, 4) / 4);
+		return 0;
+	}
 }

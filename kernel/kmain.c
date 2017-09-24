@@ -18,15 +18,17 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
+#include <tupai/dev/console.h>
 #include <tupai/util/log.h>
 #include <tupai/cpu.h>
 
 void kmain()
 {
+	console_init();
+
 	log("Hello, World! Welcome to the kernel!\n");
 
 	cpu_enable_int();
-
 	while (true)
 		cpu_halt();
 }

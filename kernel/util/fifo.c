@@ -1,5 +1,5 @@
 //
-// file : console.c
+// file : fifo.c
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,57 +18,51 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#include <tupai/dev/console.h>
 #include <tupai/util/fifo.h>
-#include <tupai/util/log.h>
 
-#ifdef ARCH_FAMILY_x86
-	#include <tupai/x86/vga.h>
-#endif
-
-#define BUFF_LEN 1024
-
-static fifo_t input;
-uint8_t input_buff[BUFF_LEN];
-
-static fifo_t output;
-uint8_t output_buff[BUFF_LEN];
-
-static bool initiated = false;
-
-void console_init()
+void fifo_init(fifo_t* fifo, uint8_t* data, size_t size)
 {
-	fifo_init(&input, input_buff, BUFF_LEN);
-	fifo_init(&output, output_buff, BUFF_LEN);
-	log("[ OK ] Initiated console buffers\n");
+	fifo->front = 0;
+	fifo->back = 0;
+	fifo->len = 0;
 
-	initiated = true;
+	fifo->data = data;
+	fifo->size = size;
 }
 
-void console_puts(const char* str)
+bool fifo_get(fifo_t* fifo, size_t index, uint8_t* ret)
 {
-	#ifdef ARCH_FAMILY_x86
-		vga_puts(str);
-	#endif
+	if (fifo->size > index)
+	{
+		size_t offset = (fifo->front + index) % fifo->size;
+		*ret = fifo->data[offset];
+		return true;
+	}
+	else
+		return false;
 }
 
-void console_putc(char c)
+bool fifo_push(fifo_t* fifo, uint8_t byte)
 {
-	#ifdef ARCH_FAMILY_x86
-		vga_putc(c);
-	#endif
+	if (fifo->len < fifo->size)
+	{
+		fifo->back = (fifo->back + 1) % fifo->size;
+		fifo->data[fifo->back] = byte;
+		fifo->len ++;
+		return true;
+	}
+	else
+		return false;
 }
 
-void console_write_in(char c)
+bool fifo_pop(fifo_t* fifo, uint8_t* ret)
 {
-	/*
-	fifo_push(&input_buff, c);
-
-	char nc;
-	fifo_pop(&input_buff, &nc);
-	*/
-
-	#ifdef ARCH_FAMILY_x86
-		vga_putc(c);
-	#endif
+	if (fifo->len > 0)
+	{
+		*ret = fifo->data[fifo->front];
+		fifo->front = (fifo->front + 1) % fifo->size;
+		return true;
+	}
+	else
+		return false;
 }

@@ -1,5 +1,5 @@
 //
-// file : console.c
+// file : kheap.c
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,57 +18,18 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#include <tupai/dev/console.h>
-#include <tupai/util/fifo.h>
+#include <tupai/mem/kheap.h>
 #include <tupai/util/log.h>
 
-#ifdef ARCH_FAMILY_x86
-	#include <tupai/x86/vga.h>
-#endif
+#define BLOCK_SIZE 64
 
-#define BUFF_LEN 1024
+extern char kheap_start[];
+extern char kheap_end[];
 
-static fifo_t input;
-uint8_t input_buff[BUFF_LEN];
+static pool_t kheap;
 
-static fifo_t output;
-uint8_t output_buff[BUFF_LEN];
-
-static bool initiated = false;
-
-void console_init()
+void kheap_init()
 {
-	fifo_init(&input, input_buff, BUFF_LEN);
-	fifo_init(&output, output_buff, BUFF_LEN);
-	log("[ OK ] Initiated console buffers\n");
-
-	initiated = true;
-}
-
-void console_puts(const char* str)
-{
-	#ifdef ARCH_FAMILY_x86
-		vga_puts(str);
-	#endif
-}
-
-void console_putc(char c)
-{
-	#ifdef ARCH_FAMILY_x86
-		vga_putc(c);
-	#endif
-}
-
-void console_write_in(char c)
-{
-	/*
-	fifo_push(&input_buff, c);
-
-	char nc;
-	fifo_pop(&input_buff, &nc);
-	*/
-
-	#ifdef ARCH_FAMILY_x86
-		vga_putc(c);
-	#endif
+	pool_init(&kheap, (size_t)kheap_start, (size_t)kheap_end - (size_t)kheap_start, 64);
+	log("[ OK ] Constructed kernel heap\n");
 }

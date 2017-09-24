@@ -28,6 +28,7 @@ void vga_init();
 void vga_putc(char c);
 void vga_puts(const char* str);
 void vga_enable_cursor(bool enable);
-void vga_place_cursor(int col, int row);
+void vga_place_cursor(unsigned int col, unsigned int row);
+void vga_scroll(unsigned int n);
 
 #endif

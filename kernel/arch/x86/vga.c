@@ -23,11 +23,11 @@
 #include <tupai/util/log.h>
 #include <tupai/def.h>
 
-static const int COLS = 80;
-static const int ROWS = 25;
+static const unsigned int COLS = 80;
+static const unsigned int ROWS = 25;
 
-static int col = 0;
-static int row = 0;
+static unsigned int col = 0;
+static unsigned int row = 0;
 
 static char fg = 0xF;
 static char bg = 0x0;
@@ -66,7 +66,7 @@ void vga_putc(char c)
 
 		default:
 		{
-			int index = COLS * row + col;
+			unsigned int index = COLS * row + col;
 			buffer[index] = make_entry(c, fg, bg);
 			col ++;
 		}
@@ -81,8 +81,8 @@ void vga_putc(char c)
 
 	if (row >= ROWS)
 	{
-		row = 0;
-		col = 0;
+		row = ROWS - 1;
+		vga_scroll(1);
 	}
 
 	vga_place_cursor(col, row);
@@ -96,25 +96,32 @@ void vga_puts(const char* str)
 
 void vga_enable_cursor(bool enable)
 {
+	outb(0x3D4, 0x0A);
 	if (enable)
-	{
-		outb(0x3D4, 0x0A);
 		outb(0x3D5, 0x00);
-	}
 	else
-	{
-		outb(0x3D4, 0x0A);
 		outb(0x3D5, 0x3F);
-	}
 }
 
-void vga_place_cursor(int col, int row)
+void vga_place_cursor(unsigned int col, unsigned int row)
 {
 	uint16_t pos = COLS * row + col;
 	outb(0x3D4, 0x0F);
 	outb(0x3D5, (uint8_t)(pos & 0xFF));
 	outb(0x3D4, 0x0E);
 	outb(0x3D5, (uint8_t)((pos >> 8) & 0xFF));
+}
+
+void vga_scroll(unsigned int n)
+{
+	for (unsigned int j = 0; j < ROWS; j ++)
+		for (unsigned int i = 0; i < COLS; i ++)
+		{
+			if (j < ROWS - n)
+				buffer[j * COLS + i] = buffer[(j + n) * COLS + i];
+			else
+				buffer[j * COLS + i] = 0;
+		}
 }
 
 uint16_t make_entry(char c, char fg, char bg)
