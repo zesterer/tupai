@@ -23,6 +23,8 @@
 
 #include <tupai/mem/pool.h>
 
+extern pool_t kheap;
+
 void kheap_init();
 
 #endif

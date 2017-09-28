@@ -20,6 +20,8 @@
 
 #include <tupai/dev/console.h>
 #include <tupai/util/log.h>
+#include <tupai/util/mem.h>
+#include <tupai/util/str.h>
 #include <tupai/cpu.h>
 
 void kmain()
@@ -27,6 +29,11 @@ void kmain()
 	console_init();
 
 	log("Hello, World! Welcome to the kernel!\n");
+
+	char* buff = alloc(256);
+	str_copy("Kernel heap working!\n", buff);
+	log(buff);
+	dealloc(buff);
 
 	cpu_enable_int();
 	while (true)

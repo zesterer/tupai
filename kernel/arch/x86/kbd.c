@@ -46,6 +46,7 @@ void kbd_init()
 	log("[ OK ] PS2 keyboard ISR installed\n");
 
 	irq_enable(KBD_INT, true); // Unmask the keyboard interrupt
+	log("[ OK ] PS2 keyboard IRQ unmasked\n");
 }
 
 size_t isr_kbd(size_t stack)

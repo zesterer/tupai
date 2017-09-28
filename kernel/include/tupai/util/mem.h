@@ -21,6 +21,11 @@
 #ifndef TUPAI_UTIL_MEM_H
 #define TUPAI_UTIL_MEM_H
 
+#include <tupai/mem/kheap.h>
+#include <tupai/util/panic.h>
+
+#define DEFAULT_ALIGN 8
+
 inline size_t align_up(size_t x, size_t a)
 {
 	return (x % a == 0) ? x : ((x / a + 1) * a);
@@ -30,5 +35,8 @@ inline size_t align_down(size_t x, size_t a)
 {
 	return (x / a) * a;
 }
+
+void* alloc(size_t n);
+void dealloc(void* ptr);
 
 #endif

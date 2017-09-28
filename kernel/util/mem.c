@@ -1,5 +1,5 @@
 //
-// file : console.h
+// file : mem.c
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,12 +18,39 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#ifndef TUPAI_DEV_CONSOLE_H
-#define TUPAI_DEV_CONSOLE_H
+#include <tupai/util/mem.h>
+#include <tupai/util/panic.h>
+#include <tupai/mem/kheap.h>
 
-void console_init();
-void console_puts(const char* str);
-void console_putc(char c);
-void console_write_in(char c);
+#define DEFAULT_ALIGN 8
 
-#endif
+void* alloc(size_t n)
+{
+	void* ret;
+	switch (pool_alloc(&kheap, n, DEFAULT_ALIGN, &ret))
+	{
+	case 0:
+		return ret;
+	case 1:
+		panic("No space left to allocate in kernel heap");
+	case 2:
+		panic("Serious kernel heap corruption occured when attempting to allocate");
+	default:
+		panic("Unknown kernel heap error occured when attempting to allocate");
+	}
+}
+
+void dealloc(void* ptr)
+{
+	switch (pool_dealloc(&kheap, ptr))
+	{
+	case 0:
+		return;
+	case 1:
+		panic("Attempted to deallocate invalid pointer from kernel heap");
+	case 2:
+		panic("Serious kernel heap corruption occured when attempting to deallocate");
+	default:
+		panic("Unknown kernel heap error occured when attempting to deallocate");
+	}
+}

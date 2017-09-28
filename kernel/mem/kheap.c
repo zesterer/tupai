@@ -20,16 +20,24 @@
 
 #include <tupai/mem/kheap.h>
 #include <tupai/util/log.h>
+#include <tupai/util/panic.h>
 
 #define BLOCK_SIZE 64
 
 extern char kheap_start[];
 extern char kheap_end[];
 
-static pool_t kheap;
+pool_t kheap;
 
 void kheap_init()
 {
-	pool_init(&kheap, (size_t)kheap_start, (size_t)kheap_end - (size_t)kheap_start, 64);
-	log("[ OK ] Constructed kernel heap\n");
+	if (pool_init(&kheap, (size_t)kheap_start, (size_t)kheap_end - (size_t)kheap_start, 64) != 0)
+		panic("Could not construct kernel heap");
+	else
+		log("[ OK ] Constructed kernel heap\n");
+
+	if (pool_integrity_check(&kheap) != 0)
+		panic("Kernel heap integrity check failed");
+	else
+		log("[ OK ] Kernel heap passed integrity check\n");
 }

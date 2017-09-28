@@ -19,12 +19,17 @@
 //
 
 #include <tupai/util/panic.h>
+#include <tupai/util/str.h>
 #include <tupai/dev/console.h>
 #include <tupai/def.h>
 
 void panic(const char* str)
 {
-	console_puts(str);
+	char buff[256];
+	str_copy("PANIC: ", buff);
+	str_cat(buff, str);
+
+	console_puts(buff);
 	hang();
 }
 

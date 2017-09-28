@@ -21,7 +21,9 @@
 #ifndef TUPAI_UTIL_STR_H
 #define TUPAI_UTIL_STR_H
 
-size_t str_copy(const char* src, char* tgt)
+#include <tupai/type.h>
+
+inline size_t str_copy(const char* src, char* tgt)
 {
 	size_t i = 0;
 	for (; src[i] != '\0'; i ++)
@@ -30,7 +32,7 @@ size_t str_copy(const char* src, char* tgt)
 	return i;
 }
 
-size_t str_cat(char* tgt, const char* src)
+inline size_t str_cat(char* tgt, const char* src)
 {
 	size_t i, j;
 	for (i = 0; tgt[i] != '\0'; i ++);
