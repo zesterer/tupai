@@ -21,9 +21,14 @@
 #ifndef TUPAI_TASK_THREAD_H
 #define TUPAI_TASK_THREAD_H
 
+#include <tupai/type.h>
+
 typedef struct thread
 {
-	
+	id_t id;
+	size_t stack;
+	size_t sp;
+	i32 priority;
 } thread_t;
 
 #endif

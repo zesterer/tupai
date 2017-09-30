@@ -29,6 +29,11 @@ extern char kheap_end[];
 
 pool_t kheap;
 
+/*
+** kheap_init()
+** Initiate the kernel heap, and perform a few basic checks
+*/
+
 void kheap_init()
 {
 	if (pool_init(&kheap, (size_t)kheap_start, (size_t)kheap_end - (size_t)kheap_start, 64) != 0)

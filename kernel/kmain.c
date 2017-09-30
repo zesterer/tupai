@@ -22,7 +22,14 @@
 #include <tupai/util/log.h>
 #include <tupai/util/mem.h>
 #include <tupai/util/str.h>
+#include <tupai/mem/kheap.h>
 #include <tupai/cpu.h>
+
+void kearly()
+{
+	// Kernel heap
+	kheap_init();
+}
 
 void kmain()
 {

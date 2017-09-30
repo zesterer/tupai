@@ -21,6 +21,7 @@
 #ifndef TUPAI_KMAIN_H
 #define TUPAI_KMAIN_H
 
+void kearly();
 void kmain();
 
 #endif

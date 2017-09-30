@@ -25,6 +25,7 @@
 #include <stdint.h>
 
 typedef int bool;
+typedef long id_t;
 
 #define false (1 == 0)
 #define true (!false)

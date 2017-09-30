@@ -31,8 +31,8 @@ void kentry()
 	// Pre-initiation
 	vga_preinit();
 
-	// Kernel heap
-	kheap_init();
+	// Kernel early setup
+	kearly();
 
 	// CPU setup
 	gdt_init();
@@ -45,6 +45,6 @@ void kentry()
 	vga_init();
 	kbd_init();
 
-	// Call kernel main
+	// Kernel main entry
 	kmain();
 }

@@ -36,6 +36,12 @@ enum
 static int block_get(pool_t* pool, size_t index);
 static void block_set(pool_t* pool, size_t index, int value);
 
+/*
+** pool_init()
+** Initiate a pool descriptor type (assign a suitable map, block size, etc.)
+*/
+
+
 int pool_init(pool_t* pool, size_t start, size_t size, size_t block_size)
 {
 	pool->start = align_up(start, PAGE_SIZE);
@@ -56,6 +62,12 @@ int pool_init(pool_t* pool, size_t start, size_t size, size_t block_size)
 		return 0;
 	}
 }
+
+/*
+** pool_alloc()
+** Allocate a region of heap memory with at least the given size
+*/
+
 
 int pool_alloc(pool_t* pool, size_t n, size_t align, void** ret)
 {
@@ -93,6 +105,11 @@ int pool_alloc(pool_t* pool, size_t n, size_t align, void** ret)
 	return 1;
 }
 
+/*
+** pool_dealloc()
+** Deallocate a heap region that starts at the given pointer
+*/
+
 int pool_dealloc(pool_t* pool, void* ptr)
 {
 	if (((size_t)ptr - pool->start) % pool->block_size != 0)
@@ -124,11 +141,26 @@ int pool_dealloc(pool_t* pool, void* ptr)
 
 }
 
+/*
+** pool_integrity_check()
+** Performs basic pool map checks (i.e: no error entries, TAIL never follows FREE, etc.)
+*/
+
 int pool_integrity_check(pool_t* pool)
 {
+	bool cfree = true;
 	for (size_t i = 0; i < pool->block_count; i ++)
-		if (block_get(pool, i) == ERROR)
+	{
+		int type = block_get(pool, i);
+		if (type == ERROR)
 			return 1;
+		else if (type == FREE)
+			cfree = true;
+		else if (type == TAIL && cfree)
+			return 1;
+		else
+			cfree = false;
+	}
 	return 0;
 }
 

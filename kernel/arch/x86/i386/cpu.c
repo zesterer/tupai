@@ -35,7 +35,7 @@ void cpu_disable_int()
 	asm volatile ("cli");
 }
 
-void cpu_wait(int delay) // TODO : Make this ms
+void cpu_wait(uint32_t delay) // TODO : Make this ms
 {
-	for (volatile int i = 0; i < delay; i ++);
+	for (volatile uint32_t i = 0; i < delay; i ++);
 }

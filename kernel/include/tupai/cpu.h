@@ -26,6 +26,6 @@
 void cpu_halt();
 void cpu_enable_int();
 void cpu_disable_int();
-void cpu_wait(int delay);
+void cpu_wait(uint32_t delay);
 
 #endif
