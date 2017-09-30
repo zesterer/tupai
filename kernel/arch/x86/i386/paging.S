@@ -40,7 +40,7 @@
 			// Map the ECX-th P1 entry to a page at address 4K * ecx
 			mov $(1024 * 4), %eax    // For each P1 table (size = 1024 * 4)
 			imul %ecx, %eax         // Calculate 4K * ecx
-			or $0b11, %eax          // Present and writable
+			or $0b111, %eax          // Present and writable, (temporary: user-accessible)
 			add $_p1_table.boot, %eax // Present, writable
 
 			// Lower identity
@@ -67,7 +67,7 @@
 			// Map the ECX-th P1 entry to a page at address 4K * ecx
 			mov $4096, %eax     // 4K
 			imul %ecx, %eax     // Calculate 4K * ecx
-			or $0b11, %eax      // Present, writable
+			or $0b111, %eax      // Present, writable, (temporary: user-accessible)
 
 			mov $4, %edx
 			imul %ecx, %edx     // Calculate (p1_table + ecx * 8)...

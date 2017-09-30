@@ -25,5 +25,6 @@
 
 void pic_init();
 void pic_mask(uint8_t irq, bool mask);
+void pic_ack(uint8_t irq);
 
 #endif

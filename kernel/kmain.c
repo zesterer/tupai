@@ -25,6 +25,8 @@
 #include <tupai/mem/kheap.h>
 #include <tupai/cpu.h>
 
+void usermode_test();
+
 void kearly()
 {
 	// Kernel heap
@@ -37,12 +39,15 @@ void kmain()
 
 	log("Hello, World! Welcome to the kernel!\n");
 
-	char* buff = alloc(256);
-	str_copy("Kernel heap working!\n", buff);
-	log(buff);
-	dealloc(buff);
+	cpu_user_jump(&usermode_test);
 
 	cpu_enable_int();
 	while (true)
 		cpu_halt();
+}
+
+void usermode_test()
+{
+	log("Hello, World! Welcome to user mode!\n");
+	while (1);
 }

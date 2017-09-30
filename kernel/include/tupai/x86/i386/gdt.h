@@ -21,7 +21,10 @@
 #ifndef TUPAI_X86_I386_GDT_H
 #define TUPAI_X86_I386_GDT_H
 
+#include <tupai/type.h>
+
 void gdt_init();
+void gdt_set(size_t n, uint32_t offset, uint32_t size, uint8_t access_flags, uint8_t gran_flags);
 void gdt_install();
 
 #endif

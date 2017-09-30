@@ -27,5 +27,6 @@ void cpu_halt();
 void cpu_enable_int();
 void cpu_disable_int();
 void cpu_wait(uint32_t delay);
+void cpu_user_jump(void* address);
 
 #endif

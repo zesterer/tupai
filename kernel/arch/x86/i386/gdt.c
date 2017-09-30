@@ -30,6 +30,8 @@ enum
 	ACCESS_EXEC    = 0b00001000,
 	ACCESS_PRESENT = 0b10000000,
 	ACCESS_ONE     = 0b00010000,
+	ACCESS_KERNEL  = 0b00000000,
+	ACCESS_USER    = 0b01100000,
 };
 
 enum
@@ -54,7 +56,7 @@ typedef struct gdt_ptr
 	uint32_t offset;
 } __attribute__((packed)) gdt_ptr_t;
 
-#define GDT_LEN 3
+#define GDT_LEN 6
 
 // GDT
 gdt_desc_t gdt[GDT_LEN] __attribute__((aligned(PAGE_SIZE)));
@@ -62,23 +64,25 @@ gdt_desc_t gdt[GDT_LEN] __attribute__((aligned(PAGE_SIZE)));
 // GDT pointer
 gdt_ptr_t gdt_ptr __attribute__((aligned(4)));
 
-void gdt_set(size_t n, uint32_t offset, uint32_t size, uint8_t access_flags, uint8_t gran_flags);
-
 void gdt_init()
 {
 	// Flags for various sections
-	uint8_t code_access_flags = ACCESS_READ | ACCESS_EXEC | ACCESS_ONE | ACCESS_PRESENT;
-	uint8_t data_access_flags = ACCESS_WRITE | ACCESS_ONE | ACCESS_PRESENT;
+	uint8_t kernel_code_flags = ACCESS_KERNEL | ACCESS_READ | ACCESS_EXEC | ACCESS_ONE | ACCESS_PRESENT;
+	uint8_t kernel_data_flags = ACCESS_KERNEL | ACCESS_WRITE | ACCESS_ONE | ACCESS_PRESENT;
+	uint8_t user_code_flags = ACCESS_USER | ACCESS_READ | ACCESS_EXEC | ACCESS_ONE | ACCESS_PRESENT;
+	uint8_t user_data_flags = ACCESS_USER | ACCESS_WRITE | ACCESS_ONE | ACCESS_PRESENT;
 	uint8_t gran_flags = GRAN_PAGE | GRAN_P32;
 
 	gdt_set(0, 0x0, 0x0, 0, 0); // Null segment
 	log("[ OK ] Null GDT segment set\n");
-
-	gdt_set(1, 0x0, 0xFFFFF, code_access_flags, gran_flags); // Code segment
-	log("[ OK ] Code GDT segment set\n");
-
-	gdt_set(2, 0x0, 0xFFFFF, data_access_flags, gran_flags); // Data segment
-	log("[ OK ] Data GDT segment set\n");
+	gdt_set(1, 0x0, 0xFFFFF, kernel_code_flags, gran_flags); // Kernel code segment
+	log("[ OK ] Kernel code GDT segment set\n");
+	gdt_set(2, 0x0, 0xFFFFF, kernel_data_flags, gran_flags); // Kernel data segment
+	log("[ OK ] Kernel data GDT segment set\n");
+	gdt_set(3, 0x0, 0xFFFFF, user_code_flags, gran_flags); // User code segment
+	log("[ OK ] User code GDT segment set\n");
+	gdt_set(4, 0x0, 0xFFFFF, user_data_flags, gran_flags); // User data segment
+	log("[ OK ] User data GDT segment set\n");
 
 	gdt_install();
 	log("[ OK ] GDT installed\n");

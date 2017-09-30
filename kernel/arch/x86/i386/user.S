@@ -1,5 +1,5 @@
 //
-// file : cpu.c
+// file : user.S
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,31 +18,26 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#include <tupai/cpu.h>
+.global _user_jump
+.type _user_jump, @function
 
-void _user_jump(void* address) __attribute__ ((naked));
+.section .text
 
-void cpu_halt()
-{
-	asm volatile ("hlt");
-}
+	_user_jump:
+		mov 4(%esp), %edx // Preserve userland entry address
 
-void cpu_enable_int()
-{
-	asm volatile ("sti");
-}
+		// Set up segment registers to user data segment (SS is handled by iret)
+		mov $0x23, %ax
+		mov %ax, %ds
+		mov %ax, %es
+		mov %ax, %fs
+		mov %ax, %gs
 
-void cpu_disable_int()
-{
-	asm volatile ("cli");
-}
+		mov %esp, %eax // Record current stack position
+		push $0x23 // User data segment
+		push %eax // Push previous stack position
+		pushf
+		push $0x1B // User code segment
 
-void cpu_wait(uint32_t delay) // TODO : Make this ms
-{
-	for (volatile uint32_t i = 0; i < delay; i ++);
-}
-
-void cpu_user_jump(void* address)
-{
-	_user_jump(address);
-}
+		push %edx // Push userland entry address
+		iret // Perform the jump to user mode
