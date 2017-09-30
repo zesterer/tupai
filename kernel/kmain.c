@@ -23,6 +23,7 @@
 #include <tupai/util/mem.h>
 #include <tupai/util/str.h>
 #include <tupai/mem/kheap.h>
+#include <tupai/mem/phys.h>
 #include <tupai/cpu.h>
 
 void usermode_test();
@@ -31,6 +32,7 @@ void kearly()
 {
 	// Kernel heap
 	kheap_init();
+	phys_init();
 }
 
 void kmain()
@@ -39,9 +41,10 @@ void kmain()
 
 	log("Hello, World! Welcome to the kernel!\n");
 
+	cpu_enable_int();
+
 	cpu_user_jump(&usermode_test);
 
-	cpu_enable_int();
 	while (true)
 		cpu_halt();
 }

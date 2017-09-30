@@ -133,8 +133,8 @@ endif
 
 SRCS = $(abspath $(SRCS_REL))
 
-OBJS  += $(subst $(SRC_ROOT), $(BUILD_ROOT), $(addsuffix .o, $(basename $(SRCS))))
-DEPS  += $(subst $(SRC_ROOT), $(BUILD_ROOT), $(addsuffix .d, $(basename $(SRCS))))
+OBJS  += $(subst $(SRC_ROOT), $(BUILD_ROOT), $(addsuffix .o, $(SRCS)))
+DEPS  += $(subst $(SRC_ROOT), $(BUILD_ROOT), $(addsuffix .d, $(SRCS)))
 BDIRS += $(sort $(dir $(OBJS)))
 
 CRTBEGIN = $(shell $(LD) $(CFLAGS) -print-file-name=crtbegin.o)
@@ -170,25 +170,25 @@ $(BDIRS) :
 -include $(DEPS)
 
 # Compile .s files
-$(BUILD_ROOT)/%.o : $(SRC_DIR)/%.s
+$(BUILD_ROOT)/%.s.o : $(SRC_DIR)/%.s
 	@echo "[`date "+%H:%M:%S"`] Compiling '$<'..."
 	@$(TOOL_DIR)/$(AS) -c -o $@ $< $(CFLAGS)
 	@echo "[`date "+%H:%M:%S"`] Compiled '$@'."
 
 # Compile .S files
-$(BUILD_ROOT)/%.o : $(SRC_DIR)/%.S
+$(BUILD_ROOT)/%.S.o : $(SRC_DIR)/%.S
 	@echo "[`date "+%H:%M:%S"`] Compiling '$<'..."
 	@$(TOOL_DIR)/$(AS) -c -o $@ $< $(CFLAGS)
 	@echo "[`date "+%H:%M:%S"`] Compiled '$@'."
 
 # Compile .c files
-$(BUILD_ROOT)/%.o : $(SRC_DIR)/%.c
+$(BUILD_ROOT)/%.c.o : $(SRC_DIR)/%.c
 	@echo "[`date "+%H:%M:%S"`] Compiling '$<'..."
 	@$(TOOL_DIR)/$(CC) -MMD -c -o $@ $< $(CFLAGS)
 	@echo "[`date "+%H:%M:%S"`] Compiled '$@'."
 
 # Compile .cpp files
-$(BUILD_ROOT)/%.o : $(SRC_DIR)/%.cpp
+$(BUILD_ROOT)/%.cpp.o : $(SRC_DIR)/%.cpp
 	@echo "[`date "+%H:%M:%S"`] Compiling '$<'..."
 	@$(TOOL_DIR)/$(CPP) -MMD -c -o $@ $< $(CFLAGS)
 	@echo "[`date "+%H:%M:%S"`] Compiled '$@'."

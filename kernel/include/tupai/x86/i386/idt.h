@@ -23,6 +23,7 @@
 
 #include <tupai/type.h>
 
+#define IDT_LEN 256
 #define IDT_REMAP_OFFSET 32
 
 void idt_init();

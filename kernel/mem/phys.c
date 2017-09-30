@@ -1,5 +1,5 @@
 //
-// file : cpu.c
+// file : phys.c
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,31 +18,11 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#include <tupai/cpu.h>
+#include <tupai/mem/phys.h>
+#include <tupai/util/log.h>
+#include <tupai/def.h>
 
-extern void _user_jump(void* address);
-
-void cpu_halt()
+void phys_init()
 {
-	asm volatile ("hlt");
-}
-
-void cpu_enable_int()
-{
-	asm volatile ("sti");
-}
-
-void cpu_disable_int()
-{
-	asm volatile ("cli");
-}
-
-void cpu_wait(uint32_t delay) // TODO : Make this ms
-{
-	for (volatile uint32_t i = 0; i < delay; i ++);
-}
-
-void cpu_user_jump(void* address)
-{
-	_user_jump(address);
+	log("[ OK ] Physical memory allocator initiated\n");
 }

@@ -55,71 +55,16 @@ typedef struct idt_ptr
 	uint32_t offset;
 } __attribute__((packed)) idt_ptr_t;
 
-#define IDT_LEN 256
-
 // IDT
 idt_desc_t idt[IDT_LEN] __attribute__((aligned(PAGE_SIZE)));
 
 // IDT pointer
 idt_ptr_t idt_ptr __attribute__((aligned(4)));
 
-extern void _exception_0();
-extern void _exception_1();
-extern void _exception_2();
-extern void _exception_3();
-extern void _exception_4();
-extern void _exception_5();
-extern void _exception_6();
-extern void _exception_7();
-extern void _exception_8();
-extern void _exception_9();
-extern void _exception_10();
-extern void _exception_11();
-extern void _exception_12();
-extern void _exception_13();
-extern void _exception_14();
-extern void _exception_15();
-extern void _exception_16();
-extern void _exception_17();
-extern void _exception_18();
-
-extern void _isr_default_stub();
-size_t isr_default(size_t stack);
-
-extern void _isr_spurious_stub();
-size_t isr_spurious(size_t stack);
-
 void idt_init()
 {
-	// Set exception routine entries
-	idt_set( 0, (void*)_exception_0, 1);
-	idt_set( 1, (void*)_exception_1, 1);
-	idt_set( 2, (void*)_exception_2, 1);
-	idt_set( 3, (void*)_exception_3, 1);
-	idt_set( 4, (void*)_exception_4, 1);
-	idt_set( 5, (void*)_exception_5, 1);
-	idt_set( 6, (void*)_exception_6, 1);
-	idt_set( 7, (void*)_exception_7, 1);
-	idt_set( 8, (void*)_exception_8, 1);
-	idt_set( 9, (void*)_exception_9, 1);
-	idt_set(10, (void*)_exception_10, 1);
-	idt_set(11, (void*)_exception_11, 1);
-	idt_set(12, (void*)_exception_12, 1);
-	idt_set(13, (void*)_exception_13, 1);
-	idt_set(14, (void*)_exception_14, 1);
-	idt_set(15, (void*)_exception_15, 1);
-	idt_set(16, (void*)_exception_16, 1);
-	idt_set(17, (void*)_exception_17, 1);
-	idt_set(18, (void*)_exception_18, 1);
-	log("[ OK ] Exception IDT entries set\n");
-
-	// Assign IDT entries to the stub handler for now
-	for (size_t i = IDT_REMAP_OFFSET; i < IDT_LEN; i ++)
-		idt_set(i, (void*)&_isr_default_stub, 1);
-	log("[ OK ] Default IDT entries set\n");
-
-	idt_install();
-	log("[ OK ] IDT installed\n");
+	// Nothing yet
+	log("[ OK ] IDT initiated\n");
 }
 
 void idt_install()
@@ -143,16 +88,4 @@ void idt_set(size_t irq, void* address, uint16_t selector_id)
 
 	// Set 'interrupt' and 'present' flags
 	idt[irq].type_attr = ATTR_GATE_INT | ATTR_PRESENT;
-}
-
-size_t isr_default(size_t stack)
-{
-	panic("Unspecified interrupt occured!\n");
-	return stack;
-}
-
-size_t isr_spurious(size_t stack)
-{
-	panic("Spurious interrupt occured!\n");
-	return stack;
 }

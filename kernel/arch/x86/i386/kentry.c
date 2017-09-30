@@ -22,8 +22,10 @@
 #include <tupai/mem/kheap.h>
 #include <tupai/x86/i386/gdt.h>
 #include <tupai/x86/i386/idt.h>
+#include <tupai/x86/i386/isr.h>
 #include <tupai/x86/i386/tss.h>
 #include <tupai/x86/pic.h>
+#include <tupai/x86/pit.h>
 #include <tupai/x86/vga.h>
 #include <tupai/x86/kbd.h>
 
@@ -38,10 +40,12 @@ void kentry()
 	// CPU setup
 	gdt_init();
 	idt_init();
+	isr_init();
 	tss_init();
 
 	// Interrupt setup
 	pic_init();
+	pit_init();
 
 	// Hardware setup
 	vga_init();
