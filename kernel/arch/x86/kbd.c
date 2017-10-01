@@ -1,5 +1,5 @@
 //
-// file : vga.c
+// file : kbd.c
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //

@@ -20,9 +20,23 @@
 
 #include <tupai/mem/phys.h>
 #include <tupai/util/log.h>
+#include <tupai/util/mem.h>
+#include <tupai/proc.h>
 #include <tupai/def.h>
+
+typedef struct phys_entry
+{
+	bool kernel;
+	proc_t* proc;
+} phys_entry_t;
+
+phys_entry_t* phys_map;
+size_t phys_map_size;
 
 void phys_init()
 {
+	phys_map_size = (256 * 1024 * 1024) / PAGE_SIZE;
+	phys_map = alloc(sizeof(phys_entry_t) * phys_map_size);
+
 	log("[ OK ] Physical memory allocator initiated\n");
 }

@@ -24,17 +24,19 @@
 #include <tupai/x86/i386/idt.h>
 #include <tupai/x86/i386/isr.h>
 #include <tupai/x86/i386/tss.h>
+#include <tupai/x86/mb.h>
 #include <tupai/x86/pic.h>
 #include <tupai/x86/pit.h>
 #include <tupai/x86/vga.h>
 #include <tupai/x86/kbd.h>
 
-void kentry()
+void kentry(size_t mb_header)
 {
 	// Pre-initiation
 	vga_preinit();
 
 	// Kernel early setup
+	mb_parse(mb_header);
 	kearly();
 
 	// CPU setup

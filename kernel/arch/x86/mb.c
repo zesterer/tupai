@@ -1,5 +1,5 @@
 //
-// file : higher.S
+// file : mb.c
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,35 +18,10 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-.global _start_virt
-.global _hang
+#include <tupai/x86/mb.h>
+#include <tupai/util/log.h>
 
-.global _stack_bottom
-.global _stack_top
-
-.set virt_offset, 0xC0000000
-
-.section .text
-
-	_start_virt: // Kernel virtual entry
-		mov $(_stack_bottom.boot + virt_offset), %esp // Reset stack, now with virtual offset
-
-		// Display higher boot message
-		push $0x0F
-		push $_start_str
-		call _vga_print.boot
-		add $8, %esp
-
-		// Call the platform-specific kentry function
-		push (_mb_struct.boot)
-		call kentry
-
-		jmp _hang
-
-	_hang:
-		hlt
-		jmp _hang
-
-.section .rodata
-	_start_str:
-		.ascii "[ OK ] Jump successful, welcome to the virtual kernel\n\0"
+void mb_parse(size_t header)
+{
+	log("[ OK ] Parsing Multiboot data...");
+}
