@@ -43,7 +43,9 @@ void log(const char* fmt, ...)
 					LOG_PUTC('%');
 				else if (*fmt == 's')
 					LOG_PUTS(va_arg(args, const char*));
-				else if (*fmt == 'i')
+				else if (*fmt == 'c')
+					LOG_PUTC((char)va_arg(args, int));
+				else if (*fmt == 'i' || *fmt == 'd')
 				{
 					char buff[I32_STR_MAX];
 					if (i32_to_str(va_arg(args, int32_t), 10, 0, buff))
@@ -51,10 +53,18 @@ void log(const char* fmt, ...)
 					else
 						LOG_PUTC('!');
 				}
-				else if (*fmt == 'x')
+				else if (*fmt == 'o')
 				{
-					char buff[I32_STR_MAX];
-					if (i32_to_str(va_arg(args, int32_t), 16, 0, buff))
+					char buff[U32_STR_MAX];
+					if (u32_to_str(va_arg(args, uint32_t), 8, 0, buff))
+						LOG_PUTS(buff);
+					else
+						LOG_PUTC('!');
+				}
+				else if (*fmt == 'X')
+				{
+					char buff[U32_STR_MAX];
+					if (u32_to_str(va_arg(args, uint32_t), 16, 0, buff))
 						LOG_PUTS(buff);
 					else
 						LOG_PUTC('!');
@@ -62,11 +72,24 @@ void log(const char* fmt, ...)
 				else if (*fmt == 'p')
 				{
 					LOG_PUTS("0x");
-					char buff[I32_STR_MAX];
-					if (ptr_to_str(va_arg(args, int32_t), 16, sizeof(size_t) * 2, buff))
+					char buff[PTR_STR_MAX];
+					if (ptr_to_str(va_arg(args, size_t), 16, sizeof(size_t) * 2, buff))
 						LOG_PUTS(buff);
 					else
 						LOG_PUTC('!');
+				}
+				else if (*fmt == 'x')
+				{
+					LOG_PUTS("<Unrecognised format specifier>");
+				}
+				else if (*fmt == 'x')
+				{
+					LOG_PUTS("<Unrecognised format specifier>");
+				}
+				else
+				{
+					LOG_PUTC('%');
+					LOG_PUTC(*fmt);
 				}
 				state = 0;
 				break;

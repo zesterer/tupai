@@ -21,34 +21,66 @@
 #include <tupai/util/conv.h>
 #include <tupai/util/math.h>
 
-static bool wrapper(int64_t x, int base, int pad, int size, char* str);
+static bool wrapper_signed(int64_t x, int base, int pad, int size, char* str);
+static bool wrapper_unsigned(uint64_t x, int base, int pad, int size, char* str);
 
 bool i8_to_str(int8_t x, int base, int pad, char (str)[I8_STR_MAX])
 {
-	return wrapper(x, base, pad, sizeof(int8_t), str);
+	return wrapper_signed(x, base, pad, sizeof(int8_t), str);
 }
 
 bool i16_to_str(int16_t x, int base, int pad, char (str)[I16_STR_MAX])
 {
-	return wrapper(x, base, pad, sizeof(int16_t), str);
+	return wrapper_signed(x, base, pad, sizeof(int16_t), str);
 }
 
 bool i32_to_str(int32_t x, int base, int pad, char (str)[I32_STR_MAX])
 {
-	return wrapper(x, base, pad, sizeof(int32_t), str);
+	return wrapper_signed(x, base, pad, sizeof(int32_t), str);
 }
 
 bool i64_to_str(int64_t x, int base, int pad, char (str)[I64_STR_MAX])
 {
-	return wrapper(x, base, pad, sizeof(int64_t), str);
+	return wrapper_signed(x, base, pad, sizeof(int64_t), str);
+}
+
+bool u8_to_str(uint8_t x, int base, int pad, char (str)[I8_STR_MAX])
+{
+	return wrapper_unsigned(x, base, pad, sizeof(uint8_t), str);
+}
+
+bool u16_to_str(uint16_t x, int base, int pad, char (str)[I16_STR_MAX])
+{
+	return wrapper_unsigned(x, base, pad, sizeof(uint16_t), str);
+}
+
+bool u32_to_str(uint32_t x, int base, int pad, char (str)[I32_STR_MAX])
+{
+	return wrapper_unsigned(x, base, pad, sizeof(uint32_t), str);
+}
+
+bool u64_to_str(uint64_t x, int base, int pad, char (str)[I64_STR_MAX])
+{
+	return wrapper_unsigned(x, base, pad, sizeof(uint64_t), str);
 }
 
 bool ptr_to_str(size_t x, int base, int pad, char (str)[PTR_STR_MAX])
 {
-	int dig = 0;
-	for (size_t t = x; t > 0; t /= base) dig ++;
+	return wrapper_unsigned(x, base, pad, sizeof(size_t), str);
+}
 
-	for (int i = min(sizeof(size_t) * 8, max(1, pad)) - dig; i > 0; i --)
+bool wrapper_signed(int64_t x, int base, int pad, int size, char* str)
+{
+	int dig = 0;
+	for (int32_t t = abs(x); t > 0; t /= base) dig ++;
+
+	if (x < 0)
+	{
+		*(str++) = '-';
+		x = -x;
+	}
+
+	for (int i = min(size * 8, max(1, pad)) - dig; i > 0; i --)
 		*(str++) = '0';
 
 	str += dig;
@@ -74,16 +106,10 @@ bool ptr_to_str(size_t x, int base, int pad, char (str)[PTR_STR_MAX])
 	return true;
 }
 
-bool wrapper(int64_t x, int base, int pad, int size, char* str)
+bool wrapper_unsigned(uint64_t x, int base, int pad, int size, char* str)
 {
 	int dig = 0;
-	for (int32_t t = abs(x); t > 0; t /= base) dig ++;
-
-	if (x < 0)
-	{
-		*(str++) = '-';
-		x = -x;
-	}
+	for (size_t t = x; t > 0; t /= base) dig ++;
 
 	for (int i = min(size * 8, max(1, pad)) - dig; i > 0; i --)
 		*(str++) = '0';
