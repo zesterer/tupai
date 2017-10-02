@@ -77,8 +77,6 @@ void mb_parse(size_t header)
 		// Increment to next tag
 		p += align_up(p->size, 8) / sizeof(*p);
 	}
-
-	while (1);
 }
 
 void parse_args(tag_args_t* tag)
