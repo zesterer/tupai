@@ -21,6 +21,10 @@
 #ifndef TUPAI_MEM_PHYS_H
 #define TUPAI_MEM_PHYS_H
 
+#include <tupai/type.h>
+
+extern uint64_t phys_preload_size;
+
 void phys_init();
 
 #endif

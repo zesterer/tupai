@@ -21,6 +21,8 @@
 #include <tupai/arch/x86/mb.h>
 #include <tupai/util/log.h>
 #include <tupai/util/mem.h>
+#include <tupai/mem/phys.h>
+#include <tupai/def.h>
 
 typedef struct tag_head
 {
@@ -130,9 +132,7 @@ void mb_parse(size_t header)
 		p += align_up(p->size, 8) / sizeof(*p);
 	}
 
-		log("[ OK ] Finished parsing Multiboot data\n");
-
-	while (1);
+	log("[ OK ] Finished parsing Multiboot data\n");
 }
 
 void parse_args(tag_args_t* tag)
@@ -154,6 +154,9 @@ void parse_meminfo(tag_meminfo_t* meminfo)
 {
 	log("[ OK ] Reported lower memory is %u KiB\n", (uint)meminfo->lower);
 	log("[ OK ] Reported upper memory is %u KiB\n", (uint)meminfo->upper);
+
+	phys_preload_size = meminfo->upper * 1024 + MEM_UPPER_START;
+	log("[ OK ] Physical memory preload set from reported meminfo data\n");
 }
 
 void parse_mmap(tag_mmap_t* mmap)

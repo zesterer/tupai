@@ -24,19 +24,46 @@
 #include <tupai/proc.h>
 #include <tupai/def.h>
 
-typedef struct phys_entry
+enum
 {
-	bool kernel;
-	proc_t* proc;
-} phys_entry_t;
+	KERNEL  = (1 << 0),
+	USER    = 0,
 
-phys_entry_t* phys_map;
-size_t phys_map_size;
+	STATIC  = (1 << 1),
+	MOVABLE = 0,
+
+	SPECIAL = (1 << 2),
+	RAM     = 0,
+
+	USED    = (1 << 3),
+	FREE    = 0,
+};
+
+typedef struct entry
+{
+	uint8_t flags;
+	proc_t* proc;
+} entry_t;
+
+uint64_t phys_preload_size = 0;
+
+static entry_t* map;
+static size_t map_size;
+
+static entry_t make_entry(uint8_t flags, proc_t* proc);
 
 void phys_init()
 {
-	phys_map_size = (256 * 1024 * 1024) / PAGE_SIZE;
-	phys_map = alloc(sizeof(phys_entry_t) * phys_map_size);
+	map_size = align_up(phys_preload_size, PAGE_SIZE) / PAGE_SIZE;
+	map = alloc(sizeof(entry_t) * map_size);
 
-	log("[ OK ] Physical memory allocator initiated\n");
+	for (size_t i = 0; i < map_size; i ++)
+		map[i] = make_entry(KERNEL | MOVABLE | RAM | FREE, nullptr);
+
+	log("[ OK ] Physical memory allocator initiated with %u entries\n", (uint)map_size);
+}
+
+entry_t make_entry(uint8_t flags, proc_t* proc)
+{
+	return (entry_t){ .flags = flags, .proc = proc };
 }

@@ -97,8 +97,6 @@ CC  = $(ARCH_GCC_PREFIX)gcc
 CPP = $(ARCH_GCC_PREFIX)gcc
 LD  = $(ARCH_GCC_PREFIX)gcc
 
-TEST = $(shell echo $(AS))
-
 TOOL_DIR ?= $(abspath $(dir $(shell which $(CC))))
 
 KSYMBOL_GEN = objdump --wide --syms $(KERNEL) | grep -P '^[0-9A-Fa-f]+\s.*\s[a-zA-Z_][a-zA-Z0-9_]+$$' | sed -r 's/^(\S+)\s+.*\s+(\S+)$$/\1 \2/' | sort > $(KSYMBOLS)
@@ -151,7 +149,6 @@ clean :
 	@rm -r -f $(KERNEL) $(OBJS) $(DEPS) $(BDIRS)
 
 $(KERNEL) : $(OBJS)
-	echo $(SRC_ROOT)
 	@echo "[`date "+%H:%M:%S"`] Linking '$@'..."
 	@$(TOOL_DIR)/$(LD) $(CFLAGS) -T $(LSCRIPT) -o $@ $(CRTBEGIN) $(OBJS) $(CRTEND) $(LFLAGS)
 	@echo "[`date "+%H:%M:%S"`] Linked '$@'."

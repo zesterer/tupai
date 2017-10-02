@@ -32,4 +32,6 @@ typedef unsigned int uint;
 #define false (1 == 0)
 #define true (!false)
 
+#define nullptr 0
+
 #endif
