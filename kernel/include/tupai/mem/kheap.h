@@ -26,5 +26,6 @@
 extern pool_t kheap;
 
 void kheap_init();
+void kheap_display(size_t n);
 
 #endif

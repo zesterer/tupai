@@ -20,6 +20,7 @@
 
 #include <tupai/mem/pool.h>
 #include <tupai/util/mem.h>
+#include <tupai/util/log.h>
 #include <tupai/def.h>
 
 #define BPBL2 2 // Blocks per byte, log2 (i.e: 4 blocks per byte)
@@ -162,6 +163,30 @@ int pool_integrity_check(pool_t* pool)
 			cfree = false;
 	}
 	return 0;
+}
+
+void pool_display(pool_t* pool, size_t n)
+{
+	for (size_t i = 0; i < pool->block_count && i < n; i ++)
+	{
+		switch (block_get(pool, i))
+		{
+			case HEAD:
+				log("H");
+				break;
+			case TAIL:
+				log("T");
+				break;
+			case FREE:
+				log("-");
+				break;
+			default:
+				log("!");
+				break;
+		}
+	}
+
+	log("\n");
 }
 
 static int block_get(pool_t* pool, size_t index)

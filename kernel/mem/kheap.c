@@ -36,7 +36,7 @@ pool_t kheap;
 
 void kheap_init()
 {
-	if (pool_init(&kheap, (size_t)kheap_start, (size_t)kheap_end - (size_t)kheap_start, 64) != 0)
+	if (pool_init(&kheap, (size_t)kheap_start, (size_t)kheap_end - (size_t)kheap_start, BLOCK_SIZE) != 0)
 		panic("Could not construct kernel heap");
 	else
 		log("[ OK ] Constructed kernel heap\n");
@@ -45,4 +45,9 @@ void kheap_init()
 		panic("Kernel heap integrity check failed");
 	else
 		log("[ OK ] Kernel heap passed integrity check\n");
+}
+
+void kheap_display(size_t n)
+{
+	pool_display(&kheap, n);
 }
