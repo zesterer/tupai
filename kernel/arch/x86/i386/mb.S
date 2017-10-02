@@ -1,5 +1,5 @@
 //
-// file : multiboot.S
+// file : mb.S
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //

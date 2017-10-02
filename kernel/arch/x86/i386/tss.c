@@ -18,8 +18,8 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#include <tupai/x86/i386/tss.h>
-#include <tupai/x86/i386/gdt.h>
+#include <tupai/arch/x86/i386/tss.h>
+#include <tupai/arch/x86/i386/gdt.h>
 #include <tupai/util/log.h>
 
 typedef struct tss_entry

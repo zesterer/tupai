@@ -18,13 +18,13 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#include <tupai/x86/pic.h>
-#include <tupai/x86/port.h>
+#include <tupai/arch/x86/pic.h>
+#include <tupai/arch/x86/port.h>
 #include <tupai/util/log.h>
 #include <tupai/cpu.h>
 
 #ifdef ARCH_TARGET_i386
-	#include <tupai/x86/i386/idt.h>
+	#include <tupai/arch/x86/i386/idt.h>
 #endif
 
 #define PIC1 0x20 // I/O offset address for master PIC

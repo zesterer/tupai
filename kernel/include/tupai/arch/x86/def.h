@@ -22,11 +22,11 @@
 #define TUPAI_X86_DEF_H
 
 #ifdef ARCH_TARGET_i386
-	#include <tupai/x86/i386/def.h>
+	#include <tupai/arch/x86/i386/def.h>
 #endif
 
 #ifdef ARCH_TARGET_x86_64
-	#include <tupai/x86/x86_64/def.h>
+	#include <tupai/arch/x86/x86_64/def.h>
 #endif
 
 #endif

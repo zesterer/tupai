@@ -24,7 +24,7 @@
 #include <tupai/type.h>
 
 #ifdef ARCH_FAMILY_x86
-	#include <tupai/x86/def.h>
+	#include <tupai/arch/x86/def.h>
 #endif
 
 #endif

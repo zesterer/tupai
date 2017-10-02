@@ -1,5 +1,5 @@
 //
-// file : irq.c
+// file : math.h
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,15 +18,11 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#include <tupai/arch/x86/irq.h>
-#include <tupai/arch/x86/pic.h>
+#ifndef TUPAI_UTIL_MATH_H
+#define TUPAI_UTIL_MATH_H
 
-void irq_enable(uint8_t irq, bool enable)
-{
-	pic_mask(irq, !enable);
-}
+#define max(a, b) (a > b ? a : b)
+#define min(a, b) (a < b ? a : b)
+#define abs(a) (a < 0 ? -a : a)
 
-void irq_ack(uint8_t irq)
-{
-	pic_ack(irq);
-}
+#endif

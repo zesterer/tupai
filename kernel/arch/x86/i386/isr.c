@@ -18,8 +18,8 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#include <tupai/x86/i386/isr.h>
-#include <tupai/x86/i386/idt.h>
+#include <tupai/arch/x86/i386/isr.h>
+#include <tupai/arch/x86/i386/idt.h>
 #include <tupai/util/log.h>
 #include <tupai/util/panic.h>
 #include <tupai/def.h>

@@ -18,8 +18,8 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#include <tupai/x86/vga.h>
-#include <tupai/x86/port.h>
+#include <tupai/arch/x86/vga.h>
+#include <tupai/arch/x86/port.h>
 #include <tupai/util/log.h>
 #include <tupai/def.h>
 

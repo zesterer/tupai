@@ -23,7 +23,7 @@
 #include <tupai/util/log.h>
 
 #ifdef ARCH_FAMILY_x86
-	#include <tupai/x86/vga.h>
+	#include <tupai/arch/x86/vga.h>
 #endif
 
 #define BUFF_LEN 1024

@@ -19,9 +19,68 @@
 //
 
 #include <tupai/util/log.h>
+#include <tupai/util/conv.h>
 #include <tupai/dev/console.h>
 
-void log(const char* str)
+#include <stdarg.h>
+
+#define LOG_PUTS console_puts
+#define LOG_PUTC console_putc
+
+void log(const char* fmt, ...)
 {
-	console_puts(str);
+	va_list args;
+	int state = 0;
+
+	va_start(args, fmt);
+	for (; *fmt != '\0'; fmt ++)
+	{
+		switch (state)
+		{
+			case 1:
+			{
+				if (*fmt == '%')
+					LOG_PUTC('%');
+				else if (*fmt == 's')
+					LOG_PUTS(va_arg(args, const char*));
+				else if (*fmt == 'i')
+				{
+					char buff[I32_STR_MAX];
+					if (i32_to_str(va_arg(args, int32_t), 10, 0, buff))
+						LOG_PUTS(buff);
+					else
+						LOG_PUTC('!');
+				}
+				else if (*fmt == 'x')
+				{
+					char buff[I32_STR_MAX];
+					if (i32_to_str(va_arg(args, int32_t), 16, 0, buff))
+						LOG_PUTS(buff);
+					else
+						LOG_PUTC('!');
+				}
+				else if (*fmt == 'p')
+				{
+					LOG_PUTS("0x");
+					char buff[I32_STR_MAX];
+					if (ptr_to_str(va_arg(args, int32_t), 16, sizeof(size_t) * 2, buff))
+						LOG_PUTS(buff);
+					else
+						LOG_PUTC('!');
+				}
+				state = 0;
+				break;
+			}
+
+			default:
+			{
+				if (*fmt == '%')
+					state = 1;
+				else
+					LOG_PUTC(*fmt);
+				break;
+			}
+		}
+	}
+	va_end(args);
 }

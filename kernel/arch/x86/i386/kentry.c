@@ -20,15 +20,15 @@
 
 #include <tupai/kmain.h>
 #include <tupai/mem/kheap.h>
-#include <tupai/x86/i386/gdt.h>
-#include <tupai/x86/i386/idt.h>
-#include <tupai/x86/i386/isr.h>
-#include <tupai/x86/i386/tss.h>
-#include <tupai/x86/mb.h>
-#include <tupai/x86/pic.h>
-#include <tupai/x86/pit.h>
-#include <tupai/x86/vga.h>
-#include <tupai/x86/kbd.h>
+#include <tupai/arch/x86/i386/gdt.h>
+#include <tupai/arch/x86/i386/idt.h>
+#include <tupai/arch/x86/i386/isr.h>
+#include <tupai/arch/x86/i386/tss.h>
+#include <tupai/arch/x86/mb.h>
+#include <tupai/arch/x86/pic.h>
+#include <tupai/arch/x86/pit.h>
+#include <tupai/arch/x86/vga.h>
+#include <tupai/arch/x86/kbd.h>
 
 void kentry(size_t mb_header)
 {

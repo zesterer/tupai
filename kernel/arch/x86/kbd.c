@@ -18,16 +18,16 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#include <tupai/x86/kbd.h>
-#include <tupai/x86/irq.h>
-#include <tupai/x86/port.h>
+#include <tupai/arch/x86/kbd.h>
+#include <tupai/arch/x86/irq.h>
+#include <tupai/arch/x86/port.h>
 #include <tupai/dev/console.h>
 #include <tupai/util/log.h>
 #include <tupai/util/char.h>
 #include <tupai/def.h>
 
 #ifdef ARCH_TARGET_i386
-	#include <tupai/x86/i386/idt.h>
+	#include <tupai/arch/x86/i386/idt.h>
 #endif
 
 #define KBD_INT 1
