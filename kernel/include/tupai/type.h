@@ -27,6 +27,8 @@
 typedef char bool;
 typedef long id_t;
 
+typedef unsigned int uint;
+
 #define false (1 == 0)
 #define true (!false)
 

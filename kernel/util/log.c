@@ -48,7 +48,15 @@ void log(const char* fmt, ...)
 				else if (*fmt == 'i' || *fmt == 'd')
 				{
 					char buff[I32_STR_MAX];
-					if (i32_to_str(va_arg(args, int32_t), 10, 0, buff))
+					if (i32_to_str((int32_t)va_arg(args, int), 10, 0, buff))
+						LOG_PUTS(buff);
+					else
+						LOG_PUTC('!');
+				}
+				else if (*fmt == 'u')
+				{
+					char buff[U32_STR_MAX];
+					if (u32_to_str((uint32_t)va_arg(args, uint), 10, 0, buff))
 						LOG_PUTS(buff);
 					else
 						LOG_PUTC('!');
@@ -56,7 +64,7 @@ void log(const char* fmt, ...)
 				else if (*fmt == 'o')
 				{
 					char buff[U32_STR_MAX];
-					if (u32_to_str(va_arg(args, uint32_t), 8, 0, buff))
+					if (u32_to_str((uint32_t)va_arg(args, uint), 8, 0, buff))
 						LOG_PUTS(buff);
 					else
 						LOG_PUTC('!');
@@ -64,7 +72,7 @@ void log(const char* fmt, ...)
 				else if (*fmt == 'X')
 				{
 					char buff[U32_STR_MAX];
-					if (u32_to_str(va_arg(args, uint32_t), 16, 0, buff))
+					if (u32_to_str((uint32_t)va_arg(args, uint), 16, 0, buff))
 						LOG_PUTS(buff);
 					else
 						LOG_PUTC('!');
