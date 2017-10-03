@@ -41,6 +41,8 @@ void kmain()
 
 	log("Hello, World! Welcome to the kernel!\n");
 
+	phys_display();
+
 	cpu_enable_int();
 
 	cpu_user_jump(&usermode_test);

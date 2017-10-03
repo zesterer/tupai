@@ -21,6 +21,8 @@
 #ifndef TUPAI_UTIL_LOG_H
 #define TUPAI_UTIL_LOG_H
 
-void log(const char* fmt, ...) __attribute__((format(printf, 1, 2)));
+void logf(const char* fmt, ...);// __attribute__((format(printf, 1, 2)));
+void log(const char* str);
+void logc(char c);
 
 #endif

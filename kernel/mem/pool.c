@@ -172,21 +172,21 @@ void pool_display(pool_t* pool, size_t n)
 		switch (block_get(pool, i))
 		{
 			case HEAD:
-				log("H");
+				logc('H');
 				break;
 			case TAIL:
-				log("T");
+				logc('T');
 				break;
 			case FREE:
-				log("-");
+				logc('-');
 				break;
 			default:
-				log("!");
+				logc('!');
 				break;
 		}
 	}
 
-	log("\n");
+	logc('\n');
 }
 
 static int block_get(pool_t* pool, size_t index)

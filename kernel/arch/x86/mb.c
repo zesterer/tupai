@@ -124,7 +124,7 @@ void mb_parse(size_t header)
 				parse_efi64((tag_efi64_t*)p);
 				break;
 			default:
-				log("[ OK ] Found unrecognised Multiboot entry with type %u\n", (uint)p->type);
+				logf("[ OK ] Found unrecognised Multiboot entry with type %u\n", (uint)p->type);
 				break;
 		}
 
@@ -137,23 +137,23 @@ void mb_parse(size_t header)
 
 void parse_args(tag_args_t* tag)
 {
-	log("[ OK ] Kernel arguments are '%s'\n", &tag->args_start);
+	logf("[ OK ] Kernel arguments are '%s'\n", &tag->args_start);
 }
 
 void parse_bln(tag_bln_t* tag)
 {
-	log("[ OK ] Bootloader name is '%s'\n", &tag->name_start);
+	logf("[ OK ] Bootloader name is '%s'\n", &tag->name_start);
 }
 
 void parse_module(tag_module_t* tag)
 {
-	log("[ OK ] Found module with args '%s' starting at %p\n", &tag->args_start, (void*)tag->start);
+	logf("[ OK ] Found module with args '%s' starting at %p\n", &tag->args_start, (void*)tag->start);
 }
 
 void parse_meminfo(tag_meminfo_t* meminfo)
 {
-	log("[ OK ] Reported lower memory is %u KiB\n", (uint)meminfo->lower);
-	log("[ OK ] Reported upper memory is %u KiB\n", (uint)meminfo->upper);
+	logf("[ OK ] Reported lower memory is %u KiB\n", (uint)meminfo->lower);
+	logf("[ OK ] Reported upper memory is %u KiB\n", (uint)meminfo->upper);
 
 	phys_preload_size = meminfo->upper * 1024 + MEM_UPPER_START;
 	log("[ OK ] Physical memory preload set from reported meminfo data\n");
@@ -166,7 +166,7 @@ void parse_mmap(tag_mmap_t* mmap)
 	else
 	{
 		size_t entry_count = (mmap->head.size - sizeof(tag_mmap_t)) / sizeof(mmap_entry_t) + 1;
-		log("[ OK ] Reading memory map with %u entries...\n", (uint)entry_count);
+		logf("[ OK ] Reading memory map with %u entries...\n", (uint)entry_count);
 
 		for (size_t i = 0; i < entry_count; i ++)
 		{
@@ -194,17 +194,17 @@ void parse_mmap(tag_mmap_t* mmap)
 					break;
 			}
 
-			log("[ OK ] Found region (type = %s, offset = %p, size = %X)\n", type_str, (void*)(size_t)centry->offset, (uint)centry->size);
+			logf("[ OK ] Found region (type = %s, offset = %p, size = %X)\n", type_str, (void*)(size_t)centry->offset, (uint)centry->size);
 		}
 	}
 }
 
 void parse_efi32(tag_efi32_t* efi32)
 {
-	log("[ OK ] Found 32-bit EFI system table at %p\n", (void*)(size_t)efi32->ptr);
+	logf("[ OK ] Found 32-bit EFI system table at %p\n", (void*)(size_t)efi32->ptr);
 }
 
 void parse_efi64(tag_efi64_t* efi64)
 {
-	log("[ OK ] Found 64-bit EFI system table at %p\n", (void*)(size_t)efi64->ptr);
+	logf("[ OK ] Found 64-bit EFI system table at %p\n", (void*)(size_t)efi64->ptr);
 }

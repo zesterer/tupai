@@ -21,7 +21,6 @@
 #include <tupai/mem/phys.h>
 #include <tupai/util/log.h>
 #include <tupai/util/mem.h>
-#include <tupai/proc.h>
 #include <tupai/def.h>
 
 enum
@@ -37,6 +36,8 @@ enum
 
 	USED    = (1 << 3),
 	FREE    = 0,
+
+	SHARED  = (1 << 4),
 };
 
 typedef struct entry
@@ -47,23 +48,73 @@ typedef struct entry
 
 uint64_t phys_preload_size = 0;
 
+extern char kernel_end[];
+
 static entry_t* map;
 static size_t map_size;
 
 static entry_t make_entry(uint8_t flags, proc_t* proc);
+static size_t entry_to_ptr(size_t i);
 
 void phys_init()
 {
 	map_size = align_up(phys_preload_size, PAGE_SIZE) / PAGE_SIZE;
 	map = alloc(sizeof(entry_t) * map_size);
 
+	// Set blank memory initially
 	for (size_t i = 0; i < map_size; i ++)
 		map[i] = make_entry(KERNEL | MOVABLE | RAM | FREE, nullptr);
 
-	log("[ OK ] Physical memory allocator initiated with %u entries\n", (uint)map_size);
+	logf("[ OK ] Physical memory allocator initiated with %u entries\n", (uint)map_size);
+
+	// Reclaim the kernel
+	phys_set_region(0, (size_t)kernel_end, KERNEL | MOVABLE | RAM | USED, nullptr);
+	logf("[ OK ] Reclaimed kernel memory between %p and %p\n", 0, (void*)kernel_end);
+}
+
+void phys_set(size_t offset, uint8_t flags, proc_t* proc)
+{
+	size_t index = align_down(offset, PAGE_SIZE) / PAGE_SIZE;
+	map[index].flags = flags;
+	map[index].proc = proc;
+}
+
+void phys_set_region(size_t offset, size_t size, uint8_t flags, proc_t* proc)
+{
+	size_t index = align_down(offset, PAGE_SIZE) / PAGE_SIZE;
+	size_t entries = align_up(offset + size, PAGE_SIZE) / PAGE_SIZE - index;
+
+	for (size_t i = 0; i < entries; i ++)
+	{
+		map[i].flags = flags;
+		map[i].proc = proc;
+	}
+}
+
+void phys_display()
+{
+	uint8_t cflags = map[0].flags;
+	proc_t* cproc = map[0].proc;
+	size_t i = 0;
+
+	for (; i < map_size; i ++)
+	{
+		if (i == 0 || map[i].flags != cflags || map[i].proc != cproc)
+		{
+			cflags = map[i].flags;
+			cproc = map[i].proc;
+			logf("%p : flags = %b, proc = %p\n", (void*)entry_to_ptr(i), cflags, (void*)cproc);
+		}
+	}
+	logf("%p : MEMORY_LIMIT\n", (void*)entry_to_ptr(i));
 }
 
 entry_t make_entry(uint8_t flags, proc_t* proc)
 {
 	return (entry_t){ .flags = flags, .proc = proc };
+}
+
+size_t entry_to_ptr(size_t i)
+{
+	return i * PAGE_SIZE;
 }

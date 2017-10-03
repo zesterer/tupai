@@ -27,7 +27,7 @@
 #define LOG_PUTS console_puts
 #define LOG_PUTC console_putc
 
-void log(const char* fmt, ...)
+void logf(const char* fmt, ...)
 {
 	va_list args;
 	int state = 0;
@@ -65,6 +65,14 @@ void log(const char* fmt, ...)
 				{
 					char buff[U32_STR_MAX];
 					if (u32_to_str((uint32_t)va_arg(args, uint), 8, 0, buff))
+						LOG_PUTS(buff);
+					else
+						LOG_PUTC('!');
+				}
+				else if (*fmt == 'b')
+				{
+					char buff[U8_STR_MAX];
+					if (u8_to_str((uint8_t)va_arg(args, uint), 2, 8, buff))
 						LOG_PUTS(buff);
 					else
 						LOG_PUTC('!');
@@ -114,4 +122,14 @@ void log(const char* fmt, ...)
 		}
 	}
 	va_end(args);
+}
+
+void log(const char* str)
+{
+	LOG_PUTS(str);
+}
+
+void logc(char c)
+{
+	LOG_PUTC(c);
 }
