@@ -33,16 +33,23 @@ BUILD_ROOT ?= $(SRC_ROOT)/build
 
 INCLUDE_DIR = $(SRC_ROOT)/include
 
+# Sysroot
+SYSROOT_SRC_DIR     = $(SRC_ROOT)/sysroot
+SYSROOT_BUILD_DIR   = $(BUILD_ROOT)/sysroot
+SYSROOT_INCLUDE_DIR = $(SYSROOT_BUILD_DIR)/usr/include
+
 # Kernel
 KERNEL_SRC_DIR    = $(SRC_ROOT)/kernel
 KERNEL_BUILD_ROOT = $(BUILD_ROOT)/kernel
 KERNEL            = $(KERNEL_BUILD_ROOT)/tupai.elf
-KERNEL_MAKE_ARGS  = BUILD_ROOT=$(KERNEL_BUILD_ROOT) LIBC_INC=$(INCLUDE_DIR) KERNEL=$(KERNEL) TARGET_FAMILY=$(TARGET_FAMILY) TARGET_ARCH=$(TARGET_ARCH)
+KERNEL_MAKE_ARGS  = BUILD_ROOT=$(KERNEL_BUILD_ROOT) KERNEL=$(KERNEL) TARGET_FAMILY=$(TARGET_FAMILY) TARGET_ARCH=$(TARGET_ARCH)
+
+# Userland
+USERLAND_SRC_DIR   = $(SRC_ROOT)/userland
+USERLAND_BUILD_DIR = $(BUILD_ROOT)/userland
+USERLAND_MAKE_ARGS = BUILD_DIR=$(USERLAND_BUILD_DIR) SYSROOT=$(SYSROOT_SRC_DIR) TARGET_FAMILY=$(TARGET_FAMILY) TARGET_ARCH=$(TARGET_ARCH)
 
 # Initrd
-SYSROOT_SRC_DIR     = $(SRC_ROOT)/sysroot
-SYSROOT_BUILD_DIR   = $(BUILD_ROOT)/sysroot
-SYSROOT_INCLUDE_DIR = $(SYSROOT_BUILD_DIR)/usr/include
 INITRD              = $(BUILD_ROOT)/initrd.tar
 INITRD_DEPS         = $(shell find $(SYSROOT_SRC_DIR) -name '*')
 
@@ -76,12 +83,12 @@ BOCHS = bochs
 # Rules
 # -----
 
-.PHONY : all build rebuild kernel iso clean run debug
+.PHONY : all build rebuild kernel userland iso clean run debug
 
 all : build
 build : iso
 rebuild : clean iso
-iso : kernel $(ISO)
+iso : $(ISO)
 
 clean :
 	@cd $(KERNEL_SRC_DIR) && $(MAKE) clean $(KERNEL_MAKE_ARGS)
@@ -96,7 +103,7 @@ debug : build
 	@echo "Debugging '$(ISO)'..."
 	@$(BOCHS)
 
-$(ISO) : $(KERNEL) $(INITRD)
+$(ISO) : $(KERNEL) userland $(INITRD)
 	@mkdir -p $(GRUB_BUILD_DIR)/isodir/boot/grub $(GRUB_BUILD_DIR)/isodir/mod
 	@cp $(KERNEL) $(GRUB_BUILD_DIR)/isodir/boot/.
 	@cp $(INITRD) $(GRUB_BUILD_DIR)/isodir/mod/.
@@ -119,6 +126,13 @@ $(INITRD) : $(INITRD_DEPS)
 $(KERNEL) : kernel
 
 kernel :
+	@mkdir -p $(KERNEL_BUILD_ROOT)
 	@echo "[`date "+%H:%M:%S"`] Building kernel..."
 	@cd $(KERNEL_SRC_DIR) && $(MAKE) all $(KERNEL_MAKE_ARGS)
+	@echo "[`date "+%H:%M:%S"`] Built kernel."
+
+userland :
+	@mkdir -p $(USERLAND_BUILD_DIR)
+	@echo "[`date "+%H:%M:%S"`] Building kernel..."
+	@cd $(USERLAND_SRC_DIR) && $(MAKE) all $(USERLAND_MAKE_ARGS)
 	@echo "[`date "+%H:%M:%S"`] Built kernel."

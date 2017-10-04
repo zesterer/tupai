@@ -27,28 +27,19 @@ TARGET_ARCH   ?= i386
 SRC_ROOT    = $(abspath .)
 BUILD_ROOT ?= $(SRC_ROOT)/build
 
-KERNEL ?= $(BUILD_ROOT)/tupai.elf
-
-KSYMBOLS ?= $(BUILD_ROOT)/tupai.symb
-
-KNAME               = tupai
-KNAME_DECORATIVE    = Tupai
-KVERSION_DECORATIVE = 0.6.0
-KMAINTAINER_NAME    = Joshua Barretto
-KMAINTAINER_EMAIL   = joshua.s.barretto@gmail.com
+EXEC ?= $(BUILD_ROOT)/init.elf
 
 # CFlags
 # -----
 
-INCS += $(SRC_ROOT)/include
+INCS += $(USERLAND_INC) $(SRC_ROOT)/include
 
 INC_FLAGS = $(addprefix -I, $(INCS))
 
-CFLAGS  = -DKNAME=\"$(KNAME)\" -DKNAME_DECORATIVE=\"$(KNAME_DECORATIVE)\" -DKVERSION_DECORATIVE=\"$(KVERSION_DECORATIVE)\" -DKMAINTAINER_NAME="\"$(KMAINTAINER_NAME)\"" -DKMAINTAINER_EMAIL=\"$(KMAINTAINER_EMAIL)\"
 CFLAGS += -DARCH_FAMILY_$(TARGET_FAMILY) -DARCH_TARGET_$(TARGET_ARCH)
 CFLAGS += $(INC_FLAGS)
 CFLAGS += -std=gnu11 -Wall -Wextra -O3 -nostdlib
-CFLAGS += -ffreestanding -fno-exceptions -fno-common -fno-builtin -fno-omit-frame-pointer
+CFLAGS += -ffreestanding -fno-exceptions -fno-common -fno-builtin -fno-omit-frame-pointer # TODO : Get rid of -ffreestanding and add a proper libc
 
 ifeq ($(TARGET_ARCH), x86_64)
 	CFLAGS += -DARCH_ADDRESS_64
@@ -99,36 +90,12 @@ LD  = $(ARCH_GCC_PREFIX)gcc
 
 TOOL_DIR ?= $(abspath $(dir $(shell which $(CC))))
 
-KSYMBOL_GEN = objdump --wide --syms $(KERNEL) | grep -P '^[0-9A-Fa-f]+\s.*\s[a-zA-Z_][a-zA-Z0-9_]+$$' | sed -r 's/^(\S+)\s+.*\s+(\S+)$$/\1 \2/' | sort > $(KSYMBOLS)
-
 # Source files
 # ------------
 
 SRC_DIR = $(abspath .)
 
 SRCS_REL += $(shell ls $(SRC_ROOT)/*.{s,S,c,cpp} 2> /dev/null)
-SRCS_REL += $(shell ls $(SRC_ROOT)/util/*.{s,S,c,cpp} 2> /dev/null)
-SRCS_REL += $(shell ls $(SRC_ROOT)/dev/*.{s,S,c,cpp} 2> /dev/null)
-SRCS_REL += $(shell ls $(SRC_ROOT)/mem/*.{s,S,c,cpp} 2> /dev/null)
-SRCS_REL += $(shell ls $(SRC_ROOT)/task/*.{s,S,c,cpp} 2> /dev/null)
-
-ifeq ($(TARGET_FAMILY), x86)
-	SRCS_REL += $(shell ls $(SRC_ROOT)/arch/x86/*.{s,S,c,cpp} 2> /dev/null)
-	SRCS_REL += $(shell ls $(SRC_ROOT)/arch/x86/mem/*.{s,S,c,cpp} 2> /dev/null)
-endif
-ifeq ($(TARGET_FAMILY), arm)
-	SRCS_REL += $(shell ls $(SRC_ROOT)/arch/arm/*.{s,S,c,cpp} 2> /dev/null)
-endif
-
-ifeq ($(TARGET_ARCH), x86_64)
-	SRCS_REL += $(shell ls $(SRC_ROOT)/arch/x86/x86_64/*.{s,S,c,cpp} 2> /dev/null)
-endif
-ifeq ($(TARGET_ARCH), i386)
-	SRCS_REL += $(shell ls $(SRC_ROOT)/arch/x86/i386/*.{s,S,c,cpp} 2> /dev/null)
-endif
-ifeq ($(TARGET_ARCH), rpi3)
-	SRCS_REL += $(shell ls $(SRC_ROOT)/arch/arm/rpi3/*.{s,S,c,cpp} 2> /dev/null)
-endif
 
 SRCS = $(abspath $(SRCS_REL))
 
@@ -139,25 +106,25 @@ BDIRS += $(sort $(dir $(OBJS)))
 CRTBEGIN = $(shell $(LD) $(CFLAGS) -print-file-name=crtbegin.o)
 CRTEND   = $(shell $(LD) $(CFLAGS) -print-file-name=crtend.o)
 
+# Libraries
+# ---------
+
+OBJS += $(shell ls $(USERLAND_INC)/*.a 2> /dev/null)
+
 # Rules
 # -----
 
 .PHONY : all clean
 
-all : $(KERNEL) $(KSYMBOLS)
+all : $(EXEC)
 
 clean :
-	@rm -r -f $(KERNEL) $(OBJS) $(DEPS) $(BDIRS)
+	@rm -r -f $(EXEC) $(OBJS) $(DEPS) $(BDIRS)
 
-$(KERNEL) : $(OBJS)
+$(EXEC) : $(OBJS)
 	@echo "[`date "+%H:%M:%S"`] Linking '$@'..."
 	@$(TOOL_DIR)/$(LD) $(CFLAGS) -T $(LSCRIPT) -o $@ $(CRTBEGIN) $(OBJS) $(CRTEND) $(LFLAGS)
 	@echo "[`date "+%H:%M:%S"`] Linked '$@'."
-
-$(KSYMBOLS) : $(KERNEL)
-	@echo "Generating kernel symbols..."
-	@$(KSYMBOL_GEN)
-	@echo "Generated kernel symbols"
 
 $(OBJS) : | $(BDIRS)
 

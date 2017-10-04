@@ -67,6 +67,8 @@ int virt_switch(virt_t* virt)
 
 int virt_map(virt_t* virt, size_t vaddr, size_t paddr, uint8_t flags)
 {
+	(void)flags; // Unused
+
 	entry_t* table = virt->table;
 
 	size_t vindex = vaddr / PAGE_SIZE;
