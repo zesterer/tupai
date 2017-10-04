@@ -103,7 +103,7 @@ debug : build
 	@echo "Debugging '$(ISO)'..."
 	@$(BOCHS)
 
-$(ISO) : $(KERNEL) userland $(INITRD)
+$(ISO) : $(KERNEL) $(INITRD)
 	@mkdir -p $(GRUB_BUILD_DIR)/isodir/boot/grub $(GRUB_BUILD_DIR)/isodir/mod
 	@cp $(KERNEL) $(GRUB_BUILD_DIR)/isodir/boot/.
 	@cp $(INITRD) $(GRUB_BUILD_DIR)/isodir/mod/.
@@ -113,12 +113,9 @@ $(ISO) : $(KERNEL) userland $(INITRD)
 	@grub-mkrescue -o $(ISO) $(GRUB_BUILD_DIR)/isodir
 	@echo "[`date "+%H:%M:%S"`] Created '$@'."
 
-$(INITRD) : $(INITRD_DEPS)
+$(INITRD) : userland $(INITRD_DEPS)
 	@mkdir -p $(SYSROOT_BUILD_DIR)
 	@cp -r $(SYSROOT_SRC_DIR)/* $(SYSROOT_BUILD_DIR)/.
-	@echo "Moving headers to initrd..."
-	@mkdir -p $(SYSROOT_INCLUDE_DIR)
-	@cp -r $(INCLUDE_DIR)/* $(SYSROOT_INCLUDE_DIR)/.
 	@echo "[`date "+%H:%M:%S"`] Creating '$@'..."
 	@cd $(SYSROOT_BUILD_DIR) && $(TAR) cf $(INITRD) --format=ustar *
 	@echo "[`date "+%H:%M:%S"`] Created '$@'."

@@ -1,5 +1,5 @@
-/*
-// file : link.ld
+//
+// file : stdio.h : Input/Output operations
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -16,61 +16,40 @@
 // WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
 // ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-*/
+//
+// This file is part of the Tupai C standard library implementation.
+//
 
-ENTRY(_start)
-OUTPUT_FORMAT(elf32-i386)
+// Standard
+#include <stdint.h>
+#include <stddef.h>
 
-SECTIONS
-{
-	HEAP_SIZE = 64M; /* Maximum heap size */
+// Types
+typedef int64_t FILE;
+typedef int64_t fpos_t;
 
-	. = 1M;
+// Macros
+//#define NULL 0
+#define EOF -1
+#define FILENAME_MAX 512
 
-	.text ALIGN(4K) :
-	{
-		*(.init*)
-		*(.fini*)
+// Standard streams
+extern FILE* stdin;
+extern FILE* stdout;
+extern FILE* stderr;
 
-		*(.text)
-		*(.gnu.linkonce.t*)
-	}
+// File access
+FILE* fopen(const char* filename, const char* mode);
+int   fclose(FILE* stream);
 
-	.rodata ALIGN(4K) :
-	{
-		*(.rodata)
+// File I/O
+size_t fread (void* ptr, size_t size, size_t count, FILE* stream);
+size_t fwrite(const void* ptr, size_t size, size_t count, FILE* stream);
 
-		start_ctors = .;
-		*(SORT(.ctors*))
-		end_ctors = .;
+// File positioning
+int fseek(FILE* stream, long offset, int origin);
 
-		start_dtors = .;
-		*(SORT(.dtors*))
-		end_dtors = .;
+// Output
+int puts(const char* str);
 
-		*(.gnu.linkonce.r*)
-	}
-
-	.data ALIGN(4K) :
-	{
-		*(.data)
-		*(.gnu.linkonce.d*)
-	}
-
-	.bss ALIGN(4K) :
-	{
-		*(COMMON)
-		*(.bss)
-		*(.gnu.linkonce.b*)
-	}
-
-	.bss.noload ALIGN(4K) (NOLOAD) :
-	{
-		*(.bss.noload)
-
-		. = ALIGN(4K);
-		heap_start = .;
-		. += HEAP_SIZE;
-		heap_end = .;
-	}
-}
+// TODO : Complete this

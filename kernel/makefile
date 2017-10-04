@@ -96,6 +96,7 @@ AS  = $(ARCH_GCC_PREFIX)gcc
 CC  = $(ARCH_GCC_PREFIX)gcc
 CPP = $(ARCH_GCC_PREFIX)gcc
 LD  = $(ARCH_GCC_PREFIX)gcc
+AR  = $(ARCH_GCC_PREFIX)ar
 
 TOOL_DIR ?= $(abspath $(dir $(shell which $(CC))))
 

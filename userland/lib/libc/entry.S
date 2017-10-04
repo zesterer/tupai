@@ -1,5 +1,5 @@
 //
-// file : stdio.h : Input/Output operations
+// file : entry.S
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -17,35 +17,21 @@
 // ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
-// This file is part of the Tupai C standard library implementation.
-//
 
-// Standard
-#include <stdint.h>
+.global _start
 
-// Types
-typedef int64_t FILE;
-typedef int64_t fpos_t;
+.section .text
 
-// Macros
-//#define NULL 0
-#define EOF -1
-#define FILENAME_MAX 512
+	_start: // Program entry
 
-// Standard streams
-extern FILE* stdin;
-extern FILE* stdout;
-extern FILE* stderr;
+		mov $_stack_bottom, %esp // Set up the stack
 
-// File access
-FILE* fopen(const char* filename, const char* mode);
-int   fclose(FILE* stream);
+		call main
 
-// File I/O
-size_t fread (void* ptr, size_t size, size_t count, FILE* stream);
-size_t fwrite(const void* ptr, size_t size, size_t count, FILE* stream);
+	_hang:
+		jmp _hang
 
-// File positioning
-int fseek(FILE* stream, long offset, int origin);
-
-// TODO : Complete this
+.section .bss
+	_stack_top:
+		.skip 4096 // 4K stack
+	_stack_bottom:

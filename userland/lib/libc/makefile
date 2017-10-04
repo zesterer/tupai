@@ -25,9 +25,8 @@ TARGET_FAMILY ?= x86
 TARGET_ARCH   ?= i386
 
 SRC_ROOT    = $(abspath .)
-BUILD_ROOT ?= $(SRC_ROOT)/build
 
-EXEC ?= $(BUILD_ROOT)/init.elf
+ARCHIVE ?= $(BUILD_ROOT)/libc.a
 
 # CFlags
 # -----
@@ -52,22 +51,6 @@ endif
 ifeq ($(TARGET_ARCH), rpi3)
 	CFLAGS += -DARCH_ADDRESS_32
 	CFLAGS += -mcpu=arm1176jzf-s
-endif
-
-# LFLAGS
-# ------
-
-LFLAGS = -lgcc
-
-ifeq ($(TARGET_ARCH), x86_64)
-	LFLAGS += -z max-page-size=4096
-	LSCRIPT = $(USERLAND_SRC)/arch/x86/x86_64/link.ld
-endif
-ifeq ($(TARGET_ARCH), i386)
-	LSCRIPT = $(USERLAND_SRC)/arch/x86/i386/link.ld
-endif
-ifeq ($(TARGET_ARCH), rpi3)
-	LSCRIPT = $(USERLAND_SRC)/arch/arm/rpi3/link.ld
 endif
 
 # Tools
@@ -104,26 +87,23 @@ OBJS  += $(subst $(SRC_ROOT), $(BUILD_ROOT), $(addsuffix .o, $(SRCS)))
 DEPS  += $(subst $(SRC_ROOT), $(BUILD_ROOT), $(addsuffix .d, $(SRCS)))
 BDIRS += $(sort $(dir $(OBJS)))
 
-# Libraries
-# ---------
-
-OBJS += $(shell ls $(USERLAND_BUILD_DIR)/lib/libc/*.a 2> /dev/null)
+CRTBEGIN = $(shell $(LD) $(CFLAGS) -print-file-name=crtbegin.o)
+CRTEND   = $(shell $(LD) $(CFLAGS) -print-file-name=crtend.o)
 
 # Rules
 # -----
 
 .PHONY : all clean
 
-all : $(EXEC)
+all : $(ARCHIVE)
 
 clean :
-	@rm -r -f $(EXEC) $(OBJS) $(DEPS) $(BDIRS)
+	@rm -r -f $(ARCHIVE) $(OBJS) $(DEPS) $(BDIRS)
 
-$(EXEC) : $(OBJS)
-	@echo "[`date "+%H:%M:%S"`] Linking '$@'..."
-	echo $(USERLAND_BUILD_DIR)
-	@$(TOOL_DIR)/$(LD) $(CFLAGS) -T $(LSCRIPT) -o $@ $(OBJS) $(LFLAGS)
-	@echo "[`date "+%H:%M:%S"`] Linked '$@'."
+$(ARCHIVE) : $(OBJS)
+	@echo "[`date "+%H:%M:%S"`] Creating '$@'..."
+	@$(TOOL_DIR)/$(AR) rcs -o $@ $(CRTBEGIN) $(OBJS) $(CRTEND)
+	@echo "[`date "+%H:%M:%S"`] Created '$@'."
 
 $(OBJS) : | $(BDIRS)
 
