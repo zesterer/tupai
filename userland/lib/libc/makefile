@@ -81,6 +81,17 @@ SRC_DIR = $(abspath .)
 
 SRCS_REL += $(shell ls $(SRC_ROOT)/*.{s,S,c,cpp} 2> /dev/null)
 
+ifeq ($(TARGET_FAMILY), x86)
+	SRCS_REL += $(shell ls $(SRC_ROOT)/arch/x86/*.{s,S,c,cpp} 2> /dev/null)
+endif
+
+ifeq ($(TARGET_ARCH), x86_64)
+	SRCS_REL += $(shell ls $(SRC_ROOT)/arch/x86/x86_64/*.{s,S,c,cpp} 2> /dev/null)
+endif
+ifeq ($(TARGET_ARCH), i386)
+	SRCS_REL += $(shell ls $(SRC_ROOT)/arch/x86/i386/*.{s,S,c,cpp} 2> /dev/null)
+endif
+
 SRCS = $(abspath $(SRCS_REL))
 
 OBJS  += $(subst $(SRC_ROOT), $(BUILD_ROOT), $(addsuffix .o, $(SRCS)))

@@ -121,7 +121,6 @@ clean :
 
 $(EXEC) : $(OBJS)
 	@echo "[`date "+%H:%M:%S"`] Linking '$@'..."
-	echo $(USERLAND_BUILD_DIR)
 	@$(TOOL_DIR)/$(LD) $(CFLAGS) -T $(LSCRIPT) -o $@ $(OBJS) $(LFLAGS)
 	@echo "[`date "+%H:%M:%S"`] Linked '$@'."
 
