@@ -24,15 +24,28 @@
 #include <tupai/util/str.h>
 #include <tupai/mem/kheap.h>
 #include <tupai/mem/phys.h>
+#include <tupai/mem/virt.h>
 #include <tupai/cpu.h>
+#include <tupai/def.h>
 
 void usermode_test();
+
+virt_t kvirt;
 
 void kearly()
 {
 	// Kernel heap
 	kheap_init();
 	phys_init();
+
+	virt_init(&kvirt);
+
+	// Set up higher-half paging
+	phys_set_region(0, (size_t)kernel_end, KERNEL | MOVABLE | RAM | USED, nullptr); // Reserve kernel memory
+	virt_map_region(&kvirt, VIRT_OFFSET, 0, (size_t)kernel_end, 0); // Map higher-half addresses to lower kernel memory
+	virt_switch(&kvirt); // Switch to the new virtual memory addresses
+
+	logf("[ OK ] Reserved kernel memory between %p and %p\n", 0, (void*)kernel_end);
 }
 
 void kmain()

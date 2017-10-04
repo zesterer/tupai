@@ -23,23 +23,6 @@
 #include <tupai/util/mem.h>
 #include <tupai/def.h>
 
-enum
-{
-	KERNEL  = (1 << 0),
-	USER    = 0,
-
-	STATIC  = (1 << 1),
-	MOVABLE = 0,
-
-	SPECIAL = (1 << 2),
-	RAM     = 0,
-
-	USED    = (1 << 3),
-	FREE    = 0,
-
-	SHARED  = (1 << 4),
-};
-
 typedef struct entry
 {
 	uint8_t flags;
@@ -47,8 +30,6 @@ typedef struct entry
 } entry_t;
 
 uint64_t phys_preload_size = 0;
-
-extern char kernel_end[];
 
 static entry_t* map;
 static size_t map_size;
@@ -66,10 +47,6 @@ void phys_init()
 		map[i] = make_entry(KERNEL | MOVABLE | RAM | FREE, nullptr);
 
 	logf("[ OK ] Physical memory allocator initiated with %u entries\n", (uint)map_size);
-
-	// Reclaim the kernel
-	phys_set_region(0, (size_t)kernel_end, KERNEL | MOVABLE | RAM | USED, nullptr);
-	logf("[ OK ] Reclaimed kernel memory between %p and %p\n", 0, (void*)kernel_end);
 }
 
 void phys_set(size_t offset, uint8_t flags, proc_t* proc)

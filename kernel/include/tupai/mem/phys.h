@@ -24,6 +24,23 @@
 #include <tupai/proc.h>
 #include <tupai/type.h>
 
+enum
+{
+	KERNEL  = (1 << 0),
+	USER    = 0,
+
+	STATIC  = (1 << 1),
+	MOVABLE = 0,
+
+	SPECIAL = (1 << 2),
+	RAM     = 0,
+
+	USED    = (1 << 3),
+	FREE    = 0,
+
+	SHARED  = (1 << 4),
+};
+
 extern uint64_t phys_preload_size;
 
 void phys_init();

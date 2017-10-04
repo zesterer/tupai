@@ -26,8 +26,13 @@
 
 void* alloc(size_t n)
 {
+	return alloc_aligned(n, DEFAULT_ALIGN);
+}
+
+void* alloc_aligned(size_t n, size_t align)
+{
 	void* ret;
-	switch (pool_alloc(&kheap, n, DEFAULT_ALIGN, &ret))
+	switch (pool_alloc(&kheap, n, align, &ret))
 	{
 	case 0:
 		return ret;

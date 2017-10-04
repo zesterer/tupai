@@ -114,6 +114,7 @@ SRCS_REL += $(shell ls $(SRC_ROOT)/task/*.{s,S,c,cpp} 2> /dev/null)
 
 ifeq ($(TARGET_FAMILY), x86)
 	SRCS_REL += $(shell ls $(SRC_ROOT)/arch/x86/*.{s,S,c,cpp} 2> /dev/null)
+	SRCS_REL += $(shell ls $(SRC_ROOT)/arch/x86/mem/*.{s,S,c,cpp} 2> /dev/null)
 endif
 ifeq ($(TARGET_FAMILY), arm)
 	SRCS_REL += $(shell ls $(SRC_ROOT)/arch/arm/*.{s,S,c,cpp} 2> /dev/null)

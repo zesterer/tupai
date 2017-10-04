@@ -23,7 +23,11 @@
 
 #include <tupai/type.h>
 
-#define VIRT_KERNEL (1 << 0)
+enum
+{
+	VIRT_KERNEL = (0 << 0),
+	VIRT_USER = (1 << 0),
+};
 
 typedef struct virt
 {
@@ -31,9 +35,11 @@ typedef struct virt
 	uint8_t flags;
 } virt_t;
 
-int virt_init(virt_t* virt, uint8_t flags);
-int virt_map(virt_t* virt, size_t virt_page, size_t phys_page); // Uses page indexes, not real addresses!
+int virt_init(virt_t* virt);
 int virt_delete(virt_t* virt);
-void virt_enable(virt_t* virt);
+int virt_switch(virt_t* virt);
+
+int virt_map(virt_t* virt, size_t vaddr, size_t paddr, uint8_t flags);
+int virt_map_region(virt_t* virt, size_t vaddr, size_t paddr, size_t size, uint8_t flags);
 
 #endif

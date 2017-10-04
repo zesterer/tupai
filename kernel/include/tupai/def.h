@@ -27,4 +27,7 @@
 	#include <tupai/arch/x86/def.h>
 #endif
 
+extern char kernel_start[];
+extern char kernel_end[];
+
 #endif

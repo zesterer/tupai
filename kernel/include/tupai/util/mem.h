@@ -37,6 +37,7 @@ inline size_t align_down(size_t x, size_t a)
 }
 
 void* alloc(size_t n);
+void* alloc_aligned(size_t n, size_t align);
 void dealloc(void* ptr);
 
 #endif
