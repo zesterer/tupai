@@ -28,10 +28,13 @@ SRC_ROOT    = $(abspath .)
 
 ARCHIVE ?= $(BUILD_ROOT)/libc.a
 
+ARCHIVE_SYSROOT ?= $(SYSROOT_BUILD_DIR)/lib/$(notdir $(ARCHIVE))
+ARCHIVE_SYSROOT_PATH = $(dir $(ARCHIVE_SYSROOT))
+
 # CFlags
 # -----
 
-INCS += $(SYSROOT)/include $(SRC_ROOT)/include
+INCS += $(SYSROOT_SRC_DIR)/include $(SRC_ROOT)/include
 
 INC_FLAGS = $(addprefix -I, $(INCS))
 
@@ -106,10 +109,14 @@ CRTEND   = $(shell $(LD) $(CFLAGS) -print-file-name=crtend.o)
 
 .PHONY : all clean
 
-all : $(ARCHIVE)
+all : $(ARCHIVE) $(ARCHIVE_SYSROOT)
 
 clean :
 	@rm -r -f $(ARCHIVE) $(OBJS) $(DEPS) $(BDIRS)
+
+$(ARCHIVE_SYSROOT) : $(ARCHIVE)
+	@mkdir -p $(ARCHIVE_SYSROOT_PATH)
+	@cp $(ARCHIVE) $(ARCHIVE_SYSROOT)
 
 $(ARCHIVE) : $(OBJS)
 	@echo "[`date "+%H:%M:%S"`] Creating '$@'..."

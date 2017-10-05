@@ -29,10 +29,13 @@ BUILD_ROOT ?= $(SRC_ROOT)/build
 
 EXEC ?= $(BUILD_ROOT)/init.elf
 
+EXEC_SYSROOT ?= $(SYSROOT_BUILD_DIR)/sbin/$(notdir $(EXEC))
+EXEC_SYSROOT_PATH = $(dir $(EXEC_SYSROOT))
+
 # CFlags
 # -----
 
-INCS += $(SYSROOT)/include $(SRC_ROOT)/include
+INCS += $(SYSROOT_SRC_DIR)/include $(SRC_ROOT)/include
 
 INC_FLAGS = $(addprefix -I, $(INCS))
 
@@ -114,10 +117,14 @@ OBJS += $(shell ls $(USERLAND_BUILD_DIR)/lib/libc/*.a 2> /dev/null)
 
 .PHONY : all clean
 
-all : $(EXEC)
+all : $(EXEC) $(EXEC_SYSROOT)
 
 clean :
 	@rm -r -f $(EXEC) $(OBJS) $(DEPS) $(BDIRS)
+
+$(EXEC_SYSROOT) : $(EXEC)
+	@mkdir -p $(EXEC_SYSROOT_PATH)
+	@cp $(EXEC) $(EXEC_SYSROOT)
 
 $(EXEC) : $(OBJS)
 	@echo "[`date "+%H:%M:%S"`] Linking '$@'..."
