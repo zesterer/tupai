@@ -29,18 +29,17 @@
 		mov $_p2_table.boot, %ecx
 		1:
 			movl $0, (%ecx)
-			inc %ecx
+			add $4, %ecx
 			cmp $_table_end.boot, %ecx
 			jne 1b
 
 		// Map P2 table entries
 		mov $0, %ecx
 		1:
-
 			// Map the ECX-th P1 entry to a page at address 4K * ecx
 			mov $(1024 * 4), %eax    // For each P1 table (size = 1024 * 4)
 			imul %ecx, %eax         // Calculate 4K * ecx
-			or $0b111, %eax          // Present and writable, (temporary: user-accessible)
+			or $0b11, %eax          // Present and writable
 			add $_p1_table.boot, %eax // Present, writable
 
 			// Lower identity
@@ -53,7 +52,7 @@
 			mov $4, %edx
 			imul %ecx, %edx     // Calculate (p2_table + ecx * 8)...
 			add $_p2_table.boot, %edx
-			add $(768 * 4), %edx
+			add $((1024 - 256) * 4), %edx // 3G offset
 			mov %eax, (%edx)    // Map ECX-th entry (each entry is 8 bytes)...
 
 			// Iterate the loop
@@ -67,12 +66,12 @@
 			// Map the ECX-th P1 entry to a page at address 4K * ecx
 			mov $4096, %eax     // 4K
 			imul %ecx, %eax     // Calculate 4K * ecx
-			or $0b111, %eax      // Present, writable, (temporary: user-accessible)
+			or $0b11, %eax      // Present, writable
 
 			mov $4, %edx
-			imul %ecx, %edx     // Calculate (p1_table + ecx * 8)...
+			imul %ecx, %edx     // Calculate (p1_table + ecx * 4)...
 			add $_p1_table.boot, %edx
-			mov %eax, (%edx)    // Map ECX-th entry (each entry is 8 bytes)...
+			mov %eax, (%edx)    // Map ECX-th entry (each entry is 4 bytes)...
 
 			// Iterate the loop
 			inc %ecx
@@ -105,6 +104,8 @@
 
 		mov %ebp, %esp // Restore the state of ESP from EBP
 		pop %ebp // Restore the state of EBP
+
+		xchg %bx, %bx
 
 		push $0x0F
 		push $_paging_enabled_str
