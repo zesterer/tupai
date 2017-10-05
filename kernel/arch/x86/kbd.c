@@ -98,7 +98,7 @@ void kbd_init()
 	log("[ OK ] PS2 keyboard IRQ unmasked\n");
 }
 
-size_t isr_kbd(size_t stack)
+ptr_t isr_kbd(ptr_t stack)
 {
 	while (true)
 	{

@@ -47,7 +47,7 @@ static const char* exception_names[] =
 	"Machine Check",              // 18
 };
 
-size_t exception_handler(size_t stack, size_t code, size_t error)
+ptr_t exception_handler(ptr_t stack, uint32_t code, ptr_t error)
 {
 	(void)stack;
 	(void)error;

@@ -23,6 +23,6 @@
 
 #include <tupai/type.h>
 
-void mb_parse(size_t header);
+void mb_parse(uintptr_t header);
 
 #endif

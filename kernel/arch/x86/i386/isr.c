@@ -45,10 +45,10 @@ extern void _exception_17();
 extern void _exception_18();
 
 extern void _isr_default_stub();
-size_t isr_default(size_t stack);
+ptr_t isr_default(ptr_t stack);
 
 extern void _isr_spurious_stub();
-size_t isr_spurious(size_t stack);
+ptr_t isr_spurious(ptr_t stack);
 
 void isr_init()
 {
@@ -83,13 +83,13 @@ void isr_init()
 	log("[ OK ] ISRs installed\n");
 }
 
-size_t isr_default(size_t stack)
+ptr_t isr_default(ptr_t stack)
 {
 	panic("Unspecified interrupt occured!\n");
 	return stack;
 }
 
-size_t isr_spurious(size_t stack)
+ptr_t isr_spurious(ptr_t stack)
 {
 	panic("Spurious interrupt occured!\n");
 	return stack;

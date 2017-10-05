@@ -39,7 +39,7 @@ int virt_init(virt_t* virt);
 int virt_delete(virt_t* virt);
 int virt_switch(virt_t* virt);
 
-int virt_map(virt_t* virt, size_t vaddr, size_t paddr, uint8_t flags);
-int virt_map_region(virt_t* virt, size_t vaddr, size_t paddr, size_t size, uint8_t flags);
+int virt_map(virt_t* virt, uintptr_t vaddr, uintptr_t paddr, uint8_t flags);
+int virt_map_region(virt_t* virt, uintptr_t vaddr, uintptr_t paddr, size_t size, uint8_t flags);
 
 #endif

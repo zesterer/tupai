@@ -1,5 +1,5 @@
 //
-// file : type.h
+// file : rd.h
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,22 +18,20 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#ifndef TUPAI_TYPE_H
-#define TUPAI_TYPE_H
+#ifndef TUPAI_RD_H
+#define TUPAI_RD_H
 
-#include <stddef.h>
-#include <stdint.h>
+enum
+{
+	RD_UNKNOWN = 0,
+	RD_TAR = 1,
+};
 
-typedef char bool;
-typedef long id_t;
+typedef struct rd
+{
+	// Nothing yet
+} rd_t;
 
-typedef unsigned int uint;
-
-typedef size_t ptr_t;
-
-#define false (1 == 0)
-#define true (!false)
-
-#define nullptr 0
+void rd_preload(uintptr_t offset, size_t size, int type);
 
 #endif

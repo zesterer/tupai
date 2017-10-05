@@ -30,7 +30,7 @@
 #include <tupai/arch/x86/vga.h>
 #include <tupai/arch/x86/kbd.h>
 
-void kentry(size_t mb_header)
+void kentry(ptr_t mb_header)
 {
 	// Pre-initiation
 	vga_preinit();

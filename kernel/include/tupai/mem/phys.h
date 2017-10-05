@@ -44,8 +44,8 @@ enum
 extern uint64_t phys_preload_size;
 
 void phys_init();
-void phys_set(size_t offset, uint8_t flags, proc_t* proc);
-void phys_set_region(size_t offset, size_t size, uint8_t flags, proc_t* proc);
+void phys_set(uintptr_t offset, uint8_t flags, proc_t* proc);
+void phys_set_region(uintptr_t offset, size_t size, uint8_t flags, proc_t* proc);
 void phys_display();
 
 #endif

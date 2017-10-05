@@ -33,7 +33,7 @@ typedef struct pool
 	size_t block_size;
 } pool_t;
 
-int pool_init(pool_t* pool, size_t start, size_t size, size_t block_size);
+int pool_init(pool_t* pool, uintptr_t start, size_t size, size_t block_size);
 int pool_alloc(pool_t* pool, size_t n, size_t align, void** ret);
 int pool_dealloc(pool_t* pool, void* ptr);
 int pool_integrity_check(pool_t* pool);

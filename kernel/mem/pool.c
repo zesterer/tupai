@@ -43,7 +43,7 @@ static void block_set(pool_t* pool, size_t index, int value);
 */
 
 
-int pool_init(pool_t* pool, size_t start, size_t size, size_t block_size)
+int pool_init(pool_t* pool, uintptr_t start, size_t size, size_t block_size)
 {
 	pool->start = align_up(start, PAGE_SIZE);
 	pool->size = size - (pool->start - start);
@@ -74,7 +74,7 @@ int pool_alloc(pool_t* pool, size_t n, size_t align, void** ret)
 {
 	size_t blocks = align_up(n, pool->block_size) / pool->block_size;
 
-	for (size_t i = 0; i < pool->block_count; i ++)
+	for (uintptr_t i = 0; i < pool->block_count; i ++)
 	{
 		int type = block_get(pool, i);
 		if (type == ERROR)
@@ -113,12 +113,12 @@ int pool_alloc(pool_t* pool, size_t n, size_t align, void** ret)
 
 int pool_dealloc(pool_t* pool, void* ptr)
 {
-	if (((size_t)ptr - pool->start) % pool->block_size != 0)
+	if (((uintptr_t)ptr - pool->start) % pool->block_size != 0)
 		return 1;
-	if (((size_t)ptr < pool->start || (size_t)ptr > pool->start + pool->block_count * pool->block_size))
+	if (((uintptr_t)ptr < pool->start || (uintptr_t)ptr > pool->start + pool->block_count * pool->block_size))
 		return 1;
 
-	size_t i = ((size_t)ptr - pool->start) / pool->block_size;
+	size_t i = ((uintptr_t)ptr - pool->start) / pool->block_size;
 	int type = block_get(pool, i);
 	if (type == ERROR)
 		return 2;

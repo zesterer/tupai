@@ -93,7 +93,7 @@ static void parse_mmap(tag_mmap_t* mmap); // Memory map
 static void parse_efi32(tag_efi32_t* efi32); // 32-bit EFI system table
 static void parse_efi64(tag_efi64_t* efi64); // 64-bit EFI system table
 
-void mb_parse(size_t header)
+void mb_parse(uintptr_t header)
 {
 	log("[ OK ] Parsing Multiboot data...\n");
 
@@ -147,7 +147,7 @@ void parse_bln(tag_bln_t* tag)
 
 void parse_module(tag_module_t* tag)
 {
-	logf("[ OK ] Found module with args '%s' starting at %p\n", &tag->args_start, (void*)tag->start);
+	logf("[ OK ] Found module with args '%s' starting at %p\n", &tag->args_start, (void*)(uintptr_t)tag->start);
 }
 
 void parse_meminfo(tag_meminfo_t* meminfo)
@@ -194,17 +194,17 @@ void parse_mmap(tag_mmap_t* mmap)
 					break;
 			}
 
-			logf("[ OK ] Found region (type = %s, offset = %p, size = %X)\n", type_str, (void*)(size_t)centry->offset, (uint)centry->size);
+			logf("[ OK ] Found region (type = %s, offset = %p, size = %X)\n", type_str, (void*)(uintptr_t)centry->offset, (uint)centry->size);
 		}
 	}
 }
 
 void parse_efi32(tag_efi32_t* efi32)
 {
-	logf("[ OK ] Found 32-bit EFI system table at %p\n", (void*)(size_t)efi32->ptr);
+	logf("[ OK ] Found 32-bit EFI system table at %p\n", (void*)(uintptr_t)efi32->ptr);
 }
 
 void parse_efi64(tag_efi64_t* efi64)
 {
-	logf("[ OK ] Found 64-bit EFI system table at %p\n", (void*)(size_t)efi64->ptr);
+	logf("[ OK ] Found 64-bit EFI system table at %p\n", (void*)(uintptr_t)efi64->ptr);
 }

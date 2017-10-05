@@ -89,7 +89,7 @@ void logf(const char* fmt, ...)
 				{
 					LOG_PUTS("0x");
 					char buff[PTR_STR_MAX];
-					if (ptr_to_str(va_arg(args, size_t), 16, sizeof(size_t) * 2, buff))
+					if (ptr_to_str(va_arg(args, uintptr_t), 16, sizeof(uintptr_t) * 2, buff))
 						LOG_PUTS(buff);
 					else
 						LOG_PUTC('!');

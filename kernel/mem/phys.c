@@ -49,14 +49,14 @@ void phys_init()
 	logf("[ OK ] Physical memory allocator initiated with %u entries\n", (uint)map_size);
 }
 
-void phys_set(size_t offset, uint8_t flags, proc_t* proc)
+void phys_set(uintptr_t offset, uint8_t flags, proc_t* proc)
 {
 	size_t index = align_down(offset, PAGE_SIZE) / PAGE_SIZE;
 	map[index].flags = flags;
 	map[index].proc = proc;
 }
 
-void phys_set_region(size_t offset, size_t size, uint8_t flags, proc_t* proc)
+void phys_set_region(uintptr_t offset, size_t size, uint8_t flags, proc_t* proc)
 {
 	size_t index = align_down(offset, PAGE_SIZE) / PAGE_SIZE;
 	size_t entries = align_up(offset + size, PAGE_SIZE) / PAGE_SIZE - index;

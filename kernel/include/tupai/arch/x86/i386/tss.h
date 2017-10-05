@@ -24,6 +24,6 @@
 #include <tupai/type.h>
 
 void tss_init();
-void tss_set_stack(size_t stack);
+void tss_set_stack(uintptr_t stack);
 
 #endif

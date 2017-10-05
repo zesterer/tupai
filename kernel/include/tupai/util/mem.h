@@ -26,12 +26,12 @@
 
 #define DEFAULT_ALIGN 8
 
-inline size_t align_up(size_t x, size_t a)
+inline uintptr_t align_up(uintptr_t x, size_t a)
 {
 	return (x % a == 0) ? x : ((x / a + 1) * a);
 }
 
-inline size_t align_down(size_t x, size_t a)
+inline uintptr_t align_down(uintptr_t x, size_t a)
 {
 	return (x / a) * a;
 }

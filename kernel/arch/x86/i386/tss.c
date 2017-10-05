@@ -90,7 +90,7 @@ void write_tss(uint32_t ss0, uint32_t esp0)
 	tss.gs = 0x13;
 }
 
-void tss_set_stack(size_t stack)
+void tss_set_stack(uintptr_t stack)
 {
 	tss.esp0 = stack; // Set kernel stack
 }

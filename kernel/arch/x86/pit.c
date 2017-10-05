@@ -69,7 +69,7 @@ void set_rate(uint32_t r)
 	outb(PORT_DATA_CH0, (div >> 8) & 0xFF); // High byte
 }
 
-size_t isr_pit(size_t stack)
+ptr_t isr_pit(ptr_t stack)
 {
 	tick ++;
 	time += 1000000 / rate;
