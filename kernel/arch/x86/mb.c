@@ -21,7 +21,9 @@
 #include <tupai/arch/x86/mb.h>
 #include <tupai/util/log.h>
 #include <tupai/util/mem.h>
+#include <tupai/util/args.h>
 #include <tupai/mem/phys.h>
+#include <tupai/rd.h>
 #include <tupai/def.h>
 
 typedef struct tag_head
@@ -132,6 +134,8 @@ void mb_parse(uintptr_t header)
 		p += align_up(p->size, 8) / sizeof(*p);
 	}
 
+	while (1);
+
 	log("[ OK ] Finished parsing Multiboot data\n");
 }
 
@@ -147,7 +151,13 @@ void parse_bln(tag_bln_t* tag)
 
 void parse_module(tag_module_t* tag)
 {
-	logf("[ OK ] Found module with args '%s' starting at %p\n", &tag->args_start, (void*)(uintptr_t)tag->start);
+	char buff[64];
+	if (find_arg(&tag->args_start, "type", buff, 64) == 0)
+	{
+		logf("[ OK ] Found initrd module with args '%s' at %p\n", &tag->args_start, (void*)(uintptr_t)tag->start);
+	}
+	else
+		logf("[ OK ] Found module with args '%s' at %p\n", &tag->args_start, (void*)(uintptr_t)tag->start);
 }
 
 void parse_meminfo(tag_meminfo_t* meminfo)
