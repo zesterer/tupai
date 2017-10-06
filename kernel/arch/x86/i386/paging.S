@@ -105,8 +105,6 @@
 		mov %ebp, %esp // Restore the state of ESP from EBP
 		pop %ebp // Restore the state of EBP
 
-		xchg %bx, %bx
-
 		push $0x0F
 		push $_paging_enabled_str
 		call _vga_print.boot

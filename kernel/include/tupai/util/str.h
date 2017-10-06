@@ -42,4 +42,12 @@ inline size_t str_cat(char* tgt, const char* src)
 	return i + j;
 }
 
+inline bool str_equal(const char* str1, const char* str2)
+{
+	for (size_t i = 0; str1[i] != '\0'; i ++)
+		if (str1[i] != str2[i])
+			return false;
+	return true;
+}
+
 #endif

@@ -22,6 +22,7 @@
 #include <tupai/util/log.h>
 #include <tupai/util/mem.h>
 #include <tupai/util/args.h>
+#include <tupai/util/str.h>
 #include <tupai/mem/phys.h>
 #include <tupai/rd.h>
 #include <tupai/def.h>
@@ -134,8 +135,6 @@ void mb_parse(uintptr_t header)
 		p += align_up(p->size, 8) / sizeof(*p);
 	}
 
-	while (1);
-
 	log("[ OK ] Finished parsing Multiboot data\n");
 }
 
@@ -151,13 +150,19 @@ void parse_bln(tag_bln_t* tag)
 
 void parse_module(tag_module_t* tag)
 {
-	char buff[64];
-	if (find_arg(&tag->args_start, "type", buff, 64) == 0)
+	char typebuff[64];
+	if (find_arg(&tag->args_start, "type", typebuff, sizeof(typebuff) / sizeof(char)) == 0)
 	{
-		logf("[ OK ] Found initrd module with args '%s' at %p\n", &tag->args_start, (void*)(uintptr_t)tag->start);
+		logf("[ OK ] Found '%s' module with args '%s' at %p\n", typebuff, &tag->args_start, (void*)(uintptr_t)tag->start);
+
+		if (str_equal(typebuff, "initrd"))
+		{
+			logf("[ OK ] Module at %p is an initrd. Load cached until later.\n", (void*)(uintptr_t)tag->start);
+			// TODO : Cache initrd here
+		}
 	}
 	else
-		logf("[ OK ] Found module with args '%s' at %p\n", &tag->args_start, (void*)(uintptr_t)tag->start);
+		logf("[ OK ] Found unrecognised module with args '%s' at %p\n", &tag->args_start, (void*)(uintptr_t)tag->start);
 }
 
 void parse_meminfo(tag_meminfo_t* meminfo)
