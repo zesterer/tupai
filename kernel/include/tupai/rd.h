@@ -21,6 +21,8 @@
 #ifndef TUPAI_RD_H
 #define TUPAI_RD_H
 
+#include <tupai/type.h>
+
 enum
 {
 	RD_UNKNOWN = 0,
@@ -29,9 +31,14 @@ enum
 
 typedef struct rd
 {
-	// Nothing yet
+	uintptr_t offset;
+	size_t size;
+	int type;
+	const char* args;
 } rd_t;
 
-void rd_preload(uintptr_t offset, size_t size, int type);
+void rd_preload(uintptr_t offset, size_t size, int type, const char* args);
+void rd_preserve();
+void rd_init();
 
 #endif

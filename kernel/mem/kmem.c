@@ -1,5 +1,5 @@
 //
-// file : mb.h
+// file : kmem.c
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,12 +18,21 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#ifndef TUPAI_X86_MB_H
-#define TUPAI_X86_MB_H
+#include <tupai/mem/kmem.h>
+#include <tupai/util/mem.h>
+#include <tupai/def.h>
 
-#include <tupai/type.h>
+extern char kernel_start[];
+extern char kernel_end[];
 
-void mb_parse(uintptr_t header);
-void mb_reserve();
+static uintptr_t kmem_end = 0;
 
-#endif
+void kmem_init()
+{
+	kmem_end = align_up((uintptr_t)kernel_end + VIRT_OFFSET, PAGE_SIZE);
+}
+
+uintptr_t kmem_new_region(size_t n)
+{
+	return kmem_end += align_up(n, PAGE_SIZE);
+}

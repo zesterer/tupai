@@ -35,6 +35,8 @@ typedef struct virt
 	uint8_t flags;
 } virt_t;
 
+extern virt_t kvirt;
+
 int virt_init(virt_t* virt);
 int virt_delete(virt_t* virt);
 int virt_switch(virt_t* virt);

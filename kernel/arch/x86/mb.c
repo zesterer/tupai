@@ -24,6 +24,7 @@
 #include <tupai/util/args.h>
 #include <tupai/util/str.h>
 #include <tupai/mem/phys.h>
+#include <tupai/mem/virt.h>
 #include <tupai/rd.h>
 #include <tupai/def.h>
 
@@ -138,6 +139,13 @@ void mb_parse(uintptr_t header)
 	log("[ OK ] Finished parsing Multiboot data\n");
 }
 
+void mb_reserve()
+{
+	// Map Multiboot data to the higher half
+	phys_set_region(0, (size_t)kernel_end, KERNEL | MOVABLE | RAM | USED, nullptr); // Reserve kernel memory
+	virt_map_region(&kvirt, VIRT_OFFSET, 0, (size_t)kernel_end, 0); // Map higher-half addresses to lower kernel memory
+}
+
 void parse_args(tag_args_t* tag)
 {
 	logf("[ OK ] Kernel arguments are '%s'\n", &tag->args_start);
@@ -157,8 +165,8 @@ void parse_module(tag_module_t* tag)
 
 		if (str_equal(typebuff, "initrd"))
 		{
+			rd_preload((uintptr_t)tag->start, (size_t)(tag->end - tag->start), RD_TAR, &tag->args_start);
 			logf("[ OK ] Module at %p is an initrd. Load cached until later.\n", (void*)(uintptr_t)tag->start);
-			// TODO : Cache initrd here
 		}
 	}
 	else

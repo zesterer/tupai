@@ -1,5 +1,5 @@
 //
-// file : mb.h
+// file : kmem.h
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,12 +18,12 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#ifndef TUPAI_X86_MB_H
-#define TUPAI_X86_MB_H
+#ifndef TUPAI_MEM_KMEM_H
+#define TUPAI_MEM_KMEM_H
 
 #include <tupai/type.h>
 
-void mb_parse(uintptr_t header);
-void mb_reserve();
+void kmem_init();
+uintptr_t kmem_new_region(size_t n);
 
 #endif

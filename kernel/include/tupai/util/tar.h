@@ -1,5 +1,5 @@
 //
-// file : mb.h
+// file : tar.h
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,12 +18,25 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#ifndef TUPAI_X86_MB_H
-#define TUPAI_X86_MB_H
+#ifndef TUPAI_UTIL_TAR_H
+#define TUPAI_UTIL_TAR_H
 
 #include <tupai/type.h>
 
-void mb_parse(uintptr_t header);
-void mb_reserve();
+typedef struct tar
+{
+	uint8_t filename[100];
+	uint8_t mode[8];
+	uint8_t uid[8];
+	uint8_t gid[8];
+	uint8_t size[12];
+	uint8_t mtime[12];
+	uint8_t checksum[8];
+	uint8_t typeflag;
+} __attribute__((packed)) tar_entry_t;
+
+tar_entry_t* tar_next(const tar_entry_t* entry);
+size_t tar_size(const tar_entry_t* entry);
+uint8_t* tar_data(const tar_entry_t* entry);
 
 #endif

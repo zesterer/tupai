@@ -39,6 +39,8 @@ void kentry(ptr_t mb_header)
 	mb_parse(mb_header);
 	kearly();
 
+	mb_reserve(); // Reserve Multiboot structures in virtual memory
+
 	// CPU setup
 	gdt_init();
 	idt_init();

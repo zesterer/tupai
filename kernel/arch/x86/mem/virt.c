@@ -39,6 +39,8 @@
 	static const size_t TABLE_TOTAL[TABLE_LAYERS] = { 1024, 1024 * 1024 };
 #endif
 
+virt_t kvirt;
+
 static entry_t* entry_to_ptr(entry_t entry);
 static void clear_table(entry_t* table, size_t layer);
 static entry_t* alloc_table(size_t layer);

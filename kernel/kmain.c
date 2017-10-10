@@ -25,15 +25,18 @@
 #include <tupai/mem/kheap.h>
 #include <tupai/mem/phys.h>
 #include <tupai/mem/virt.h>
+#include <tupai/mem/kmem.h>
+#include <tupai/rd.h>
 #include <tupai/cpu.h>
 #include <tupai/def.h>
 
 void usermode_test();
 
-virt_t kvirt;
-
 void kearly()
 {
+	// Initiate kernel offset memory
+	kmem_init();
+
 	// Kernel heap
 	kheap_init();
 	phys_init();
@@ -45,16 +48,26 @@ void kearly()
 	virt_map_region(&kvirt, VIRT_OFFSET, 0, (size_t)kernel_end, 0); // Map higher-half addresses to lower kernel memory
 	virt_switch(&kvirt); // Switch to the new virtual memory addresses
 
+	// Preserve ramdisks
+	rd_preserve();
+
 	logf("[ OK ] Reserved kernel memory between %p and %p\n", 0, (void*)kernel_end);
 }
 
 void kmain()
 {
-	console_init();
+	// Initial systems initiation //
+	// -------------------------- //
 
-	log("Hello, World! Welcome to the kernel!\n");
+	console_init();
+	rd_init();
+
+	log("[ OK ] Entered the kernel main\n");
 
 	phys_display();
+
+	// Initiation finished //
+	// ------------------- //
 
 	cpu_enable_int();
 
