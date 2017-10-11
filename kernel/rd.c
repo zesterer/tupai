@@ -25,6 +25,7 @@
 #include <tupai/mem/phys.h>
 #include <tupai/mem/virt.h>
 #include <tupai/mem/kmem.h>
+#include <tupai/vfs/vfs.h>
 #include <tupai/fs/tmpfs.h>
 #include <tupai/def.h>
 
@@ -87,7 +88,10 @@ int load_tar(rd_t* rd)
 	tmpfs_create(nfs);
 
 	for (tar_entry_t* tar = (tar_entry_t*)rd->offset; tar != nullptr; tar = tar_next(tar))
-		logf("[ OK ] Found tar file with name '%s'\n", tar->filename);
+	{
+		//logf("[ OK ] Found tar file with name '%s'\n", tar->filename);
+		tmpfs_add(nfs, tar_data(tar), tar_size(tar));
+	}
 
 	return 0;
 }

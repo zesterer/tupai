@@ -24,5 +24,6 @@
 #include <tupai/vfs/fs.h>
 
 int tmpfs_create(fs_t* fs);
+int tmpfs_add(fs_t* fs, uint8_t* data, size_t size);
 
 #endif

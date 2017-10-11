@@ -20,6 +20,7 @@
 
 #include <tupai/util/table.h>
 #include <tupai/util/mem.h>
+#include <tupai/util/panic.h>
 
 typedef struct table_entry
 {
@@ -30,6 +31,7 @@ typedef struct table_entry
 
 static id_t hash(id_t x);
 static void resize(table_t* table, size_t ncap);
+static int insert(table_t* table, id_t id, void* ptr);
 
 int table_create(table_t* table)
 {
@@ -43,22 +45,14 @@ int table_create(table_t* table)
 
 int table_add(table_t* table, id_t id, void* ptr)
 {
-	if (table->size == table->cap)
+	if (table->size >= table->cap)
 		resize(table, table->cap * 2);
 
-	size_t off = hash(id) % table->cap;
-	for (size_t i = 0; i < table->cap; i ++)
-	{
-		size_t j = (off + i) % table->cap;
-		if (!table->entries[j].used)
-		{
-			table->entries[j] = (table_entry_t){ .used = true, .id = id, .ptr = ptr };
-			table->size ++;
-			return 0;
-		}
-	}
+	int val = insert(table, id, ptr);
+	if (val == 0)
+		table->size ++;
 
-	return 1;
+	 return val;
 }
 
 void* table_get(table_t* table, id_t id)
@@ -71,7 +65,7 @@ void* table_get(table_t* table, id_t id)
 			return table->entries[j].ptr;
 	}
 
-	return nullptr;
+	panic("Attempted to find table entry, but entry was not found\n");
 }
 
 void* table_nth(table_t* table, size_t n)
@@ -88,30 +82,52 @@ void* table_nth(table_t* table, size_t n)
 		}
 	}
 
-	return nullptr;
+	panic("Attempted to find nth table entry, but n was out of bounds\n");
 }
 
 void table_delete(table_t* table);
 
-static id_t hash(id_t x)
+id_t hash(id_t x)
 {
 	return x;
 }
 
-static void resize(table_t* table, size_t ncap)
+void resize(table_t* table, size_t ncap)
 {
 	size_t ocap = table->cap;
 	table_entry_t* oentries = table->entries;
 
+	// Allocate new table
 	table->cap = ncap;
 	table->entries = ALLOC_ARR(table_entry_t, table->cap);
 
+	// Mark all new entries as unused
 	for (size_t i = 0; i < table->cap; i ++)
 		table->entries[i].used = false;
 
+	// Copy across used entries
 	for (size_t i = 0; i < ocap; i ++)
 	{
 		if (oentries[i].used)
-			table_add(table, oentries[i].id, oentries[i].ptr);
+			insert(table, oentries[i].id, oentries[i].ptr);
 	}
+
+	// Deallocate old table
+	dealloc(oentries);
+}
+
+int insert(table_t* table, id_t id, void* ptr)
+{
+	size_t off = hash(id) % table->cap;
+	for (size_t i = 0; i < table->cap; i ++)
+	{
+		size_t j = (off + i) % table->cap;
+		if (!table->entries[j].used)
+		{
+			table->entries[j] = (table_entry_t){ .used = true, .id = id, .ptr = ptr };
+			return 0;
+		}
+	}
+
+	return 1;
 }

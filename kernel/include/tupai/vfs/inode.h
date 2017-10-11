@@ -29,6 +29,8 @@ typedef struct inode
 {
 	id_t id;
 	fs_t* fs;
+
+	void* internal;
 } inode_t;
 
 #endif

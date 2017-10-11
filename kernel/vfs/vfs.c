@@ -31,6 +31,8 @@ id_t fs_count = 0;
 table_t inode_table;
 id_t inode_count = 0;
 
+fs_t* rootfs = nullptr;
+
 void vfs_init()
 {
 	if (table_create(&fs_table))
@@ -43,14 +45,26 @@ void vfs_init()
 
 int vfs_fs_create(fs_t* fs, const char* name)
 {
-	table_add(&fs_table, ++fs_count, fs); // Add it to the filesystem table
+	id_t nid = ++fs_count;
 
+	table_add(&fs_table, nid, fs); // Add it to the filesystem table
+
+	fs->id = nid;
 	fs->name = str_new(name); // Copy the name across
 
 	fs->root = ALLOC_OBJ(inode_t); // Create a root inode
 	vfs_inode_create(fs->root, fs);
 
-	logf("[ OK ] Created filesystem '%s'\n", fs->name);
+	// By default, make all functions nullptr
+	fs->display = nullptr;
+
+	// If no root filesystem exists yet, set this one as root
+	if (rootfs == nullptr)
+	{
+		rootfs = fs;
+		logf("[ OK ] Root filesystem set to %u (%s)\n", fs->id, fs->name);
+	}
+
 	return 0;
 }
 
@@ -65,9 +79,13 @@ void vfs_fs_delete(fs_t* fs)
 
 int vfs_inode_create(inode_t* inode, fs_t* fs)
 {
-	table_add(&inode_table, ++inode_count, inode); // Add it to the inode table
+	id_t nid = ++inode_count;
 
+	table_add(&inode_table, nid, inode); // Add it to the inode table
+
+	inode->id = nid;
 	inode->fs = fs;
+
 	return 0;
 }
 
@@ -81,12 +99,16 @@ void vfs_display()
 	for (size_t i = 0; i < fs_table.size; i ++)
 	{
 		fs_t* fs = table_nth(&fs_table, i);
-		logf("Filesystem %u is '%s'\n", i, fs->name);
+		logf("Filesystem %u is '%s'\n", fs->id, fs->name);
 	}
 
 	for (size_t i = 0; i < inode_table.size; i ++)
 	{
 		inode_t* inode = table_nth(&inode_table, i);
-		logf("Inode %u belongs to filesystem at %p\n", i, inode->fs);
+
+		//logf("Inode %u at %p belongs to filesystem at %p\n", inode->id, inode, inode->fs);
+
+		if (inode->fs->display != nullptr)
+			inode->fs->display(inode);
 	}
 }

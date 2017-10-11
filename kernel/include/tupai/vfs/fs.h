@@ -30,6 +30,8 @@ typedef struct fs
 	char* name;
 
 	inode_t* root;
+
+	void (*display)(inode_t* inode);
 } fs_t;
 
 #endif
