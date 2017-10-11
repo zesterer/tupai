@@ -26,6 +26,7 @@
 #include <tupai/mem/phys.h>
 #include <tupai/mem/virt.h>
 #include <tupai/mem/kmem.h>
+#include <tupai/vfs/vfs.h>
 #include <tupai/rd.h>
 #include <tupai/cpu.h>
 #include <tupai/def.h>
@@ -41,7 +42,7 @@ void kearly()
 	kheap_init();
 	phys_init();
 
-	virt_init(&kvirt);
+	virt_create(&kvirt);
 
 	// Set up higher-half paging
 	phys_set_region(0, (size_t)kernel_end, KERNEL | MOVABLE | RAM | USED, nullptr); // Reserve kernel memory
@@ -56,23 +57,29 @@ void kearly()
 
 void kmain()
 {
-	// Initial systems initiation //
-	// -------------------------- //
-
-	console_init();
-	rd_init();
-
 	log("[ OK ] Entered the kernel main\n");
 
-	phys_display();
+	// Core systems initiation //
+	// ----------------------- //
 
-	// Initiation finished //
-	// ------------------- //
+	vfs_init();
+	console_init();
+
+	// Secondary setup //
+	// --------------- //
+
+	rd_init();
+
+	// Initiation finished, show tests //
+	// ------------------------------- //
+
+	phys_display();
+	vfs_display();
+
+	// Prepare the CPU for the scheduler //
+	// --------------------------------- //
 
 	cpu_enable_int();
-
-	cpu_user_jump(&usermode_test);
-
 	while (true)
 		cpu_halt();
 }

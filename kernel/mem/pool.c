@@ -38,12 +38,12 @@ static int block_get(pool_t* pool, size_t index);
 static void block_set(pool_t* pool, size_t index, int value);
 
 /*
-** pool_init()
+** pool_create()
 ** Initiate a pool descriptor type (assign a suitable map, block size, etc.)
 */
 
 
-int pool_init(pool_t* pool, uintptr_t start, size_t size, size_t block_size)
+int pool_create(pool_t* pool, uintptr_t start, size_t size, size_t block_size)
 {
 	pool->start = align_up(start, PAGE_SIZE);
 	pool->size = size - (pool->start - start);

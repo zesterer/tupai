@@ -21,15 +21,19 @@
 #include <tupai/rd.h>
 #include <tupai/util/log.h>
 #include <tupai/util/tar.h>
+#include <tupai/util/mem.h>
 #include <tupai/mem/phys.h>
 #include <tupai/mem/virt.h>
 #include <tupai/mem/kmem.h>
+#include <tupai/fs/tmpfs.h>
 #include <tupai/def.h>
 
 #define CACHE_SIZE 16
 
 static rd_t rd_cache[CACHE_SIZE];
 static size_t rd_count = 0;
+
+static int load_tar(rd_t* rd);
 
 void rd_preload(uintptr_t offset, size_t size, int type, const char* args)
 {
@@ -64,19 +68,26 @@ void rd_init()
 		switch (rd_cache[i].type)
 		{
 			case RD_TAR:
-			{
-				logf("[ OK ] Loading tar ramdisk at %p...\n", (void*)rd_cache[i].offset);
-
-				for (tar_entry_t* tar = (tar_entry_t*)rd_cache[i].offset; tar != nullptr; tar = tar_next(tar))
-				{
-					logf("[ OK ] Found tar file with name '%s'\n", tar->filename);
-				}
-			}
-			break;
+				load_tar(&rd_cache[i]);
+				break;
 
 			default:
 				logf("[ OK ] Loading unrecognised ramdisk at %p...\n", (void*)rd_cache[i].offset);
 				break;
 		}
 	}
+}
+
+int load_tar(rd_t* rd)
+{
+	logf("[ OK ] Loading tar ramdisk at %p...\n", (void*)rd->offset);
+
+	// Create a new tmpfs filesystem for the tar ramdisk
+	fs_t* nfs = ALLOC_OBJ(fs_t);
+	tmpfs_create(nfs);
+
+	for (tar_entry_t* tar = (tar_entry_t*)rd->offset; tar != nullptr; tar = tar_next(tar))
+		logf("[ OK ] Found tar file with name '%s'\n", tar->filename);
+
+	return 0;
 }

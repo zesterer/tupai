@@ -1,5 +1,5 @@
 //
-// file : pool.h
+// file : inode.h
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,25 +18,17 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#ifndef TUPAI_MEM_POOL_H
-#define TUPAI_MEM_POOL_H
+#ifndef TUPAI_VFS_INODE_H
+#define TUPAI_VFS_INODE_H
 
 #include <tupai/type.h>
 
-typedef struct pool
+typedef struct fs fs_t;
+
+typedef struct inode
 {
-	size_t start;
-	size_t size;
-
-	uint8_t* map;
-	size_t block_count;
-	size_t block_size;
-} pool_t;
-
-int pool_create(pool_t* pool, uintptr_t start, size_t size, size_t block_size);
-int pool_alloc(pool_t* pool, size_t n, size_t align, void** ret);
-int pool_dealloc(pool_t* pool, void* ptr);
-int pool_integrity_check(pool_t* pool);
-void pool_display(pool_t* pool, size_t n);
+	id_t id;
+	fs_t* fs;
+} inode_t;
 
 #endif

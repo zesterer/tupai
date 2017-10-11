@@ -21,6 +21,7 @@
 #ifndef TUPAI_UTIL_STR_H
 #define TUPAI_UTIL_STR_H
 
+#include <tupai/util/mem.h>
 #include <tupai/type.h>
 
 inline size_t str_copy(const char* src, char* tgt)
@@ -48,6 +49,20 @@ inline bool str_equal(const char* str1, const char* str2)
 		if (str1[i] != str2[i])
 			return false;
 	return true;
+}
+
+inline size_t str_len(const char* str)
+{
+	size_t i = 0;
+	for (; str[i] != '\0'; i ++);
+	return i;
+}
+
+inline char* str_new(const char* str)
+{
+	char* nstr = alloc((str_len(str) + 1) * sizeof(char));
+	str_copy(str, nstr);
+	return nstr;
 }
 
 #endif

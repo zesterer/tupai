@@ -1,5 +1,5 @@
 //
-// file : pool.h
+// file : vfs.h
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,25 +18,18 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#ifndef TUPAI_MEM_POOL_H
-#define TUPAI_MEM_POOL_H
+#ifndef TUPAI_VFS_VFS_H
+#define TUPAI_VFS_VFS_H
 
-#include <tupai/type.h>
+#include <tupai/vfs/inode.h>
+#include <tupai/vfs/fs.h>
 
-typedef struct pool
-{
-	size_t start;
-	size_t size;
+void vfs_init();
+int vfs_fs_create(fs_t* fs, const char* name);
+void vfs_fs_delete(fs_t* fs);
+int vfs_inode_create(inode_t* inode, fs_t* fs);
+void vfs_inode_delete(inode_t* inode);
 
-	uint8_t* map;
-	size_t block_count;
-	size_t block_size;
-} pool_t;
-
-int pool_create(pool_t* pool, uintptr_t start, size_t size, size_t block_size);
-int pool_alloc(pool_t* pool, size_t n, size_t align, void** ret);
-int pool_dealloc(pool_t* pool, void* ptr);
-int pool_integrity_check(pool_t* pool);
-void pool_display(pool_t* pool, size_t n);
+void vfs_display();
 
 #endif

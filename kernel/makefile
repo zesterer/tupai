@@ -112,6 +112,8 @@ SRCS_REL += $(shell ls $(SRC_ROOT)/util/*.{s,S,c,cpp} 2> /dev/null)
 SRCS_REL += $(shell ls $(SRC_ROOT)/dev/*.{s,S,c,cpp} 2> /dev/null)
 SRCS_REL += $(shell ls $(SRC_ROOT)/mem/*.{s,S,c,cpp} 2> /dev/null)
 SRCS_REL += $(shell ls $(SRC_ROOT)/task/*.{s,S,c,cpp} 2> /dev/null)
+SRCS_REL += $(shell ls $(SRC_ROOT)/vfs/*.{s,S,c,cpp} 2> /dev/null)
+SRCS_REL += $(shell ls $(SRC_ROOT)/fs/*.{s,S,c,cpp} 2> /dev/null)
 
 ifeq ($(TARGET_FAMILY), x86)
 	SRCS_REL += $(shell ls $(SRC_ROOT)/arch/x86/*.{s,S,c,cpp} 2> /dev/null)

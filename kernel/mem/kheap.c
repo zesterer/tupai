@@ -36,7 +36,7 @@ pool_t kheap;
 
 void kheap_init()
 {
-	if (pool_init(&kheap, (uintptr_t)kheap_start, (uintptr_t)kheap_end - (uintptr_t)kheap_start, BLOCK_SIZE) != 0)
+	if (pool_create(&kheap, (uintptr_t)kheap_start, (uintptr_t)kheap_end - (uintptr_t)kheap_start, BLOCK_SIZE) != 0)
 		panic("Could not construct kernel heap");
 	else
 		log("[ OK ] Constructed kernel heap\n");

@@ -40,4 +40,7 @@ void* alloc(size_t n);
 void* alloc_aligned(size_t n, size_t align);
 void dealloc(void* ptr);
 
+#define ALLOC_OBJ(T) ((T*)alloc(sizeof(T)))
+#define ALLOC_ARR(T, N) ((T*)alloc(sizeof(T) * (N)))
+
 #endif

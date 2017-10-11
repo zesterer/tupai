@@ -37,7 +37,7 @@ typedef struct virt
 
 extern virt_t kvirt;
 
-int virt_init(virt_t* virt);
+int virt_create(virt_t* virt);
 int virt_delete(virt_t* virt);
 int virt_switch(virt_t* virt);
 

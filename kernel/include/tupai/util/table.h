@@ -1,5 +1,5 @@
 //
-// file : pool.h
+// file : table.h
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,25 +18,24 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#ifndef TUPAI_MEM_POOL_H
-#define TUPAI_MEM_POOL_H
+#ifndef TUPAI_UTIL_TABLE_H
+#define TUPAI_UTIL_TABLE_H
 
 #include <tupai/type.h>
 
-typedef struct pool
+typedef struct table_entry table_entry_t;
+
+typedef struct table
 {
-	size_t start;
 	size_t size;
+	size_t cap;
+	table_entry_t* entries;
+} table_t;
 
-	uint8_t* map;
-	size_t block_count;
-	size_t block_size;
-} pool_t;
-
-int pool_create(pool_t* pool, uintptr_t start, size_t size, size_t block_size);
-int pool_alloc(pool_t* pool, size_t n, size_t align, void** ret);
-int pool_dealloc(pool_t* pool, void* ptr);
-int pool_integrity_check(pool_t* pool);
-void pool_display(pool_t* pool, size_t n);
+int table_create(table_t* table);
+int table_add(table_t* table, id_t id, void* ptr);
+void* table_get(table_t* table, id_t id);
+void* table_nth(table_t* table, size_t n);
+void table_delete(table_t* table);
 
 #endif

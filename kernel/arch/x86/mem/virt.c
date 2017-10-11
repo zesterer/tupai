@@ -46,7 +46,7 @@ static void clear_table(entry_t* table, size_t layer);
 static entry_t* alloc_table(size_t layer);
 static void delete_table(entry_t* table, size_t layer);
 
-int virt_init(virt_t* virt)
+int virt_create(virt_t* virt)
 {
 	virt->table = (entry_t*)(VIRT_OFFSET + (size_t)alloc_table(TABLE_LAYERS - 1));
 
