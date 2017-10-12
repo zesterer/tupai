@@ -31,9 +31,12 @@ typedef struct fs
 
 	inode_t* root;
 
-	void (*display)(inode_t* inode);
+	int (*inode_create)(fs_t* fs, inode_t* inode, int type);
+	int (*inode_set_raw)(inode_t* inode, uint8_t* data, size_t size);
+	void (*inode_display)(inode_t* inode);
 } fs_t;
 
 inode_t* fs_get_rel_inode(fs_t* fs, const char* path);
+inode_t* fs_create_path(fs_t* fs);
 
 #endif

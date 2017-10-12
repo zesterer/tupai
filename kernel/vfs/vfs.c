@@ -53,10 +53,7 @@ int vfs_fs_create(fs_t* fs, const char* name)
 	fs->name = str_new(name); // Copy the name across
 
 	fs->root = ALLOC_OBJ(inode_t); // Create a root directory inode
-	vfs_inode_create(fs->root, INODE_DIRECTORY, fs);
-
-	// By default, make all functions nullptr
-	fs->display = nullptr;
+	vfs_inode_create(fs->root, fs, INODE_DIRECTORY);
 
 	// If no root filesystem exists yet, set this one as root
 	if (rootfs == nullptr)
@@ -77,11 +74,9 @@ void vfs_fs_delete(fs_t* fs)
 	dealloc(fs);
 }
 
-int vfs_inode_create(inode_t* inode, int type, fs_t* fs)
+int vfs_inode_create(inode_t* inode, fs_t* fs, int type)
 {
 	id_t nid = ++inode_count;
-
-	table_add(&inode_table, nid, inode); // Add it to the inode table
 
 	inode->id = nid;
 	inode->type = type;
@@ -89,6 +84,8 @@ int vfs_inode_create(inode_t* inode, int type, fs_t* fs)
 
 	if (inode->type == INODE_DIRECTORY) // Create child table if it's a directory
 		strtable_create(&inode->children);
+
+	table_add(&inode_table, nid, inode); // Add it to the inode table
 
 	return 0;
 }
@@ -110,9 +107,9 @@ void vfs_display()
 	{
 		inode_t* inode = table_nth(&inode_table, i);
 
-		//logf("Inode %u at %p belongs to filesystem at %p\n", inode->id, inode, inode->fs);
+		//logf("Inode %u with type %u belongs to filesystem at %p\n", inode->id, inode->type, inode->fs);
 
-		if (inode->fs->display != nullptr)
-			inode->fs->display(inode);
+		if (inode->fs->inode_display != nullptr)
+			inode->fs->inode_display(inode);
 	}
 }

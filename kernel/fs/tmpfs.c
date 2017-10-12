@@ -32,42 +32,65 @@ typedef struct tmpfs_file
 	size_t size;
 } tmpfs_file_t;
 
-static void fs_display(inode_t* inode);
+static int fs_inode_create(fs_t* fs, inode_t* inode, int type);
+static int fs_inode_set_raw(inode_t* inode, uint8_t* data, size_t size);
+static void fs_inode_display(inode_t* inode);
 
 int tmpfs_create(fs_t* fs)
 {
+	// Set up function pointers
+	fs->inode_create = &fs_inode_create;
+	fs->inode_set_raw = &fs_inode_set_raw;
+	fs->inode_display = &fs_inode_display;
+
+	// Execute filesystem-independent creation
 	int val = vfs_fs_create(fs, "tmpfs");
 	if (val)
 		return val;
 	else
 	{
-		// Set up function pointers
-		fs->display = &fs_display;
-
 		log("[ OK ] Created tmpfs\n");
 		return 0;
 	}
 }
 
-int tmpfs_add(fs_t* fs, const char* rpath, int type, uint8_t* data, size_t size)
+int fs_inode_create(fs_t* fs, inode_t* inode, int type)
 {
-	inode_t* inode = ALLOC_OBJ(inode_t);
-	int val = vfs_inode_create(inode, type, fs);
+	vfs_inode_create(inode, fs, type);
 
-	tmpfs_file_t* nfile = ALLOC_OBJ(tmpfs_file_t);
-	nfile->data = data;
-	nfile->size = size;
+	if (inode->type == INODE_NORMAL)
+	{
+		tmpfs_file_t* nfile = ALLOC_OBJ(tmpfs_file_t);
+		nfile->data = nullptr;
+		nfile->size = 0;
 
-	inode->internal = nfile;
+		inode->internal = nfile;
+	}
+	else
+		inode->internal = nullptr;
 
-	return val;
+	return 0;
 }
 
-void fs_display(inode_t* inode)
+int fs_inode_set_raw(inode_t* inode, uint8_t* data, size_t size)
+{
+	if (inode->type != INODE_NORMAL)
+		return 1;
+	else if (inode->internal == nullptr)
+		return 2;
+
+	tmpfs_file_t* file = inode->internal;
+	file->data = data;
+	file->size = size;
+
+	return 0;
+}
+
+void fs_inode_display(inode_t* inode)
 {
 	tmpfs_file_t* file = inode->internal;
 	if (file == nullptr)
-		return;
+		logf("Inode %u of type %u has no data\n", inode->id, inode->type);
 	else
 		logf("Inode %u of type %u has data at %p of size %u\n", inode->id, inode->type, (void*)file->data, file->size);
 }

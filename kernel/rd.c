@@ -105,7 +105,9 @@ int load_tar(rd_t* rd)
 				break;
 		}
 
-		tmpfs_add(nfs, (const char*)tar->filename, type, tar_data(tar), tar_size(tar));
+		inode_t* ninode = ALLOC_OBJ(inode_t);
+		nfs->inode_create(nfs, ninode, type);
+		nfs->inode_set_raw(ninode, tar_data(tar), tar_size(tar));
 	}
 
 	return 0;
