@@ -1,5 +1,5 @@
 //
-// file : table.c
+// file : strtable.c
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,24 +18,25 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#include <tupai/util/table.h>
+#include <tupai/util/strtable.h>
 #include <tupai/util/mem.h>
+#include <tupai/util/str.h>
 #include <tupai/util/panic.h>
 
-typedef struct table_entry
+typedef struct strtable_entry
 {
 	bool used;
-	id_t id;
+	char* key;
 	void* ptr;
-} table_entry_t;
+} strtable_entry_t;
 
-static size_t hash(id_t x);
-static void resize(table_t* table, size_t ncap);
-static int insert(table_t* table, id_t id, void* ptr);
+static size_t hash(const char* str);
+static void resize(strtable_t* table, size_t ncap);
+static int insert(strtable_t* table, char* key, void* ptr);
 
-int table_create(table_t* table)
+int strtable_create(strtable_t* table)
 {
-	*table = (table_t){ .size = 0, .cap = 1, .entries = ALLOC_ARR(table_entry_t, 1) };
+	*table = (strtable_t){ .size = 0, .cap = 1, .entries = ALLOC_ARR(strtable_entry_t, 1) };
 
 	for (size_t i = 0; i < table->cap; i ++)
 		table->entries[i].used = false;
@@ -43,32 +44,32 @@ int table_create(table_t* table)
 	return 0;
 }
 
-int table_add(table_t* table, id_t id, void* ptr)
+int strtable_add(strtable_t* table, const char* key, void* ptr)
 {
 	if (table->size >= table->cap)
 		resize(table, table->cap * 2);
 
-	int val = insert(table, id, ptr);
+	int val = insert(table, str_new(key), ptr);
 	if (val == 0)
 		table->size ++;
 
 	 return val;
 }
 
-void* table_get(table_t* table, id_t id)
+void* strtable_get(strtable_t* table, const char* key)
 {
-	size_t off = hash(id) % table->cap;
+	size_t off = hash(key) % table->cap;
 	for (size_t i = 0; i < table->cap; i ++)
 	{
 		size_t j = (off + i) % table->cap;
-		if (table->entries[j].used && table->entries[j].id == id)
+		if (table->entries[j].used && str_equal(table->entries[j].key, key))
 			return table->entries[j].ptr;
 	}
 
 	return nullptr;
 }
 
-void* table_nth(table_t* table, size_t n)
+void* strtable_nth(strtable_t* table, size_t n)
 {
 	size_t c = 0;
 	for (size_t i = 0; i < table->cap; i ++)
@@ -85,21 +86,24 @@ void* table_nth(table_t* table, size_t n)
 	return nullptr;
 }
 
-void table_delete(table_t* table);
+void strtable_delete(strtable_t* table);
 
-size_t hash(id_t x)
+size_t hash(const char* str)
 {
-	return x;
+	uint32_t hash = 5381;
+	while (*(str++) != '\0')
+		hash = ((hash << 5) + hash) + *str;
+	return hash;
 }
 
-void resize(table_t* table, size_t ncap)
+void resize(strtable_t* table, size_t ncap)
 {
 	size_t ocap = table->cap;
-	table_entry_t* oentries = table->entries;
+	strtable_entry_t* oentries = table->entries;
 
 	// Allocate new table
 	table->cap = ncap;
-	table->entries = ALLOC_ARR(table_entry_t, table->cap);
+	table->entries = ALLOC_ARR(strtable_entry_t, table->cap);
 
 	// Mark all new entries as unused
 	for (size_t i = 0; i < table->cap; i ++)
@@ -109,22 +113,22 @@ void resize(table_t* table, size_t ncap)
 	for (size_t i = 0; i < ocap; i ++)
 	{
 		if (oentries[i].used)
-			insert(table, oentries[i].id, oentries[i].ptr);
+			insert(table, oentries[i].key, oentries[i].ptr);
 	}
 
 	// Deallocate old table
 	dealloc(oentries);
 }
 
-int insert(table_t* table, id_t id, void* ptr)
+int insert(strtable_t* table, char* key, void* ptr)
 {
-	size_t off = hash(id) % table->cap;
+	size_t off = hash(key) % table->cap;
 	for (size_t i = 0; i < table->cap; i ++)
 	{
 		size_t j = (off + i) % table->cap;
 		if (!table->entries[j].used)
 		{
-			table->entries[j] = (table_entry_t){ .used = true, .id = id, .ptr = ptr };
+			table->entries[j] = (strtable_entry_t){ .used = true, .key = key, .ptr = ptr };
 			return 0;
 		}
 	}

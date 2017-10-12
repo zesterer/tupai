@@ -21,16 +21,38 @@
 #ifndef TUPAI_VFS_INODE_H
 #define TUPAI_VFS_INODE_H
 
+#include <tupai/util/strtable.h>
 #include <tupai/type.h>
 
+enum
+{
+	INODE_NORMAL    = 0,
+	INODE_DIRECTORY = 1,
+	INODE_FIFO      = 2,
+	INODE_SOCKET    = 3,
+};
+
 typedef struct fs fs_t;
+typedef struct inode inode_t;
+
+typedef struct inode_child
+{
+	char* name;
+	inode_t* inode;
+} inode_child_t;
 
 typedef struct inode
 {
 	id_t id;
+
+	int type;
 	fs_t* fs;
+
+	strtable_t children;
 
 	void* internal;
 } inode_t;
+
+inode_t* inode_get_child(inode_t* inode, const char* filename);
 
 #endif

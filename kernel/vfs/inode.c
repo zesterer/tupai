@@ -1,5 +1,5 @@
 //
-// file : tmpfs.h
+// file : inode.c
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,12 +18,13 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#ifndef TUPAI_FS_TMPFS_H
-#define TUPAI_FS_TMPFS_H
+#include <tupai/vfs/inode.h>
+#include <tupai/util/path.h>
 
-#include <tupai/vfs/fs.h>
-
-int tmpfs_create(fs_t* fs);
-int tmpfs_add(fs_t* fs, const char* rpath, int type, uint8_t* data, size_t size);
-
-#endif
+inode_t* inode_get_child(inode_t* inode, const char* filename)
+{
+	if (inode->type != INODE_DIRECTORY)
+		return nullptr;
+	else
+		return strtable_get(&inode->children, filename);
+}

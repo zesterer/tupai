@@ -49,10 +49,10 @@ int tmpfs_create(fs_t* fs)
 	}
 }
 
-int tmpfs_add(fs_t* fs, uint8_t* data, size_t size)
+int tmpfs_add(fs_t* fs, const char* rpath, int type, uint8_t* data, size_t size)
 {
 	inode_t* inode = ALLOC_OBJ(inode_t);
-	int val = vfs_inode_create(inode, fs);
+	int val = vfs_inode_create(inode, type, fs);
 
 	tmpfs_file_t* nfile = ALLOC_OBJ(tmpfs_file_t);
 	nfile->data = data;
@@ -69,5 +69,5 @@ void fs_display(inode_t* inode)
 	if (file == nullptr)
 		return;
 	else
-		logf("Inode %u has data at %p of size %u\n", inode->id, (void*)file->data, file->size);
+		logf("Inode %u of type %u has data at %p of size %u\n", inode->id, inode->type, (void*)file->data, file->size);
 }

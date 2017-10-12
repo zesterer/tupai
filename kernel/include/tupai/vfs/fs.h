@@ -34,4 +34,6 @@ typedef struct fs
 	void (*display)(inode_t* inode);
 } fs_t;
 
+inode_t* fs_get_rel_inode(fs_t* fs, const char* path);
+
 #endif

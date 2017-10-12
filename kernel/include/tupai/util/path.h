@@ -1,5 +1,5 @@
 //
-// file : tmpfs.h
+// file : path.h
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,12 +18,18 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#ifndef TUPAI_FS_TMPFS_H
-#define TUPAI_FS_TMPFS_H
+#ifndef TUPAI_UTIL_PATH_H
+#define TUPAI_UTIL_PATH_H
 
-#include <tupai/vfs/fs.h>
+#include <tupai/type.h>
 
-int tmpfs_create(fs_t* fs);
-int tmpfs_add(fs_t* fs, const char* rpath, int type, uint8_t* data, size_t size);
+#define PATH_MAX_LEN 1023
+#define ELEMENT_MAX_LEN 255
+
+const char* path_element_start(const char* path, size_t n);
+bool path_extract(const char* path, size_t n, char buff[ELEMENT_MAX_LEN + 1]);
+size_t path_elements(const char* path);
+bool path_isabs(const char* path);
+bool path_extract_base(const char* path, char buff[PATH_MAX_LEN + 1]);
 
 #endif

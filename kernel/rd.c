@@ -90,7 +90,22 @@ int load_tar(rd_t* rd)
 	for (tar_entry_t* tar = (tar_entry_t*)rd->offset; tar != nullptr; tar = tar_next(tar))
 	{
 		//logf("[ OK ] Found tar file with name '%s'\n", tar->filename);
-		tmpfs_add(nfs, tar_data(tar), tar_size(tar));
+
+		int type;
+		switch (tar->typeflag) // TODO : Expand this
+		{
+			case '0':
+				type = INODE_NORMAL;
+				break;
+			case '5':
+				type = INODE_DIRECTORY;
+				break;
+			default:
+				type = INODE_NORMAL;
+				break;
+		}
+
+		tmpfs_add(nfs, (const char*)tar->filename, type, tar_data(tar), tar_size(tar));
 	}
 
 	return 0;

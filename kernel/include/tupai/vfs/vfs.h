@@ -27,7 +27,7 @@
 void vfs_init();
 int vfs_fs_create(fs_t* fs, const char* name);
 void vfs_fs_delete(fs_t* fs);
-int vfs_inode_create(inode_t* inode, fs_t* fs);
+int vfs_inode_create(inode_t* inode, int type, fs_t* fs);
 void vfs_inode_delete(inode_t* inode);
 
 void vfs_display();

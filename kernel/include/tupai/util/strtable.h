@@ -1,5 +1,5 @@
 //
-// file : tmpfs.h
+// file : strtable.h
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,12 +18,24 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#ifndef TUPAI_FS_TMPFS_H
-#define TUPAI_FS_TMPFS_H
+#ifndef TUPAI_UTIL_STRTABLE_H
+#define TUPAI_UTIL_STRTABLE_H
 
-#include <tupai/vfs/fs.h>
+#include <tupai/type.h>
 
-int tmpfs_create(fs_t* fs);
-int tmpfs_add(fs_t* fs, const char* rpath, int type, uint8_t* data, size_t size);
+typedef struct strtable_entry strtable_entry_t;
+
+typedef struct strtable
+{
+	size_t size;
+	size_t cap;
+	strtable_entry_t* entries;
+} strtable_t;
+
+int strtable_create(strtable_t* table);
+int strtable_add(strtable_t* table, const char* key, void* ptr);
+void* strtable_get(strtable_t* table, const char* key);
+void* strtable_nth(strtable_t* table, size_t n);
+void strtable_delete(strtable_t* table);
 
 #endif

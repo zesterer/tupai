@@ -52,8 +52,8 @@ int vfs_fs_create(fs_t* fs, const char* name)
 	fs->id = nid;
 	fs->name = str_new(name); // Copy the name across
 
-	fs->root = ALLOC_OBJ(inode_t); // Create a root inode
-	vfs_inode_create(fs->root, fs);
+	fs->root = ALLOC_OBJ(inode_t); // Create a root directory inode
+	vfs_inode_create(fs->root, INODE_DIRECTORY, fs);
 
 	// By default, make all functions nullptr
 	fs->display = nullptr;
@@ -77,14 +77,18 @@ void vfs_fs_delete(fs_t* fs)
 	dealloc(fs);
 }
 
-int vfs_inode_create(inode_t* inode, fs_t* fs)
+int vfs_inode_create(inode_t* inode, int type, fs_t* fs)
 {
 	id_t nid = ++inode_count;
 
 	table_add(&inode_table, nid, inode); // Add it to the inode table
 
 	inode->id = nid;
+	inode->type = type;
 	inode->fs = fs;
+
+	if (inode->type == INODE_DIRECTORY) // Create child table if it's a directory
+		strtable_create(&inode->children);
 
 	return 0;
 }

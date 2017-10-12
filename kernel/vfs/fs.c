@@ -1,5 +1,5 @@
 //
-// file : tmpfs.h
+// file : fs.c
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,12 +18,23 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#ifndef TUPAI_FS_TMPFS_H
-#define TUPAI_FS_TMPFS_H
-
 #include <tupai/vfs/fs.h>
+#include <tupai/util/path.h>
 
-int tmpfs_create(fs_t* fs);
-int tmpfs_add(fs_t* fs, const char* rpath, int type, uint8_t* data, size_t size);
+inode_t* fs_get_rel_inode(fs_t* fs, const char* path)
+{
+	size_t nelem = path_elements(path);
 
-#endif
+	inode_t* cnode = fs->root;
+	for (size_t i = 0; i < nelem && cnode != nullptr; i ++)
+	{
+		char elem[ELEMENT_MAX_LEN + 1];
+		path_extract(path, i, elem);
+		cnode = inode_get_child(cnode, elem);
+	}
+
+	if (cnode == nullptr)
+		return nullptr;
+	else
+		return cnode;
+}
