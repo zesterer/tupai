@@ -48,6 +48,7 @@ typedef struct inode
 	int type;
 	fs_t* fs;
 
+	size_t ref;
 	strtable_t children;
 
 	void* internal;

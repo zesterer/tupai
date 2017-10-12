@@ -43,4 +43,10 @@ void dealloc(void* ptr);
 #define ALLOC_OBJ(T) ((T*)alloc(sizeof(T)))
 #define ALLOC_ARR(T, N) ((T*)alloc(sizeof(T) * (N)))
 
+inline void mem_copy(const void* src, void* tgt, size_t n)
+{
+	for (size_t i = 0; i < n; i ++)
+		((uint8_t*)tgt)[i] = ((const uint8_t*)src)[i];
+}
+
 #endif

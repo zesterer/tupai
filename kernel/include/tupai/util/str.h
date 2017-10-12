@@ -65,4 +65,36 @@ inline char* str_new(const char* str)
 	return nstr;
 }
 
+typedef struct slice
+{
+	const char* str;
+	size_t len;
+} slice_t;
+
+inline slice_t make_slice(const char* str, size_t pos, size_t len)
+{
+	return (slice_t){ .str = str + pos, len = len };
+}
+
+inline bool slice_equal(slice_t s0, slice_t s1)
+{
+	if (s0.len != s1.len)
+		return false;
+	else
+	{
+		for (size_t i = 0; i < s0.len && (s0.str[i] != '\0' || s1.str[i] != '\0'); i ++)
+			if (s0.str[i] != s1.str[i])
+				return false;
+		return true;
+	}
+}
+
+inline void slice_to_str(slice_t s, char* buff)
+{
+	size_t i = 0;
+	for (; i < s.len && s.str[i] != '\0'; i ++)
+		buff[i] = s.str[i];
+	buff[i] = '\0';
+}
+
 #endif

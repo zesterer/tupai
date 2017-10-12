@@ -24,6 +24,12 @@
 #include <tupai/vfs/inode.h>
 #include <tupai/type.h>
 
+enum
+{
+	FS_PROPAGATE = 0,
+	FS_TERMINATE = 1,
+};
+
 typedef struct fs
 {
 	id_t id;
@@ -31,12 +37,12 @@ typedef struct fs
 
 	inode_t* root;
 
-	int (*inode_create)(fs_t* fs, inode_t* inode, int type);
-	int (*inode_set_raw)(inode_t* inode, uint8_t* data, size_t size);
-	void (*inode_display)(inode_t* inode);
+	int (*inode_create_event)(fs_t* fs, inode_t* inode);
+	int (*inode_set_raw_event)(inode_t* inode, uint8_t* data, size_t size);
+	int (*inode_display_event)(inode_t* inode);
 } fs_t;
 
 inode_t* fs_get_rel_inode(fs_t* fs, const char* path);
-inode_t* fs_create_path(fs_t* fs);
+inode_t* fs_create_path(fs_t* fs, const char* path);
 
 #endif

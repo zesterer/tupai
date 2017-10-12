@@ -105,9 +105,10 @@ int load_tar(rd_t* rd)
 				break;
 		}
 
+		// TODO : Uncomment this
 		inode_t* ninode = ALLOC_OBJ(inode_t);
-		nfs->inode_create(nfs, ninode, type);
-		nfs->inode_set_raw(ninode, tar_data(tar), tar_size(tar));
+		vfs_inode_create(ninode, nfs, type, nfs->root, (const char*)tar->filename);
+		//nfs->inode_set_raw(ninode, tar_data(tar), tar_size(tar));
 	}
 
 	return 0;

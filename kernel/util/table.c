@@ -85,7 +85,10 @@ void* table_nth(table_t* table, size_t n)
 	return nullptr;
 }
 
-void table_delete(table_t* table);
+void table_delete(table_t* table)
+{
+	dealloc(table->entries);
+}
 
 size_t hash(id_t x)
 {

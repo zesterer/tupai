@@ -21,6 +21,7 @@
 #include <tupai/vfs/fs.h>
 #include <tupai/util/path.h>
 
+/*
 inode_t* fs_get_rel_inode(fs_t* fs, const char* path)
 {
 	size_t nelem = path_elements(path);
@@ -38,3 +39,20 @@ inode_t* fs_get_rel_inode(fs_t* fs, const char* path)
 	else
 		return cnode;
 }
+
+inode_t* fs_create_path(fs_t* fs, const char* path)
+{
+	size_t nelem = path_elements(path);
+
+	inode_t* cnode = fs->root;
+	for (size_t i = 0; i < nelem; i ++)
+	{
+		char elem[ELEMENT_MAX_LEN + 1];
+		path_extract(path, i, elem)
+
+		inode_t* child = inode_get_child(cnode, elem);
+		if (child == nullptr)
+			inode_c
+	}
+}
+*/

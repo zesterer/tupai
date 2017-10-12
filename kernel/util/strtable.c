@@ -86,7 +86,10 @@ void* strtable_nth(strtable_t* table, size_t n)
 	return nullptr;
 }
 
-void strtable_delete(strtable_t* table);
+void strtable_delete(strtable_t* table)
+{
+	dealloc(table->entries);
+}
 
 size_t hash(const char* str)
 {

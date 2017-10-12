@@ -77,16 +77,6 @@ void kmain()
 	phys_display();
 	vfs_display();
 
-	const char* path = "/dev/test/myfile.txt";
-	logf("Path is %s\n", path);
-	logf("Element count = %u\n", path_elements(path));
-	char extract[ELEMENT_MAX_LEN + 1];
-	logf("Try extract = %u\n", path_extract(path, 2, extract));
-	logf("Element 2 is %s\n", extract);
-	char extractbase[PATH_MAX_LEN + 1];
-	logf("Try extract base = %u\n", path_extract_base(path, extractbase));
-	logf("Base is %s\n", extractbase);
-
 	// Prepare the CPU for the scheduler //
 	// --------------------------------- //
 
