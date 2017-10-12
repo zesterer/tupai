@@ -61,6 +61,13 @@ void logf(const char* fmt, ...)
 					else
 						LOG_PUTC('!');
 				}
+				else if (*fmt == 'b')
+				{
+					if ((char)va_arg(args, uint) > 0)
+						LOG_PUTS("true");
+					else
+						LOG_PUTS("false");
+				}
 				else if (*fmt == 'o')
 				{
 					char buff[U32_STR_MAX];
