@@ -23,6 +23,7 @@
 #include <tupai/util/log.h>
 #include <tupai/util/str.h>
 #include <tupai/util/table.h>
+#include <tupai/util/path.h>
 #include <tupai/util/panic.h>
 
 table_t fs_table;
@@ -33,6 +34,8 @@ id_t inode_count = 0;
 
 fs_t* rootfs = nullptr;
 
+static void inode_create(inode_t* inode, fs_t* fs, int type);
+static int inode_at(inode_t* base, path_t path, inode_t** ret);
 static void inode_delete(inode_t* inode);
 
 void vfs_init()
@@ -55,8 +58,8 @@ int vfs_fs_create(fs_t* fs, const char* name)
 	fs->name = str_new(name); // Copy the name across
 
 	// TODO : Uncomment this
-	//fs->root = ALLOC_OBJ(inode_t); // Create a root directory inode
-	//vfs_inode_create(fs->root, fs, INODE_DIRECTORY);
+	fs->root = ALLOC_OBJ(inode_t); // Create a root directory inode
+	inode_create(fs->root, fs, INODE_DIRECTORY);
 
 	// If no root filesystem exists yet, set this one as root
 	if (rootfs == nullptr)
@@ -79,22 +82,12 @@ void vfs_fs_delete(fs_t* fs)
 
 int vfs_inode_create(inode_t* inode, fs_t* fs, int type, inode_t* base, const char* path)
 {
-	id_t nid = ++inode_count;
-
-	inode->id = nid;
-	inode->fs = fs;
-	inode->type = type;
-	inode->ref = 0;
-	inode->internal = nullptr;
+	inode_create(inode, fs, type);
 
 	if (fs->inode_create_event(fs, inode) == FS_PROPAGATE)
 	{
-		if (inode->type == INODE_DIRECTORY)
-			strtable_create(&inode->children);
-
-		table_add(&inode_table, nid, inode);
-		vfs_inode_mount(inode, base, path);
-		return 0;
+		table_add(&inode_table, inode->id, inode);
+		return vfs_inode_mount(inode, base, path);
 	}
 	else
 	{
@@ -105,11 +98,66 @@ int vfs_inode_create(inode_t* inode, fs_t* fs, int type, inode_t* base, const ch
 
 int vfs_inode_remove(inode_t* base, const char* path);
 
-int vfs_inode_at(inode_t* base, const char* path, inode_t** ret);
+int vfs_inode_at(inode_t* base, const char* path, inode_t** ret)
+{
+	path_t cpath = path_parse(path);
+
+	int val = inode_at(base, cpath, ret);
+
+	path_delete(cpath);
+	return val;
+}
 
 int vfs_inode_mount(inode_t* inode, inode_t* base, const char* path)
 {
-	// TODO : Mount here
+	path_t child_path = path_parse(path);
+	path_t parent_path = path_base(child_path);
+
+	inode_t* parent;
+	if (inode_at(base, parent_path, &parent))
+	{
+		path_delete(child_path);
+		path_delete(parent_path);
+		return 1;
+	}
+	else
+	{
+		char filename[ELEMENT_MAX_LEN + 1];
+		slice_to_str(child_path.elems[child_path.nelem - 1], filename);
+
+		if (parent->type == INODE_DIRECTORY)
+			strtable_add(&parent->children, filename, inode);
+
+		path_delete(child_path);
+		path_delete(parent_path);
+		return 0;
+	}
+}
+
+static void inode_display_children(inode_t* inode, size_t depth)
+{
+	if (inode->type == INODE_DIRECTORY)
+	{
+		for (size_t i = 0; i < inode->children.size; i ++)
+		{
+			inode_t* cinode = strtable_nth(&inode->children, i);
+			char filename[ELEMENT_MAX_LEN + 1];
+			strtable_key(&inode->children, cinode, filename);
+
+			for (size_t i = 0; i < depth; i ++)
+				log("|  ");
+			log("|--");
+
+			log(filename);
+
+			if (cinode->type == INODE_DIRECTORY)
+				log("/\n");
+			else
+				log("\n");
+
+			inode_display_children(cinode, depth + 1);
+		}
+	}
 }
 
 void vfs_display()
@@ -128,11 +176,52 @@ void vfs_display()
 			if (inode->fs->inode_display_event(inode) == FS_PROPAGATE)
 				logf("Inode %u with type %u belongs to filesystem at %p\n", inode->id, inode->type, inode->fs);
 	}
+
+	log("/\n");
+	inode_display_children(rootfs->root, 0);
+}
+
+void inode_create(inode_t* inode, fs_t* fs, int type)
+{
+	id_t nid = ++inode_count;
+
+	inode->id = nid;
+	inode->fs = fs;
+	inode->type = type;
+	inode->ref = 0;
+	inode->internal = nullptr;
+
+	if (inode->type == INODE_DIRECTORY)
+		strtable_create(&inode->children);
+}
+
+int inode_at(inode_t* base, path_t path, inode_t** ret)
+{
+	if (base->type != INODE_DIRECTORY)
+		return 1;
+
+	inode_t* cnode = base;
+	for (size_t i = 0; i < path.nelem; i ++)
+	{
+		if (cnode->type != INODE_DIRECTORY)
+			return 1;
+
+		char filename[ELEMENT_MAX_LEN + 1];
+		slice_to_str(path.elems[i], filename);
+		cnode = strtable_get(&cnode->children, filename);
+
+		if (cnode == nullptr)
+			return 1;
+	}
+
+	*ret = cnode;
+	return 0;
 }
 
 static void inode_delete(inode_t* inode)
 {
-	strtable_delete(&inode->children);
+	if (inode->type == INODE_DIRECTORY)
+		strtable_delete(&inode->children);
 	dealloc(inode);
 }
 

@@ -107,7 +107,12 @@ int load_tar(rd_t* rd)
 
 		// TODO : Uncomment this
 		inode_t* ninode = ALLOC_OBJ(inode_t);
-		vfs_inode_create(ninode, nfs, type, nfs->root, (const char*)tar->filename);
+		int val = vfs_inode_create(ninode, nfs, type, nfs->root, (const char*)tar->filename);
+
+		if (val)
+			logf("Failed to create %s\n", tar->filename);
+		else
+			logf("Created %s, type %u\n", tar->filename, type);
 		//nfs->inode_set_raw(ninode, tar_data(tar), tar_size(tar));
 	}
 

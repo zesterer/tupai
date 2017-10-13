@@ -33,6 +33,15 @@ inline size_t str_copy(const char* src, char* tgt)
 	return i;
 }
 
+inline size_t str_copy_n(const char* src, char* tgt, size_t n)
+{
+	size_t i = 0;
+	for (; src[i] != '\0' && i < n; i ++)
+		tgt[i] = src[i];
+	tgt[i] = '\0';
+	return i;
+}
+
 inline size_t str_cat(char* tgt, const char* src)
 {
 	size_t i, j;

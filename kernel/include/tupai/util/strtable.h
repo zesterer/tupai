@@ -36,6 +36,7 @@ int strtable_create(strtable_t* table);
 int strtable_add(strtable_t* table, const char* key, void* ptr);
 void* strtable_get(strtable_t* table, const char* key);
 void* strtable_nth(strtable_t* table, size_t n);
+int strtable_key(strtable_t* table, void* val, char* buff);
 void strtable_delete(strtable_t* table);
 
 #endif

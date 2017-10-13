@@ -38,7 +38,7 @@ path_t path_parse(const char* str);
 path_t path_base(path_t path);
 path_t path_cat(path_t p0, path_t p1);
 void path_to_str(path_t path, char* buff);
-void path_free(path_t path);
+void path_delete(path_t path);
 
 const char* path_element_start(const char* path, size_t n);
 bool path_extract(const char* path, size_t n, char buff[ELEMENT_MAX_LEN + 1]);

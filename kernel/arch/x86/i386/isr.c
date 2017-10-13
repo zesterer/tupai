@@ -79,6 +79,9 @@ void isr_init()
 		idt_set(i, (void*)&_isr_default_stub, 1);
 	log("[ OK ] Default ISRs set\n");
 
+	idt_set(IDT_REMAP_OFFSET + 7, (void*)_isr_spurious_stub, 1);
+	log("[ OK ] Spurious interrupt set\n");
+
 	idt_install();
 	log("[ OK ] ISRs installed\n");
 }
@@ -91,6 +94,6 @@ ptr_t isr_default(ptr_t stack)
 
 ptr_t isr_spurious(ptr_t stack)
 {
-	panic("Spurious interrupt occured!\n");
+	log("Spurious interrupt occured!\n");
 	return stack;
 }

@@ -108,7 +108,7 @@ void path_to_str(path_t path, char* buff)
 	}
 }
 
-void path_free(path_t path)
+void path_delete(path_t path)
 {
 	dealloc(path.elems);
 }

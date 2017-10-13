@@ -86,6 +86,20 @@ void* strtable_nth(strtable_t* table, size_t n)
 	return nullptr;
 }
 
+int strtable_key(strtable_t* table, void* val, char* buff)
+{
+	for (size_t i = 0; i < table->cap; i ++)
+	{
+		if (table->entries[i].used && table->entries[i].ptr == val)
+		{
+			str_copy(table->entries[i].key, buff);
+			return 0;
+		}
+	}
+
+	return 1;
+}
+
 void strtable_delete(strtable_t* table)
 {
 	dealloc(table->entries);
