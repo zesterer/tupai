@@ -25,14 +25,16 @@
 #include <tupai/vfs/fs.h>
 
 void vfs_init();
-int vfs_fs_create(fs_t* fs, const char* name);
+int vfs_fs_create(fs_t* fs, vtable_t* vtable, const char* name);
 void vfs_fs_delete(fs_t* fs);
 
-int vfs_inode_create(inode_t* inode, fs_t* fs, int type, inode_t* base, const char* path);
+int vfs_inode_create(inode_t* inode, fs_t* fs, vtable_t* vtable, int type, inode_t* base, const char* path);
 int vfs_inode_remove(inode_t* base, const char* path);
 
 int vfs_inode_at(inode_t* base, const char* path, inode_t** ret);
 int vfs_inode_mount(inode_t* inode, inode_t* base, const char* path);
+int vfs_inode_set_raw(inode_t* inode, uint8_t* data, size_t n);
+size_t vfs_inode_size(inode_t* inode);
 
 void vfs_display();
 

@@ -21,6 +21,7 @@
 #ifndef TUPAI_VFS_INODE_H
 #define TUPAI_VFS_INODE_H
 
+#include <tupai/vfs/vtable.h>
 #include <tupai/util/strtable.h>
 #include <tupai/type.h>
 
@@ -47,6 +48,7 @@ typedef struct inode
 
 	int type;
 	fs_t* fs;
+	vtable_t* vtable;
 
 	size_t ref;
 	strtable_t children;

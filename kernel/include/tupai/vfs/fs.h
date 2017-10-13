@@ -22,6 +22,7 @@
 #define TUPAI_VFS_FS_H
 
 #include <tupai/vfs/inode.h>
+#include <tupai/vfs/vtable.h>
 #include <tupai/type.h>
 
 enum
@@ -36,10 +37,6 @@ typedef struct fs
 	char* name;
 
 	inode_t* root;
-
-	int (*inode_create_event)(fs_t* fs, inode_t* inode);
-	int (*inode_set_raw_event)(inode_t* inode, uint8_t* data, size_t size);
-	int (*inode_display_event)(inode_t* inode);
 } fs_t;
 
 inode_t* fs_get_rel_inode(fs_t* fs, const char* path);

@@ -20,6 +20,7 @@
 
 #include <tupai/fs/tmpfs.h>
 #include <tupai/vfs/vfs.h>
+#include <tupai/vfs/fs.h>
 #include <tupai/vfs/inode.h>
 #include <tupai/util/mem.h>
 #include <tupai/util/log.h>
@@ -32,19 +33,23 @@ typedef struct tmpfs_file
 	size_t size;
 } tmpfs_file_t;
 
-static int fs_inode_create(fs_t* fs, inode_t* inode);
+static int fs_inode_create(inode_t* inode);
 static int fs_inode_set_raw(inode_t* inode, uint8_t* data, size_t size);
+static size_t fs_inode_size(inode_t* inode);
 static int fs_inode_display(inode_t* inode);
+
+vtable_t tmpfs_vtable;
 
 int tmpfs_create(fs_t* fs)
 {
 	// Set up function pointers
-	fs->inode_create_event = &fs_inode_create;
-	//fs->inode_set_raw = &fs_inode_set_raw;
-	fs->inode_display_event = &fs_inode_display;
+	tmpfs_vtable.inode_create = &fs_inode_create;
+	tmpfs_vtable.inode_set_raw = &fs_inode_set_raw;
+	tmpfs_vtable.inode_size = &fs_inode_size;
+	tmpfs_vtable.inode_display = &fs_inode_display;
 
 	// Execute filesystem-independent creation
-	int val = vfs_fs_create(fs, "tmpfs");
+	int val = vfs_fs_create(fs, &tmpfs_vtable, "tmpfs");
 	if (val)
 		return val;
 	else
@@ -54,7 +59,7 @@ int tmpfs_create(fs_t* fs)
 	}
 }
 
-int fs_inode_create(fs_t* fs, inode_t* inode)
+int fs_inode_create(inode_t* inode)
 {
 	if (inode->type == INODE_NORMAL)
 	{
@@ -70,25 +75,6 @@ int fs_inode_create(fs_t* fs, inode_t* inode)
 	return FS_PROPAGATE;
 }
 
-/*
-int fs_inode_create(fs_t* fs, inode_t* inode, int type)
-{
-	vfs_inode_create(inode, fs, type);
-
-	if (inode->type == INODE_NORMAL)
-	{
-		tmpfs_file_t* nfile = ALLOC_OBJ(tmpfs_file_t);
-		nfile->data = nullptr;
-		nfile->size = 0;
-
-		inode->internal = nfile;
-	}
-	else
-		inode->internal = nullptr;
-
-	return 0;
-}
-
 int fs_inode_set_raw(inode_t* inode, uint8_t* data, size_t size)
 {
 	if (inode->type != INODE_NORMAL)
@@ -100,9 +86,18 @@ int fs_inode_set_raw(inode_t* inode, uint8_t* data, size_t size)
 	file->data = data;
 	file->size = size;
 
-	return 0;
+	return FS_PROPAGATE;
 }
-*/
+
+size_t fs_inode_size(inode_t* inode)
+{
+	if (inode->type != INODE_NORMAL || inode->internal == nullptr)
+		return 0;
+
+	tmpfs_file_t* file = inode->internal;
+
+	return file->size;
+}
 
 int fs_inode_display(inode_t* inode)
 {
