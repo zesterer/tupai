@@ -17,7 +17,7 @@
 A modular POSIX-like operating system created for educational purposes
 
 
-![Tupai 0.6.0](doc/images/tupai-0-6-0-dev.png)
+-> ![Tupai 0.6.0](doc/images/tupai-0.6.0-dev.png) <-
 
 
 ## What is Tupai?
@@ -34,18 +34,26 @@ be beneficial to others wishing to learn from it.
 ## Projects Goals
 ---
 
-* Modular multi-tasking kernel
-* Ports for amd64, i386 and ARM (Raspberry Pi 2) architectures
-* Generic, cross-platform design that makes future porting relatively trivial
-* Correct use of memory-protection systems such as paging / MMUs
-* Interrupt-driven architecture
+* Modular (initially monolithic), premptive, multi-tasking kernel
+* Ports for amd64, i386 and ARM (Raspberry Pi 3) architectures
+* Generic, cross-platform design that makes future porting easy with only minor components needing to be rewritten
+* Correct use of memory protection systems such as paging or segmentation
+* Interrupt-driven architecture to reduce power consumption (polling to be kept to a minimum)
 * Preemptive, multi-process POSIX-like userland
-* Simple filesystem
+* Simple filesystems - tmpfs, fatfs, ext2fs, etc.
+* Drivers for common devices (PS2 keyboard, PS2 mouse, ATA disks, NIC cards, etc.)
 
 ## Project Status
 ---
 
-_See `docs/STATUS.md`_
+- [x] Higher-half kernel
+- [x] Simple PS/2 keyboard driver
+- [x] VGA console driver
+- [x] i386 port
+- [x] InitRD loading
+- [ ] VFS with tmpfs
+- [ ] amd64 port
+- [ ] arm64 port
 
 ## Building
 ---
