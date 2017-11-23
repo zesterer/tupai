@@ -28,6 +28,7 @@
 #include <tupai/mem/virt.h>
 #include <tupai/mem/kmem.h>
 #include <tupai/vfs/vfs.h>
+#include <tupai/kshell.h>
 #include <tupai/rd.h>
 #include <tupai/cpu.h>
 #include <tupai/def.h>
@@ -74,13 +75,16 @@ void kmain()
 	// Initiation finished, show tests //
 	// ------------------------------- //
 
-	phys_display();
-	vfs_display();
+	//phys_display();
+	//vfs_display();
 
 	// Prepare the CPU for the scheduler //
 	// --------------------------------- //
 
 	cpu_enable_int();
+
+	kshell_main(0, nullptr);
+
 	while (true)
 		cpu_halt();
 }

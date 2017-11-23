@@ -1,5 +1,5 @@
 //
-// file : console.h
+// file : kshell.h
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,13 +18,11 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#ifndef TUPAI_DEV_CONSOLE_H
-#define TUPAI_DEV_CONSOLE_H
+#ifndef TUPAI_KSHELL_H
+#define TUPAI_KSHELL_H
 
-void console_init();
-void console_puts(const char* str);
-void console_putc(char c);
-void console_write_in(char c);
-char console_read_in();
+#include <tupai/def.h>
+
+void kshell(int argc, char* argv[]);
 
 #endif

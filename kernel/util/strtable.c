@@ -46,10 +46,13 @@ int strtable_create(strtable_t* table)
 
 int strtable_add(strtable_t* table, const char* key, void* ptr)
 {
+	char* nkey = str_new(key);
+	//logf("key = %s (%p)\n", nkey, nkey);
+
 	if (table->size >= table->cap)
 		resize(table, table->cap * 2);
 
-	int val = insert(table, str_new(key), ptr);
+	int val = insert(table, nkey, ptr);
 	if (val == 0)
 		table->size ++;
 
@@ -102,6 +105,10 @@ int strtable_key(strtable_t* table, void* val, char* buff)
 
 void strtable_delete(strtable_t* table)
 {
+	for (size_t i = 0; i < table->cap; i ++)
+		if (table->entries[i].used)
+			dealloc(table->entries[i].key);
+
 	dealloc(table->entries);
 }
 

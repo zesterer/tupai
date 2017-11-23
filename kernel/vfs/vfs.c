@@ -121,14 +121,22 @@ int vfs_inode_mount(inode_t* inode, inode_t* base, const char* path)
 	}
 	else
 	{
-		char filename[ELEMENT_MAX_LEN + 1];
-		slice_to_str(child_path.elems[child_path.nelem - 1], filename);
+		char* filename = slice_to_str(child_path.elems[child_path.nelem - 1]);
+
+		//logf("FN = %s (%p) ", filename, filename);
+		//if (parent_path.nelem > 0)
+		//	while (1);
+		//logf("PATH = %s, filename = %s\n", path, filename);
+		//while(1);
+		//char filename[ELEMENT_MAX_LEN + 1];
+		//slice_write(child_path.elems[child_path.nelem - 1], filename);
 
 		if (parent->type == INODE_DIRECTORY)
 			strtable_add(&parent->children, filename, inode);
 
 		inode->ref ++;
 
+		str_delete(filename);
 		path_delete(child_path);
 		path_delete(parent_path);
 		return 0;
@@ -151,7 +159,7 @@ size_t vfs_inode_size(inode_t* inode)
 		return 0;
 }
 
-static void inode_display_children(inode_t* inode, size_t depth)
+void inode_display_children(inode_t* inode, size_t depth)
 {
 	if (inode->type == INODE_DIRECTORY)
 	{
@@ -226,9 +234,11 @@ int inode_at(inode_t* base, path_t path, inode_t** ret)
 		if (cnode->type != INODE_DIRECTORY)
 			return 1;
 
+		//char* filename = slice_to_str(path.elems[i]);
 		char filename[ELEMENT_MAX_LEN + 1];
-		slice_to_str(path.elems[i], filename);
+		slice_write(path.elems[i], filename);
 		cnode = strtable_get(&cnode->children, filename);
+		//dealloc(filename);
 
 		if (cnode == nullptr)
 			return 1;

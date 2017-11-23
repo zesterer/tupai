@@ -1,5 +1,5 @@
 //
-// file : console.h
+// file : kshell.c
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,13 +18,55 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#ifndef TUPAI_DEV_CONSOLE_H
-#define TUPAI_DEV_CONSOLE_H
+#include <tupai/kshell.h>
+#include <tupai/util/log.h>
+#include <tupai/util/str.h>
+#include <tupai/dev/console.h>
+#include <tupai/cpu.h>
 
-void console_init();
-void console_puts(const char* str);
-void console_putc(char c);
-void console_write_in(char c);
-char console_read_in();
+void readline(char* buff)
+{
+	while (true)
+	{
+		char c = console_read_in();
+		switch (c)
+		{
+			case '\n':
+				*(buff++) = '\0';
+				logc(c);
+				return;
 
-#endif
+			case '\0':
+				*(buff++) = '\0';
+				return;
+
+			default:
+				*(buff++) = c;
+				logc(c);
+				break;
+		}
+	}
+}
+
+void kshell_main(int argc, char* argv[])
+{
+	(void)argc;
+	(void)argv;
+
+	log("Type 'help' for more info\n");
+	while (true)
+	{
+		log("kshell> ");
+
+		char buff[256];
+		readline(buff);
+
+		if (str_equal(buff, "help"))
+		{
+			log("Available commands:\n");
+			log(" - help : Show this screen\n");
+		}
+		else
+			logf("Unknown command '%s'\n", buff);
+	}
+}

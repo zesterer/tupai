@@ -74,6 +74,11 @@ inline char* str_new(const char* str)
 	return nstr;
 }
 
+inline void str_delete(char* str)
+{
+	dealloc(str);
+}
+
 typedef struct slice
 {
 	const char* str;
@@ -98,12 +103,22 @@ inline bool slice_equal(slice_t s0, slice_t s1)
 	}
 }
 
-inline void slice_to_str(slice_t s, char* buff)
+inline void slice_write(slice_t s, char* buff)
 {
 	size_t i = 0;
 	for (; i < s.len && s.str[i] != '\0'; i ++)
 		buff[i] = s.str[i];
 	buff[i] = '\0';
+}
+
+inline char* slice_to_str(slice_t s)
+{
+	char* buff = ALLOC_ARR(char, s.len + 1);
+	size_t i = 0;
+	for (; i < s.len && s.str[i] != '\0'; i ++)
+		buff[i] = s.str[i];
+	buff[i] = '\0';
+	return buff;
 }
 
 #endif

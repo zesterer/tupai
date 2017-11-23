@@ -21,9 +21,11 @@
 #include <tupai/dev/console.h>
 #include <tupai/util/fifo.h>
 #include <tupai/util/log.h>
+#include <tupai/cpu.h>
 
 #ifdef ARCH_FAMILY_x86
 	#include <tupai/arch/x86/vga.h>
+	#include <tupai/arch/x86/kbd.h>
 #endif
 
 #define BUFF_LEN 1024
@@ -35,6 +37,9 @@ static fifo_t output;
 uint8_t output_buff[BUFF_LEN];
 
 static bool initiated = false;
+
+char in_buff_char = '\0';
+bool in_buff_full = false;
 
 void console_init()
 {
@@ -69,6 +74,18 @@ void console_write_in(char c)
 	*/
 
 	#ifdef ARCH_FAMILY_x86
-		vga_putc(c);
+		in_buff_full = true;
+		in_buff_char = c;
+	#endif
+}
+
+char console_read_in()
+{
+	#ifdef ARCH_FAMILY_x86
+			while (!in_buff_full)
+				cpu_halt();
+
+			in_buff_full = false;
+			return in_buff_char;
 	#endif
 }

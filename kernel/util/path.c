@@ -103,7 +103,7 @@ void path_to_str(path_t path, char* buff)
 		if (i > 0)
 			*(buff++) = '/';
 
-		slice_to_str(path.elems[i], buff);
+		slice_write(path.elems[i], buff);
 		buff += path.elems[i].len;
 	}
 }
