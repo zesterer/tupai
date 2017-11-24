@@ -187,7 +187,8 @@
 		push (tmp_exception_code) // Pass the exception code
 		push %eax // Pass the stack pointer (see above)
 		cld
-		call exception_handler
+		// TODO : Uncomment this!
+		//call exception_handler
 		mov %eax, %esp // Restore the thread stack pointer
 
 		movl $0, (_in_irq) // No longer in an IRQ

@@ -44,24 +44,30 @@ INCS += $(SRC_ROOT)/include
 
 INC_FLAGS = $(addprefix -I, $(INCS))
 
-CFLAGS  = -DKNAME=\"$(KNAME)\" -DKNAME_DECORATIVE=\"$(KNAME_DECORATIVE)\" -DKVERSION_DECORATIVE=\"$(KVERSION_DECORATIVE)\" -DKMAINTAINER_NAME="\"$(KMAINTAINER_NAME)\"" -DKMAINTAINER_EMAIL=\"$(KMAINTAINER_EMAIL)\"
-CFLAGS += -DARCH_FAMILY_$(TARGET_FAMILY) -DARCH_TARGET_$(TARGET_ARCH)
-CFLAGS += $(INC_FLAGS)
-CFLAGS += -std=gnu11 -Wall -Wextra -O3 -nostdlib
-CFLAGS += -ffreestanding -fno-exceptions -fno-common -fno-builtin -fno-omit-frame-pointer
+GCCFLAGS  = -DKNAME=\"$(KNAME)\" -DKNAME_DECORATIVE=\"$(KNAME_DECORATIVE)\" -DKVERSION_DECORATIVE=\"$(KVERSION_DECORATIVE)\" -DKMAINTAINER_NAME="\"$(KMAINTAINER_NAME)\"" -DKMAINTAINER_EMAIL=\"$(KMAINTAINER_EMAIL)\"
+GCCFLAGS += -DARCH_FAMILY_$(TARGET_FAMILY) -DARCH_TARGET_$(TARGET_ARCH)
+GCCFLAGS += $(INC_FLAGS)
+GCCFLAGS += -Wall -Wextra -O3 -nostdlib
+GCCFLAGS += -ffreestanding -fno-common -fno-builtin -fno-omit-frame-pointer
 
 ifeq ($(TARGET_ARCH), x86_64)
-	CFLAGS += -DARCH_ADDRESS_64
-	CFLAGS += -mcmodel=kernel -mno-red-zone -mno-mmx -mno-sse -mno-sse2
+	GCCFLAGS += -DARCH_ADDRESS_64
+	GCCFLAGS += -mcmodel=kernel -mno-red-zone -mno-mmx -mno-sse -mno-sse2
 endif
 ifeq ($(TARGET_ARCH), i386)
-	CFLAGS += -DARCH_ADDRESS_32
-	CFLAGS +=
+	GCCFLAGS += -DARCH_ADDRESS_32
+	GCCFLAGS +=
 endif
 ifeq ($(TARGET_ARCH), rpi3)
-	CFLAGS += -DARCH_ADDRESS_32
-	CFLAGS += -mcpu=arm1176jzf-s
+	GCCFLAGS += -DARCH_ADDRESS_32
+	GCCFLAGS += -mcpu=arm1176jzf-s
 endif
+
+CFLAGS += $(GCCFLAGS)
+CFLAGS += -std=c11
+
+CPPFLAGS += $(GCCFLAGS)
+CPPFLAGS += -std=c++1z -fno-exceptions -fno-rtti -fno-stack-protector
 
 # LFLAGS
 # ------
@@ -109,15 +115,10 @@ SRC_DIR = $(abspath .)
 
 SRCS_REL += $(shell ls $(SRC_ROOT)/*.{s,S,c,cpp} 2> /dev/null)
 SRCS_REL += $(shell ls $(SRC_ROOT)/util/*.{s,S,c,cpp} 2> /dev/null)
-SRCS_REL += $(shell ls $(SRC_ROOT)/dev/*.{s,S,c,cpp} 2> /dev/null)
-SRCS_REL += $(shell ls $(SRC_ROOT)/mem/*.{s,S,c,cpp} 2> /dev/null)
-SRCS_REL += $(shell ls $(SRC_ROOT)/task/*.{s,S,c,cpp} 2> /dev/null)
-SRCS_REL += $(shell ls $(SRC_ROOT)/vfs/*.{s,S,c,cpp} 2> /dev/null)
-SRCS_REL += $(shell ls $(SRC_ROOT)/fs/*.{s,S,c,cpp} 2> /dev/null)
 
 ifeq ($(TARGET_FAMILY), x86)
 	SRCS_REL += $(shell ls $(SRC_ROOT)/arch/x86/*.{s,S,c,cpp} 2> /dev/null)
-	SRCS_REL += $(shell ls $(SRC_ROOT)/arch/x86/mem/*.{s,S,c,cpp} 2> /dev/null)
+	SRCS_REL += $(shell ls $(SRC_ROOT)/arch/x86/vga/*.{s,S,c,cpp} 2> /dev/null)
 endif
 ifeq ($(TARGET_FAMILY), arm)
 	SRCS_REL += $(shell ls $(SRC_ROOT)/arch/arm/*.{s,S,c,cpp} 2> /dev/null)
@@ -128,6 +129,7 @@ ifeq ($(TARGET_ARCH), x86_64)
 endif
 ifeq ($(TARGET_ARCH), i386)
 	SRCS_REL += $(shell ls $(SRC_ROOT)/arch/x86/i386/*.{s,S,c,cpp} 2> /dev/null)
+	SRCS_REL += $(shell ls $(SRC_ROOT)/arch/x86/i386/cpu/*.{s,S,c,cpp} 2> /dev/null)
 endif
 ifeq ($(TARGET_ARCH), rpi3)
 	SRCS_REL += $(shell ls $(SRC_ROOT)/arch/arm/rpi3/*.{s,S,c,cpp} 2> /dev/null)
@@ -154,7 +156,7 @@ clean :
 
 $(KERNEL) : $(OBJS)
 	@echo "[`date "+%H:%M:%S"`] Linking '$@'..."
-	@$(TOOL_DIR)/$(LD) $(CFLAGS) -T $(LSCRIPT) -o $@ $(CRTBEGIN) $(OBJS) $(CRTEND) $(LFLAGS)
+	@$(TOOL_DIR)/$(LD) $(GCCFLAGS) -T $(LSCRIPT) -o $@ $(CRTBEGIN) $(OBJS) $(CRTEND) $(LFLAGS)
 	@echo "[`date "+%H:%M:%S"`] Linked '$@'."
 
 $(KSYMBOLS) : $(KERNEL)
@@ -191,5 +193,5 @@ $(BUILD_ROOT)/%.c.o : $(SRC_DIR)/%.c
 # Compile .cpp files
 $(BUILD_ROOT)/%.cpp.o : $(SRC_DIR)/%.cpp
 	@echo "[`date "+%H:%M:%S"`] Compiling '$<'..."
-	@$(TOOL_DIR)/$(CPP) -MMD -c -o $@ $< $(CFLAGS)
+	@$(TOOL_DIR)/$(CPP) -MMD -c -o $@ $< $(CPPFLAGS)
 	@echo "[`date "+%H:%M:%S"`] Compiled '$@'."
