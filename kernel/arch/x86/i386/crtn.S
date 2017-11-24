@@ -1,5 +1,5 @@
 //
-// file : attr.hpp
+// file : crtn.S
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,12 +18,12 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#ifndef TUPAI_UTIL_ATTR_HPP
-#define TUPAI_UTIL_ATTR_HPP
+.section .init
+	// GCC should place crtend.o init code here
+	popl %ebp
+	ret
 
-#define ATTR(A) __attribute__((A))
-
-#define ATTR_PACKED ATTR(packed) // For tightly-packed data structures
-#define ATTR_NORETURN ATTR(noreturn) // For functions that do not return control to their caller
-
-#endif
+.section .fini
+	// GCC should place crtend.o fini code here
+	popl %ebp
+	ret

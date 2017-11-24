@@ -1,5 +1,5 @@
 //
-// file : attr.hpp
+// file : kearly.hpp
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,12 +18,12 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#ifndef TUPAI_UTIL_ATTR_HPP
-#define TUPAI_UTIL_ATTR_HPP
+#ifndef TUPAI_KEARLY_HPP
+#define TUPAI_KEARLY_HPP
 
-#define ATTR(A) __attribute__((A))
-
-#define ATTR_PACKED ATTR(packed) // For tightly-packed data structures
-#define ATTR_NORETURN ATTR(noreturn) // For functions that do not return control to their caller
+namespace tupai
+{
+	extern "C" void kearly();
+}
 
 #endif

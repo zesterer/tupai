@@ -67,7 +67,7 @@ CFLAGS += $(GCCFLAGS)
 CFLAGS += -std=c11
 
 CPPFLAGS += $(GCCFLAGS)
-CPPFLAGS += -std=c++1z -fno-exceptions -fno-rtti -fno-stack-protector
+CPPFLAGS += -std=c++1z -fno-exceptions -fno-stack-protector -fno-rtti
 
 # LFLAGS
 # ------
@@ -98,10 +98,10 @@ ifeq ($(TARGET_ARCH), rpi3)
 	ARCH_GCC_PREFIX = arm-none-eabi-
 endif
 
-AS  = $(ARCH_GCC_PREFIX)gcc
-CC  = $(ARCH_GCC_PREFIX)gcc
-CPP = $(ARCH_GCC_PREFIX)gcc
-LD  = $(ARCH_GCC_PREFIX)gcc
+AS  = $(ARCH_GCC_PREFIX)g++
+CC  = $(ARCH_GCC_PREFIX)g++
+CPP = $(ARCH_GCC_PREFIX)g++
+LD  = $(ARCH_GCC_PREFIX)g++
 AR  = $(ARCH_GCC_PREFIX)ar
 
 TOOL_DIR ?= $(abspath $(dir $(shell which $(CC))))

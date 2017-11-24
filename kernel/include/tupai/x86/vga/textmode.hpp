@@ -28,6 +28,8 @@ namespace tupai::x86::vga
 	void init();
 	void write_char(char c);
 	void move_cursor(size_t col, size_t row);
+	void enable_cursor();
+	void disable_cursor();
 	void scroll(size_t n);
 }
 

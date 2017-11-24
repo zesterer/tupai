@@ -21,11 +21,32 @@
 #ifndef TUPAI_UTIL_BOOT_HPP
 #define TUPAI_UTIL_BOOT_HPP
 
+#include <tupai/util/log.hpp>
+
 namespace tupai::util
 {
 	enum class BootStatus { OK, FAIL };
 
-	void bootlog(const char* str, BootStatus status = BootStatus::OK);
+	template <typename ... Args>
+	void bootlog(const char* str, BootStatus status = BootStatus::OK, Args ... args)
+	{
+		switch (status)
+		{
+		case BootStatus::OK:
+			util::log("[ OK ] ");
+			break;
+
+		case BootStatus::FAIL:
+			util::log("[FAIL] ");
+			break;
+
+		default:
+			util::log("[????] ");
+			break;
+		}
+
+		util::logln(str, args ...);
+	}
 }
 
 #endif

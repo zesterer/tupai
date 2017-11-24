@@ -19,6 +19,7 @@
 //
 
 #include <tupai/cpu/power.hpp>
+#include <tupai/cpu/int.hpp>
 
 namespace tupai::cpu
 {
@@ -27,7 +28,14 @@ namespace tupai::cpu
 		asm volatile ("hlt");
 	}
 
-	[[noreturn]] void hang()
+	ATTR_NORETURN void hang()
+	{
+		int_disable();
+		while (true)
+			halt();
+	}
+
+	ATTR_NORETURN void wait()
 	{
 		while (true)
 			halt();

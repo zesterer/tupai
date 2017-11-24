@@ -1,5 +1,5 @@
 //
-// file : log.cpp
+// file : int.hpp
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,25 +18,13 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#include <tupai/util/log.hpp>
-#ifdef ARCH_FAMILY_x86
-	#include <tupai/x86/vga/textmode.hpp>
-#endif
+#ifndef TUPAI_CPU_INT_HPP
+#define TUPAI_CPU_INT_HPP
 
-namespace tupai::util
+namespace tupai::cpu
 {
-	void log(const char* str)
-	{
-		while (*str != '\0') {
-			#ifdef ARCH_FAMILY_x86
-				x86::vga::write_char(*(str++));
-			#endif
-		}
-	}
-
-	void logln(const char* str)
-	{
-		log(str);
-		log("\n");
-	}
+	void int_enable();
+	void int_disable();
 }
+
+#endif

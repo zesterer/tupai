@@ -37,6 +37,12 @@
 		call _vga_print.boot
 		add $8, %esp
 
+		// Call early kernel setup (heap, virtual memory, etc.)
+		call kearly
+
+		// Call global constructors
+		call _init
+
 		// Call the platform-specific kentry function
 		push (_mb_struct.boot)
 		call kentry

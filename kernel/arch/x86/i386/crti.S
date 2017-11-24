@@ -1,5 +1,5 @@
 //
-// file : attr.hpp
+// file : crti.S
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,12 +18,19 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#ifndef TUPAI_UTIL_ATTR_HPP
-#define TUPAI_UTIL_ATTR_HPP
+.global _init
+.global _fini
 
-#define ATTR(A) __attribute__((A))
+.section .init
+	.type _init, @function
+	_init:
+		push %ebp
+		movl %esp, %ebp
+		// GCC will nicely put the contents of crtbegin.o's init section here.
 
-#define ATTR_PACKED ATTR(packed) // For tightly-packed data structures
-#define ATTR_NORETURN ATTR(noreturn) // For functions that do not return control to their caller
-
-#endif
+.section .fini
+	.type _fini, @function
+	_fini:
+		push %ebp
+		movl %esp, %ebp
+		// GCC will nicely put the contents of crtbegin.o's fini section here.

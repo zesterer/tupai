@@ -29,7 +29,7 @@ namespace tupai::util
 	template <typename T>
 	constexpr const char* type_name()
 	{
-		return "UNKNOWN";
+		return __PRETTY_FUNCTION__ + 57; // TODO : This is a total hack. Maintain it well, and replace it when the C++ standard matures
 	}
 }
 

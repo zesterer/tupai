@@ -57,6 +57,8 @@ namespace tupai::x86::vga
 
 		buffer.create(reinterpret_cast<Entry*>(mem::VOFFSET + 0xB8000));
 
+		enable_cursor();
+
 		util::bootlog("Acquired early VGA parameters");
 	}
 
@@ -98,6 +100,18 @@ namespace tupai::x86::vga
 		out8(0x3D5, (uint8_t)(off & 0xFF));
 		out8(0x3D4, 0x0E);
 		out8(0x3D5, (uint8_t)((off >> 8) & 0xFF));
+	}
+
+	void enable_cursor()
+	{
+		out8(0x3D4, 0x0A);
+		out8(0x3D5, 0x00);
+	}
+
+	void disable_cursor()
+	{
+		out8(0x3D4, 0x0A);
+		out8(0x3D5, 0x3F);
 	}
 
 	void scroll(size_t n)

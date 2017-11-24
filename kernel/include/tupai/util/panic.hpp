@@ -21,15 +21,17 @@
 #ifndef TUPAI_UTIL_PANIC_HPP
 #define TUPAI_UTIL_PANIC_HPP
 
+#include <tupai/util/attr.hpp>
 #include <tupai/util/log.hpp>
 #include <tupai/cpu/power.hpp>
 
 namespace tupai::util
 {
 	template <typename ... Args>
-	[[noreturn]] void panic(const char* str, Args ... args)
+	ATTR_NORETURN void panic(const char* str, Args ... args)
 	{
-		logln(str);
+		log("[PANIC] ");
+		logln(str, args ...);
 		cpu::hang();
 	}
 }

@@ -1,5 +1,5 @@
 //
-// file : boot.cpp
+// file : char.hpp
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,28 +18,12 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#include <tupai/util/boot.hpp>
-#include <tupai/util/log.hpp>
+#ifndef TUPAI_UTIL_CHAR_HPP
+#define TUPAI_UTIL_CHAR_HPP
 
 namespace tupai::util
 {
-	void bootlog(const char* str, BootStatus status)
-	{
-		switch (status)
-		{
-		case BootStatus::OK:
-			util::log("[ OK ] ");
-			break;
-
-		case BootStatus::FAIL:
-			util::log("[FAIL] ");
-			break;
-
-		default:
-			util::log("[????] ");
-			break;
-		}
-		
-		util::logln(str);
-	}
+	inline bool is_digit(char c) { return c >= '0' && c <= '9'; }
 }
+
+#endif

@@ -1,5 +1,5 @@
 //
-// file : attr.hpp
+// file : int.cpp
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,12 +18,17 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#ifndef TUPAI_UTIL_ATTR_HPP
-#define TUPAI_UTIL_ATTR_HPP
+#include <tupai/cpu/int.hpp>
 
-#define ATTR(A) __attribute__((A))
+namespace tupai::cpu
+{
+	void int_enable()
+	{
+		asm volatile ("sti");
+	}
 
-#define ATTR_PACKED ATTR(packed) // For tightly-packed data structures
-#define ATTR_NORETURN ATTR(noreturn) // For functions that do not return control to their caller
-
-#endif
+	void int_disable()
+	{
+		asm volatile ("cli");
+	}
+}

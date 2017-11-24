@@ -1,5 +1,5 @@
 //
-// file : buff.hpp
+// file : fmt.cpp
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,51 +18,65 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#ifndef TUPAI_UTIL_BUFF_HPP
-#define TUPAI_UTIL_BUFF_HPP
-
-#include <tupai/util/panic.hpp>
-#include <tupai/util/type.hpp>
+#include <tupai/util/fmt.hpp>
 
 namespace tupai::util
 {
-	template <typename T, size_t N>
-	struct Buff
+	_Fmt _read_fmt(const char* format)
 	{
-	private:
-		T* _items;
-
-	public:
-		Buff(T* buff) : _items(buff) {}
-
-		T& at(size_t i)
+		_Fmt ret;
+		int state = 0;
+		int ni;
+		for (size_t i = 0; format[i] != '\0'; i ++)
 		{
-			if (i < N)
-				return this->_items[i];
-			else
-				panic("Attempted to access Buff<{0}, {1}> out of bounds at {2}", type_name<T>(), N, i);
+			char c = format[i];
+			switch (state)
+			{
+			case 0:
+				{
+					if (c == '{')
+					{
+						state = 1;
+						ni = 0;
+					}
+					else
+						return ret;
+					break;
+				}
+			case 1:
+				{
+					if (is_digit(c))
+					{
+						if (ni == 0)
+						{
+							ret.ni ++;
+							ret.n[ret.ni - 1] = 0;
+						}
+						else
+							ret.n[ret.ni - 1] *= 10;
+
+						ret.n[ret.ni - 1] += c - '0';
+
+						ni ++;
+					}
+					else if (c == ':' && ret.ni < _FMT_ARGS_MAX - 1)
+					{
+						ni = 0;
+					}
+					else if (c == '}')
+						return ret;
+					else
+					{
+						ret.inc = 0;
+						return ret;
+					}
+					break;
+				}
+			}
+			ret.inc ++;
 		}
 
-		T& operator[](size_t i) { return this->at(i); }
-	};
-
-	template <typename T, size_t W, size_t H>
-	struct Buff2D
-	{
-	private:
-		T* _items;
-
-	public:
-		Buff2D(T* buff) : _items(buff) {}
-
-		T& at(size_t x, size_t y)
-		{
-			if (x < W && y < H)
-				return this->_items[y * W + x];
-			else
-				panic("Attempted to access Buff<{0}, {1}, {2}> out of bounds at {3}, {4}", type_name<T>(), W, H, x, y);
-		}
-	};
+		ret.inc = 0;
+		return ret;
+	}
 }
-
-#endif

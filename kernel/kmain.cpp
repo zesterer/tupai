@@ -25,9 +25,8 @@ namespace tupai
 {
 	extern "C" void kmain()
 	{
-		util::logln("Hello, kernel!");
+		util::logln("Hello, {} world!", "kernel");
 
-		while (true)
-			cpu::halt();
+		cpu::wait();
 	}
 }

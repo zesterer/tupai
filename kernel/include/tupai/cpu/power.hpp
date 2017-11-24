@@ -21,10 +21,13 @@
 #ifndef TUPAI_CPU_POWER_HPP
 #define TUPAI_CPU_POWER_HPP
 
+#include <tupai/util/attr.hpp>
+
 namespace tupai::cpu
 {
 	void halt();
-	[[noreturn]] void hang();
+	ATTR_NORETURN void hang();
+	ATTR_NORETURN void wait();
 }
 
 #endif
