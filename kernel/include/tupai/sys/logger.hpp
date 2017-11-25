@@ -1,5 +1,5 @@
 //
-// file : higher.S
+// file : logger.hpp
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,41 +18,17 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-.global _start_virt
-.global _hang
+#ifndef TUPAI_SYS_LOGGER_HPP
+#define TUPAI_SYS_LOGGER_HPP
 
-.global _stack_bottom
-.global _stack_top
+namespace tupai::sys
+{
+	struct Logger
+	{
+		void operator<<(char c);
+	};
 
-.set virt_offset, 0xC0000000
+	extern Logger log;
+}
 
-.section .text
-
-	_start_virt: // Kernel virtual entry
-		mov $(_stack_bottom.boot + virt_offset), %esp // Reset stack, now with virtual offset
-
-		// Display higher boot message
-		push $0x0F
-		push $_start_str
-		call _vga_print.boot
-		add $8, %esp
-
-		// Call early kernel setup (heap, virtual memory, etc.)
-		call kearly
-
-		// Call global constructors
-		call _init
-
-		// Call the platform-specific kentry function
-		push (_mb_struct.boot)
-		call kentry
-
-		jmp _hang
-
-	_hang:
-		hlt
-		jmp _hang
-
-.section .rodata
-	_start_str:
-		.ascii "[ OK ] Jump successful, welcome to the virtual kernel\n\0"
+#endif

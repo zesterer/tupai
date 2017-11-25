@@ -50,19 +50,19 @@ namespace tupai::x86::vga
 	extern "C" uint32_t _vga_col_boot;
 	extern "C" uint32_t _vga_row_boot;
 
-	void init()
+	void tm_init()
 	{
 		col = _vga_col_boot;
 		row = _vga_row_boot;
 
 		buffer.create(reinterpret_cast<Entry*>(mem::VOFFSET + 0xB8000));
 
-		enable_cursor();
+		tm_enable_cursor();
 
 		util::bootlog("Acquired early VGA parameters");
 	}
 
-	void write_char(char c)
+	void tm_write_char(char c)
 	{
 		switch (c)
 		{
@@ -87,13 +87,13 @@ namespace tupai::x86::vga
 
 		if (row >= ROWS) {
 			row = ROWS - 1;
-			scroll(1);
+			tm_scroll(1);
 		}
 
-		move_cursor(col, row);
+		tm_move_cursor(col, row);
 	}
 
-	void move_cursor(size_t col, size_t row)
+	void tm_move_cursor(size_t col, size_t row)
 	{
 		uint16_t off = COLS * row + col;
 		out8(0x3D4, 0x0F);
@@ -102,19 +102,19 @@ namespace tupai::x86::vga
 		out8(0x3D5, (uint8_t)((off >> 8) & 0xFF));
 	}
 
-	void enable_cursor()
+	void tm_enable_cursor()
 	{
 		out8(0x3D4, 0x0A);
 		out8(0x3D5, 0x00);
 	}
 
-	void disable_cursor()
+	void tm_disable_cursor()
 	{
 		out8(0x3D4, 0x0A);
 		out8(0x3D5, 0x3F);
 	}
 
-	void scroll(size_t n)
+	void tm_scroll(size_t n)
 	{
 		for (size_t j = 0; j < ROWS; j ++)
 			for (size_t i = 0; i < COLS; i ++)

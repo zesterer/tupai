@@ -25,5 +25,6 @@
 
 #define ATTR_PACKED ATTR(packed) // For tightly-packed data structures
 #define ATTR_NORETURN ATTR(noreturn) // For functions that do not return control to their caller
+#define ATTR_ALIGNED(N) ATTR(aligned(N)) // For aligned data structures
 
 #endif

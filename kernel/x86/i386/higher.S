@@ -1,5 +1,5 @@
 //
-// file : kentry.cpp
+// file : higher.S
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,18 +18,41 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#include <tupai/x86/vga/textmode.hpp>
-#include <tupai/kmain.hpp>
+.global _start_virt
+.global _hang
 
-#include <stdint.h>
+.global _stack_bottom
+.global _stack_top
 
-namespace tupai::x86
-{
-	extern "C" void kentry(uintptr_t mb_header)
-	{
-		(void)mb_header;
+.set virt_offset, 0xC0000000
 
-		vga::init();
-		kmain();
-	}
-}
+.section .text
+
+	_start_virt: // Kernel virtual entry
+		mov $(_stack_bottom.boot + virt_offset), %esp // Reset stack, now with virtual offset
+
+		// Display higher boot message
+		push $0x0F
+		push $_start_str
+		call _vga_print.boot
+		add $8, %esp
+
+		// Perform platform-specific early kernel setup (heap, virtual memory, arch-specific things, etc.)
+		push (_mb_struct.boot)
+		call kearly
+
+		// Call global constructors
+		call _init
+
+		// Enter the kernel main
+		call kmain
+
+		jmp _hang
+
+	_hang:
+		hlt
+		jmp _hang
+
+.section .rodata
+	_start_str:
+		.ascii "[ OK ] Jump successful, welcome to the virtual kernel\n\0"

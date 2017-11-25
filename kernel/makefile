@@ -76,13 +76,13 @@ LFLAGS = -lgcc
 
 ifeq ($(TARGET_ARCH), x86_64)
 	LFLAGS += -z max-page-size=4096
-	LSCRIPT = $(SRC_DIR)/arch/x86/x86_64/link.ld
+	LSCRIPT = $(SRC_DIR)/x86/x86_64/link.ld
 endif
 ifeq ($(TARGET_ARCH), i386)
-	LSCRIPT = $(SRC_DIR)/arch/x86/i386/link.ld
+	LSCRIPT = $(SRC_DIR)/x86/i386/link.ld
 endif
 ifeq ($(TARGET_ARCH), rpi3)
-	LSCRIPT = $(SRC_DIR)/arch/arm/rpi3/link.ld
+	LSCRIPT = $(SRC_DIR)/arm/rpi3/link.ld
 endif
 
 # Tools
@@ -115,24 +115,26 @@ SRC_DIR = $(abspath .)
 
 SRCS_REL += $(shell ls $(SRC_ROOT)/*.{s,S,c,cpp} 2> /dev/null)
 SRCS_REL += $(shell ls $(SRC_ROOT)/util/*.{s,S,c,cpp} 2> /dev/null)
+SRCS_REL += $(shell ls $(SRC_ROOT)/sys/*.{s,S,c,cpp} 2> /dev/null)
+SRCS_REL += $(shell ls $(SRC_ROOT)/dev/*.{s,S,c,cpp} 2> /dev/null)
 
 ifeq ($(TARGET_FAMILY), x86)
-	SRCS_REL += $(shell ls $(SRC_ROOT)/arch/x86/*.{s,S,c,cpp} 2> /dev/null)
-	SRCS_REL += $(shell ls $(SRC_ROOT)/arch/x86/vga/*.{s,S,c,cpp} 2> /dev/null)
+	SRCS_REL += $(shell ls $(SRC_ROOT)/x86/*.{s,S,c,cpp} 2> /dev/null)
+	SRCS_REL += $(shell ls $(SRC_ROOT)/x86/vga/*.{s,S,c,cpp} 2> /dev/null)
 endif
 ifeq ($(TARGET_FAMILY), arm)
-	SRCS_REL += $(shell ls $(SRC_ROOT)/arch/arm/*.{s,S,c,cpp} 2> /dev/null)
+	SRCS_REL += $(shell ls $(SRC_ROOT)/arm/*.{s,S,c,cpp} 2> /dev/null)
 endif
 
 ifeq ($(TARGET_ARCH), x86_64)
-	SRCS_REL += $(shell ls $(SRC_ROOT)/arch/x86/x86_64/*.{s,S,c,cpp} 2> /dev/null)
+	SRCS_REL += $(shell ls $(SRC_ROOT)/x86/x86_64/*.{s,S,c,cpp} 2> /dev/null)
 endif
 ifeq ($(TARGET_ARCH), i386)
-	SRCS_REL += $(shell ls $(SRC_ROOT)/arch/x86/i386/*.{s,S,c,cpp} 2> /dev/null)
-	SRCS_REL += $(shell ls $(SRC_ROOT)/arch/x86/i386/cpu/*.{s,S,c,cpp} 2> /dev/null)
+	SRCS_REL += $(shell ls $(SRC_ROOT)/x86/i386/*.{s,S,c,cpp} 2> /dev/null)
+	SRCS_REL += $(shell ls $(SRC_ROOT)/x86/i386/cpu/*.{s,S,c,cpp} 2> /dev/null)
 endif
 ifeq ($(TARGET_ARCH), rpi3)
-	SRCS_REL += $(shell ls $(SRC_ROOT)/arch/arm/rpi3/*.{s,S,c,cpp} 2> /dev/null)
+	SRCS_REL += $(shell ls $(SRC_ROOT)/arm/rpi3/*.{s,S,c,cpp} 2> /dev/null)
 endif
 
 SRCS = $(abspath $(SRCS_REL))

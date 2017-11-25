@@ -1,5 +1,5 @@
 //
-// file : kearly.cpp
+// file : logger.cpp
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,10 +18,20 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-namespace tupai
+#include <tupai/sys/logger.hpp>
+
+#ifdef ARCH_FAMILY_x86
+	#include <tupai/x86/vga/textmode.hpp>
+#endif
+
+namespace tupai::sys
 {
-	extern "C" void kearly()
+	Logger log;
+
+	void Logger::operator<<(char c)
 	{
-		// Cannot log anything here! Will cause panic.
+		#ifdef ARCH_FAMILY_x86
+			x86::vga::tm_write_char(c);
+		#endif
 	}
 }

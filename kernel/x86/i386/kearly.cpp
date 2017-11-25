@@ -1,5 +1,5 @@
 //
-// file : kearly.hpp
+// file : kearly.cpp
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,12 +18,17 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#ifndef TUPAI_KEARLY_HPP
-#define TUPAI_KEARLY_HPP
+#include <tupai/x86/i386/gdt.hpp>
+#include <tupai/x86/vga/textmode.hpp>
+#include <tupai/util/type.hpp>
 
-namespace tupai
+namespace tupai::x86::i386
 {
-	extern "C" void kearly();
-}
+	extern "C" void kearly(uintptr_t mb_header)
+	{
+		(void)mb_header;
 
-#endif
+		vga::tm_init();
+		gdt_init();
+	}
+}
