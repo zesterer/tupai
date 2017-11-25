@@ -1,5 +1,5 @@
 //
-// file : kearly.cpp
+// file : idt.hpp
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,22 +18,47 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#include <tupai/x86/i386/gdt.hpp>
-#include <tupai/x86/i386/idt.hpp>
-#include <tupai/x86/vga/textmode.hpp>
+#ifndef TUPAI_X86_I386_IDT_HPP
+#define TUPAI_X86_I386_IDT_HPP
+
 #include <tupai/util/type.hpp>
+#include <tupai/util/attr.hpp>
 
 namespace tupai::x86::i386
 {
-	extern "C" void kearly(uintptr_t mb_header)
+	struct IDTAttr
 	{
-		(void)mb_header;
+		const static uint8_t TASK = 0b0101;
+		const static uint8_t INT  = 0b1110;
+		const static uint8_t TRAP = 0b1111;
 
-		// Init basic textmode terminal
-		vga::tm_init();
+		const static uint8_t STORE = 0b10000;
 
-		// Init CPU tables
-		gdt_init();
-		idt_init();
-	}
+		const static uint8_t DPL0 = 0b0000000;
+		const static uint8_t DPL1 = 0b0100000;
+		const static uint8_t DPL2 = 0b1000000;
+		const static uint8_t DPL3 = 0b1100000;
+
+		const static uint8_t PRESENT = 0b10000000;
+	};
+
+	struct IDTEntry
+	{
+	private:
+		uint16_t off_lo = 0;
+		uint16_t select = 0;
+		uint8_t  zero   = 0;
+		uint8_t  attr   = 0;
+		uint16_t off_hi = 0;
+
+	public:
+		IDTEntry() {}
+		IDTEntry(uintptr_t addr);
+	} ATTR_PACKED;
+
+	void idt_init();
+	void idt_set_entry(size_t vec, IDTEntry entry);
+	void idt_flush();
 }
+
+#endif

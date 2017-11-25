@@ -45,20 +45,22 @@ namespace tupai::util
 			this->_constructed = true;
 		}
 
-		T* operator->()
-		{
-			if (this->_constructed)
-				return &this->_item;
-			else
-				panic("Attempted to access unconstructed Box<{0}> item", type_name<T>());
-		}
-
 		T& item()
 		{
 			if (this->_constructed)
 				return this->_item;
 			else
 				panic("Attempted to access unconstructed Box<{0}> item", type_name<T>());
+		}
+
+		T* operator->()
+		{
+			return &this->item();
+		}
+
+		T& operator*()
+		{
+			return this->item();
 		}
 	};
 }

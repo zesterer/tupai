@@ -18,6 +18,7 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
+#include <tupai/util/boot.hpp>
 #include <tupai/util/log.hpp>
 #include <tupai/cpu/power.hpp>
 
@@ -25,6 +26,8 @@ namespace tupai
 {
 	extern "C" void kmain()
 	{
+		util::bootlog("Entered kernel main");
+
 		util::logln("Hello, {} world!", "kernel");
 
 		cpu::wait();

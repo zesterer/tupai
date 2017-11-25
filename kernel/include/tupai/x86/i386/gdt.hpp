@@ -26,6 +26,11 @@
 
 namespace tupai::x86::i386
 {
+	const size_t GDT_KCODE_SELECTOR = 1;
+	const size_t GDT_KDATA_SELECTOR = 2;
+	const size_t GDT_UCODE_SELECTOR = 3;
+	const size_t GDT_UDATA_SELECTOR = 4;
+
 	struct GDTAccess
 	{
 		const static uint8_t READ    = 0b00000010;

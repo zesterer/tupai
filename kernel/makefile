@@ -131,6 +131,8 @@ ifeq ($(TARGET_ARCH), x86_64)
 endif
 ifeq ($(TARGET_ARCH), i386)
 	SRCS_REL += $(shell ls $(SRC_ROOT)/x86/i386/*.{s,S,c,cpp} 2> /dev/null)
+	SRCS_REL += $(shell ls $(SRC_ROOT)/x86/i386/boot/*.{s,S,c,cpp} 2> /dev/null)
+	SRCS_REL += $(shell ls $(SRC_ROOT)/x86/i386/crt/*.{s,S,c,cpp} 2> /dev/null)
 	SRCS_REL += $(shell ls $(SRC_ROOT)/x86/i386/cpu/*.{s,S,c,cpp} 2> /dev/null)
 endif
 ifeq ($(TARGET_ARCH), rpi3)

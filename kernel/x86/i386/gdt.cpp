@@ -26,6 +26,9 @@
 
 namespace tupai::x86::i386
 {
+	const size_t GDT_SIZE = 5;
+	static util::Box<util::Arr<GDTEntry, GDT_SIZE>> gdt;
+
 	struct GDTPtr
 	{
 	private:
@@ -34,11 +37,8 @@ namespace tupai::x86::i386
 
 	public:
 		GDTPtr() {}
-		GDTPtr(uint32_t offset, uint16_t size) : size(size), off(offset) {}
+		GDTPtr(util::Arr<GDTEntry, GDT_SIZE>& gdt, uint16_t size) : size(size), off((uint32_t)&gdt[0]) {}
 	} ATTR_PACKED;
-
-	const size_t GDT_SIZE = 5;
-	static util::Box<util::Arr<GDTEntry, GDT_SIZE>> gdt;
 
 	extern "C" GDTPtr gdt_ptr;
 	GDTPtr gdt_ptr ATTR_ALIGNED(4);
@@ -55,13 +55,13 @@ namespace tupai::x86::i386
 
 		gdt_set_entry(0, GDTEntry()); // Null segment
 		util::bootlog("Null GDT entry set");
-		gdt_set_entry(1, GDTEntry(0x0, 0xFFFFF, kcode_access, gran)); // Kernel code segment
+		gdt_set_entry(GDT_KCODE_SELECTOR, GDTEntry(0x0, 0xFFFFF, kcode_access, gran)); // Kernel code segment
 		util::bootlog("Kernel code GDT entry set");
-		gdt_set_entry(2, GDTEntry(0x0, 0xFFFFF, kdata_access, gran)); // Kernel data segment
+		gdt_set_entry(GDT_KDATA_SELECTOR, GDTEntry(0x0, 0xFFFFF, kdata_access, gran)); // Kernel data segment
 		util::bootlog("Kernel data GDT entry set");
-		gdt_set_entry(3, GDTEntry(0x0, 0xFFFFF, ucode_access, gran)); // User code segment
+		gdt_set_entry(GDT_UCODE_SELECTOR, GDTEntry(0x0, 0xFFFFF, ucode_access, gran)); // User code segment
 		util::bootlog("User code GDT entry set");
-		gdt_set_entry(4, GDTEntry(0x0, 0xFFFFF, udata_access, gran)); // User data segment
+		gdt_set_entry(GDT_UDATA_SELECTOR, GDTEntry(0x0, 0xFFFFF, udata_access, gran)); // User data segment
 		util::bootlog("User data GDT entry set");
 
 		gdt_flush();
@@ -70,12 +70,12 @@ namespace tupai::x86::i386
 
 	void gdt_set_entry(size_t desc, GDTEntry entry)
 	{
-		gdt->at(desc) = entry;
+		(*gdt)[desc] = entry;
 	}
 
 	void gdt_flush()
 	{
-		gdt_ptr = GDTPtr((uint32_t)&gdt.item()[0], sizeof(GDTEntry) * GDT_SIZE - 1);
+		gdt_ptr = GDTPtr(*gdt, sizeof(GDTEntry) * GDT_SIZE - 1);
 
 		asm volatile
 		(
