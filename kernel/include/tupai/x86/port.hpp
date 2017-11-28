@@ -25,42 +25,68 @@
 
 namespace tupai::x86::io
 {
-	template<size_t SIZE> inline void out(uint16_t port, uint32_t val);
-	template<size_t SIZE> inline uint32_t in(uint16_t port);
+	template<size_t SIZE> inline void out(uint16_t port, uint32_t val, bool do_wait = true);
+	template<size_t SIZE> inline uint32_t in(uint16_t port, bool do_wait = true);
 
-	template<> inline void out<8>(uint16_t port, uint32_t val)
+	inline void wait()
+	{
+		asm volatile ( "outb %%al, $0x80" : : "a"(0) ); // Port 0x80 is free
+	}
+
+	template<> inline void out<8>(uint16_t port, uint32_t val, bool do_wait)
 	{
 		asm volatile ("outb %0, %1" :: "a"(static_cast<uint8_t>(val)), "Nd"(port));
+
+		if (do_wait)
+			wait();
 	}
 
-	template<> inline void out<16>(uint16_t port, uint32_t val)
+	template<> inline void out<16>(uint16_t port, uint32_t val, bool do_wait)
 	{
 		asm volatile ("outw %0, %1" :: "a"(static_cast<uint16_t>(val)), "Nd"(port));
+
+		if (do_wait)
+			wait();
 	}
 
-	template<> inline void out<32>(uint16_t port, uint32_t val)
+	template<> inline void out<32>(uint16_t port, uint32_t val, bool do_wait)
 	{
 		asm volatile ("outl %0, %1" :: "a"(static_cast<uint32_t>(val)), "Nd"(port));
+
+		if (do_wait)
+			wait();
 	}
 
-	template<> inline uint32_t in<8>(uint16_t port)
+	template<> inline uint32_t in<8>(uint16_t port, bool do_wait)
 	{
 		uint8_t val;
 		asm volatile ("inb %1, %0" : "=a"(val) : "Nd"(port));
+
+		if (do_wait)
+			wait();
+
 		return val;
 	}
 
-	template<> inline uint32_t in<16>(uint16_t port)
+	template<> inline uint32_t in<16>(uint16_t port, bool do_wait)
 	{
 		uint16_t val;
 		asm volatile ("inw %1, %0" : "=a"(val) : "Nd"(port));
+
+		if (do_wait)
+			wait();
+
 		return val;
 	}
 
-	template<> inline uint32_t in<32>(uint16_t port)
+	template<> inline uint32_t in<32>(uint16_t port, bool do_wait)
 	{
 		uint32_t val;
 		asm volatile ("inl %1, %0" : "=a"(val) : "Nd"(port));
+
+		if (do_wait)
+			wait();
+
 		return val;
 	}
 }

@@ -20,6 +20,7 @@
 
 #include <tupai/util/boot.hpp>
 #include <tupai/util/log.hpp>
+#include <tupai/util/assert.hpp>
 #include <tupai/cpu/power.hpp>
 
 namespace tupai

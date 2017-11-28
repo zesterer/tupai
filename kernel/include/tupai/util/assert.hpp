@@ -1,5 +1,5 @@
 //
-// file : kearly.cpp
+// file : assert.hpp
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,26 +18,20 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#include <tupai/x86/i386/gdt.hpp>
-#include <tupai/x86/i386/idt.hpp>
-#include <tupai/x86/vga/textmode.hpp>
-#include <tupai/x86/pic.hpp>
-#include <tupai/util/type.hpp>
+#ifndef TUPAI_UTIL_ASSERT_HPP
+#define TUPAI_UTIL_ASSERT_HPP
 
-namespace tupai::x86::i386
+#include <tupai/util/panic.hpp>
+
+namespace tupai::util
 {
-	extern "C" void kearly(uintptr_t mb_header)
+	#define assert(EXPR, STR) tupai::util::_assert(EXPR, #EXPR, STR)
+
+	static inline void _assert(bool expr, const char* expr_str, const char* msg)
 	{
-		(void)mb_header;
-
-		// Init basic textmode terminal
-		vga::textmode::init();
-
-		// Init CPU tables
-		gdt::init();
-		idt::init();
-
-		// Init interrupt hardware
-		pic::init();
+		if (!expr)
+			panic("Assertion '{}' failed: {}", expr_str, msg);
 	}
 }
+
+#endif

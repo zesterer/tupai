@@ -25,7 +25,7 @@
 
 namespace tupai::x86::pic
 {
-	const size_t VEC_OFFSET = 32;
+	const size_t IRQ_REMAP = 32;
 
 	void init();
 	void enable_irq(int irq);
