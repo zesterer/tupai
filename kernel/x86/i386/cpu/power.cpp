@@ -30,7 +30,7 @@ namespace tupai::cpu
 
 	ATTR_NORETURN void hang()
 	{
-		int_disable();
+		irq::disable();
 		while (true)
 			halt();
 	}

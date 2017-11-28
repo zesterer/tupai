@@ -21,10 +21,10 @@
 #ifndef TUPAI_CPU_INT_HPP
 #define TUPAI_CPU_INT_HPP
 
-namespace tupai::cpu
+namespace tupai::cpu::irq
 {
-	void int_enable();
-	void int_disable();
+	void enable();
+	void disable();
 }
 
 #endif

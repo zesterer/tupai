@@ -25,52 +25,52 @@
 #include <tupai/util/box.hpp>
 #include <tupai/util/boot.hpp>
 
-namespace tupai::x86::i386
+namespace tupai::x86::i386::idt
 {
-	const size_t IDT_SIZE = 5;
-	static util::Box<util::Arr<IDTEntry, IDT_SIZE>> idt;
+	const size_t LENGTH = 5;
+	static util::Box<util::Arr<Entry, LENGTH>> idt ATTR_ALIGNED(4);
 
-	struct IDTPtr
+	struct Ptr
 	{
 	private:
 		uint16_t size;
 		uint32_t off;
 
 	public:
-		IDTPtr() {}
-		IDTPtr(util::Arr<IDTEntry, IDT_SIZE>& idt, uint16_t size) : size(size), off((uint32_t)&idt[0]) {}
+		Ptr() {}
+		Ptr(util::Arr<Entry, LENGTH>& idt, uint16_t size) : size(size), off((uint32_t)&idt[0]) {}
 	} ATTR_PACKED;
 
-	extern "C" IDTPtr idt_ptr;
-	IDTPtr idt_ptr ATTR_ALIGNED(4);
+	extern "C" Ptr idt_ptr;
+	Ptr idt_ptr ATTR_ALIGNED(4);
 
-	void idt_init()
+	void init()
 	{
 		idt.create();
 
 		util::bootlog("Initiated IDT");
 
-		idt_flush();
+		flush();
 		util::bootlog("Flushed IDT");
 	}
 
-	void idt_set_entry(size_t vec, IDTEntry entry)
+	void set_entry(size_t vec, Entry entry)
 	{
 		(*idt)[vec] = entry;
 	}
 
-	void idt_flush()
+	void flush()
 	{
-		idt_ptr = IDTPtr(*idt, sizeof(IDTEntry) * IDT_SIZE - 1);
+		idt_ptr = Ptr(*idt, sizeof(Entry) * LENGTH - 1);
 
 		asm volatile ("lidt (idt_ptr)\n");
 	}
 
-	IDTEntry::IDTEntry(uintptr_t addr) :
+	Entry::Entry(uintptr_t addr) :
 		off_lo(((uint32_t)addr >> 0) & 0xFFFF),
-		select(GDT_KCODE_SELECTOR * 8),
+		select(gdt::KCODE_SELECTOR * 8),
 		zero  (0),
-		attr  (IDTAttr::INT | IDTAttr::PRESENT),
+		attr  (Attr::INT | Attr::PRESENT),
 		off_hi(((uint32_t)addr >> 16) & 0xFFFF)
 	{}
 }

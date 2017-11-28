@@ -1,5 +1,5 @@
 //
-// file : idt.hpp
+// file : pic.cpp
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,47 +18,17 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#ifndef TUPAI_X86_I386_IDT_HPP
-#define TUPAI_X86_I386_IDT_HPP
+#include <tupai/x86/pic.hpp>
+#include <tupai/x86/port.hpp>
 
-#include <tupai/util/type.hpp>
-#include <tupai/util/attr.hpp>
-
-namespace tupai::x86::i386::idt
+namespace tupai::x86::pic
 {
-	struct Attr
+	void init()
 	{
-		const static uint8_t TASK = 0b0101;
-		const static uint8_t INT  = 0b1110;
-		const static uint8_t TRAP = 0b1111;
 
-		const static uint8_t STORE = 0b10000;
+	}
 
-		const static uint8_t DPL0 = 0b0000000;
-		const static uint8_t DPL1 = 0b0100000;
-		const static uint8_t DPL2 = 0b1000000;
-		const static uint8_t DPL3 = 0b1100000;
-
-		const static uint8_t PRESENT = 0b10000000;
-	};
-
-	struct Entry
-	{
-	private:
-		uint16_t off_lo = 0;
-		uint16_t select = 0;
-		uint8_t  zero   = 0;
-		uint8_t  attr   = 0;
-		uint16_t off_hi = 0;
-
-	public:
-		Entry() {}
-		Entry(uintptr_t addr);
-	} ATTR_PACKED;
-
-	void init();
-	void set_entry(size_t vec, Entry entry);
-	void flush();
+	void enable_irq(int irq);
+	void disable_irq(int irq);
+	void ack(int irq);
 }
-
-#endif

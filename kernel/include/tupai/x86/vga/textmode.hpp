@@ -23,14 +23,14 @@
 
 #include <tupai/util/type.hpp>
 
-namespace tupai::x86::vga
+namespace tupai::x86::vga::textmode
 {
-	void tm_init();
-	void tm_write_char(char c);
-	void tm_move_cursor(size_t col, size_t row);
-	void tm_enable_cursor();
-	void tm_disable_cursor();
-	void tm_scroll(size_t n);
+	void init();
+	void write_char(char c);
+	void move_cursor(size_t col, size_t row);
+	void enable_cursor();
+	void disable_cursor();
+	void scroll(size_t n);
 }
 
 #endif

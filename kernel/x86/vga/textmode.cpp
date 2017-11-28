@@ -26,7 +26,7 @@
 #include <tupai/util/attr.hpp>
 #include <tupai/mem/virt.hpp>
 
-namespace tupai::x86::vga
+namespace tupai::x86::vga::textmode
 {
 	struct Entry
 	{
@@ -50,19 +50,19 @@ namespace tupai::x86::vga
 	extern "C" uint32_t _vga_col_boot;
 	extern "C" uint32_t _vga_row_boot;
 
-	void tm_init()
+	void init()
 	{
 		col = _vga_col_boot;
 		row = _vga_row_boot;
 
-		buffer.create(reinterpret_cast<Entry*>(mem::VOFFSET + 0xB8000));
+		buffer.create(reinterpret_cast<Entry*>(mem::virt::OFFSET + 0xB8000));
 
-		tm_enable_cursor();
+		enable_cursor();
 
 		util::bootlog("Acquired early VGA parameters");
 	}
 
-	void tm_write_char(char c)
+	void write_char(char c)
 	{
 		switch (c)
 		{
@@ -87,34 +87,34 @@ namespace tupai::x86::vga
 
 		if (row >= ROWS) {
 			row = ROWS - 1;
-			tm_scroll(1);
+			scroll(1);
 		}
 
-		tm_move_cursor(col, row);
+		move_cursor(col, row);
 	}
 
-	void tm_move_cursor(size_t col, size_t row)
+	void move_cursor(size_t col, size_t row)
 	{
 		uint16_t off = COLS * row + col;
-		out8(0x3D4, 0x0F);
-		out8(0x3D5, (uint8_t)(off & 0xFF));
-		out8(0x3D4, 0x0E);
-		out8(0x3D5, (uint8_t)((off >> 8) & 0xFF));
+		io::out<8>(0x3D4, 0x0F);
+		io::out<8>(0x3D5, (uint8_t)(off & 0xFF));
+		io::out<8>(0x3D4, 0x0E);
+		io::out<8>(0x3D5, (uint8_t)((off >> 8) & 0xFF));
 	}
 
-	void tm_enable_cursor()
+	void enable_cursor()
 	{
-		out8(0x3D4, 0x0A);
-		out8(0x3D5, 0x00);
+		io::out<8>(0x3D4, 0x0A);
+		io::out<8>(0x3D5, 0x00);
 	}
 
-	void tm_disable_cursor()
+	void disable_cursor()
 	{
-		out8(0x3D4, 0x0A);
-		out8(0x3D5, 0x3F);
+		io::out<8>(0x3D4, 0x0A);
+		io::out<8>(0x3D5, 0x3F);
 	}
 
-	void tm_scroll(size_t n)
+	void scroll(size_t n)
 	{
 		for (size_t j = 0; j < ROWS; j ++)
 			for (size_t i = 0; i < COLS; i ++)

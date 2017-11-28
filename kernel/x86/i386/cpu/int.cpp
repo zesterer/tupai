@@ -20,14 +20,14 @@
 
 #include <tupai/cpu/int.hpp>
 
-namespace tupai::cpu
+namespace tupai::cpu::irq
 {
-	void int_enable()
+	void enable()
 	{
 		asm volatile ("sti");
 	}
 
-	void int_disable()
+	void disable()
 	{
 		asm volatile ("cli");
 	}

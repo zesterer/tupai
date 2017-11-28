@@ -24,58 +24,58 @@
 #include <tupai/util/box.hpp>
 #include <tupai/util/boot.hpp>
 
-namespace tupai::x86::i386
+namespace tupai::x86::i386::gdt
 {
-	const size_t GDT_SIZE = 5;
-	static util::Box<util::Arr<GDTEntry, GDT_SIZE>> gdt;
+	const size_t LENGTH = 5;
+	static util::Box<util::Arr<Entry, LENGTH>> gdt ATTR_ALIGNED(4);
 
-	struct GDTPtr
+	struct Ptr
 	{
 	private:
 		uint16_t size;
 		uint32_t off;
 
 	public:
-		GDTPtr() {}
-		GDTPtr(util::Arr<GDTEntry, GDT_SIZE>& gdt, uint16_t size) : size(size), off((uint32_t)&gdt[0]) {}
+		Ptr() {}
+		Ptr(util::Arr<Entry, LENGTH>& gdt, uint16_t size) : size(size), off((uint32_t)&gdt[0]) {}
 	} ATTR_PACKED;
 
-	extern "C" GDTPtr gdt_ptr;
-	GDTPtr gdt_ptr ATTR_ALIGNED(4);
+	extern "C" Ptr gdt_ptr;
+	Ptr gdt_ptr ATTR_ALIGNED(4);
 
-	void gdt_init()
+	void init()
 	{
 		gdt.create();
 
-		uint8_t kcode_access = GDTAccess::KERNEL | GDTAccess::READ  | GDTAccess::ONE | GDTAccess::PRESENT | GDTAccess::EXEC;
-		uint8_t kdata_access = GDTAccess::KERNEL | GDTAccess::WRITE | GDTAccess::ONE | GDTAccess::PRESENT;
-		uint8_t ucode_access = GDTAccess::USER   | GDTAccess::READ  | GDTAccess::ONE | GDTAccess::PRESENT | GDTAccess::EXEC;
-		uint8_t udata_access = GDTAccess::USER   | GDTAccess::WRITE | GDTAccess::ONE | GDTAccess::PRESENT;
-		uint8_t gran = GDTGran::PAGE | GDTGran::P32;
+		uint8_t kcode_access = Access::KERNEL | Access::READ  | Access::ONE | Access::PRESENT | Access::EXEC;
+		uint8_t kdata_access = Access::KERNEL | Access::WRITE | Access::ONE | Access::PRESENT;
+		uint8_t ucode_access = Access::USER   | Access::READ  | Access::ONE | Access::PRESENT | Access::EXEC;
+		uint8_t udata_access = Access::USER   | Access::WRITE | Access::ONE | Access::PRESENT;
+		uint8_t gran = Gran::PAGE | Gran::P32;
 
-		gdt_set_entry(0, GDTEntry()); // Null segment
+		set_entry(0, Entry()); // Null segment
 		util::bootlog("Null GDT entry set");
-		gdt_set_entry(GDT_KCODE_SELECTOR, GDTEntry(0x0, 0xFFFFF, kcode_access, gran)); // Kernel code segment
+		set_entry(KCODE_SELECTOR, Entry(0x0, 0xFFFFF, kcode_access, gran)); // Kernel code segment
 		util::bootlog("Kernel code GDT entry set");
-		gdt_set_entry(GDT_KDATA_SELECTOR, GDTEntry(0x0, 0xFFFFF, kdata_access, gran)); // Kernel data segment
+		set_entry(KDATA_SELECTOR, Entry(0x0, 0xFFFFF, kdata_access, gran)); // Kernel data segment
 		util::bootlog("Kernel data GDT entry set");
-		gdt_set_entry(GDT_UCODE_SELECTOR, GDTEntry(0x0, 0xFFFFF, ucode_access, gran)); // User code segment
+		set_entry(UCODE_SELECTOR, Entry(0x0, 0xFFFFF, ucode_access, gran)); // User code segment
 		util::bootlog("User code GDT entry set");
-		gdt_set_entry(GDT_UDATA_SELECTOR, GDTEntry(0x0, 0xFFFFF, udata_access, gran)); // User data segment
+		set_entry(UDATA_SELECTOR, Entry(0x0, 0xFFFFF, udata_access, gran)); // User data segment
 		util::bootlog("User data GDT entry set");
 
-		gdt_flush();
+		flush();
 		util::bootlog("Flushed GDT");
 	}
 
-	void gdt_set_entry(size_t desc, GDTEntry entry)
+	void set_entry(size_t desc, Entry entry)
 	{
 		(*gdt)[desc] = entry;
 	}
 
-	void gdt_flush()
+	void flush()
 	{
-		gdt_ptr = GDTPtr(*gdt, sizeof(GDTEntry) * GDT_SIZE - 1);
+		gdt_ptr = Ptr(*gdt, sizeof(Entry) * LENGTH - 1);
 
 		asm volatile
 		(
@@ -95,7 +95,7 @@ namespace tupai::x86::i386
 		);
 	}
 
-	GDTEntry::GDTEntry(uint32_t offset, uint32_t size, uint8_t access, uint8_t gran) :
+	Entry::Entry(uint32_t offset, uint32_t size, uint8_t access, uint8_t gran) :
 		size_lo(size & 0xFFFF),
 		off_lo ((offset >> 0) & 0xFFFF),
 		off_mid((offset >> 16) & 0xFF),

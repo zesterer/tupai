@@ -21,9 +21,9 @@
 #ifndef TUPAI_MEM_VIRT_HPP
 #define TUPAI_MEM_VIRT_HPP
 
-namespace tupai::mem
+namespace tupai::mem::virt
 {
-	const uintptr_t VOFFSET   = 0xC0000000;
+	const uintptr_t OFFSET   = 0xC0000000;
 	const uintptr_t PAGE_SIZE = 0x1000;
 }
 

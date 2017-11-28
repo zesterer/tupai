@@ -24,14 +24,14 @@
 #include <tupai/util/type.hpp>
 #include <tupai/util/attr.hpp>
 
-namespace tupai::x86::i386
+namespace tupai::x86::i386::gdt
 {
-	const size_t GDT_KCODE_SELECTOR = 1;
-	const size_t GDT_KDATA_SELECTOR = 2;
-	const size_t GDT_UCODE_SELECTOR = 3;
-	const size_t GDT_UDATA_SELECTOR = 4;
+	const size_t KCODE_SELECTOR = 1;
+	const size_t KDATA_SELECTOR = 2;
+	const size_t UCODE_SELECTOR = 3;
+	const size_t UDATA_SELECTOR = 4;
 
-	struct GDTAccess
+	struct Access
 	{
 		const static uint8_t READ    = 0b00000010;
 		const static uint8_t WRITE   = 0b00000010;
@@ -42,13 +42,13 @@ namespace tupai::x86::i386
 		const static uint8_t USER    = 0b01100000;
 	};
 
-	struct GDTGran
+	struct Gran
 	{
 		const static uint8_t PAGE = 0b1000;
 		const static uint8_t P32  = 0b0100;
 	};
 
-	struct GDTEntry
+	struct Entry
 	{
 	private:
 		uint16_t size_lo = 0;
@@ -59,13 +59,13 @@ namespace tupai::x86::i386
 		uint8_t  off_hi  = 0;
 
 	public:
-		GDTEntry() {}
-		GDTEntry(uint32_t offset, uint32_t size, uint8_t access, uint8_t gran);
+		Entry() {}
+		Entry(uint32_t offset, uint32_t size, uint8_t access, uint8_t gran);
 	} ATTR_PACKED;
 
-	void gdt_init();
-	void gdt_set_entry(size_t desc, GDTEntry entry);
-	void gdt_flush();
+	void init();
+	void set_entry(size_t desc, Entry entry);
+	void flush();
 }
 
 #endif

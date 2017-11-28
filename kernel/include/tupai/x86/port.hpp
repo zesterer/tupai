@@ -23,42 +23,45 @@
 
 #include <tupai/util/type.hpp>
 
-namespace tupai::x86::vga
+namespace tupai::x86::io
 {
-	static inline void out8(uint16_t port, uint8_t value)
+	template<size_t SIZE> inline void out(uint16_t port, uint32_t val);
+	template<size_t SIZE> inline uint32_t in(uint16_t port);
+
+	template<> inline void out<8>(uint16_t port, uint32_t val)
 	{
-		asm volatile ("outb %0, %1" :: "a"(value), "Nd"(port));
+		asm volatile ("outb %0, %1" :: "a"(static_cast<uint8_t>(val)), "Nd"(port));
 	}
 
-	static inline void out16(uint16_t port, uint16_t value)
+	template<> inline void out<16>(uint16_t port, uint32_t val)
 	{
-		asm volatile ("outw %0, %1" :: "a"(value), "Nd"(port));
+		asm volatile ("outw %0, %1" :: "a"(static_cast<uint16_t>(val)), "Nd"(port));
 	}
 
-	static inline void out32(uint16_t port, uint32_t value)
+	template<> inline void out<32>(uint16_t port, uint32_t val)
 	{
-		asm volatile ("outl %0, %1" :: "a"(value), "Nd"(port));
+		asm volatile ("outl %0, %1" :: "a"(static_cast<uint32_t>(val)), "Nd"(port));
 	}
 
-	static inline uint8_t in8(uint16_t port)
+	template<> inline uint32_t in<8>(uint16_t port)
 	{
-		uint8_t value;
-		asm volatile ("inb %1, %0" : "=a"(value) : "Nd"(port));
-		return value;
+		uint8_t val;
+		asm volatile ("inb %1, %0" : "=a"(val) : "Nd"(port));
+		return val;
 	}
 
-	static inline uint16_t in16(uint16_t port)
+	template<> inline uint32_t in<16>(uint16_t port)
 	{
-		uint16_t value;
-		asm volatile ("inw %1, %0" : "=a"(value) : "Nd"(port));
-		return value;
+		uint16_t val;
+		asm volatile ("inw %1, %0" : "=a"(val) : "Nd"(port));
+		return val;
 	}
 
-	static inline uint32_t in32(uint16_t port)
+	template<> inline uint32_t in<32>(uint16_t port)
 	{
-		uint32_t value;
-		asm volatile ("inl %1, %0" : "=a"(value) : "Nd"(port));
-		return value;
+		uint32_t val;
+		asm volatile ("inl %1, %0" : "=a"(val) : "Nd"(port));
+		return val;
 	}
 }
 

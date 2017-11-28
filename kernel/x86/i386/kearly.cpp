@@ -30,10 +30,10 @@ namespace tupai::x86::i386
 		(void)mb_header;
 
 		// Init basic textmode terminal
-		vga::tm_init();
+		vga::textmode::init();
 
 		// Init CPU tables
-		gdt_init();
-		idt_init();
+		gdt::init();
+		idt::init();
 	}
 }

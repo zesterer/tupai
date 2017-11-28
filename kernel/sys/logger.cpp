@@ -31,7 +31,7 @@ namespace tupai::sys
 	void Logger::operator<<(char c)
 	{
 		#ifdef ARCH_FAMILY_x86
-			x86::vga::tm_write_char(c);
+			x86::vga::textmode::write_char(c);
 		#endif
 	}
 }
