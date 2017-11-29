@@ -1,5 +1,5 @@
 //
-// file : kmain.cpp
+// file : fault.hpp
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,22 +18,14 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#include <tupai/util/boot.hpp>
-#include <tupai/util/log.hpp>
-#include <tupai/util/assert.hpp>
-#include <tupai/cpu/power.hpp>
+#ifndef TUPAI_X86_I386_FAULT_HPP
+#define TUPAI_X86_I386_FAULT_HPP
 
-namespace tupai
+#include <tupai/util/type.hpp>
+
+namespace tupai::x86::i386
 {
-	extern "C" void kmain()
-	{
-		util::bootlog("Entered kernel main");
-
-		util::logln("Hello, {} world!", "kernel");
-
-		util::logln("Triggering div exception...");
-		volatile int i = 5 / 0;
-
-		cpu::wait();
-	}
+	extern "C" uintptr_t fault_handler(uintptr_t stack, uint32_t code, uint32_t err);
 }
+
+#endif

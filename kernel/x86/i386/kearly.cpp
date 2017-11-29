@@ -20,8 +20,9 @@
 
 #include <tupai/x86/i386/gdt.hpp>
 #include <tupai/x86/i386/idt.hpp>
-#include <tupai/x86/vga/textmode.hpp>
+#include <tupai/x86/i386/isr.hpp>
 #include <tupai/x86/pic.hpp>
+#include <tupai/x86/vga/textmode.hpp>
 #include <tupai/util/type.hpp>
 
 namespace tupai::x86::i386
@@ -36,6 +37,9 @@ namespace tupai::x86::i386
 		// Init CPU tables
 		gdt::init();
 		idt::init();
+
+		// Initiate ISRs
+		isr::init();
 
 		// Init interrupt hardware
 		pic::init();

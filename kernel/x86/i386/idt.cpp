@@ -27,7 +27,36 @@
 
 namespace tupai::x86::i386::idt
 {
-	const size_t LENGTH = 5;
+	struct Attr
+	{
+		const static uint8_t TASK = 0b0101;
+		const static uint8_t INT  = 0b1110;
+		const static uint8_t TRAP = 0b1111;
+
+		const static uint8_t STORE = 0b10000;
+
+		const static uint8_t DPL0 = 0b0000000;
+		const static uint8_t DPL1 = 0b0100000;
+		const static uint8_t DPL2 = 0b1000000;
+		const static uint8_t DPL3 = 0b1100000;
+
+		const static uint8_t PRESENT = 0b10000000;
+	};
+
+	struct Entry
+	{
+	private:
+		uint16_t off_lo = 0;
+		uint16_t select = 0;
+		uint8_t  zero   = 0;
+		uint8_t  attr   = 0;
+		uint16_t off_hi = 0;
+
+	public:
+		Entry() {}
+		Entry(uintptr_t addr);
+	} ATTR_PACKED;
+
 	static util::Box<util::Arr<Entry, LENGTH>> idt ATTR_ALIGNED(4);
 
 	struct Ptr
@@ -54,9 +83,9 @@ namespace tupai::x86::i386::idt
 		util::bootlog("Flushed IDT");
 	}
 
-	void set_entry(size_t vec, Entry entry)
+	void set(size_t vec, uintptr_t handler)
 	{
-		(*idt)[vec] = entry;
+		(*idt)[vec] = Entry(handler);
 	}
 
 	void flush()
