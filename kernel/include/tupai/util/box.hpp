@@ -36,6 +36,24 @@ namespace tupai::util
 
 	public:
 		Box() {}
+
+		Box(const Box<T>& other) // Copy construction
+		{
+			this->_constructed = other._constructed;
+			if (this->_constructed)
+				this->_item = other._item;
+		}
+
+		Box(Box<T>&& other) // Move construction
+		{
+			this->_constructed = other._constructed;
+			if (this->_constructed)
+				this->_item = move(other._item);
+
+			// Invalid other
+			other._constructed = false;
+		}
+
 		~Box() { if (this->_constructed) this->_item.~T(); }
 
 		template <typename... Args>
@@ -45,12 +63,67 @@ namespace tupai::util
 			this->_constructed = true;
 		}
 
+		void destroy()
+		{
+			this->_constructed = false;
+			this->_item.~T();
+		}
+
 		T& item()
 		{
 			if (this->_constructed)
 				return this->_item;
 			else
-				panic("Attempted to access unconstructed Box<{0}> item", type_name<T>());
+				panic("Attempted to access unconstructed Box<{}> item", type_name<T>());
+		}
+
+		T* operator->()
+		{
+			return &this->item();
+		}
+
+		T& operator*()
+		{
+			return this->item();
+		}
+	};
+
+	template <typename T>
+	struct _UnsafeBox
+	{
+	private:
+		union { T _item; };
+
+		_UnsafeBox(const _UnsafeBox<T>& other); // Copy construction
+		_UnsafeBox(_UnsafeBox<T>&& other); // Move construction
+
+	public:
+		_UnsafeBox() {}
+
+		void copy_from_unsafe(const _UnsafeBox<T>& other)
+		{
+			this->_item = other._item;
+		}
+
+		void move_from_unsafe(_UnsafeBox<T>&& other)
+		{
+			this->_item = move(other._item);
+		}
+
+		template <typename... Args>
+		void create(Args... args)
+		{
+			new (&this->_item) T(args...);
+		}
+
+		void destroy()
+		{
+			this->_item.~T();
+		}
+
+		T& item()
+		{
+			return this->_item;
 		}
 
 		T* operator->()

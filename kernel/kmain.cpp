@@ -21,6 +21,7 @@
 #include <tupai/util/boot.hpp>
 #include <tupai/util/log.hpp>
 #include <tupai/util/assert.hpp>
+#include <tupai/util/vec.hpp>
 #include <tupai/cpu/cpu.hpp>
 
 namespace tupai
@@ -30,6 +31,8 @@ namespace tupai
 		util::bootlog("Entered kernel main");
 
 		util::logln("Hello, {} world!", "kernel");
+
+		util::Vec<int> myvec;
 
 		cpu::wait();
 	}

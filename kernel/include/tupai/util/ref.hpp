@@ -1,5 +1,5 @@
 //
-// file : buff.hpp
+// file : ref.hpp
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,49 +18,50 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#ifndef TUPAI_UTIL_BUFF_HPP
-#define TUPAI_UTIL_BUFF_HPP
+#ifndef TUPAI_UTIL_REF_HPP
+#define TUPAI_UTIL_REF_HPP
 
-#include <tupai/util/panic.hpp>
-#include <tupai/util/type.hpp>
+#include <stdint.h>
+#include <stddef.h>
 
 namespace tupai::util
 {
-	template <typename T, size_t N>
-	struct Buff
+	template <typename T>
+	struct UniqueRef
 	{
 	private:
-		T* _items;
+		T* _item = nullptr;
+
+		UniqueRef(T* item) : _item(item) {}
+		UniqueRef(const UniqueRef<T>& other) = delete; // Non-copyable
+		UniqueRef<T>& operator=(const UniqueRef<T>&) = delete; // Non-copyable
 
 	public:
-		Buff(T* buff) : _items(buff) {}
-
-		T& at(size_t i)
+		template <typename... Args>
+		static UniqueRef<T> create(Args... args)
 		{
-			if (i < N)
-				return this->_items[i];
-			else
-				panic("Attempted to access Buff<{}, {}> out of bounds at {}", type_name<T>(), N, i);
+			return UniqueRef<T>(new T(args...));
 		}
 
-		T& operator[](size_t i) { return this->at(i); }
-	};
-
-	template <typename T, size_t W, size_t H>
-	struct Buff2D
-	{
-	private:
-		T* _items;
-
-	public:
-		Buff2D(T* buff) : _items(buff) {}
-
-		T& at(size_t x, size_t y)
+		~UniqueRef()
 		{
-			if (x < W && y < H)
-				return this->_items[y * W + x];
+			if (this->_item != nullptr)
+				delete this->_item;
+		}
+
+		bool valid() { return this->_item != nullptr; }
+
+		T& raw()
+		{
+			return *this->_item;
+		}
+
+		T& operator*()
+		{
+			if (this->valid())
+				return *this->_item;
 			else
-				panic("Attempted to access Buff<{}, {}, {}> out of bounds at {}, {}", type_name<T>(), W, H, x, y);
+				panic("Attempted to access invalid UniqueRef<{0}> item", type_name<T>());
 		}
 	};
 }

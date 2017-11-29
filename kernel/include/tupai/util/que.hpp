@@ -1,5 +1,5 @@
 //
-// file : buff.hpp
+// file : que.hpp
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,51 +18,12 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#ifndef TUPAI_UTIL_BUFF_HPP
-#define TUPAI_UTIL_BUFF_HPP
-
-#include <tupai/util/panic.hpp>
-#include <tupai/util/type.hpp>
+#ifndef TUPAI_UTIL_QUE_HPP
+#define TUPAI_UTIL_QUE_HPP
 
 namespace tupai::util
 {
-	template <typename T, size_t N>
-	struct Buff
-	{
-	private:
-		T* _items;
-
-	public:
-		Buff(T* buff) : _items(buff) {}
-
-		T& at(size_t i)
-		{
-			if (i < N)
-				return this->_items[i];
-			else
-				panic("Attempted to access Buff<{}, {}> out of bounds at {}", type_name<T>(), N, i);
-		}
-
-		T& operator[](size_t i) { return this->at(i); }
-	};
-
-	template <typename T, size_t W, size_t H>
-	struct Buff2D
-	{
-	private:
-		T* _items;
-
-	public:
-		Buff2D(T* buff) : _items(buff) {}
-
-		T& at(size_t x, size_t y)
-		{
-			if (x < W && y < H)
-				return this->_items[y * W + x];
-			else
-				panic("Attempted to access Buff<{}, {}, {}> out of bounds at {}, {}", type_name<T>(), W, H, x, y);
-		}
-	};
+	#error This needs completing
 }
 
 #endif
