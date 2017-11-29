@@ -24,6 +24,8 @@
 namespace tupai::util
 {
 	inline bool is_digit(char c) { return c >= '0' && c <= '9'; }
+
+	inline char to_uppercase(char c) { return (c >= 'a' && c <= 'z') ? (c - 'a' + 'A') : c; }
 }
 
 #endif

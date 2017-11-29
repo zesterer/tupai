@@ -1,5 +1,5 @@
 //
-// file : panic.hpp
+// file : irq.cpp
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,22 +18,30 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#ifndef TUPAI_UTIL_PANIC_HPP
-#define TUPAI_UTIL_PANIC_HPP
+#include <tupai/cpu/irq.hpp>
+#include <tupai/x86/pic.hpp>
+#include <tupai/x86/i386/idt.hpp>
 
-#include <tupai/util/attr.hpp>
-#include <tupai/util/log.hpp>
-#include <tupai/cpu/cpu.hpp>
-
-namespace tupai::util
+namespace tupai::cpu::irq
 {
-	template <typename ... Args>
-	ATTR_NORETURN void panic(const char* str, Args ... args)
+	void unmask_irq(uint8_t vec)
 	{
-		log("[PANIC] ");
-		logln(str, args ...);
-		cpu::hang();
+		x86::pic::unmask_irq(vec);
+	}
+
+	void mask_irq(uint8_t vec)
+	{
+		x86::pic::mask_irq(vec);
+	}
+
+	void ack(uint8_t vec)
+	{
+		x86::pic::ack(vec);
+	}
+
+	void set_handler(uint8_t vec, uintptr_t handler)
+	{
+		x86::i386::idt::set(x86::pic::IRQ_REMAP + vec, handler);
+		x86::i386::idt::flush();
 	}
 }
-
-#endif

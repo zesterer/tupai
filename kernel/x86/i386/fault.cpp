@@ -48,6 +48,8 @@ namespace tupai::x86::i386
 
 	uintptr_t fault_handler(uintptr_t stack, uint32_t code, uint32_t err)
 	{
+		(void)stack;
+
 		util::panic("Fault '{}' [{}] occured", fault_names[code], err);
 
 		//return stack;

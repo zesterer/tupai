@@ -22,6 +22,7 @@
 #include <tupai/x86/i386/idt.hpp>
 #include <tupai/x86/i386/isr.hpp>
 #include <tupai/x86/pic.hpp>
+#include <tupai/x86/kbd.hpp>
 #include <tupai/x86/vga/textmode.hpp>
 #include <tupai/util/type.hpp>
 
@@ -43,5 +44,8 @@ namespace tupai::x86::i386
 
 		// Init interrupt hardware
 		pic::init();
+
+		// Init non-critical hardware
+		kbd::init();
 	}
 }

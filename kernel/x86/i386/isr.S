@@ -94,8 +94,7 @@
 		BEGIN_IRQ
 
 		push %esp // Pass the current stack pointer
-		// TODO : Uncomment this!
-		//call isr_kbd
+		call isr_kbd
 		mov %eax, %esp // Restore the thread stack pointer
 
 		END_IRQ

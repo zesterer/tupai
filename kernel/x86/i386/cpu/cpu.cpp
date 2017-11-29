@@ -1,5 +1,5 @@
 //
-// file : power.hpp
+// file : cpu.cpp
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,16 +18,39 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#ifndef TUPAI_CPU_POWER_HPP
-#define TUPAI_CPU_POWER_HPP
-
-#include <tupai/util/attr.hpp>
+#include <tupai/cpu/cpu.hpp>
+#include <tupai/cpu/irq.hpp>
 
 namespace tupai::cpu
 {
-	void halt();
-	ATTR_NORETURN void hang();
-	ATTR_NORETURN void wait();
-}
+	void enable_int()
+	{
+		asm volatile ("sti");
+	}
 
-#endif
+	void disable_int()
+	{
+		asm volatile ("cli");
+	}
+
+	void halt()
+	{
+		asm volatile ("hlt");
+	}
+
+	ATTR_NORETURN void hang()
+	{
+		disable_int();
+
+		while (true)
+			halt();
+	}
+
+	ATTR_NORETURN void wait()
+	{
+		enable_int();
+
+		while (true)
+			halt();
+	}
+}

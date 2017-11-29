@@ -1,5 +1,5 @@
 //
-// file : int.cpp
+// file : irq.hpp
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,17 +18,17 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#include <tupai/cpu/int.hpp>
+#ifndef TUPAI_CPU_IRQ_HPP
+#define TUPAI_CPU_IRQ_HPP
+
+#include <tupai/util/type.hpp>
 
 namespace tupai::cpu::irq
 {
-	void enable()
-	{
-		asm volatile ("sti");
-	}
-
-	void disable()
-	{
-		asm volatile ("cli");
-	}
+	void unmask_irq(uint8_t vec);
+	void mask_irq(uint8_t vec);
+	void ack(uint8_t vec);
+	void set_handler(uint8_t vec, uintptr_t handler);
 }
+
+#endif

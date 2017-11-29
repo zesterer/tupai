@@ -1,5 +1,5 @@
 //
-// file : panic.hpp
+// file : cpu.hpp
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,22 +18,18 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#ifndef TUPAI_UTIL_PANIC_HPP
-#define TUPAI_UTIL_PANIC_HPP
+#ifndef TUPAI_CPU_CPU_HPP
+#define TUPAI_CPU_CPU_HPP
 
 #include <tupai/util/attr.hpp>
-#include <tupai/util/log.hpp>
-#include <tupai/cpu/cpu.hpp>
 
-namespace tupai::util
+namespace tupai::cpu
 {
-	template <typename ... Args>
-	ATTR_NORETURN void panic(const char* str, Args ... args)
-	{
-		log("[PANIC] ");
-		logln(str, args ...);
-		cpu::hang();
-	}
+	void enable_int();
+	void disable_int();
+	void halt();
+	ATTR_NORETURN void hang();
+	ATTR_NORETURN void wait();
 }
 
 #endif

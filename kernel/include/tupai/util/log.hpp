@@ -26,6 +26,8 @@
 
 namespace tupai::util
 {
+	void logc(char c);
+
 	template <typename ... Args>
 	void log(const char* format, Args ... args)
 	{

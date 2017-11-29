@@ -21,7 +21,7 @@
 #include <tupai/util/boot.hpp>
 #include <tupai/util/log.hpp>
 #include <tupai/util/assert.hpp>
-#include <tupai/cpu/power.hpp>
+#include <tupai/cpu/cpu.hpp>
 
 namespace tupai
 {
@@ -30,9 +30,6 @@ namespace tupai
 		util::bootlog("Entered kernel main");
 
 		util::logln("Hello, {} world!", "kernel");
-
-		util::logln("Triggering div exception...");
-		volatile int i = 5 / 0;
 
 		cpu::wait();
 	}

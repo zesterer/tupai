@@ -1,5 +1,5 @@
 //
-// file : int.hpp
+// file : kbd.hpp
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,13 +18,14 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#ifndef TUPAI_CPU_INT_HPP
-#define TUPAI_CPU_INT_HPP
+#ifndef TUPAI_X86_KBD_HPP
+#define TUPAI_X86_KBD_HPP
 
-namespace tupai::cpu::irq
+#include <tupai/util/type.hpp>
+
+namespace tupai::x86::kbd
 {
-	void enable();
-	void disable();
+	void init();
 }
 
 #endif

@@ -28,8 +28,8 @@ namespace tupai::x86::pic
 	const size_t IRQ_REMAP = 32;
 
 	void init();
-	void enable_irq(int irq);
-	void disable_irq(int irq);
+	void unmask_irq(int irq);
+	void mask_irq(int irq);
 	void ack(int irq);
 }
 

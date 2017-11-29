@@ -1,5 +1,5 @@
 //
-// file : power.cpp
+// file : log.cpp
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,26 +18,12 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#include <tupai/cpu/power.hpp>
-#include <tupai/cpu/int.hpp>
+#include <tupai/util/log.hpp>
 
-namespace tupai::cpu
+namespace tupai::util
 {
-	void halt()
+	void logc(char c)
 	{
-		asm volatile ("hlt");
-	}
-
-	ATTR_NORETURN void hang()
-	{
-		irq::disable();
-		while (true)
-			halt();
-	}
-
-	ATTR_NORETURN void wait()
-	{
-		while (true)
-			halt();
+		sys::log << c;
 	}
 }

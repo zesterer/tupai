@@ -72,7 +72,7 @@ namespace tupai::x86::pic
 		util::bootlog("Masked PIC interrupts");
 	}
 
-	void enable_irq(int irq)
+	void unmask_irq(int irq)
 	{
 		assert(irq < 16, "Attempted to enable an IRQ not within PIC range");
 		uint16_t port = (irq < 8) ? MASTER_DATA : SLAVE_DATA;
@@ -80,7 +80,7 @@ namespace tupai::x86::pic
 		io::out<8>(port, nmask);
 	}
 
-	void disable_irq(int irq)
+	void mask_irq(int irq)
 	{
 		assert(irq < 16, "Attempted to disable an IRQ not within PIC range");
 		uint16_t port = (irq < 8) ? MASTER_DATA : SLAVE_DATA;
