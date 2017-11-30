@@ -1,5 +1,5 @@
 //
-// file : logger.cpp
+// file : status.hpp
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,22 +18,46 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#include <tupai/sys/logger.hpp>
+#ifndef TUPAI_UTIL_STATUS_HPP
+#define TUPAI_UTIL_STATUS_HPP
 
-#ifdef ARCH_FAMILY_x86
-	#include <tupai/x86/vga/textmode.hpp>
-#endif
+#include <tupai/util/type.hpp>
 
-namespace tupai::sys
+namespace tupai::util
 {
-	Logger log;
+	//! Status<T>
+	//! Provides optional error value
 
-	Logger& Logger::operator<<(char c)
+	template <typename T>
+	struct Status
 	{
-		#ifdef ARCH_FAMILY_x86
-			x86::vga::textmode::write_char(c);
-		#endif
+	private:
+		bool _success;
+		union { T _err; };
 
-		return *this;
-	}
+	public:
+		Status() : _success(true) {}
+		Status(T err) : _success(false), _err(err) {}
+
+		bool success() { return this->_success; }
+		bool failed() { return !this->success(); }
+
+		template <typename ... Args>
+		void except(Args ... args)
+		{
+			if (this->failed())
+				panic(args ...);
+		}
+
+		T error()
+		{
+			if (this->failed())
+				return this->_err;
+			else
+				panic("Cannot extract error from successful Status<{}>", type_name<T>());
+		}
+	};
+
 }
+
+#endif

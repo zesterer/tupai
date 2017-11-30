@@ -1,5 +1,5 @@
 //
-// file : logger.cpp
+// file : kheap.hpp
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,22 +18,14 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#include <tupai/sys/logger.hpp>
+#ifndef TUPAI_MEM_KHEAP_HPP
+#define TUPAI_MEM_KHEAP_HPP
 
-#ifdef ARCH_FAMILY_x86
-	#include <tupai/x86/vga/textmode.hpp>
-#endif
+#include <tupai/mem/pool.hpp>
 
-namespace tupai::sys
+namespace tupai::mem
 {
-	Logger log;
-
-	Logger& Logger::operator<<(char c)
-	{
-		#ifdef ARCH_FAMILY_x86
-			x86::vga::textmode::write_char(c);
-		#endif
-
-		return *this;
-	}
+	extern Pool kheap;
 }
+
+#endif

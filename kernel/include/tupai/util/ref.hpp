@@ -21,8 +21,7 @@
 #ifndef TUPAI_UTIL_REF_HPP
 #define TUPAI_UTIL_REF_HPP
 
-#include <stdint.h>
-#include <stddef.h>
+#include <tupai/util/type.hpp>
 
 namespace tupai::util
 {

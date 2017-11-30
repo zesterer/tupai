@@ -35,6 +35,9 @@ namespace tupai::util
 	{
 		// TODO : Replace internal array accesses with .raw() to prevent double bounds checks & improve performance once we know this 100% works
 
+	public:
+		typedef T item_type;
+
 	private:
 		DynArr<_UnsafeBox<T>> _items;
 		size_t _len;
@@ -62,13 +65,7 @@ namespace tupai::util
 		size_t length() { return this->_len; }
 		size_t capacity() { return this->_items.length(); }
 
-		T& at(size_t i)
-		{
-			if (i < this->_len)
-				return *this->_items[i];
-			else
-				panic("Attempted to access Vec<{}> of length {} out of bounds at {}", type_name<T>(), this->_len, i);
-		}
+		T& at(size_t i);
 
 		void push(T item)
 		{
@@ -78,14 +75,7 @@ namespace tupai::util
 			this->_items[this->_len].copy_from_unsafe(item);
 		}
 
-		T pop()
-		{
-			if (this->_len == 0)
-				panic("Attempted to pop item from empty Vec<{}>", type_name<T>());
-
-			if (this->length() < this->capacity() / 2 && this->length() > 1)
-				this->_resize(this->capacity() * 2);
-		}
+		T pop();
 
 		T& operator[](size_t i)
 		{
@@ -105,6 +95,31 @@ namespace tupai::util
 		T& at_unsafe(uintptr_t i) { return *this->_items[i]; }
 		T* raw_unsafe() { return &(*this->_items[0]); }
 	};
+}
+
+// Delayed implementation to prevent circular references
+#include <tupai/util/cpp.hpp>
+
+namespace tupai::util
+{
+	template<typename T>
+	T& Vec<T>::at(size_t i)
+	{
+		if (i < this->_len)
+			return *this->_items[i];
+		else
+			panic("Attempted to access Vec<{}> of length {} out of bounds at {}", type_name<T>(), this->_len, i);
+	}
+
+	template <typename T>
+	T Vec<T>::pop()
+	{
+		if (this->_len == 0)
+			panic("Attempted to pop item from empty Vec<{}>", type_name<T>());
+
+		if (this->length() < this->capacity() / 2 && this->length() > 1)
+			this->_resize(this->capacity() * 2);
+	}
 }
 
 #endif

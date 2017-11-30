@@ -44,6 +44,9 @@ namespace tupai::util
 	template <typename T>
 	struct GenRefStr
 	{
+	public:
+		typedef T item_type;
+
 	private:
 		const T* _str;
 		size_t _len;
@@ -77,6 +80,9 @@ namespace tupai::util
 	template <typename T>
 	struct GenStr
 	{
+	public:
+		typedef T item_type;
+
 	private:
 		DynArr<T> _str;
 

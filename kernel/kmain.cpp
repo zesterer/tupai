@@ -36,6 +36,9 @@ namespace tupai
 
 		util::logln("Hello, {} world!", str1);
 
+		auto sarr = util::make_arr({"hello", "there"});
+		util::logln("arr = {}", sarr);
+
 		cpu::wait();
 	}
 }

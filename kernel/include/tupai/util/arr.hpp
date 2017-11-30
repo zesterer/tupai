@@ -34,6 +34,9 @@ namespace tupai::util
 	template <typename T, size_t N>
 	struct Arr
 	{
+	public:
+		typedef T item_type;
+
 	private:
 		T _items[N];
 
@@ -67,6 +70,9 @@ namespace tupai::util
 	template <typename T>
 	struct DynArr
 	{
+	public:
+		typedef T item_type;
+
 	private:
 		T* _items;
 		size_t _len;

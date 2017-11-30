@@ -40,6 +40,16 @@ namespace tupai::util
 
 	template<bool cond, class T = void> struct enable_if {};
 	template <typename T> struct enable_if<true, T> { typedef T type; };
+
+	// template<typename _Tp, bool = !is_reference<_Tp>::value && !is_void<_Tp>::value> struct __add_rvalue_reference_helper { typedef _Tp type; };
+	// template<typename _Tp> struct __add_rvalue_reference_helper<_Tp, true> { typedef _Tp&& type; };
+    //
+	// template<typename _Tp> struct add_rvalue_reference : public __add_rvalue_reference_helper<_Tp> {};
+    //
+	// template <class T> typename add_rvalue_reference<T>::type declval() noexcept;
+    //
+	// template<typename _Signature> class result_of;
+	// template<typename _Functor, typename... _ArgTypes> struct result_of<_Functor(_ArgTypes...)> { typedef decltype( std::declval<_Functor>()(std::declval<_ArgTypes>()...) ) type; };
 }
 
 #endif

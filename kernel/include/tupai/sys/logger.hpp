@@ -25,7 +25,7 @@ namespace tupai::sys
 {
 	struct Logger
 	{
-		void operator<<(char c);
+		Logger& operator<<(char c);
 	};
 
 	extern Logger log;

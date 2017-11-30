@@ -32,11 +32,16 @@ namespace tupai::util
 	template <typename T, size_t N>
 	struct Buff
 	{
+	public:
+		typedef T item_type;
+
 	private:
 		T* _items;
 
 	public:
 		Buff(T* buff) : _items(buff) {}
+
+		size_t length() { return N; }
 
 		T& at(size_t i)
 		{
@@ -71,6 +76,38 @@ namespace tupai::util
 			else
 				panic("Attempted to access Buff<{}, {}, {}> out of bounds at {}, {}", type_name<T>(), W, H, x, y);
 		}
+	};
+
+	//! DynBuff<T>
+	//! Used to provide a safe abstraction around a dynamically-sized memory buffer
+
+	template <typename T>
+	struct DynBuff
+	{
+	public:
+		typedef T item_type;
+
+	private:
+		T* _items;
+		size_t _len;
+
+	public:
+		DynBuff(T* buff, size_t len) : _items(buff), _len(len) {}
+
+		size_t length() { return this->_len; }
+
+		T& at(size_t i)
+		{
+			if (i < this->length())
+				return this->_items[i];
+			else
+				panic("Attempted to access Buff<{}> of length {} out of bounds at {}", type_name<T>(), this->_len, i);
+		}
+
+		T& operator[](size_t i) { return this->at(i); }
+
+		T& at_unsafe(size_t i) { return this->_items[i]; }
+		T* raw_unsafe() { return this->_items; }
 	};
 }
 

@@ -27,10 +27,12 @@
 
 namespace tupai::util
 {
+	// Character formatting
 	template <typename S>
 	typename enable_if<is_stream<S>::value>::type
 	fmt_arg(S& strm, char c) { strm << c; }
 
+	// String literal formatting
 	template <typename S>
 	constexpr typename enable_if<is_stream<S>::value>::type
 	fmt_arg(S& strm, const char* str)
@@ -39,12 +41,40 @@ namespace tupai::util
 			strm << *(str++);
 	}
 
+	// Pointer formatting
+	template <typename S>
+	typename enable_if<is_stream<S>::value>::type
+	fmt_arg(S& strm, void* ptr)
+	{
+		(void)strm;
+		(void)ptr;
+		// Nothing
+	}
+
+	// String formatting
 	template <typename S, typename T>
-	typename enable_if<is_str<T, char>::value>::type
+	typename enable_if<is_stream<S>::value && is_str<T, char>::value>::type
 	fmt_arg(S& strm, T& str)
 	{
 		for (size_t i = 0; i < str.length(); i ++)
 			strm << str[i];
+	}
+
+	// Array formatting
+	template <typename S, typename T>
+	typename enable_if<is_stream<S>::value && is_arr<T>::value>::type
+	fmt_arg(S& strm, T& arr)
+	{
+		strm << '[';
+		for (size_t i = 0; i < arr.length(); i ++)
+		{
+			if (i > 0)
+				fmt_arg(strm, ", ");
+			strm << '\'';
+			fmt_arg(strm, arr[i]);
+			strm << '\'';
+		}
+		strm << ']';
 	}
 
 	template <typename S>

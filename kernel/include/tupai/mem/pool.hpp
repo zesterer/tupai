@@ -1,5 +1,5 @@
 //
-// file : logger.cpp
+// file : pool.hpp
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,22 +18,37 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#include <tupai/sys/logger.hpp>
+#ifndef TUPAI_MEM_POOL_HPP
+#define TUPAI_MEM_POOL_HPP
 
-#ifdef ARCH_FAMILY_x86
-	#include <tupai/x86/vga/textmode.hpp>
-#endif
+#include <tupai/util/buff.hpp>
+#include <tupai/util/result.hpp>
+#include <tupai/util/status.hpp>
 
-namespace tupai::sys
+namespace tupai::mem
 {
-	Logger log;
-
-	Logger& Logger::operator<<(char c)
+	enum class PoolError
 	{
-		#ifdef ARCH_FAMILY_x86
-			x86::vga::textmode::write_char(c);
-		#endif
+		FULL,
+		CORRUPTION,
+		INVALID_PTR,
+	};
 
-		return *this;
-	}
+	struct Pool
+	{
+	private:
+		util::DynBuff<uint8_t> _map;
+		util::DynBuff<uint8_t> _heap;
+		size_t _bs;
+
+	public:
+		Pool(uintptr_t start, size_t size);
+
+		util::Result<uintptr_t, PoolError> alloc(size_t bytes);
+		util::Status<PoolError> dealloc(uintptr_t ptr);
+
+		util::Status<PoolError> check();
+	};
 }
+
+#endif
