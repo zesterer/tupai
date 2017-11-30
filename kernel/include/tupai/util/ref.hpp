@@ -26,6 +26,9 @@
 
 namespace tupai::util
 {
+	//! UniqueRef<T>
+	//! Provides automatic construction / destruction of a singly-owned heap-allocated object
+
 	template <typename T>
 	struct UniqueRef
 	{

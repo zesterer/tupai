@@ -21,12 +21,14 @@
 #ifndef TUPAI_UTIL_BOX_HPP
 #define TUPAI_UTIL_BOX_HPP
 
-#include <tupai/util/panic.hpp>
 #include <tupai/util/type.hpp>
 #include <tupai/util/cpp.hpp>
 
 namespace tupai::util
 {
+	//! Box<T>
+	//! Used to provide a safe late / optional construction abstraction around an object
+
 	template <typename T>
 	struct Box
 	{
@@ -69,13 +71,7 @@ namespace tupai::util
 			this->_item.~T();
 		}
 
-		T& item()
-		{
-			if (this->_constructed)
-				return this->_item;
-			else
-				panic("Attempted to access unconstructed Box<{}> item", type_name<T>());
-		}
+		T& item();
 
 		T* operator->()
 		{
@@ -87,6 +83,10 @@ namespace tupai::util
 			return this->item();
 		}
 	};
+
+	//! UnsafeBox<T>
+	//! Used to provide a late / optional construction abstraction around an object
+	//! UnsafeBox assumes that the construction state of the object is externally known
 
 	template <typename T>
 	struct _UnsafeBox
@@ -136,6 +136,21 @@ namespace tupai::util
 			return this->item();
 		}
 	};
+}
+
+// Delayed implementation to prevent circular references
+#include <tupai/util/panic.hpp>
+
+namespace tupai::util
+{
+	template <typename T>
+	T& Box<T>::item()
+	{
+		if (this->_constructed)
+			return this->_item;
+		else
+			panic("Attempted to access unconstructed Box<{}> item", type_name<T>());
+	}
 }
 
 #endif

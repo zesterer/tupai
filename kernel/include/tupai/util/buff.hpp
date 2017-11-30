@@ -26,6 +26,9 @@
 
 namespace tupai::util
 {
+	//! Buff<T, N>
+	//! Used to provide a safe abstraction around a static memory buffer
+
 	template <typename T, size_t N>
 	struct Buff
 	{
@@ -44,7 +47,13 @@ namespace tupai::util
 		}
 
 		T& operator[](size_t i) { return this->at(i); }
+
+		T& at_unsafe(size_t i) { return this->_items[i]; }
+		T* raw_unsafe() { return this->_items; }
 	};
+
+	//! Buff2D<T, W, H>
+	//! Used to provide a safe abstraction around a 2-dimensional static memory buffer
 
 	template <typename T, size_t W, size_t H>
 	struct Buff2D

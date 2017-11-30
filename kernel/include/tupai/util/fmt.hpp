@@ -23,23 +23,36 @@
 
 #include <tupai/util/type.hpp>
 #include <tupai/util/char.hpp>
+#include <tupai/util/traits.hpp>
 
 namespace tupai::util
 {
 	template <typename S>
-	void fmt_arg(S& strm, char c) { strm << c; }
+	typename enable_if<is_stream<S>::value>::type
+	fmt_arg(S& strm, char c) { strm << c; }
 
 	template <typename S>
-	void fmt_arg(S& strm, const char* str)
+	constexpr typename enable_if<is_stream<S>::value>::type
+	fmt_arg(S& strm, const char* str)
 	{
 		while (*str != '\0')
 			strm << *(str++);
 	}
 
+	template <typename S, typename T>
+	typename enable_if<is_str<T, char>::value>::type
+	fmt_arg(S& strm, T& str)
+	{
+		for (size_t i = 0; i < str.length(); i ++)
+			strm << str[i];
+	}
+
 	template <typename S>
-	void _fmt_nth(S& strm, int n) { (void)n; fmt_arg(strm, "N/A"); }
+	constexpr typename enable_if<is_stream<S>::value>::type
+	_fmt_nth(S& strm, int n) { (void)n; fmt_arg(strm, "N/A"); }
 	template <typename S, typename T, typename ... Args>
-	void _fmt_nth(S& strm, int n, T item, Args ... args)
+	constexpr typename enable_if<is_stream<S>::value>::type
+	_fmt_nth(S& strm, int n, T item, Args ... args)
 	{
 		if (n == 0)
 			fmt_arg(strm, item);
@@ -52,13 +65,18 @@ namespace tupai::util
 	_Fmt _read_fmt(const char* format);
 
 	template <typename S>
-	void fmt(S& strm, const char* format)
+	constexpr typename enable_if<is_stream<S>::value>::type
+	fmt(S& strm, const char* format)
 	{
 		fmt_arg(strm, format);
 	}
 
+	//! fmt(stream, format, args...)
+	//! Formats a string with the specified arguments and inserts them into a stream
+
 	template <typename S, typename ... Args>
-	constexpr void fmt(S& strm, const char* format, Args ... args)
+	constexpr typename enable_if<is_stream<S>::value>::type
+	fmt(S& strm, const char* format, Args ... args)
 	{
 		bool escaped = false;
 		size_t carg = 0;

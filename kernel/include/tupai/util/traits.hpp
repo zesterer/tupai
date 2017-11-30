@@ -1,5 +1,5 @@
 //
-// file : assert.hpp
+// file : traits.hpp
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,28 +18,45 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#ifndef TUPAI_UTIL_ASSERT_HPP
-#define TUPAI_UTIL_ASSERT_HPP
+#ifndef TUPAI_UTIL_TRAITS_HPP
+#define TUPAI_UTIL_TRAITS_HPP
 
 #include <tupai/util/type.hpp>
 
 namespace tupai::util
 {
-	#define assert(EXPR, STR) tupai::util::_assert(EXPR, #EXPR, STR)
+	// is_arr requirements:
+	// - length()
+	// - at()
+	// - operator[]()
+	// - at_unsafe()
+	// - raw_unsafe()
+	template <typename T, typename V,
+		size_t (T::*F0)() = &T::length,
+		V& (T::*F1)(size_t) = &T::at,
+		V& (T::*F2)(size_t) = &T::operator[],
+		V& (T::*F3)(size_t) = &T::at_unsafe,
+		V* (T::*F4)() = &T::raw_unsafe
+	>
+	struct is_arr { static const bool value = true; };
 
-	static inline void _assert(bool expr, const char* expr_str, const char* msg);
-}
+	// is_str requirements:
+	// - length()
+	// - at()
+	// - operator[]()
+	template <typename T, typename V,
+		size_t (T::*F0)() = &T::length,
+		V (T::*F1)(size_t) = &T::at,
+		V (T::*F2)(size_t) = &T::operator[]
+	>
+	struct is_str { static const bool value = true; };
 
-// Delayed implementation to prevent circular references
-#include <tupai/util/panic.hpp>
-
-namespace tupai::util
-{
-	static inline void _assert(bool expr, const char* expr_str, const char* msg)
-	{
-		if (!expr)
-			panic("Assertion '{}' failed: {}", expr_str, msg);
-	}
+	// is_stream requirements:
+	// - operator<<()
+	template <typename T,
+		void (T::*F2)(char) = &T::operator<<
+	>
+	struct is_stream { static const bool value = true; };
 }
 
 #endif

@@ -27,11 +27,14 @@
 
 namespace tupai::util
 {
+	//! panic(format, args...)
+	//! Permanently panic the kernel, displaying a formatted string formatted with arguments as the error
+
 	template <typename ... Args>
-	ATTR_NORETURN void panic(const char* str, Args ... args)
+	ATTR_NORETURN void panic(const char* format, Args ... args)
 	{
 		log("[PANIC] ");
-		logln(str, args ...);
+		logln(format, args ...);
 		cpu::hang();
 	}
 }

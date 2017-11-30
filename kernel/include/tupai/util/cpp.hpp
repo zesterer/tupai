@@ -33,8 +33,8 @@ inline void operator delete  (void*, void*) throw() {}
 inline void operator delete[](void*, void*) throw() {}
 
 // Default operator new
-inline void* operator new(size_t sz) throw() { tupai::util::panic("Attempted to allocated object of size {}", sz); return nullptr; }
-inline void* operator new[](size_t sz) throw() { tupai::util::panic("Attempted to allocated array of size {}", sz); return nullptr; }
+inline void* operator new(size_t sz) throw() { tupai::util::panic("Attempted to allocate object of size {}", sz); return nullptr; }
+inline void* operator new[](size_t sz) throw() { tupai::util::panic("Attempted to allocate array of size {}", sz); return nullptr; }
 
 // Default operator delete
 inline void operator delete  (void* ptr) throw() { tupai::util::panic("Attempted to delete pointer at {}", (uintptr_t)ptr); }

@@ -27,11 +27,14 @@
 
 namespace tupai::util
 {
-	// TODO : Replace internal array accesses with .raw() to prevent double bounds checks & improve performance once we know this 100% works
+	//! Vec<T>
+	//! Manages a heap-allocated LIFO list of T objects
 
 	template <typename T>
 	struct Vec
 	{
+		// TODO : Replace internal array accesses with .raw() to prevent double bounds checks & improve performance once we know this 100% works
+
 	private:
 		DynArr<_UnsafeBox<T>> _items;
 		size_t _len;
@@ -49,13 +52,20 @@ namespace tupai::util
 	public:
 		Vec(size_t reserve = 1) : _items(reserve), _len(0) {}
 
+		template <size_t N>
+		Vec(const T (&arr)[N]) : _items(N), _len(N)
+		{
+			for (size_t i = 0; i < N; i ++)
+				this->_items[i].create(arr[i]);
+		}
+
 		size_t length() { return this->_len; }
 		size_t capacity() { return this->_items.length(); }
 
 		T& at(size_t i)
 		{
 			if (i < this->_len)
-				return this->_items[i];
+				return *this->_items[i];
 			else
 				panic("Attempted to access Vec<{}> of length {} out of bounds at {}", type_name<T>(), this->_len, i);
 		}
@@ -81,6 +91,19 @@ namespace tupai::util
 		{
 			return this->at(i);
 		}
+
+		void operator<<(T item)
+		{
+			this->push(item);
+		}
+
+		T operator>>(T& item)
+		{
+			item = this->pop();
+		}
+
+		T& at_unsafe(uintptr_t i) { return *this->_items[i]; }
+		T* raw_unsafe() { return &(*this->_items[0]); }
 	};
 }
 

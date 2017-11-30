@@ -21,8 +21,6 @@
 #ifndef TUPAI_UTIL_ARR_HPP
 #define TUPAI_UTIL_ARR_HPP
 
-#include <tupai/util/panic.hpp>
-#include <tupai/util/assert.hpp>
 #include <tupai/util/type.hpp>
 
 // TODO : Added these features later
@@ -30,6 +28,9 @@
 
 namespace tupai::util
 {
+	//! Arr<T, N>
+	//! Provides a safe abstraction around a fixed-size, stack-allocated array
+
 	template <typename T, size_t N>
 	struct Arr
 	{
@@ -39,31 +40,29 @@ namespace tupai::util
 	public:
 		Arr() {}
 
-		// TODO : Added these features later
-		// Arr(std::initializer_list<T> args)
-		// {
-		// 	auto it = args.begin();
-		// 	for (size_t i = 0; i < N && it != args.end(); i ++)
-		// 		this->_items[i] = *(it++);
-		// }
+		Arr(const T (&arr)[N])
+		{
+			for (size_t i = 0; i < N; i ++)
+				this->_items[i] = arr[i];
+		}
+
+		static Arr<T, N> from(const T* arr)
+		{
+			return Arr<T, N>(static_cast<const T (&)[N]>(arr));
+		}
 
 		size_t length() { return N; }
 
-		T& at(size_t i)
-		{
-			if (i < N)
-				return this->_items[i];
-			else
-				panic("Attempted to access Arr<{}, {}> out of bounds at {}", type_name<T>(), N, i);
-		}
+		T& at(size_t i);
 
 		T& operator[](size_t i) { return this->at(i); }
 
-		T& raw(uintptr_t i)
-		{
-			return this->_items[i];
-		}
+		T& at_unsafe(size_t i) { return this->_items[i]; }
+		T* raw_unsafe() { return this->_items; }
 	};
+
+	//! DynArr<T>
+	//! Provides a safe abstraction around a dynamically-sized, heap-allocated array
 
 	template <typename T>
 	struct DynArr
@@ -72,27 +71,92 @@ namespace tupai::util
 		T* _items;
 		size_t _len;
 
+		DynArr(const T* arr, size_t len);
+
 	public:
-		DynArr(size_t len) : _items(new T[len]), _len(len) { if (len == 0) panic("Attempted to create DynArr<{}> with zero length", type_name<T>()); }
+		DynArr(size_t len);
+
+		template <size_t N>
+		DynArr(T (&arr)[N]);
+
+		static DynArr<T> from(const T* arr, size_t len)
+		{
+			return DynArr<T>(arr, len);
+		}
+
 		~DynArr() { delete[] this->_items; }
 
 		size_t length() { return this->_len; }
 
-		T& at(size_t i)
-		{
-			if (i < this->_len)
-				return this->_items[i];
-			else
-				panic("Attempted to access DynArr<{}> of length {} out of bounds at {}", type_name<T>(), this->_len, i);
-		}
+		T& at(size_t i);
 
 		T& operator[](size_t i) { return this->at(i); }
 
-		T& raw(uintptr_t i)
+		T& at_unsafe(uintptr_t i)
 		{
 			return this->_items[i];
 		}
+
+		T* raw_unsafe() { return this->_items; }
 	};
+
+	template <typename T, size_t N>
+	Arr<T, N> make_arr(const T (&arr)[N])
+	{
+		return Arr<T, N>(arr);
+	}
+}
+
+// Delayed implementation to prevent circular references
+#include <tupai/util/panic.hpp>
+
+namespace tupai::util
+{
+	template <typename T, size_t N>
+	T& Arr<T, N>::at(size_t i)
+	{
+		if (i < N)
+			return this->_items[i];
+		else
+			panic("Attempted to access Arr<{}, {}> out of bounds at {}", type_name<T>(), N, i);
+	}
+
+	template <typename T>
+	DynArr<T>::DynArr(const T* arr, size_t len) : _items(new T[len]), _len(len)
+	{
+		if (this->_len == 0)
+			panic("Attempted to create DynArr<{}> with zero length", type_name<T>());
+
+		for (size_t i = 0; i < len; i ++)
+			this->_items[i] = arr[i];
+	}
+
+	template <typename T>
+	DynArr<T>::DynArr(size_t len) : _items(new T[len]), _len(len)
+	{
+		if (this->_len == 0)
+			panic("Attempted to create DynArr<{}> with zero length", type_name<T>());
+	}
+
+	template <typename T>
+	template <size_t N>
+	DynArr<T>::DynArr(T (&arr)[N]) : _items(new T[N]), _len(N)
+	{
+		if (this->_len == 0)
+			panic("Attempted to create DynArr<{}> with zero length", type_name<T>());
+
+		for (size_t i = 0; i < N; i ++)
+			this->_items[i] = arr[i];
+	}
+
+	template <typename T>
+	T& DynArr<T>::at(size_t i)
+	{
+		if (i < this->_len)
+			return this->_items[i];
+		else
+			panic("Attempted to access DynArr<{}> of length {} out of bounds at {}", type_name<T>(), this->_len, i);
+	}
 }
 
 #endif
