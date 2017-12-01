@@ -1,5 +1,5 @@
 //
-// file : kmain.cpp
+// file : conv.hpp
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,29 +18,20 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#include <tupai/util/boot.hpp>
-#include <tupai/util/log.hpp>
-#include <tupai/cpu/cpu.hpp>
+#ifndef TUPAI_UTIL_CONV_HPP
+#define TUPAI_UTIL_CONV_HPP
 
-#include <tupai/util/vec.hpp>
-#include <tupai/util/str.hpp>
+#include <tupai/util/type.hpp>
+#include <tupai/util/result.hpp>
 
-namespace tupai
+namespace tupai::util
 {
-	extern "C" void kmain()
+	enum class ConvError
 	{
-		util::bootlog("Entered kernel main");
+		// Nothing yet
+	};
 
-		auto arr = util::make_arr("kernel");
-		util::RefStr str1 = util::RefStr::from(arr);
-
-		util::logln("Hello, {} world!", str1);
-
-		auto sarr = util::make_arr({"hello", "there"});
-		util::logln("arr = {}!", sarr);
-
-		util::RefStr s = sarr[2];
-
-		cpu::wait();
-	}
+	Result<>
 }
+
+#endif

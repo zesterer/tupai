@@ -41,6 +41,16 @@ namespace tupai::util
 			strm << *(str++);
 	}
 
+	// Integer formatting
+	template <typename S>
+	typename enable_if<is_stream<S>::value>::type
+	fmt_arg(S& strm, uint32_t n)
+	{
+		(void)strm;
+		(void)n;
+		// Nothing
+	}
+
 	// Pointer formatting
 	template <typename S>
 	typename enable_if<is_stream<S>::value>::type

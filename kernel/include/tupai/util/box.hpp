@@ -33,8 +33,8 @@ namespace tupai::util
 	struct Box
 	{
 	private:
-		bool _constructed;
 		union { T _item; };
+		bool _constructed;
 
 	public:
 		Box() {}

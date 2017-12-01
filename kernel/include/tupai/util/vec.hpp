@@ -31,12 +31,9 @@ namespace tupai::util
 	//! Manages a heap-allocated LIFO list of T objects
 
 	template <typename T>
-	struct Vec
+	struct Vec : public IArr<T>, public IBuff<T>
 	{
 		// TODO : Replace internal array accesses with .raw() to prevent double bounds checks & improve performance once we know this 100% works
-
-	public:
-		typedef T item_type;
 
 	private:
 		DynArr<_UnsafeBox<T>> _items;
@@ -62,7 +59,7 @@ namespace tupai::util
 				this->_items[i].create(arr[i]);
 		}
 
-		size_t length() { return this->_len; }
+		size_t length() override { return this->_len; }
 		size_t capacity() { return this->_items.length(); }
 
 		T& at(size_t i);

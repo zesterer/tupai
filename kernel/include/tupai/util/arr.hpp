@@ -22,9 +22,7 @@
 #define TUPAI_UTIL_ARR_HPP
 
 #include <tupai/util/type.hpp>
-
-// TODO : Added these features later
-//#include <initializer_list>
+#include <tupai/util/common.hpp>
 
 namespace tupai::util
 {
@@ -32,11 +30,8 @@ namespace tupai::util
 	//! Provides a safe abstraction around a fixed-size, stack-allocated array
 
 	template <typename T, size_t N>
-	struct Arr
+	struct Arr : public IArr<T>, public IBuff<T>
 	{
-	public:
-		typedef T item_type;
-
 	private:
 		T _items[N];
 
@@ -49,30 +44,24 @@ namespace tupai::util
 				this->_items[i] = arr[i];
 		}
 
+		size_t length() { return N; }
+		T& at(size_t i);
+
+		T& at_unsafe(size_t i) { return this->_items[i]; }
+		T* raw_unsafe() { return this->_items; }
+
 		static Arr<T, N> from(const T* arr)
 		{
 			return Arr<T, N>(static_cast<const T (&)[N]>(arr));
 		}
-
-		size_t length() { return N; }
-
-		T& at(size_t i);
-
-		T& operator[](size_t i) { return this->at(i); }
-
-		T& at_unsafe(size_t i) { return this->_items[i]; }
-		T* raw_unsafe() { return this->_items; }
 	};
 
 	//! DynArr<T>
 	//! Provides a safe abstraction around a dynamically-sized, heap-allocated array
 
 	template <typename T>
-	struct DynArr
+	struct DynArr : public IArr<T>, public IBuff<T>
 	{
-	public:
-		typedef T item_type;
-
 	private:
 		T* _items;
 		size_t _len;
@@ -85,32 +74,25 @@ namespace tupai::util
 		template <size_t N>
 		DynArr(T (&arr)[N]);
 
+		~DynArr() { delete[] this->_items; }
+
+		size_t length() { return this->_len; }
+		T& at(size_t i);
+
+		T& at_unsafe(uintptr_t i) { return this->_items[i]; }
+		T* raw_unsafe() { return this->_items; }
+
 		static DynArr<T> from(const T* arr, size_t len)
 		{
 			return DynArr<T>(arr, len);
 		}
-
-		~DynArr() { delete[] this->_items; }
-
-		size_t length() { return this->_len; }
-
-		T& at(size_t i);
-
-		T& operator[](size_t i) { return this->at(i); }
-
-		T& at_unsafe(uintptr_t i)
-		{
-			return this->_items[i];
-		}
-
-		T* raw_unsafe() { return this->_items; }
 	};
 
 	template <typename T, size_t N>
-	Arr<T, N> make_arr(const T (&arr)[N])
-	{
-		return Arr<T, N>(arr);
-	}
+	Arr<T, N> make_arr(const T (&arr)[N]) { return Arr<T, N>(arr); }
+
+	template <typename T, size_t N>
+	DynArr<T> make_dynarr(const T (&arr)[N]) { return DynArr<T>(arr); }
 }
 
 // Delayed implementation to prevent circular references

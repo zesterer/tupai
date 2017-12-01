@@ -1,5 +1,5 @@
 //
-// file : kmain.cpp
+// file : common.hpp
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,29 +18,52 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#include <tupai/util/boot.hpp>
-#include <tupai/util/log.hpp>
-#include <tupai/cpu/cpu.hpp>
+#ifndef TUPAI_UTIL_COMMON_HPP
+#define TUPAI_UTIL_COMMON_HPP
 
-#include <tupai/util/vec.hpp>
-#include <tupai/util/str.hpp>
+#include <tupai/util/type.hpp>
 
-namespace tupai
+namespace tupai::util
 {
-	extern "C" void kmain()
+	template <typename T>
+	struct IArr
 	{
-		util::bootlog("Entered kernel main");
+	public:
+		typedef T item_type;
 
-		auto arr = util::make_arr("kernel");
-		util::RefStr str1 = util::RefStr::from(arr);
+	public:
+		virtual size_t length();
+		virtual T& at(size_t i);
+		T& operator[](size_t i) { return this->at(i); }
+	};
 
-		util::logln("Hello, {} world!", str1);
+	template <typename T>
+	struct IArr2D
+	{
+	public:
+		typedef T item_type;
 
-		auto sarr = util::make_arr({"hello", "there"});
-		util::logln("arr = {}!", sarr);
+	public:
+		virtual size_t width();
+		virtual size_t height();
+		virtual T& at(size_t x, size_t y);
+	};
 
-		util::RefStr s = sarr[2];
+	template <typename T>
+	struct IBuff
+	{
+	public:
+		virtual T& at_unsafe(size_t i);
+		virtual T* raw_unsafe();
+	};
 
-		cpu::wait();
-	}
+	template <typename T>
+	struct IBuff2D
+	{
+	public:
+		virtual T& at_unsafe(size_t x, size_t y);
+		virtual T* raw_unsafe();
+	};
 }
+
+#endif

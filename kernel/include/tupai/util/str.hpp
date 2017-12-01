@@ -57,10 +57,9 @@ namespace tupai::util
 		GenRefStr(const T* str) : _str(str), _len(cstr_len(str)) {}
 		GenRefStr(const T* str, size_t len) : _str(str), _len(len) {}
 
-		template <typename A>
+		template <typename A, typename = typename enable_if<is_arr<A, T>::value>::type>
 		static GenRefStr<T> from(A& arr)
 		{
-			static_assert(is_arr<A, T>::value);
 			return GenRefStr<T>(arr.raw_unsafe(), arr.length());
 		}
 
@@ -91,10 +90,9 @@ namespace tupai::util
 		GenStr(const T (&str)[N]) : _str(DynArr<T>::from(str, N)) {}
 		GenStr(const T* cstr = "") : _str(DynArr<T>::from(cstr, cstr_len(cstr))) {}
 
-		template <typename A>
+		template <typename A, typename = typename enable_if<is_arr<A, T>::value>::type>
 		static GenStr<T> from(A& arr)
 		{
-			static_assert(is_arr<A, T>::value);
 			return GenStr<T>(arr.raw_unsafe());
 		}
 
