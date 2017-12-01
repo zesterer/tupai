@@ -24,6 +24,7 @@
 #include <tupai/x86/pic.hpp>
 #include <tupai/x86/kbd.hpp>
 #include <tupai/x86/vga/textmode.hpp>
+#include <tupai/mem/kheap.hpp>
 #include <tupai/util/type.hpp>
 
 namespace tupai::x86::i386
@@ -47,5 +48,8 @@ namespace tupai::x86::i386
 
 		// Init non-critical hardware
 		kbd::init();
+
+		// Init memory (heap, paging, etc.)
+		mem::kheap::init();
 	}
 }

@@ -22,7 +22,6 @@
 #define TUPAI_UTIL_BOX_HPP
 
 #include <tupai/util/type.hpp>
-#include <tupai/util/cpp.hpp>
 
 namespace tupai::util
 {
@@ -58,12 +57,7 @@ namespace tupai::util
 
 		~Box() { if (this->_constructed) this->_item.~T(); }
 
-		template <typename... Args>
-		void create(Args... args)
-		{
-			new (&this->_item) T(args...);
-			this->_constructed = true;
-		}
+		template <typename ... Args> void create(Args ... args);
 
 		void destroy()
 		{
@@ -110,11 +104,7 @@ namespace tupai::util
 			this->_item = move(other._item);
 		}
 
-		template <typename... Args>
-		void create(Args... args)
-		{
-			new (&this->_item) T(args...);
-		}
+		template <typename... Args> void create(Args... args);
 
 		void destroy()
 		{
@@ -140,9 +130,24 @@ namespace tupai::util
 
 // Delayed implementation to prevent circular references
 #include <tupai/util/panic.hpp>
+#include <tupai/util/typedata.hpp>
+#include <tupai/util/cpp.hpp>
 
 namespace tupai::util
 {
+	template <typename T> template <typename ... Args>
+	void Box<T>::create(Args ... args)
+	{
+		new (&this->_item) T(args...);
+		this->_constructed = true;
+	}
+
+	template <typename T> template <typename ... Args>
+	void _UnsafeBox<T>::create(Args ... args)
+	{
+		new (&this->_item) T(args...);
+	}
+
 	template <typename T>
 	T& Box<T>::item()
 	{

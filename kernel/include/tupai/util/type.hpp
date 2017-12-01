@@ -26,15 +26,6 @@
 
 namespace tupai::util
 {
-	//! type_name()
-	//! Emits a static string containing a human-readable description of the type T
-
-	template <typename T>
-	constexpr const char* type_name()
-	{
-		return __PRETTY_FUNCTION__ + 57; // TODO : This is a total hack. Maintain it well, and replace it when the C++ standard matures
-	}
-
 	template <typename T, typename U> struct is_same { static const bool value = false; };
 	template <typename T> struct is_same<T, T> { static const bool value = true; };
 
@@ -47,6 +38,13 @@ namespace tupai::util
 	template <typename T> true_type is_base_of_func(T*);
 	template <typename T> false_type is_base_of_func(void*);
 	template <typename T, typename U> struct is_base_of { static const bool value = decltype(is_base_of_func<U>(static_cast<T*>(nullptr)))::value; };
+
+	template< class T > struct remove_ref      {typedef T type;};
+	template< class T > struct remove_ref<T&>  {typedef T type;};
+	template< class T > struct remove_ref<T&&> {typedef T type;};
+
+	template <typename T>
+	typename remove_ref<T>::type&& move(T&& arg) noexcept { return static_cast<typename remove_ref<decltype(arg)>::type&&>(arg); }
 }
 
 #endif

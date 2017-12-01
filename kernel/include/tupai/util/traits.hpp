@@ -64,17 +64,16 @@ namespace tupai::util
 	// - length()
 	// - at()
 	// - operator[]()
-	template <typename T, typename V,
+	template <typename T, typename V = typename T::item_type,
 		size_t (T::*F0)() = &T::length,
-		V (T::*F1)(size_t) = &T::at,
-		V (T::*F2)(size_t) = &T::operator[]
+		V& (T::*F1)(size_t) = &T::at
 	>
-	struct is_str { static const bool value = true; };
+	struct is_str { static const bool value = is_base_of<T, IStr<V>>::value; };
 
 	// is_stream requirements:
 	// - operator<<()
-	template <typename T,
-		T& (T::*F2)(char) = &T::operator<<
+	template <typename T, typename V = typename T::item_type,
+		T& (T::*F2)(V) = &T::operator<<
 	>
 	struct is_stream { static const bool value = true; };
 }

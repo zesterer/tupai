@@ -90,13 +90,11 @@ namespace tupai::util
 
 	template <typename T, size_t N>
 	Arr<T, N> make_arr(const T (&arr)[N]) { return Arr<T, N>(arr); }
-
-	template <typename T, size_t N>
-	DynArr<T> make_dynarr(const T (&arr)[N]) { return DynArr<T>(arr); }
 }
 
 // Delayed implementation to prevent circular references
 #include <tupai/util/panic.hpp>
+#include <tupai/util/typedata.hpp>
 
 namespace tupai::util
 {

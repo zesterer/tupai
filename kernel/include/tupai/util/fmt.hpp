@@ -63,7 +63,7 @@ namespace tupai::util
 
 	// String formatting
 	template <typename S, typename T>
-	typename enable_if<is_stream<S>::value && is_str<T, char>::value>::type
+	typename enable_if<is_stream<S>::value && is_str<T>::value>::type
 	fmt_arg(S& strm, T& str)
 	{
 		for (size_t i = 0; i < str.length(); i ++)

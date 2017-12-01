@@ -23,9 +23,17 @@
 
 #include <tupai/mem/pool.hpp>
 
-namespace tupai::mem
+namespace tupai::util
 {
-	extern Pool kheap;
+	// Forward declaration
+	template<typename T> struct Box;
+}
+
+namespace tupai::mem::kheap
+{
+	extern util::Box<Pool> heap;
+
+	void init();
 }
 
 #endif

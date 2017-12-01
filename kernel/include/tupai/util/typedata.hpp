@@ -1,5 +1,5 @@
 //
-// file : common.hpp
+// file : typename.hpp
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,74 +18,33 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#ifndef TUPAI_UTIL_COMMON_HPP
-#define TUPAI_UTIL_COMMON_HPP
+#ifndef TUPAI_UTIL_TYPEDATA_HPP
+#define TUPAI_UTIL_TYPEDATA_HPP
 
 #include <tupai/util/type.hpp>
 
 namespace tupai::util
 {
-	template <typename T>
-	struct IArr
-	{
-	public:
-		typedef T item_type;
+	// Forward declaration
+	template <typename T> struct GenRefStr;
 
-	public:
-		virtual size_t length();
-		virtual T& at(size_t i);
-		T& operator[](size_t i) { return this->at(i); }
-	};
+	//! type_name()
+	//! Emits a static string containing a human-readable description of the type T
 
 	template <typename T>
-	struct IArr2D
-	{
-	public:
-		typedef T item_type;
+	constexpr GenRefStr<char> type_name();
+}
 
-	public:
-		virtual size_t width();
-		virtual size_t height();
-		virtual T& at(size_t x, size_t y);
-	};
+// Delayed implementation to prevent circular references
+#include <tupai/util/refstr.hpp>
 
+namespace tupai::util
+{
 	template <typename T>
-	struct IBuff
+	constexpr GenRefStr<char> type_name()
 	{
-	public:
-		virtual T& at_unsafe(size_t i);
-		virtual T* raw_unsafe();
-	};
-
-	template <typename T>
-	struct IBuff2D
-	{
-	public:
-		virtual T& at_unsafe(size_t x, size_t y);
-		virtual T* raw_unsafe();
-	};
-
-	template <typename T>
-	struct IStr
-	{
-	public:
-		typedef T item_type;
-
-	public:
-		virtual size_t length();
-		virtual T& at(size_t i);
-		T& operator[](size_t i) { return this->at(i); }
-	};
-
-	template <typename T>
-	struct IStream
-	{
-	public:
-		typedef T item_type;
-
-	public:
-		virtual IStream<T>& operator<<(T c);
-	};
+		return GenRefStr<char>(__PRETTY_FUNCTION__ + 74, cstr_len(__PRETTY_FUNCTION__) - 75); // TODO : This is a total hack. Maintain it well, and replace it when the C++ standard matures
+	}
 }
 
 #endif

@@ -115,6 +115,7 @@ SRC_DIR = $(abspath .)
 
 SRCS_REL += $(shell ls $(SRC_ROOT)/*.{s,S,c,cpp} 2> /dev/null)
 SRCS_REL += $(shell ls $(SRC_ROOT)/util/*.{s,S,c,cpp} 2> /dev/null)
+SRCS_REL += $(shell ls $(SRC_ROOT)/mem/*.{s,S,c,cpp} 2> /dev/null)
 SRCS_REL += $(shell ls $(SRC_ROOT)/sys/*.{s,S,c,cpp} 2> /dev/null)
 SRCS_REL += $(shell ls $(SRC_ROOT)/dev/*.{s,S,c,cpp} 2> /dev/null)
 

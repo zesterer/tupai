@@ -95,6 +95,7 @@ namespace tupai::util
 
 // Delayed implementation to prevent circular references
 #include <tupai/util/panic.hpp>
+#include <tupai/util/typedata.hpp>
 
 namespace tupai::util
 {

@@ -22,62 +22,17 @@
 #define TUPAI_UTIL_STR_HPP
 
 #include <tupai/util/type.hpp>
+#include <tupai/util/refstr.hpp>
 #include <tupai/util/arr.hpp>
 #include <tupai/util/traits.hpp>
 
 namespace tupai::util
 {
-	template <typename T>
-	inline size_t cstr_len(const T* str)
-	{
-		size_t i = 0;
-		for (; str[i] != '\0'; i ++);
-		return i;
-	}
-
-	template <typename T>
-	struct GenStr;
-
-	//! GenStrRef<T>
-	//! References a constant (within the lifetime of the reference) string of T items
-
-	template <typename T>
-	struct GenRefStr
-	{
-	public:
-		typedef T item_type;
-
-	private:
-		const T* _str;
-		size_t _len;
-
-	public:
-		template <size_t N>
-		GenRefStr(const T (&str)[N]) : _str(str), _len(N) {}
-		GenRefStr(const T* str) : _str(str), _len(cstr_len(str)) {}
-		GenRefStr(const T* str, size_t len) : _str(str), _len(len) {}
-
-		template <typename A, typename = typename enable_if<is_arr<A, T>::value>::type>
-		static GenRefStr<T> from(A& arr)
-		{
-			return GenRefStr<T>(arr.raw_unsafe(), arr.length());
-		}
-
-		size_t length() { return this->_len; }
-
-		T at(size_t i);
-
-		T operator[](size_t i)
-		{
-			return this->at(i);
-		}
-	};
-
 	//! GenStr<T>
 	//! Manages a single-owned heap-allocated string of T items
 
 	template <typename T>
-	struct GenStr
+	struct GenStr : public IStr<T>, public IStream<T>
 	{
 	public:
 		typedef T item_type;
@@ -86,8 +41,7 @@ namespace tupai::util
 		DynArr<T> _str;
 
 	public:
-		template <size_t N>
-		GenStr(const T (&str)[N]) : _str(DynArr<T>::from(str, N)) {}
+		template <size_t N> GenStr(const T (&str)[N]) : _str(DynArr<T>::from(str, N)) {}
 		GenStr(const T* cstr = "") : _str(DynArr<T>::from(cstr, cstr_len(cstr))) {}
 
 		template <typename A, typename = typename enable_if<is_arr<A, T>::value>::type>
@@ -96,35 +50,50 @@ namespace tupai::util
 			return GenStr<T>(arr.raw_unsafe());
 		}
 
-		T& at(size_t i)
-		{
-			return this->_str[i];
-		}
+		size_t length() { return this->_str.length(); }
+		T& at(size_t i) { return this->_str[i]; }
+
+		GenStr<T>& operator<<(T c);
+	};
+
+	//! GenFlatStr<T, N>
+	//! Provides an abstraction around a fixed-size, stack-allocated string
+
+	template <typename T, size_t N>
+	struct GenFlatStr : public IStr<T>
+	{
+	private:
+		Arr<T, N> _str;
+
+	public:
+		GenFlatStr(const T (&str)[N]) : _str(str) {}
 
 		size_t length() { return this->_str.length(); }
-
-		T& operator[](size_t i)
-		{
-			return this->at(i);
-		}
+		T& at(size_t i) { return this->_str[i]; }
 	};
 
 	using Str = GenStr<char>;
 	using RefStr = GenRefStr<char>;
+	template <size_t N> using FlatStr = GenFlatStr<char, N>;
+
+	template <typename T, size_t N>
+	GenFlatStr<T, N> make_flatstr(const T (&str)[N]) { return GenFlatStr<T, N>(str); }
 }
 
 // Delayed implementation to prevent circular references
 #include <tupai/util/panic.hpp>
+#include <tupai/util/typedata.hpp>
+#include <tupai/util/arr.hpp>
+#include <tupai/util/vec.hpp>
 
 namespace tupai::util
 {
 	template <typename T>
-	T GenRefStr<T>::at(size_t i)
+	GenStr<T>& GenStr<T>::operator<<(T c)
 	{
-		if (i < this->_len)
-			return this->_str[i];
-		else
-			panic("Attempted to access StrRef<{}> of length {} out of bounds at {}", type_name<T>(), this->_len, i);
+		// TODO : Implement this
+		(void)c;
+		panic("Tried to insert {0} into GenStr<{0}> without implementation", type_name<T>());
 	}
 }
 

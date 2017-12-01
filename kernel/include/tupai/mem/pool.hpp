@@ -29,6 +29,7 @@ namespace tupai::mem
 {
 	enum class PoolError
 	{
+		NOPOOL,
 		FULL,
 		CORRUPTION,
 		INVALID_PTR,
@@ -42,7 +43,7 @@ namespace tupai::mem
 		size_t _bs;
 
 	public:
-		Pool(uintptr_t start, size_t size);
+		Pool(uintptr_t start, size_t size, size_t bs);
 
 		util::Result<uintptr_t, PoolError> alloc(size_t bytes);
 		util::Status<PoolError> dealloc(uintptr_t ptr);

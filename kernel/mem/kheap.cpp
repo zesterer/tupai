@@ -1,5 +1,5 @@
 //
-// file : logger.hpp
+// file : kheap.cpp
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,19 +18,20 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#ifndef TUPAI_SYS_LOGGER_HPP
-#define TUPAI_SYS_LOGGER_HPP
+#include <tupai/mem/kheap.hpp>
+#include <tupai/util/box.hpp>
 
-#include <tupai/util/common.hpp>
-
-namespace tupai::sys
+namespace tupai::mem::kheap
 {
-	struct Logger : public util::IStream<char>
+	extern "C" char kheap_start[];
+	extern "C" char kheap_end[];
+
+	static const size_t BLOCK_SIZE = 64;
+
+	util::Box<Pool> heap;
+
+	void init()
 	{
-		Logger& operator<<(char c);
-	};
-
-	extern Logger log;
+		heap.create((uintptr_t)kheap_start, (uintptr_t)kheap_end - (uintptr_t)kheap_start, BLOCK_SIZE);
+	}
 }
-
-#endif

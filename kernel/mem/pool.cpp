@@ -1,5 +1,5 @@
 //
-// file : logger.hpp
+// file : pool.cpp
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,19 +18,23 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#ifndef TUPAI_SYS_LOGGER_HPP
-#define TUPAI_SYS_LOGGER_HPP
+#include <tupai/mem/kheap.hpp>
+#include <tupai/util/box.hpp>
 
-#include <tupai/util/common.hpp>
-
-namespace tupai::sys
+namespace tupai::mem
 {
-	struct Logger : public util::IStream<char>
+	Pool::Pool(uintptr_t start, size_t size, size_t bs) : _map(0, 0), _heap(0, 0)
 	{
-		Logger& operator<<(char c);
-	};
+		// Nothing yet
+		(void)start;
+		(void)size;
+		(void)bs;
+	}
 
-	extern Logger log;
+	util::Result<uintptr_t, PoolError> Pool::alloc(size_t bytes)
+	{
+		// Nothing yet
+		(void)bytes;
+		return util::Result<uintptr_t, PoolError>(PoolError::NOPOOL);
+	}
 }
-
-#endif

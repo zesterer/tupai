@@ -33,13 +33,7 @@ namespace tupai
 
 		auto arr = util::make_arr("kernel");
 		util::RefStr str1 = util::RefStr::from(arr);
-
 		util::logln("Hello, {} world!", str1);
-
-		auto sarr = util::make_arr({"hello", "there"});
-		util::logln("arr = {}!", sarr);
-
-		util::RefStr s = sarr[2];
 
 		cpu::wait();
 	}
