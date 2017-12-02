@@ -23,7 +23,7 @@
 
 #include <tupai/util/type.hpp>
 #include <tupai/util/attr.hpp>
-#include <tupai/util/common.hpp>
+#include <tupai/util/traits.hpp>
 
 namespace tupai::util
 {
@@ -31,8 +31,11 @@ namespace tupai::util
 	//! Provides a safe abstraction around a fixed-size, stack-allocated array
 
 	template <typename T, size_t N>
-	struct Arr : public IArr<T>, public IBuff<T>
+	struct Arr
 	{
+	public:
+		typedef T item_type;
+
 	private:
 		T _items[N];
 
@@ -53,6 +56,8 @@ namespace tupai::util
 
 		size_t length() { return N; }
 		T& at(size_t i);
+
+		T& operator[](size_t i) { return this->at(i); }
 
 		T& at_unsafe(size_t i) { return this->_items[i]; }
 		T* raw_unsafe() { return this->_items; }

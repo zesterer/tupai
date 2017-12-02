@@ -1,5 +1,5 @@
 //
-// file : buff.hpp
+// file : refarr.hpp
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,40 +18,36 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#ifndef TUPAI_UTIL_BUFF_HPP
-#define TUPAI_UTIL_BUFF_HPP
+#ifndef TUPAI_UTIL_DYNARR_HPP
+#define TUPAI_UTIL_DYNARR_HPP
 
-#include <tupai/util/def/buff.hpp>
+#include <tupai/util/def/refarr.hpp>
 #include <tupai/util/panic.hpp>
 #include <tupai/util/typedata.hpp>
 
 namespace tupai::util
 {
-	template <typename T, size_t N>
-	T& Buff<T, N>::at(size_t i)
+	template <typename T>
+	T& RefArr<T>::at(size_t i)
 	{
-		if (i < N)
+		if (i < this->_len)
 			return this->_items[i];
 		else
-			panic("Attempted to access Buff<{}, {}> out of bounds at {}", type_name<T>(), N, i);
-	}
-
-	template <typename T, size_t W, size_t H>
-	T& Buff2D<T, W, H>::at(size_t x, size_t y)
-	{
-		if (x < W && y < H)
-			return this->_items[y * W + x];
-		else
-			panic("Attempted to access Buff<{}, {}, {}> out of bounds at {}, {}", type_name<T>(), W, H, x, y);
+			panic("Attempted to access RefArr<{}> of length {} out of bounds at {}", type_name<T>(), this->_len, i);
 	}
 
 	template <typename T>
-	T& DynBuff<T>::at(size_t i)
+	template <typename S>
+	typename enable_if<is_stream<S>::value>::type RefArr<T>::print(S& s)
 	{
-		if (i < this->length())
-			return this->_items[i];
-		else
-			panic("Attempted to access Buff<{}> of length {} out of bounds at {}", type_name<T>(), this->_len, i);
+		fmt_arg(s, '[');
+		for (size_t i = 0; i < this->length(); i ++)
+		{
+			if (i > 0)
+				fmt_arg(s, ", ");
+			fmt_arg(s, this->at(i));
+		}
+		fmt_arg(s, ']');
 	}
 }
 

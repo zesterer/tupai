@@ -21,7 +21,8 @@
 #ifndef TUPAI_MEM_POOL_HPP
 #define TUPAI_MEM_POOL_HPP
 
-#include <tupai/util/buff.hpp>
+#include <tupai/util/box.hpp>
+#include <tupai/util/refarr.hpp>
 #include <tupai/util/result.hpp>
 #include <tupai/util/status.hpp>
 
@@ -38,8 +39,8 @@ namespace tupai::mem
 	struct Pool
 	{
 	private:
-		util::DynBuff<uint8_t> _map;
-		util::DynBuff<uint8_t> _heap;
+		util::RefArr<uint8_t> _map;
+		util::RefArr<uint8_t> _heap;
 		size_t _bs;
 
 	public:

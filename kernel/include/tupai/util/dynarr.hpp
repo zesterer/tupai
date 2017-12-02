@@ -63,6 +63,20 @@ namespace tupai::util
 		else
 			panic("Attempted to access DynArr<{}> of length {} out of bounds at {}", type_name<T>(), this->_len, i);
 	}
+
+	template <typename T>
+	template <typename S>
+	typename enable_if<is_stream<S>::value>::type DynArr<T>::print(S& s)
+	{
+		fmt_arg(s, '[');
+		for (size_t i = 0; i < this->length(); i ++)
+		{
+			if (i > 0)
+				fmt_arg(s, ", ");
+			fmt_arg(s, this->at(i));
+		}
+		fmt_arg(s, ']');
+	}
 }
 
 #endif

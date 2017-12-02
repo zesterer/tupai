@@ -32,7 +32,7 @@ namespace tupai::util
 	//! Manages a single-owned heap-allocated string of T items
 
 	template <typename T>
-	struct GenDynStr : public IStr<T>, public IStream<T>
+	struct GenDynStr
 	{
 	public:
 		typedef T item_type;
@@ -52,6 +52,8 @@ namespace tupai::util
 
 		size_t length() { return this->_str.length(); }
 		T& at(size_t i) { return this->_str[i]; }
+
+		T& operator[](size_t i) { return this->at(i); }
 
 		template <typename S> typename enable_if<is_stream<S, T>::value>::type print(S& s);
 

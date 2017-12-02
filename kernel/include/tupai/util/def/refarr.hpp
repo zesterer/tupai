@@ -1,5 +1,5 @@
 //
-// file : common.hpp
+// file : refarr.hpp
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,24 +18,40 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#ifndef TUPAI_UTIL_DEF_COMMON_HPP
-#define TUPAI_UTIL_DEF_COMMON_HPP
+#ifndef TUPAI_UTIL_DEF_REFARR_HPP
+#define TUPAI_UTIL_DEF_REFARR_HPP
 
 #include <tupai/util/type.hpp>
+#include <tupai/util/traits.hpp>
 
 namespace tupai::util
 {
-	template <typename T> struct IArr;
+	//! RefArr<T>
+	//! Provides a safe reference to an array
 
-	template <typename T> struct IArr2D;
+	template <typename T>
+	struct RefArr
+	{
+	public:
+		typedef T item_type;
 
-	template <typename T> struct IBuff;
+	private:
+		T* _items;
+		size_t _len;
 
-	template <typename T> struct IBuff2D;
+	public:
+		RefArr(T* arr, size_t len) : _items(arr), _len(len) {}
 
-	template <typename T> struct IStr;
+		size_t length() { return this->_len; }
+		T& at(size_t i);
 
-	template <typename T> struct IStream;
+		T& operator[](size_t i) { return this->at(i); }
+
+		T& at_unsafe(uintptr_t i) { return this->_items[i]; }
+		T* raw_unsafe() { return this->_items; }
+
+		template <typename S> typename enable_if<is_stream<S>::value>::type print(S& s);
+	};
 }
 
 #endif

@@ -22,7 +22,6 @@
 #define TUPAI_UTIL_TRAITS_HPP
 
 #include <tupai/util/type.hpp>
-#include <tupai/util/def/common.hpp>
 
 namespace tupai::util
 {
@@ -32,19 +31,23 @@ namespace tupai::util
 	// - operator[]()
 	template <typename T, typename V = typename T::item_type,
 		size_t (T::*F0)() = &T::length,
-		V& (T::*F1)(size_t) = &T::at
+		V& (T::*F1)(size_t) = &T::at,
+		V& (T::*F2)(size_t) = &T::operator[]
 	>
-	struct is_arr { static const bool value = is_base_of<T, IArr<V>>::value; };
+	struct is_arr { static const bool value = true; };
 
 	// is_buff requirements:
 	// - implements is_arr
 	// - at_unsafe()
 	// - raw_unsafe()
 	template <typename T, typename V = typename T::item_type,
-		V& (T::*F0)(size_t) = &T::at_unsafe,
-		V* (T::*F1)() = &T::raw_unsafe
+		size_t (T::*F0)() = &T::length,
+		V& (T::*F1)(size_t) = &T::at,
+		V& (T::*F2)(size_t) = &T::operator[],
+		V& (T::*F3)(size_t) = &T::at_unsafe,
+		V* (T::*F4)() = &T::raw_unsafe
 	>
-	struct is_buff { static const bool value = is_base_of<T, IBuff<V>>::value && is_arr<T>::value; };
+	struct is_buff { static const bool value = true; };
 
 	// is_arr2d requirements:
 	// - width()
@@ -58,7 +61,7 @@ namespace tupai::util
 		size_t (T::*F1)() = &T::height,
 		V& (T::*F2)(size_t, size_t) = &T::at
 	>
-	struct is_arr2d { static const bool value = is_base_of<T, IArr2D<V>>::value; };
+	struct is_arr2d { static const bool value = true; };
 
 	// is_str requirements:
 	// - length()
@@ -66,9 +69,10 @@ namespace tupai::util
 	// - operator[]()
 	template <typename T, typename V = typename T::item_type,
 		size_t (T::*F0)() = &T::length,
-		V& (T::*F1)(size_t) = &T::at
+		V& (T::*F1)(size_t) = &T::at,
+		V& (T::*F2)(size_t) = &T::operator[]
 	>
-	struct is_str { static const bool value = is_base_of<T, IStr<V>>::value; };
+	struct is_str { static const bool value = true; };
 
 	// is_stream requirements:
 	// - operator<<()

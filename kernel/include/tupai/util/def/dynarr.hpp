@@ -22,7 +22,7 @@
 #define TUPAI_UTIL_DEF_DYNARR_HPP
 
 #include <tupai/util/type.hpp>
-#include <tupai/util/common.hpp>
+#include <tupai/util/traits.hpp>
 
 namespace tupai::util
 {
@@ -30,8 +30,11 @@ namespace tupai::util
 	//! Provides a safe abstraction around a dynamically-sized, heap-allocated array
 
 	template <typename T>
-	struct DynArr : public IArr<T>, public IBuff<T>
+	struct DynArr
 	{
+	public:
+		typedef T item_type;
+
 	private:
 		T* _items;
 		size_t _len;
@@ -49,8 +52,12 @@ namespace tupai::util
 		size_t length() { return this->_len; }
 		T& at(size_t i);
 
+		T& operator[](size_t i) { return this->at(i); }
+
 		T& at_unsafe(uintptr_t i) { return this->_items[i]; }
 		T* raw_unsafe() { return this->_items; }
+
+		template <typename S> typename enable_if<is_stream<S>::value>::type print(S& s);
 
 		static DynArr<T> from(const T* arr, size_t len)
 		{

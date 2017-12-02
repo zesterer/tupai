@@ -32,8 +32,11 @@ namespace tupai::util
 	//! Provides an abstraction around a fixed-size, stack-allocated string
 
 	template <typename T, size_t N>
-	struct GenFlatStr : public IStr<T>
+	struct GenFlatStr
 	{
+	public:
+		typedef T item_type;
+
 	private:
 		Arr<T, N> _str;
 		size_t _len;
@@ -47,6 +50,8 @@ namespace tupai::util
 
 		size_t length() { return this->_len; }
 		T& at(size_t i);
+
+		T& operator[](size_t i) { return this->at(i); }
 
 		template <typename S> typename enable_if<is_stream<S, T>::value>::type print(S& s);
 	};

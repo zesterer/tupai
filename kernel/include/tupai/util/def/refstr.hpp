@@ -32,8 +32,12 @@ namespace tupai::util
 	//! References a constant (within the lifetime of the reference) string of T items
 
 	template <typename T>
-	struct GenRefStr : public IStr<const T>
+	struct GenRefStr
 	{
+	public:
+		typedef T item_type;
+
+		
 	private:
 		const T* _str;
 		size_t _len;
@@ -51,6 +55,8 @@ namespace tupai::util
 
 		size_t length() { return this->_len; }
 		const T& at(size_t i);
+
+		const T& operator[](size_t i) { return this->at(i); }
 
 		template <typename S> typename enable_if<is_stream<S>::value>::type print(S& s);
 	};

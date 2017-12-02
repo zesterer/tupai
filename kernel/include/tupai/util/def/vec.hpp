@@ -31,8 +31,11 @@ namespace tupai::util
 	//! Manages a heap-allocated LIFO list of T objects
 
 	template <typename T>
-	struct Vec : public IArr<T>, public IBuff<T>
+	struct Vec
 	{
+	public:
+		typedef T item_type;
+		
 		// TODO : Replace internal array accesses with .raw() to prevent double bounds checks & improve performance once we know this 100% works
 
 	private:
@@ -64,6 +67,8 @@ namespace tupai::util
 
 		T& at(size_t i);
 
+		T& operator[](size_t i) { return this->at(i); }
+
 		void push(T item)
 		{
 			if (this->length() == this->capacity())
@@ -73,11 +78,6 @@ namespace tupai::util
 		}
 
 		T pop();
-
-		T& operator[](size_t i)
-		{
-			return this->at(i);
-		}
 
 		void operator<<(T item)
 		{

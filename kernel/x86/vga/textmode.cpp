@@ -20,7 +20,7 @@
 
 #include <tupai/x86/vga/textmode.hpp>
 #include <tupai/x86/port.hpp>
-#include <tupai/util/buff.hpp>
+#include <tupai/util/arr.hpp>
 #include <tupai/util/box.hpp>
 #include <tupai/util/boot.hpp>
 #include <tupai/util/attr.hpp>
@@ -28,24 +28,25 @@
 
 namespace tupai::x86::vga::textmode
 {
+	const size_t COLS = 80;
+	const size_t ROWS = 25;
+
+	size_t col = 0, row = 0;
+	uint8_t fg = 0xA, bg = 0x0;
+
 	struct Entry
 	{
 		uint8_t data;
 		uint8_t color;
 
+		Entry() : color((bg << 4) | fg) {}
 		Entry(uint8_t data, uint8_t color) : data(data), color(color) {}
 		Entry(uint8_t data, uint8_t fg, uint8_t bg) : data(data), color((bg << 4) | fg) {}
 
-		static Entry blank() { return Entry(' ', 0xF, 0x0); }
+		static Entry blank() { return Entry(' ', fg, bg); }
 	} ATTR_PACKED;
 
-	const size_t COLS = 80;
-	const size_t ROWS = 25;
-
-	size_t col = 0, row = 0;
-	uint8_t fg = 0xF, bg = 0x0;
-
-	static util::Box<util::Buff2D<Entry, COLS, ROWS>> buffer;
+	static util::StaticBox<util::Arr<util::Arr<Entry, COLS>, ROWS>> buffer;
 
 	extern "C" uint32_t _vga_col_boot;
 	extern "C" uint32_t _vga_row_boot;
@@ -55,7 +56,8 @@ namespace tupai::x86::vga::textmode
 		col = _vga_col_boot;
 		row = _vga_row_boot;
 
-		buffer.create(mem::virt::OFFSET + 0xB8000);
+		buffer.place(mem::virt::OFFSET + 0xB8000);
+		buffer.create();
 
 		enable_cursor();
 
@@ -75,7 +77,7 @@ namespace tupai::x86::vga::textmode
 			break;
 
 		default:
-			buffer->at(col, row) = Entry(c, fg, bg);
+			buffer->at(row)[col] = Entry(c, fg, bg);
 			col ++;
 			break;
 		}
@@ -120,9 +122,9 @@ namespace tupai::x86::vga::textmode
 			for (size_t i = 0; i < COLS; i ++)
 			{
 				if (j < ROWS - n)
-					buffer->at(i, j) = buffer->at(i, j + n);
+					buffer->at(j)[i] = buffer->at(j + n)[i];
 				else
-					buffer->at(i, j) = Entry::blank();
+					buffer->at(j)[i] = Entry::blank();
 			}
 	}
 }

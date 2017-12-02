@@ -21,12 +21,14 @@
 #ifndef TUPAI_SYS_LOGGER_HPP
 #define TUPAI_SYS_LOGGER_HPP
 
-#include <tupai/util/common.hpp>
-
 namespace tupai::sys
 {
-	struct Logger : public util::IStream<char>
+	struct Logger
 	{
+	public:
+		typedef char item_type;
+
+	public:
 		Logger& operator<<(char c);
 	};
 
