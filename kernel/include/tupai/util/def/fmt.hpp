@@ -18,139 +18,60 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#ifndef TUPAI_UTIL_FMT_HPP
-#define TUPAI_UTIL_FMT_HPP
+#ifndef TUPAI_UTIL_DEF_FMT_HPP
+#define TUPAI_UTIL_DEF_FMT_HPP
 
-#include <tupai/util/def/fmt.hpp>
-#include <tupai/util/char.hpp>
-#include <tupai/util/compose.hpp>
-#include <tupai/util/result.hpp>
+#include <tupai/util/type.hpp>
+#include <tupai/util/traits.hpp>
 
 namespace tupai::util
 {
 	// Character formatting
 	template <typename S>
 	typename enable_if<is_stream<S>::value>::type
-	fmt_arg(S& strm, char c) { strm << c; }
+	fmt_arg(S& strm, char c);
 
 	// String literal formatting
 	template <typename S>
 	constexpr typename enable_if<is_stream<S>::value>::type
-	fmt_arg(S& strm, const char* str)
-	{
-		while (*str != '\0')
-			strm << *(str++);
-	}
+	fmt_arg(S& strm, const char* str);
 
 	// Integer formatting
 	template <typename S>
 	typename enable_if<is_stream<S>::value>::type
-	fmt_arg(S& strm, uint32_t n)
-	{
-		auto r = compose<char, uint32_t>(n);
-		if (r.success())
-			fmt_arg(strm, r.value());
-	}
+	fmt_arg(S& strm, uint32_t n);
 
 	// Pointer formatting
 	template <typename S>
 	typename enable_if<is_stream<S>::value>::type
-	fmt_arg(S& strm, void* ptr)
-	{
-		(void)strm;
-		(void)ptr;
-		// Nothing
-	}
-
-	// Printable formatting
-	template <typename S, typename T>
-	typename enable_if<is_stream<S>::value && is_printable<T, S>::value>::type
-	fmt_arg(S& strm, T& obj)
-	{
-		obj.print(strm);
-	}
+	fmt_arg(S& strm, void* ptr);
 
 	// Array formatting
 	// template <typename S, typename T>
 	// typename enable_if<is_stream<S>::value && is_arr<T>::value>::type
-	// fmt_arg(S& strm, T& arr)
-	// {
-	// 	strm << '[';
-	// 	for (size_t i = 0; i < arr.length(); i ++)
-	// 	{
-	// 		if (i > 0)
-	// 			fmt_arg(strm, ", ");
-	// 		strm << '\'';
-	// 		fmt_arg(strm, arr[i]);
-	// 		strm << '\'';
-	// 	}
-	// 	strm << ']';
-	// }
+	// fmt_arg(S& strm, T& arr);
 
 	template <typename S>
 	constexpr typename enable_if<is_stream<S>::value>::type
-	_fmt_nth(S& strm, int n) { (void)n; fmt_arg(strm, "N/A"); }
+	_fmt_nth(S& strm, int n);
 	template <typename S, typename T, typename ... Args>
 	constexpr typename enable_if<is_stream<S>::value>::type
-	_fmt_nth(S& strm, int n, T item, Args ... args)
-	{
-		if (n == 0)
-			fmt_arg(strm, item);
-		else
-			_fmt_nth(strm, n - 1, args ...);
-	}
+	_fmt_nth(S& strm, int n, T item, Args ... args);
+
+	const int _FMT_ARGS_MAX = 4;
+	struct _Fmt { int ni = 0; int n[_FMT_ARGS_MAX] = { -1, }; int inc = 0; };
+	_Fmt _read_fmt(const char* format);
 
 	template <typename S>
 	constexpr typename enable_if<is_stream<S>::value>::type
-	fmt(S& strm, const char* format)
-	{
-		fmt_arg(strm, format);
-	}
+	fmt(S& strm, const char* format);
 
 	//! fmt(stream, format, args...)
 	//! Formats a string with the specified arguments and inserts them into a stream
 
 	template <typename S, typename ... Args>
 	constexpr typename enable_if<is_stream<S>::value>::type
-	fmt(S& strm, const char* format, Args ... args)
-	{
-		bool escaped = false;
-		size_t carg = 0;
-		for (size_t i = 0; format[i] != '\0'; i ++)
-		{
-			char c = format[i];
-			if (escaped)
-			{
-				fmt_arg(strm, c);
-				escaped = false;
-			}
-			else
-			{
-				if (c == '{')
-				{
-					_Fmt nfmt = _read_fmt(&format[i]);
-					if (nfmt.inc > 0)
-					{
-						i += nfmt.inc;
-
-						if (nfmt.ni >= 1)
-							_fmt_nth(strm, nfmt.n[0], args ...);
-						else
-						{
-							_fmt_nth(strm, carg, args ...);
-							carg ++;
-						}
-					}
-					else
-						fmt_arg(strm, c);
-				}
-				else if (c == '\\')
-					escaped = true;
-				else
-					fmt_arg(strm, c);
-			}
-		}
-	}
+	fmt(S& strm, const char* format, Args ... args);
 }
 
 #endif

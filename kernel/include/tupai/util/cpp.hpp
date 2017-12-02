@@ -21,29 +21,7 @@
 #ifndef TUPAI_UTIL_CPP_HPP
 #define TUPAI_UTIL_CPP_HPP
 
-#include <tupai/util/type.hpp>
-
-// Default placement versions of operator new
-inline void* operator new(size_t, void* __p) throw();
-inline void* operator new[](size_t, void* __p) throw();
-
-// Default placement versions of operator delete
-inline void operator delete  (void*, void*) throw();
-inline void operator delete[](void*, void*) throw();
-
-// Default operator new
-inline void* operator new(size_t sz) throw();
-inline void* operator new[](size_t sz) throw();
-
-// Default operator delete
-inline void operator delete  (void* ptr) throw();
-inline void operator delete[](void* arr) throw();
-
-// Default operator sized delete
-inline void operator delete  (void* ptr, size_t sz) throw();
-inline void operator delete[](void* arr, size_t sz) throw();
-
-// Delayed implementation to prevent circular references
+#include <tupai/util/def/cpp.hpp>
 #include <tupai/util/panic.hpp>
 #include <tupai/mem/kheap.hpp>
 #include <tupai/util/box.hpp>
@@ -57,15 +35,15 @@ inline void operator delete  (void*, void*) throw() {}
 inline void operator delete[](void*, void*) throw() {}
 
 // Default operator new
-inline void* operator new(size_t sz) throw() { return reinterpret_cast<void*>(tupai::mem::kheap::heap->alloc(sz).except("Kernel heap error when attempting to allocate block of size {}", sz)); }
-inline void* operator new[](size_t sz) throw() { return reinterpret_cast<void*>(tupai::mem::kheap::heap->alloc(sz).except("Kernel heap error when attempting to allocate block of size {}", sz)); }
+inline void* operator new(size_t sz) throw() { return reinterpret_cast<void*>(tupai::mem::kheap::alloc(sz)); }
+inline void* operator new[](size_t sz) throw() { return reinterpret_cast<void*>(tupai::mem::kheap::alloc(sz)); }
 
 // Default operator delete
-inline void operator delete  (void* ptr) throw() { tupai::mem::kheap::heap->dealloc(reinterpret_cast<uintptr_t>(ptr)).except("Kernel heap error when attempting to deallocate block at {}", ptr); }
-inline void operator delete[](void* arr) throw() { tupai::mem::kheap::heap->dealloc(reinterpret_cast<uintptr_t>(arr)).except("Kernel heap error when attempting to deallocate array at {}", arr); }
+inline void operator delete  (void* ptr) throw() { tupai::mem::kheap::dealloc(reinterpret_cast<uintptr_t>(ptr)); }
+inline void operator delete[](void* arr) throw() { tupai::mem::kheap::dealloc(reinterpret_cast<uintptr_t>(arr)); }
 
 // Default operator sized delete
-inline void operator delete  (void* ptr, size_t sz) throw() { tupai::mem::kheap::heap->dealloc(reinterpret_cast<uintptr_t>(ptr)).except("Kernel heap error when attempting to deallocate block at {} of size {}", ptr, sz); }
-inline void operator delete[](void* arr, size_t sz) throw() { tupai::mem::kheap::heap->dealloc(reinterpret_cast<uintptr_t>(arr)).except("Kernel heap error when attempting to deallocate array at {} of size {}", arr, sz); }
+inline void operator delete  (void* ptr, size_t sz) throw() { (void)sz; tupai::mem::kheap::dealloc(reinterpret_cast<uintptr_t>(ptr)); }
+inline void operator delete[](void* arr, size_t sz) throw() { (void)sz; tupai::mem::kheap::dealloc(reinterpret_cast<uintptr_t>(arr)); }
 
 #endif

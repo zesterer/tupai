@@ -18,19 +18,21 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#ifndef TUPAI_UTIL_TYPEDATA_HPP
-#define TUPAI_UTIL_TYPEDATA_HPP
+#ifndef TUPAI_UTIL_DEF_TYPEDATA_HPP
+#define TUPAI_UTIL_DEF_TYPEDATA_HPP
 
-#include <tupai/util/def/typedata.hpp>
-#include <tupai/util/refstr.hpp>
+#include <tupai/util/type.hpp>
 
 namespace tupai::util
 {
+	// Forward declaration
+	template <typename T> struct GenRefStr;
+
+	//! type_name()
+	//! Emits a static string containing a human-readable description of the type T
+
 	template <typename T>
-	constexpr GenRefStr<char> type_name()
-	{
-		return GenRefStr<char>(__PRETTY_FUNCTION__ + 74, cstr_len(__PRETTY_FUNCTION__) - 75); // TODO : This is a total hack. Maintain it well, and replace it when the C++ standard matures
-	}
+	constexpr GenRefStr<char> type_name();
 }
 
 #endif

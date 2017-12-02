@@ -21,19 +21,13 @@
 #ifndef TUPAI_MEM_KHEAP_HPP
 #define TUPAI_MEM_KHEAP_HPP
 
-#include <tupai/mem/pool.hpp>
-
-namespace tupai::util
-{
-	// Forward declaration
-	template<typename T> struct Box;
-}
+#include <tupai/util/type.hpp>
 
 namespace tupai::mem::kheap
 {
-	extern util::Box<Pool> heap;
-
 	void init();
+	uintptr_t alloc(size_t bytes);
+	void dealloc(uintptr_t ptr);
 }
 
 #endif

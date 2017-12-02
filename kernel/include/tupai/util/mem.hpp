@@ -1,5 +1,5 @@
 //
-// file : conv.hpp
+// file : mem.hpp
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,20 +18,16 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#ifndef TUPAI_UTIL_CONV_HPP
-#define TUPAI_UTIL_CONV_HPP
-
-#include <tupai/util/type.hpp>
-#include <tupai/util/result.hpp>
+#ifndef TUPAI_UTIL_MEM_HPP
+#define TUPAI_UTIL_MEM_HPP
 
 namespace tupai::util
 {
-	enum class ConvError
+	inline void mem_copy(const uint8_t* src, uint8_t* tgt, size_t n)
 	{
-		// Nothing yet
-	};
-
-	Result<>
+		for (size_t i = 0; i < n; i ++)
+			tgt[i] = src[i];
+	}
 }
 
 #endif

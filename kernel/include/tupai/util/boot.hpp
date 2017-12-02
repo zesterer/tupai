@@ -21,20 +21,7 @@
 #ifndef TUPAI_UTIL_BOOT_HPP
 #define TUPAI_UTIL_BOOT_HPP
 
-#include <tupai/util/type.hpp>
-
-namespace tupai::util
-{
-	enum class BootStatus { OK, FAIL };
-
-	//! bootlog(str, status, args...)
-	//! Logs a message to the kernel log using the special boot syntax
-
-	template <typename ... Args>
-	void bootlog(const char* str, BootStatus status = BootStatus::OK, Args ... args);
-}
-
-// Delayed implementation to prevent circular references
+#include <tupai/util/def/boot.hpp>
 #include <tupai/util/log.hpp>
 
 namespace tupai::util

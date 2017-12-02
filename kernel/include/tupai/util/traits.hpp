@@ -22,7 +22,7 @@
 #define TUPAI_UTIL_TRAITS_HPP
 
 #include <tupai/util/type.hpp>
-#include <tupai/util/common.hpp>
+#include <tupai/util/def/common.hpp>
 
 namespace tupai::util
 {
@@ -76,6 +76,13 @@ namespace tupai::util
 		T& (T::*F2)(V) = &T::operator<<
 	>
 	struct is_stream { static const bool value = true; };
+
+	// is_printable requirements:
+	// - print()
+	template <typename T, typename S,
+		typename enable_if<is_stream<S, typename S::item_type>::value>::type (T::*F2)(S&) = &T::print
+	>
+	struct is_printable { static const bool value = is_stream<S>::value; };
 }
 
 #endif

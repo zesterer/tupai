@@ -31,9 +31,8 @@ namespace tupai
 	{
 		util::bootlog("Entered kernel main");
 
-		auto arr = util::make_arr("kernel");
-		util::RefStr str1 = util::RefStr::from(arr);
-		util::logln("Hello, {} world!", str1);
+		auto arr = util::make_flatstr("kernel");
+		util::logln("Hello, {} world!", arr);
 
 		cpu::wait();
 	}

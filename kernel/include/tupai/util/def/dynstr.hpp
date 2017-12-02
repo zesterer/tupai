@@ -1,5 +1,5 @@
 //
-// file : common.hpp
+// file : dynstr.hpp
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,76 +18,47 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#ifndef TUPAI_UTIL_COMMON_HPP
-#define TUPAI_UTIL_COMMON_HPP
+#ifndef TUPAI_UTIL_DEF_DYNSTR_HPP
+#define TUPAI_UTIL_DEF_DYNSTR_HPP
 
 #include <tupai/util/type.hpp>
-#include <tupai/util/def/common.hpp>
+#include <tupai/util/def/dynarr.hpp>
 #include <tupai/util/traits.hpp>
+#include <tupai/util/cstr.hpp>
 
 namespace tupai::util
 {
+	//! GenDynStr<T>
+	//! Manages a single-owned heap-allocated string of T items
+
 	template <typename T>
-	struct IArr
+	struct GenDynStr : public IStr<T>, public IStream<T>
 	{
 	public:
 		typedef T item_type;
 
+	private:
+		DynArr<T> _str;
+
 	public:
-		virtual size_t length();
-		virtual T& at(size_t i);
-		T& operator[](size_t i) { return this->at(i); }
+		template <size_t N> GenDynStr(const T (&str)[N]) : _str(DynArr<T>::from(str, N)) {}
+		GenDynStr(const T* cstr = "") : _str(DynArr<T>::from(cstr, cstr_len(cstr))) {}
+
+		template <typename A, typename = typename enable_if<is_arr<A, T>::value>::type>
+		static GenDynStr<T> from(A& arr)
+		{
+			return GenDynStr<T>(arr.raw_unsafe());
+		}
+
+		size_t length() { return this->_str.length(); }
+		T& at(size_t i) { return this->_str[i]; }
+
+		template <typename S> typename enable_if<is_stream<S, T>::value>::type print(S& s);
+
+		GenDynStr<T>& operator<<(T c);
 	};
 
-	template <typename T>
-	struct IArr2D
-	{
-	public:
-		typedef T item_type;
-
-	public:
-		virtual size_t width();
-		virtual size_t height();
-		virtual T& at(size_t x, size_t y);
-	};
-
-	template <typename T>
-	struct IBuff
-	{
-	public:
-		virtual T& at_unsafe(size_t i);
-		virtual T* raw_unsafe();
-	};
-
-	template <typename T>
-	struct IBuff2D
-	{
-	public:
-		virtual T& at_unsafe(size_t x, size_t y);
-		virtual T* raw_unsafe();
-	};
-
-	template <typename T>
-	struct IStr
-	{
-	public:
-		typedef T item_type;
-
-	public:
-		virtual size_t length();
-		virtual T& at(size_t i);
-		T& operator[](size_t i) { return this->at(i); }
-	};
-
-	template <typename T>
-	struct IStream
-	{
-	public:
-		typedef T item_type;
-
-	public:
-		virtual IStream<T>& operator<<(T c);
-	};
+	using DynStr = GenDynStr<char>;
 }
 
 #endif

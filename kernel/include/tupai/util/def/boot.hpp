@@ -1,5 +1,5 @@
 //
-// file : typename.hpp
+// file : boot.hpp
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,19 +18,20 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#ifndef TUPAI_UTIL_TYPEDATA_HPP
-#define TUPAI_UTIL_TYPEDATA_HPP
+#ifndef TUPAI_UTIL_DEF_BOOT_HPP
+#define TUPAI_UTIL_DEF_BOOT_HPP
 
-#include <tupai/util/def/typedata.hpp>
-#include <tupai/util/refstr.hpp>
+#include <tupai/util/type.hpp>
 
 namespace tupai::util
 {
-	template <typename T>
-	constexpr GenRefStr<char> type_name()
-	{
-		return GenRefStr<char>(__PRETTY_FUNCTION__ + 74, cstr_len(__PRETTY_FUNCTION__) - 75); // TODO : This is a total hack. Maintain it well, and replace it when the C++ standard matures
-	}
+	enum class BootStatus { OK, FAIL };
+
+	//! bootlog(str, status, args...)
+	//! Logs a message to the kernel log using the special boot syntax
+
+	template <typename ... Args>
+	void bootlog(const char* str, BootStatus status = BootStatus::OK, Args ... args);
 }
 
 #endif

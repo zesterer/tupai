@@ -1,5 +1,5 @@
 //
-// file : typename.hpp
+// file : status.hpp
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,19 +18,36 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#ifndef TUPAI_UTIL_TYPEDATA_HPP
-#define TUPAI_UTIL_TYPEDATA_HPP
+#ifndef TUPAI_UTIL_DEF_STATUS_HPP
+#define TUPAI_UTIL_DEF_STATUS_HPP
 
-#include <tupai/util/def/typedata.hpp>
-#include <tupai/util/refstr.hpp>
+#include <tupai/util/type.hpp>
 
 namespace tupai::util
 {
+	//! Status<T>
+	//! Provides optional error value
+
 	template <typename T>
-	constexpr GenRefStr<char> type_name()
+	struct Status
 	{
-		return GenRefStr<char>(__PRETTY_FUNCTION__ + 74, cstr_len(__PRETTY_FUNCTION__) - 75); // TODO : This is a total hack. Maintain it well, and replace it when the C++ standard matures
-	}
+	private:
+		bool _success;
+		union { T _err; };
+
+	public:
+		Status() : _success(true) {}
+		Status(T err) : _success(false), _err(err) {}
+
+		bool success() { return this->_success; }
+		bool failed() { return !this->success(); }
+
+		template <typename ... Args>
+		void except(Args ... args);
+
+		T error();
+	};
+
 }
 
 #endif

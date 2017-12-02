@@ -1,5 +1,5 @@
 //
-// file : typename.hpp
+// file : dynarr.hpp
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,19 +18,45 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#ifndef TUPAI_UTIL_TYPEDATA_HPP
-#define TUPAI_UTIL_TYPEDATA_HPP
+#ifndef TUPAI_UTIL_DEF_DYNARR_HPP
+#define TUPAI_UTIL_DEF_DYNARR_HPP
 
-#include <tupai/util/def/typedata.hpp>
-#include <tupai/util/refstr.hpp>
+#include <tupai/util/type.hpp>
+#include <tupai/util/common.hpp>
 
 namespace tupai::util
 {
+	//! DynArr<T>
+	//! Provides a safe abstraction around a dynamically-sized, heap-allocated array
+
 	template <typename T>
-	constexpr GenRefStr<char> type_name()
+	struct DynArr : public IArr<T>, public IBuff<T>
 	{
-		return GenRefStr<char>(__PRETTY_FUNCTION__ + 74, cstr_len(__PRETTY_FUNCTION__) - 75); // TODO : This is a total hack. Maintain it well, and replace it when the C++ standard matures
-	}
+	private:
+		T* _items;
+		size_t _len;
+
+		DynArr(const T* arr, size_t len);
+
+	public:
+		DynArr(size_t len);
+
+		template <size_t N>
+		DynArr(T (&arr)[N]);
+
+		~DynArr() { delete[] this->_items; }
+
+		size_t length() { return this->_len; }
+		T& at(size_t i);
+
+		T& at_unsafe(uintptr_t i) { return this->_items[i]; }
+		T* raw_unsafe() { return this->_items; }
+
+		static DynArr<T> from(const T* arr, size_t len)
+		{
+			return DynArr<T>(arr, len);
+		}
+	};
 }
 
 #endif

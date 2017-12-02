@@ -18,8 +18,7 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#include <tupai/mem/kheap.hpp>
-#include <tupai/util/box.hpp>
+#include <tupai/mem/pool.hpp>
 
 namespace tupai::mem
 {
@@ -36,5 +35,12 @@ namespace tupai::mem
 		// Nothing yet
 		(void)bytes;
 		return util::Result<uintptr_t, PoolError>(PoolError::NOPOOL);
+	}
+
+	util::Status<PoolError> Pool::dealloc(uintptr_t ptr)
+	{
+		// Nothing yet
+		(void)ptr;
+		return util::Status<PoolError>(PoolError::NOPOOL);
 	}
 }

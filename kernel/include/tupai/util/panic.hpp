@@ -21,15 +21,12 @@
 #ifndef TUPAI_UTIL_PANIC_HPP
 #define TUPAI_UTIL_PANIC_HPP
 
-#include <tupai/util/attr.hpp>
+#include <tupai/util/def/panic.hpp>
 #include <tupai/util/log.hpp>
 #include <tupai/cpu/cpu.hpp>
 
 namespace tupai::util
 {
-	//! panic(format, args...)
-	//! Permanently panic the kernel, displaying a formatted string formatted with arguments as the error
-
 	template <typename ... Args>
 	ATTR_NORETURN void panic(const char* format, Args ... args)
 	{

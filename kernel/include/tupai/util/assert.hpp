@@ -21,16 +21,7 @@
 #ifndef TUPAI_UTIL_ASSERT_HPP
 #define TUPAI_UTIL_ASSERT_HPP
 
-#include <tupai/util/type.hpp>
-
-namespace tupai::util
-{
-	#define assert(EXPR, STR) tupai::util::_assert(EXPR, #EXPR, STR)
-
-	static inline void _assert(bool expr, const char* expr_str, const char* msg);
-}
-
-// Delayed implementation to prevent circular references
+#include <tupai/util/def/assert.hpp>
 #include <tupai/util/panic.hpp>
 
 namespace tupai::util

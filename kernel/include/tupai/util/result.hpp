@@ -21,73 +21,38 @@
 #ifndef TUPAI_UTIL_RESULT_HPP
 #define TUPAI_UTIL_RESULT_HPP
 
-#include <tupai/util/type.hpp>
+#include <tupai/util/def/result.hpp>
+#include <tupai/util/panic.hpp>
+#include <tupai/util/typedata.hpp>
 
 namespace tupai::util
 {
-	template <typename T, typename U>
-	struct Either
+	template <typename T, typename E>
+	T& Result<T, E>::value()
 	{
-		static_assert(!is_same<T, U>::value, "Types within 'Either' cannot be identical");
-
-		bool _is_first;
-		union
-		{
-			T _first;
-			U _second;
-		};
-
-		Either(T val) : _is_first(true), _first(val) {}
-		Either(U val) : _is_first(false), _second(val) {}
-
-		bool is_first() { return this->_is_first; }
-
-		T first() { return this->_first; }
-		U second() { return this->_second; }
-	};
-
-	//! Result<T, U>
-	//! Provides optional return values (monadic function results)
+		if (this->success())
+			return this->_either.first();
+		else
+			panic("Cannot extract value from failed Result<{}>", type_name<E>());
+	}
 
 	template <typename T, typename E>
-	struct Result
+	E& Result<T, E>::error()
 	{
-	private:
-		Either<T, E> _either;
+		if (this->failed())
+			return this->_either.second();
+		else
+			panic("Cannot extract error from successful Result<{}>", type_name<T>());
+	}
 
-	public:
-		Result(T val) : _either(val) {}
-		Result(E err) : _either(err) {}
-
-		bool success() { return this->_either.is_first(); }
-		bool failed() { return !this->success(); }
-
-		T value()
-		{
-			if (this->success())
-				return this->_either.first();
-			else
-				panic("Cannot extract value from failed Result<{}>", type_name<E>());
-		}
-
-		template <typename ... Args>
-		T except(Args ... args)
-		{
-			if (this->success())
-				return this->_either.first();
-			else
-				panic(args ...);
-		}
-
-		E error()
-		{
-			if (this->failed())
-				return this->_either.second();
-			else
-				panic("Cannot extract error from successful Result<{}>", type_name<T>());
-		}
-	};
-
+	template <typename T, typename E> template <typename ... Args>
+	T& Result<T, E>::except(Args ... args)
+	{
+		if (this->success())
+			return this->_either.first();
+		else
+			panic(args ...);
+	}
 }
 
 #endif

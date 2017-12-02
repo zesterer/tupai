@@ -21,49 +21,8 @@
 #ifndef TUPAI_UTIL_REFSTR_HPP
 #define TUPAI_UTIL_REFSTR_HPP
 
-#include <tupai/util/type.hpp>
-#include <tupai/util/arr.hpp>
-#include <tupai/util/traits.hpp>
-
-namespace tupai::util
-{
-	template <typename T>
-	inline size_t cstr_len(const T* str)
-	{
-		size_t i = 0;
-		for (; str[i] != '\0'; i ++);
-		return i;
-	}
-
-	//! GenStrRef<T>
-	//! References a constant (within the lifetime of the reference) string of T items
-
-	template <typename T>
-	struct GenRefStr : public IStr<const T>
-	{
-	private:
-		const T* _str;
-		size_t _len;
-
-	public:
-		template <size_t N> GenRefStr(const T (&str)[N]) : _str(str), _len(N) {}
-		GenRefStr(const T* str) : _str(str), _len(cstr_len(str)) {}
-		GenRefStr(const T* str, size_t len) : _str(str), _len(len) {}
-
-		template <typename A, typename = typename enable_if<is_arr<A, T>::value>::type>
-		static GenRefStr<T> from(A& arr)
-		{
-			return GenRefStr<T>(arr.raw_unsafe(), arr.length());
-		}
-
-		size_t length() { return this->_len; }
-		const T& at(size_t i);
-	};
-
-	using RefStr = GenRefStr<char>;
-}
-
-// Delayed implementation to prevent circular references
+#include <tupai/util/def/refstr.hpp>
+#include <tupai/util/fmt.hpp>
 #include <tupai/util/panic.hpp>
 #include <tupai/util/typedata.hpp>
 
@@ -76,6 +35,13 @@ namespace tupai::util
 			return this->_str[i];
 		else
 			panic("Attempted to access StrRef<{}> of length {} out of bounds at {}", type_name<T>(), this->_len, i);
+	}
+
+	template <typename T>
+	template <typename S>
+	typename enable_if<is_stream<S>::value>::type GenRefStr<T>::print(S& s)
+	{
+		util::fmt(s, this->_str);
 	}
 }
 

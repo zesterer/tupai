@@ -21,43 +21,26 @@
 #ifndef TUPAI_UTIL_STATUS_HPP
 #define TUPAI_UTIL_STATUS_HPP
 
-#include <tupai/util/type.hpp>
+#include <tupai/util/def/status.hpp>
 
 namespace tupai::util
 {
-	//! Status<T>
-	//! Provides optional error value
+	template <typename T>
+	template <typename ... Args>
+	void Status<T>::except(Args ... args)
+	{
+		if (this->failed())
+			panic(args ...);
+	}
 
 	template <typename T>
-	struct Status
+	T Status<T>::error()
 	{
-	private:
-		bool _success;
-		union { T _err; };
-
-	public:
-		Status() : _success(true) {}
-		Status(T err) : _success(false), _err(err) {}
-
-		bool success() { return this->_success; }
-		bool failed() { return !this->success(); }
-
-		template <typename ... Args>
-		void except(Args ... args)
-		{
-			if (this->failed())
-				panic(args ...);
-		}
-
-		T error()
-		{
-			if (this->failed())
-				return this->_err;
-			else
-				panic("Cannot extract error from successful Status<{}>", type_name<T>());
-		}
-	};
-
+		if (this->failed())
+			return this->_err;
+		else
+			panic("Cannot extract error from successful Status<{}>", type_name<T>());
+	}
 }
 
 #endif

@@ -1,5 +1,5 @@
 //
-// file : typename.hpp
+// file : flatstr.hpp
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,18 +18,31 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#ifndef TUPAI_UTIL_TYPEDATA_HPP
-#define TUPAI_UTIL_TYPEDATA_HPP
+#ifndef TUPAI_UTIL_FLATSTR_HPP
+#define TUPAI_UTIL_FLATSTR_HPP
 
-#include <tupai/util/def/typedata.hpp>
-#include <tupai/util/refstr.hpp>
+#include <tupai/util/def/flatstr.hpp>
+#include <tupai/util/fmt.hpp>
+#include <tupai/util/panic.hpp>
+#include <tupai/util/typedata.hpp>
+#include <tupai/util/arr.hpp>
 
 namespace tupai::util
 {
-	template <typename T>
-	constexpr GenRefStr<char> type_name()
+	template <typename T, size_t N>
+	T& GenFlatStr<T, N>::at(size_t i)
 	{
-		return GenRefStr<char>(__PRETTY_FUNCTION__ + 74, cstr_len(__PRETTY_FUNCTION__) - 75); // TODO : This is a total hack. Maintain it well, and replace it when the C++ standard matures
+		if (i < N)
+			return this->_str[i];
+		else
+			panic("Attempted to access StrRef<{}> of length {} out of bounds at {}", type_name<T>(), this->_len, i);
+	}
+
+	template <typename T, size_t N>
+	template <typename S>
+	typename enable_if<is_stream<S, T>::value>::type GenFlatStr<T, N>::print(S& s)
+	{
+		util::fmt(s, this->_str.raw_unsafe());
 	}
 }
 

@@ -1,5 +1,5 @@
 //
-// file : typename.hpp
+// file : compose.hpp
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,19 +18,22 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#ifndef TUPAI_UTIL_TYPEDATA_HPP
-#define TUPAI_UTIL_TYPEDATA_HPP
+#ifndef TUPAI_UTIL_DEF_COMPOSE_HPP
+#define TUPAI_UTIL_DEF_COMPOSE_HPP
 
-#include <tupai/util/def/typedata.hpp>
-#include <tupai/util/refstr.hpp>
+#include <tupai/util/type.hpp>
+#include <tupai/util/def/result.hpp>
+#include <tupai/util/def/flatstr.hpp>
 
 namespace tupai::util
 {
-	template <typename T>
-	constexpr GenRefStr<char> type_name()
+	enum class ComposeError
 	{
-		return GenRefStr<char>(__PRETTY_FUNCTION__ + 74, cstr_len(__PRETTY_FUNCTION__) - 75); // TODO : This is a total hack. Maintain it well, and replace it when the C++ standard matures
-	}
+		// Nothing yet
+	};
+
+	template <typename C, typename T>
+	Result<GenFlatStr<C, sizeof(T) * 8 + 1>, ComposeError> compose(T item);
 }
 
 #endif

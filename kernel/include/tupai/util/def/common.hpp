@@ -1,5 +1,5 @@
 //
-// file : typename.hpp
+// file : common.hpp
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,19 +18,24 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#ifndef TUPAI_UTIL_TYPEDATA_HPP
-#define TUPAI_UTIL_TYPEDATA_HPP
+#ifndef TUPAI_UTIL_DEF_COMMON_HPP
+#define TUPAI_UTIL_DEF_COMMON_HPP
 
-#include <tupai/util/def/typedata.hpp>
-#include <tupai/util/refstr.hpp>
+#include <tupai/util/type.hpp>
 
 namespace tupai::util
 {
-	template <typename T>
-	constexpr GenRefStr<char> type_name()
-	{
-		return GenRefStr<char>(__PRETTY_FUNCTION__ + 74, cstr_len(__PRETTY_FUNCTION__) - 75); // TODO : This is a total hack. Maintain it well, and replace it when the C++ standard matures
-	}
+	template <typename T> struct IArr;
+
+	template <typename T> struct IArr2D;
+
+	template <typename T> struct IBuff;
+
+	template <typename T> struct IBuff2D;
+
+	template <typename T> struct IStr;
+
+	template <typename T> struct IStream;
 }
 
 #endif

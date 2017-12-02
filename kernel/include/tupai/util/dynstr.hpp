@@ -1,5 +1,5 @@
 //
-// file : typename.hpp
+// file : dynstr.hpp
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,18 +18,29 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#ifndef TUPAI_UTIL_TYPEDATA_HPP
-#define TUPAI_UTIL_TYPEDATA_HPP
+#ifndef TUPAI_UTIL_DYNSTR_HPP
+#define TUPAI_UTIL_DYNSTR_HPP
 
-#include <tupai/util/def/typedata.hpp>
-#include <tupai/util/refstr.hpp>
+#include <tupai/util/def/dynstr.hpp>
+#include <tupai/util/panic.hpp>
+#include <tupai/util/typedata.hpp>
+#include <tupai/util/dynarr.hpp>
 
 namespace tupai::util
 {
 	template <typename T>
-	constexpr GenRefStr<char> type_name()
+	GenDynStr<T>& GenDynStr<T>::operator<<(T c)
 	{
-		return GenRefStr<char>(__PRETTY_FUNCTION__ + 74, cstr_len(__PRETTY_FUNCTION__) - 75); // TODO : This is a total hack. Maintain it well, and replace it when the C++ standard matures
+		// TODO : Implement this
+		(void)c;
+		panic("Tried to insert {0} into GenStr<{0}> without implementation", type_name<T>());
+	}
+
+	template <typename T>
+	template <typename S>
+	typename enable_if<is_stream<S, T>::value>::type GenDynStr<T>::print(S& s)
+	{
+		util::fmt(s, this->_str.raw_unsafe());
 	}
 }
 

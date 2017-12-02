@@ -21,29 +21,7 @@
 #ifndef TUPAI_UTIL_LOG_HPP
 #define TUPAI_UTIL_LOG_HPP
 
-#include <tupai/util/type.hpp>
-
-namespace tupai::util
-{
-	//! logc(c)
-	//! Write a single character to the kernel log
-
-	void logc(char c);
-
-	//! log(format, args...)
-	//! Write a string formatted by the given arguments to the kernel log
-
-	template <typename ... Args>
-	void log(const char* format, Args ... args);
-
-	//! log(format, args...)
-	//! Write a string formatted by the given arguments, followed by a newline, to the kernel log
-
-	template <typename ... Args>
-	void logln(const char* format, Args ... args);
-}
-
-// Delayed implementation to prevent circular references
+#include <tupai/util/def/log.hpp>
 #include <tupai/util/fmt.hpp>
 #include <tupai/sys/logger.hpp>
 

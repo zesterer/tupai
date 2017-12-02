@@ -1,5 +1,5 @@
 //
-// file : arr.hpp
+// file : flatstr.hpp
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,38 +18,43 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#ifndef TUPAI_UTIL_ARR_HPP
-#define TUPAI_UTIL_ARR_HPP
+#ifndef TUPAI_UTIL_DEF_FLATSTR_HPP
+#define TUPAI_UTIL_DEF_FLATSTR_HPP
 
+#include <tupai/util/type.hpp>
 #include <tupai/util/def/arr.hpp>
-#include <tupai/util/fmt.hpp>
-#include <tupai/util/panic.hpp>
-#include <tupai/util/typedata.hpp>
+#include <tupai/util/traits.hpp>
+#include <tupai/util/cstr.hpp>
 
 namespace tupai::util
 {
-	template <typename T, size_t N>
-	T& Arr<T, N>::at(size_t i)
-	{
-		if (i < N)
-			return this->_items[i];
-		else
-			panic("Attempted to access Arr<{}, {}> out of bounds at {}", type_name<T>(), N, i);
-	}
+	//! GenFlatStr<T, N>
+	//! Provides an abstraction around a fixed-size, stack-allocated string
 
 	template <typename T, size_t N>
-	template <typename S>
-	typename enable_if<is_stream<S>::value>::type Arr<T, N>::print(S& s)
+	struct GenFlatStr : public IStr<T>
 	{
-		fmt_arg(s, '[');
-		for (size_t i = 0; i < this->length(); i ++)
+	private:
+		Arr<T, N> _str;
+		size_t _len;
+
+	public:
+		template <size_t X>
+		GenFlatStr(const T (&str)[X]) : _str(Arr<T, N>::from(str, X - 1)), _len(X - 1)
 		{
-			if (i > 0)
-				fmt_arg(s, ", ");
-			fmt_arg(s, this->at(i));
+			static_assert(X <= N + 1);
 		}
-		fmt_arg(s, ']');
-	}
+
+		size_t length() { return this->_len; }
+		T& at(size_t i);
+
+		template <typename S> typename enable_if<is_stream<S, T>::value>::type print(S& s);
+	};
+
+	template <size_t N> using FlatStr = GenFlatStr<char, N>;
+
+	template <typename T, size_t N>
+	GenFlatStr<T, N> make_flatstr(const T (&str)[N]) { return GenFlatStr<T, N>(str); }
 }
 
 #endif
