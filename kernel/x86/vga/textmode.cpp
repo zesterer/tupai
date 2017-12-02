@@ -55,7 +55,7 @@ namespace tupai::x86::vga::textmode
 		col = _vga_col_boot;
 		row = _vga_row_boot;
 
-		buffer.create(reinterpret_cast<Entry*>(mem::virt::OFFSET + 0xB8000));
+		buffer.create(mem::virt::OFFSET + 0xB8000);
 
 		enable_cursor();
 

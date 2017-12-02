@@ -22,6 +22,7 @@
 #define TUPAI_UTIL_DEF_ARR_HPP
 
 #include <tupai/util/type.hpp>
+#include <tupai/util/attr.hpp>
 #include <tupai/util/common.hpp>
 
 namespace tupai::util
@@ -62,7 +63,7 @@ namespace tupai::util
 		}
 
 		template <typename S> typename enable_if<is_stream<S>::value>::type print(S& s);
-	};
+	} ATTR_PACKED;
 
 	template <typename T, size_t N>
 	Arr<T, N> make_arr(const T (&arr)[N]) { return Arr<T, N>(arr); }

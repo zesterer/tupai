@@ -36,6 +36,13 @@ namespace tupai::util
 	}
 
 	template <typename T> template <typename ... Args>
+	void StaticBox<T>::create(Args ... args)
+	{
+		new (this->_item) T(args...);
+		this->_constructed = true;
+	}
+
+	template <typename T> template <typename ... Args>
 	void _UnsafeBox<T>::create(Args ... args)
 	{
 		new (&this->_item) T(args...);
@@ -48,6 +55,15 @@ namespace tupai::util
 			return this->_item;
 		else
 			panic("Attempted to access unconstructed Box<{}> item", type_name<T>());
+	}
+
+	template <typename T>
+	T& StaticBox<T>::item()
+	{
+		if (this->_constructed)
+			return *this->_item;
+		else
+			panic("Attempted to access unconstructed StaticBox<{}> item", type_name<T>());
 	}
 }
 

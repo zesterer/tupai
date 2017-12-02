@@ -39,7 +39,7 @@ namespace tupai::util
 		T* _items;
 
 	public:
-		Buff(T* buff) : _items(buff) {}
+		Buff(uintptr_t ptr) : _items(reinterpret_cast<T*>(ptr)) {}
 
 		size_t length() { return N; }
 		T& at(size_t i);
@@ -58,7 +58,7 @@ namespace tupai::util
 		T* _items;
 
 	public:
-		Buff2D(T* buff) : _items(buff) {}
+		Buff2D(uintptr_t ptr) : _items(reinterpret_cast<T*>(ptr)) {}
 
 		size_t width() { return W; }
 		size_t height() { return H; }
@@ -83,7 +83,7 @@ namespace tupai::util
 		size_t _len;
 
 	public:
-		DynBuff(T* buff, size_t len) : _items(buff), _len(len) {}
+		DynBuff(uintptr_t ptr, size_t len) : _items(reinterpret_cast<T*>(ptr)), _len(len) {}
 
 		size_t length() { return this->_len; }
 		T& at(size_t i);

@@ -78,6 +78,64 @@ namespace tupai::util
 		}
 	};
 
+	//! StaticBox<T>
+	//! Used to provide a safe late / optional construction abstraction around a static object
+
+	template <typename T>
+	struct StaticBox
+	{
+	private:
+		T* _item;
+		bool _constructed;
+
+	public:
+		StaticBox() {}
+
+		StaticBox(const StaticBox<T>& other) // Copy construction
+		{
+			this->_constructed = other._constructed;
+			if (this->_constructed)
+				this->_item = other._item;
+		}
+
+		StaticBox(StaticBox<T>&& other) // Move construction
+		{
+			this->_constructed = other._constructed;
+			if (this->_constructed)
+				this->_item = move(other._item);
+
+			// Invalid other
+			other._constructed = false;
+		}
+
+		~StaticBox() { if (this->_constructed) this->_item->~T(); }
+
+		void place(uintptr_t loc)
+		{
+			this->_item = reinterpret_cast<T*>(loc);
+		}
+
+		template <typename ... Args> void create(Args ... args);
+
+		void destroy()
+		{
+			this->_constructed = false;
+			this->_item->~T();
+		}
+
+		T& item();
+
+		T* operator->()
+		{
+			return &this->item();
+		}
+
+		T& operator*()
+		{
+			return this->item();
+		}
+	};
+
 	//! UnsafeBox<T>
 	//! Used to provide a late / optional construction abstraction around an object
 	//! UnsafeBox assumes that the construction state of the object is externally known
