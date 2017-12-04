@@ -24,12 +24,12 @@
 
 namespace tupai::cpu::irq
 {
-	void unmask_irq(uint8_t vec)
+	void unmask(uint8_t vec)
 	{
 		x86::pic::unmask_irq(vec);
 	}
 
-	void mask_irq(uint8_t vec)
+	void mask(uint8_t vec)
 	{
 		x86::pic::mask_irq(vec);
 	}

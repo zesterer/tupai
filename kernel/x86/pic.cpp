@@ -37,7 +37,7 @@ namespace tupai::x86::pic
 	static const uint8_t ICW4_8086 = 0x01;
 
 	// PIC commands
-	static const uint8_t PIC_EOI = 0x20;
+	static const uint8_t EOI = 0x20;
 
 	void init()
 	{
@@ -94,8 +94,8 @@ namespace tupai::x86::pic
 
 		// If it's a slave IRQ, send an EOI to the slave too
 		if (irq >= 8)
-			io::out<8>(SLAVE_CMD, PIC_EOI);
+			io::out<8>(SLAVE_CMD, EOI);
 
-		io::out<8>(MASTER_CMD, PIC_EOI);
+		io::out<8>(MASTER_CMD, EOI);
 	}
 }

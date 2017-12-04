@@ -1,5 +1,5 @@
 //
-// file : irq.hpp
+// file : test.cpp
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,17 +18,10 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#ifndef TUPAI_CPU_IRQ_HPP
-#define TUPAI_CPU_IRQ_HPP
+#include <tupai/util/arr.hpp>
 
-#include <tupai/util/type.hpp>
-
-namespace tupai::cpu::irq
+namespace tupai::util
 {
-	void unmask(uint8_t vec);
-	void mask(uint8_t vec);
-	void ack(uint8_t vec);
-	void set_handler(uint8_t vec, uintptr_t handler);
+	// Array size test
+	static_assert(sizeof(Arr<int, 17>) == (sizeof(int) * 17), "Size of Arr does not equal the sum of its members");
 }
-
-#endif

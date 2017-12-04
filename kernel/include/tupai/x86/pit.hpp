@@ -1,5 +1,5 @@
 //
-// file : irq.hpp
+// file : pit.hpp
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,17 +18,16 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#ifndef TUPAI_CPU_IRQ_HPP
-#define TUPAI_CPU_IRQ_HPP
+#ifndef TUPAI_X86_PIT_HPP
+#define TUPAI_X86_PIT_HPP
 
 #include <tupai/util/type.hpp>
 
-namespace tupai::cpu::irq
+namespace tupai::x86::pit
 {
-	void unmask(uint8_t vec);
-	void mask(uint8_t vec);
-	void ack(uint8_t vec);
-	void set_handler(uint8_t vec, uintptr_t handler);
+	void init();
+	uint32_t get_rate();
+	void set_rate(uint32_t rate);
 }
 
 #endif

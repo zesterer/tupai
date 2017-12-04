@@ -94,10 +94,10 @@ namespace tupai::x86::kbd
 
 	void init()
 	{
-		cpu::irq::set_handler(IRQ, (uintptr_t)_isr_kbd_stub);
+		cpu::irq::set_handler(IRQ, reinterpret_cast<uintptr_t>(_isr_kbd_stub));
 		util::bootlog("PS2 keyboard ISR installed");
 
-		cpu::irq::unmask_irq(IRQ);
+		cpu::irq::unmask(IRQ);
 		util::bootlog("PS2 keyboard IRQ unmasked");
 	}
 
