@@ -37,7 +37,7 @@ namespace tupai::util
 	public:
 		typedef T item_type;
 
-		
+
 	private:
 		const T* _str;
 		size_t _len;
@@ -46,6 +46,11 @@ namespace tupai::util
 		template <size_t N> GenRefStr(const T (&str)[N]) : _str(str), _len(N - 1) {}
 		GenRefStr(const T* str) : _str(str), _len(cstr_len(str)) {}
 		GenRefStr(const T* str, size_t len) : _str(str), _len(len) {}
+
+		static GenRefStr<T> from(const T* arr)
+		{
+			return GenRefStr<T>(arr, cstr_len(arr));
+		}
 
 		template <typename A, typename = typename enable_if<is_arr<A, T>::value>::type>
 		static GenRefStr<T> from(A& arr)

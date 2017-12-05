@@ -36,8 +36,8 @@ namespace tupai::x86::vga::textmode
 
 	struct Entry
 	{
-		uint8_t data;
-		uint8_t color;
+		volatile uint8_t data;
+		volatile uint8_t color;
 
 		Entry() : color((bg << 4) | fg) {}
 		Entry(uint8_t data, uint8_t color) : data(data), color(color) {}

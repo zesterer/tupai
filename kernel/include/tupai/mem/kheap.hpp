@@ -28,6 +28,7 @@ namespace tupai::mem::kheap
 	void init();
 	uintptr_t alloc(size_t bytes);
 	void dealloc(uintptr_t ptr);
+	void display(size_t n = 256);
 }
 
 #endif

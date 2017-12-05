@@ -34,16 +34,16 @@ inline void* operator new[](size_t, void* __p) throw() { return __p; }
 inline void operator delete  (void*, void*) throw() {}
 inline void operator delete[](void*, void*) throw() {}
 
-// Default operator new
-inline void* operator new(size_t sz) throw() { return reinterpret_cast<void*>(tupai::mem::kheap::alloc(sz)); }
-inline void* operator new[](size_t sz) throw() { return reinterpret_cast<void*>(tupai::mem::kheap::alloc(sz)); }
-
-// Default operator delete
-inline void operator delete  (void* ptr) throw() { tupai::mem::kheap::dealloc(reinterpret_cast<uintptr_t>(ptr)); }
-inline void operator delete[](void* arr) throw() { tupai::mem::kheap::dealloc(reinterpret_cast<uintptr_t>(arr)); }
-
-// Default operator sized delete
-inline void operator delete  (void* ptr, size_t sz) throw() { (void)sz; tupai::mem::kheap::dealloc(reinterpret_cast<uintptr_t>(ptr)); }
-inline void operator delete[](void* arr, size_t sz) throw() { (void)sz; tupai::mem::kheap::dealloc(reinterpret_cast<uintptr_t>(arr)); }
+// // Default operator new
+// inline void* operator new(size_t sz) throw() { return reinterpret_cast<void*>(tupai::mem::kheap::alloc(sz)); }
+// inline void* operator new[](size_t sz) throw() { return reinterpret_cast<void*>(tupai::mem::kheap::alloc(sz)); }
+//
+// // Default operator delete
+// inline void operator delete  (void* ptr) throw() { tupai::mem::kheap::dealloc(reinterpret_cast<uintptr_t>(ptr)); }
+// inline void operator delete[](void* arr) throw() { tupai::mem::kheap::dealloc(reinterpret_cast<uintptr_t>(arr)); }
+//
+// // Default operator sized delete
+// inline void operator delete  (void* ptr, size_t sz) throw() { (void)sz; tupai::mem::kheap::dealloc(reinterpret_cast<uintptr_t>(ptr)); }
+// inline void operator delete[](void* arr, size_t sz) throw() { (void)sz; tupai::mem::kheap::dealloc(reinterpret_cast<uintptr_t>(arr)); }
 
 #endif

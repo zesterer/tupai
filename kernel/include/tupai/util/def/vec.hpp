@@ -24,6 +24,7 @@
 #include <tupai/util/def/dynarr.hpp>
 #include <tupai/util/def/box.hpp>
 #include <tupai/util/def/cpp.hpp>
+#include <tupai/util/traits.hpp>
 
 namespace tupai::util
 {
@@ -35,7 +36,7 @@ namespace tupai::util
 	{
 	public:
 		typedef T item_type;
-		
+
 		// TODO : Replace internal array accesses with .raw() to prevent double bounds checks & improve performance once we know this 100% works
 
 	private:
@@ -47,22 +48,28 @@ namespace tupai::util
 			DynArr<_UnsafeBox<T>> nitems(ncap);
 
 			for (size_t i = 0; i < this->_len; i ++)
-				nitems[i] = move(this->_items[i]);
+				nitems[i].move_from_unsafe(this->_items[i]);
 
 			this->_items = move(nitems);
 		}
 
 	public:
-		Vec(size_t reserve = 1) : _items(reserve), _len(0) {}
+		Vec(size_t reserve = 1);
 
 		template <size_t N>
 		Vec(const T (&arr)[N]) : _items(N), _len(N)
 		{
 			for (size_t i = 0; i < N; i ++)
-				this->_items[i].create(arr[i]);
+				this->push(arr[i]);
 		}
 
-		size_t length() override { return this->_len; }
+		~Vec()
+		{
+			for (size_t i = 0; i < this->_len; i ++)
+				this->_items[i].destroy();
+		}
+
+		size_t length() { return this->_len; }
 		size_t capacity() { return this->_items.length(); }
 
 		T& at(size_t i);
@@ -74,10 +81,15 @@ namespace tupai::util
 			if (this->length() == this->capacity())
 				this->_resize(this->capacity() * 2);
 
-			this->_items[this->_len].copy_from_unsafe(item);
+			this->_items[this->_len++].copy_from(item);
 		}
 
 		T pop();
+
+		void clear()
+		{
+			*this = Vec<T>();
+		}
 
 		void operator<<(T item)
 		{
@@ -91,6 +103,8 @@ namespace tupai::util
 
 		T& at_unsafe(uintptr_t i) { return *this->_items[i]; }
 		T* raw_unsafe() { return &(*this->_items[0]); }
+
+		template <typename S> typename enable_if<is_stream<S>::value>::type print(S& s);
 	};
 }
 

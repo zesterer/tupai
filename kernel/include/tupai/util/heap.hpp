@@ -1,5 +1,5 @@
 //
-// file : cstr.hpp
+// file : heap.hpp
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,19 +18,47 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#ifndef TUPAI_UTIL_CSTR_HPP
-#define TUPAI_UTIL_CSTR_HPP
+#ifndef TUPAI_UTIL_HEAP_HPP
+#define TUPAI_UTIL_HEAP_HPP
 
 #include <tupai/util/type.hpp>
+#include <tupai/mem/kheap.hpp>
 
 namespace tupai::util
 {
 	template <typename T>
-	inline constexpr size_t cstr_len(const T* str)
+	template <typename ... Args>
+	HeapObj<T> HeapObj<T>::create(Args ... args)
 	{
-		size_t i = 0;
-		for (; str[i] != '\0'; i ++);
-		return i;
+		T* item = reinterpret_cast<T*>(mem::kheap::alloc(sizeof(T)));
+		new (item) T(args ...);
+		return HeapObj(item);
+	}
+
+	template <typename T>
+	void HeapObj<T>::destroy()
+	{
+		this->_item->~T();
+		mem::kheap::dealloc(reinterpret_cast<uintptr_t>(this->_item));
+	}
+
+	template <typename T>
+	template <typename ... Args>
+	HeapArr<T> HeapArr<T>::create(size_t len, Args ... args)
+	{
+		T* items = reinterpret_cast<T*>(mem::kheap::alloc(sizeof(T) * len));
+		new (items) T(args ...);
+		return HeapArr(len, items);
+	}
+
+	template <typename T>
+	void HeapArr<T>::destroy()
+	{
+		for (size_t i = 0; i < this->_len; i ++)
+			this->_items[i].~T();
+
+		mem::kheap::dealloc(reinterpret_cast<uintptr_t>(this->_items));
 	}
 }
+
 #endif

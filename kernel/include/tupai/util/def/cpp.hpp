@@ -31,16 +31,16 @@ inline void* operator new[](size_t, void* __p) throw();
 inline void operator delete  (void*, void*) throw();
 inline void operator delete[](void*, void*) throw();
 
-// Default operator new
-inline void* operator new(size_t sz) throw();
-inline void* operator new[](size_t sz) throw();
-
-// Default operator delete
-inline void operator delete  (void* ptr) throw();
-inline void operator delete[](void* arr) throw();
-
-// Default operator sized delete
-inline void operator delete  (void* ptr, size_t sz) throw();
-inline void operator delete[](void* arr, size_t sz) throw();
+// // Default operator new
+// inline void* operator new(size_t sz) throw() { static_assert(false, "Use of the new operator is illegal"); }
+// inline void* operator new[](size_t sz) throw() { static_assert(false, "Use of the new operator is illegal"); }
+//
+// // Default operator delete
+// inline void operator delete  (void* ptr) throw() { static_assert(false, "Use of the delete operator is illegal"); }
+// inline void operator delete[](void* arr) throw() { static_assert(false, "Use of the delete operator is illegal"); }
+//
+// // Default operator sized delete
+// inline void operator delete  (void* ptr, size_t sz) throw() { static_assert(false, "Use of the delete operator is illegal"); }
+// inline void operator delete[](void* arr, size_t sz) throw() { static_assert(false, "Use of the delete operator is illegal"); }
 
 #endif

@@ -1,5 +1,5 @@
 //
-// file : cstr.hpp
+// file : math.hpp
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,19 +18,13 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#ifndef TUPAI_UTIL_CSTR_HPP
-#define TUPAI_UTIL_CSTR_HPP
-
-#include <tupai/util/type.hpp>
+#ifndef TUPAI_UTIL_MATH_HPP
+#define TUPAI_UTIL_MATH_HPP
 
 namespace tupai::util
 {
-	template <typename T>
-	inline constexpr size_t cstr_len(const T* str)
-	{
-		size_t i = 0;
-		for (; str[i] != '\0'; i ++);
-		return i;
-	}
+	template <typename T, typename U> T floor(T x, U m = 1) { return (x / m) * m; }
+	template <typename T, typename U> T ceil(T x, U m = 1) { return floor(x, m) + ((x % m) ? m : 0); }
 }
+
 #endif

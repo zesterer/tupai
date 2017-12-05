@@ -22,6 +22,7 @@
 #define TUPAI_UTIL_DEF_BOX_HPP
 
 #include <tupai/util/type.hpp>
+#include <tupai/util/mem.hpp>
 
 namespace tupai::util
 {
@@ -146,18 +147,42 @@ namespace tupai::util
 	private:
 		union { T _item; };
 
-		_UnsafeBox(const _UnsafeBox<T>& other); // Copy construction
-		_UnsafeBox(_UnsafeBox<T>&& other); // Move construction
-
 	public:
 		_UnsafeBox() {}
+
+		_UnsafeBox(_UnsafeBox<T>&& other)
+		{
+			mem_copy(reinterpret_cast<const uint8_t*>(&other._item), reinterpret_cast<uint8_t*>(&this->_item), sizeof(T));
+		}
+
+		_UnsafeBox<T>& operator=(_UnsafeBox<T>&& other)
+		{
+			mem_copy(reinterpret_cast<const uint8_t*>(&other._item), reinterpret_cast<uint8_t*>(&this->_item), sizeof(T));
+			return *this;
+		}
+
+		_UnsafeBox(const _UnsafeBox<T>& other)
+		{
+			mem_copy(reinterpret_cast<const uint8_t*>(&other._item), reinterpret_cast<uint8_t*>(&this->_item), sizeof(T));
+		}
+
+		_UnsafeBox<T>& operator=(const _UnsafeBox<T>& other)
+		{
+			mem_copy(reinterpret_cast<const uint8_t*>(&other._item), reinterpret_cast<uint8_t*>(&this->_item), sizeof(T));
+			return *this;
+		}
+
+		void copy_from(const T& item)
+		{
+			this->_item = item;
+		}
 
 		void copy_from_unsafe(const _UnsafeBox<T>& other)
 		{
 			this->_item = other._item;
 		}
 
-		void move_from_unsafe(_UnsafeBox<T>&& other)
+		void move_from_unsafe(_UnsafeBox<T>& other)
 		{
 			this->_item = move(other._item);
 		}

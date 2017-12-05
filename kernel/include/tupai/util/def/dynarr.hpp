@@ -23,6 +23,7 @@
 
 #include <tupai/util/type.hpp>
 #include <tupai/util/traits.hpp>
+#include <tupai/util/def/heap.hpp>
 
 namespace tupai::util
 {
@@ -36,20 +37,47 @@ namespace tupai::util
 		typedef T item_type;
 
 	private:
-		T* _items;
-		size_t _len;
+		HeapArr<T> _items;
 
-		DynArr(const T* arr, size_t len);
+		//DynArr(const T* arr, size_t len);
+
+		// DynArr<T>& _copy(const DynArr<T>& other)
+		// {
+		// 	this->_items.create(other.length());
+		// 	this->_len = other.length();
+        //
+		// 	for (size_t i = 0; i < this->_len; i ++)
+		// 		this->_items[i] = other._items[i];
+        //
+		// 	return *this;
+		// }
 
 	public:
 		DynArr(size_t len);
+		DynArr(DynArr<T>&& other) : _items(other._items) {}
+
+		~DynArr() { this->_items.destroy(); }
+
+		DynArr(const DynArr<T>& other) : _items(HeapArr<T>::create(other.length()))
+		{
+			for (size_t i = 0; i < this->length(); i ++)
+				this->_items[i] = other._items[i];
+		}
+
+		DynArr<T>& operator=(const DynArr<T>& other)
+		{
+			this->_items.destroy();
+
+			this->_items = HeapArr<T>::create(other.length());
+			for (size_t i = 0; i < this->length(); i ++)
+				this->_items[i] = other._items[i];
+			return *this;
+		}
 
 		template <size_t N>
 		DynArr(T (&arr)[N]);
 
-		~DynArr() { delete[] this->_items; }
-
-		size_t length() { return this->_len; }
+		size_t length() const { return this->_items.length(); }
 		T& at(size_t i);
 
 		T& operator[](size_t i) { return this->at(i); }

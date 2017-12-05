@@ -1,5 +1,5 @@
 //
-// file : cstr.hpp
+// file : heap.hpp
 //
 // Copyright (c) 2017 Joshua Barretto <joshua.s.barretto@gmail.com>
 //
@@ -18,19 +18,52 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
-#ifndef TUPAI_UTIL_CSTR_HPP
-#define TUPAI_UTIL_CSTR_HPP
+#ifndef TUPAI_UTIL_DEF_HEAP_HPP
+#define TUPAI_UTIL_DEF_HEAP_HPP
 
 #include <tupai/util/type.hpp>
 
 namespace tupai::util
 {
+	//! HeapObj<T>
+	//! Used to provide a safe abstraction around a heap object
+
 	template <typename T>
-	inline constexpr size_t cstr_len(const T* str)
+	struct HeapObj
 	{
-		size_t i = 0;
-		for (; str[i] != '\0'; i ++);
-		return i;
-	}
+	private:
+		T* _item;
+
+		HeapObj(T* item) : _item(item) {}
+
+	public:
+		template <typename ... Args>
+		static HeapObj<T> create(Args ... args);
+		void destroy();
+	};
+
+	//! HeapArr<T>
+	//! Used to provide a safe abstraction around a heap array
+
+	template <typename T>
+	struct HeapArr
+	{
+	private:
+		T* _items;
+		size_t _len;
+
+		HeapArr(size_t len, T* items) : _items(items), _len(len) {}
+
+	public:
+		template <typename ... Args>
+		static HeapArr<T> create(size_t len, Args ... args);
+		void destroy();
+
+		size_t length() const { return this->_len; }
+
+		T& operator[](size_t i) { return this->_items[i]; }
+		const T& operator[](size_t i) const { return this->_items[i]; }
+	};
 }
+
 #endif

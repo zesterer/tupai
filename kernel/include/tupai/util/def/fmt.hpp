@@ -27,9 +27,9 @@
 namespace tupai::util
 {
 	// Character formatting
-	template <typename S>
-	typename enable_if<is_stream<S>::value>::type
-	fmt_arg(S& strm, char c);
+	template <typename S, typename T>
+	typename enable_if<is_stream<S>::value && is_same<T, char>::value>::type
+	fmt_arg(S& strm, T c);
 
 	// String literal formatting
 	template <typename S>

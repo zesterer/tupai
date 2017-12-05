@@ -21,6 +21,7 @@
 #include <tupai/mem/kheap.hpp>
 #include <tupai/mem/pool.hpp>
 #include <tupai/util/box.hpp>
+#include <tupai/util/boot.hpp>
 
 namespace tupai::mem::kheap
 {
@@ -33,7 +34,8 @@ namespace tupai::mem::kheap
 
 	void init()
 	{
-		heap.create((uintptr_t)kheap_start, (uintptr_t)kheap_end - (uintptr_t)kheap_start, BLOCK_SIZE);
+		heap.create(Pool::from((uintptr_t)kheap_start, (uintptr_t)kheap_end - (uintptr_t)kheap_start, BLOCK_SIZE).except("Failed to create kernel heap"));
+		util::bootlog("Kernel heap initiated");
 	}
 
 	uintptr_t alloc(size_t bytes)
@@ -44,5 +46,10 @@ namespace tupai::mem::kheap
 	void dealloc(uintptr_t ptr)
 	{
 		heap->dealloc(ptr).except("Kernel heap error when attempting to deallocate block at {}", ptr);;
+	}
+
+	void display(size_t n)
+	{
+		heap->display(n);
 	}
 }

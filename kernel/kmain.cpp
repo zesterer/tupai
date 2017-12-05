@@ -25,6 +25,8 @@
 #include <tupai/util/vec.hpp>
 #include <tupai/util/str.hpp>
 
+#include <tupai/mem/kheap.hpp>
+
 namespace tupai
 {
 	extern "C" void kmain()
@@ -33,6 +35,13 @@ namespace tupai
 
 		auto arr = util::make_flatstr("kernel");
 		util::logln("Hello, {} world!", arr);
+
+		// util::Vec<const char*> myvec;
+		// myvec.push("Hello");
+		// myvec.push("there");
+		// myvec.push("!");
+        //
+		// util::logln("myvec = {}", myvec);
 
 		cpu::wait();
 	}

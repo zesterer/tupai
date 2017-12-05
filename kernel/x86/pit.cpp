@@ -69,7 +69,7 @@ namespace tupai::x86::pit
 
 	extern "C" uintptr_t isr_pit(uintptr_t stack)
 	{
-		util::log("PIT!");
+		//util::log("PIT!");
 
 		cpu::irq::ack(IRQ);
 		return stack;
