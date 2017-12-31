@@ -71,7 +71,7 @@ namespace tupai::util
 		T& value();
 		E& error();
 
-		template <typename ... Args> T& except(Args ... args);
+		template <typename ... Args> T& expect(Args ... args);
 	};
 }
 

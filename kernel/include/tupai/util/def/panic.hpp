@@ -30,6 +30,12 @@ namespace tupai::util
 
 	template <typename ... Args>
 	ATTR_NORETURN void panic(const char* format, Args ... args);
+
+	//! panic_if(expr, format, args...)
+	//! Permanently panic the kernel, displaying a formatted string formatted with arguments as the error if the expression is true
+
+	template <typename ... Args>
+	void panic_if(bool expr, const char* format, Args ... args) { if (expr) panic(format, args ...); }
 }
 
 #endif

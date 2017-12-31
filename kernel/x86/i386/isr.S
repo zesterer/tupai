@@ -70,8 +70,7 @@
 		BEGIN_IRQ
 
 		push %esp // Pass the current stack pointer
-		// TODO : Uncomment this!
-		//call isr_stub
+		call isr_stub
 		mov %eax, %esp // Restore the thread stack pointer
 
 		END_IRQ
@@ -104,8 +103,7 @@
 		BEGIN_IRQ
 
 		push %esp // Pass the current stack pointer
-		// TODO : Uncomment this!
-		//call isr_spurious
+		call isr_spurious
 		mov %eax, %esp // Restore the thread stack pointer
 
 		END_IRQ

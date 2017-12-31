@@ -46,7 +46,7 @@ namespace tupai::util
 	}
 
 	template <typename T, typename E> template <typename ... Args>
-	T& Result<T, E>::except(Args ... args)
+	T& Result<T, E>::expect(Args ... args)
 	{
 		if (this->success())
 			return this->_either.first();

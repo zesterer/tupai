@@ -26,7 +26,15 @@ namespace tupai::util
 	Result<FlatStr<sizeof(uint32_t) * 8 + 1>, ComposeError> compose<char, uint32_t>(uint32_t item)
 	{
 		(void)item;
-		FlatStr<sizeof(uint32_t) * 8 + 1> s("hi");
+		FlatStr<sizeof(uint32_t) * 8 + 1> s("");
+
+		for (size_t i = 0; item > 0; i ++)
+		{
+			s[i] = '0' + (item % 10);
+			item /= 10;
+			s[i + 1] = '\0';
+		}
+
 		return Result<FlatStr<sizeof(uint32_t) * 8 + 1>, ComposeError>(s);
 	}
 }

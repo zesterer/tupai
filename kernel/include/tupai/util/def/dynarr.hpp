@@ -23,7 +23,7 @@
 
 #include <tupai/util/type.hpp>
 #include <tupai/util/traits.hpp>
-#include <tupai/util/def/heap.hpp>
+#include <tupai/util/def/dyn.hpp>
 
 namespace tupai::util
 {
@@ -37,7 +37,7 @@ namespace tupai::util
 		typedef T item_type;
 
 	private:
-		HeapArr<T> _items;
+		Dyn<T> _items;
 
 		//DynArr(const T* arr, size_t len);
 
@@ -54,25 +54,6 @@ namespace tupai::util
 
 	public:
 		DynArr(size_t len);
-		DynArr(DynArr<T>&& other) : _items(other._items) {}
-
-		~DynArr() { this->_items.destroy(); }
-
-		DynArr(const DynArr<T>& other) : _items(HeapArr<T>::create(other.length()))
-		{
-			for (size_t i = 0; i < this->length(); i ++)
-				this->_items[i] = other._items[i];
-		}
-
-		DynArr<T>& operator=(const DynArr<T>& other)
-		{
-			this->_items.destroy();
-
-			this->_items = HeapArr<T>::create(other.length());
-			for (size_t i = 0; i < this->length(); i ++)
-				this->_items[i] = other._items[i];
-			return *this;
-		}
 
 		template <size_t N>
 		DynArr(T (&arr)[N]);

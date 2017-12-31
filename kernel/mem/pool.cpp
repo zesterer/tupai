@@ -43,7 +43,7 @@ namespace tupai::mem
 			return util::Result<Pool, PoolError>(Pool(nheap, reinterpret_cast<uint8_t*>(nmap), bc, bs));
 	}
 
-	util::Result<uintptr_t, PoolError> Pool::alloc(size_t bytes, size_t align)
+	util::Result<uintptr_t, PoolError> Pool::alloc_bytes(size_t bytes, size_t align)
 	{
 		size_t blocks = util::ceil(bytes, this->_block_sz) / this->_block_sz;
 
@@ -77,7 +77,7 @@ namespace tupai::mem
 		return util::Result<uintptr_t, PoolError>(PoolError::FULL);
 	}
 
-	util::Status<PoolError> Pool::dealloc(uintptr_t ptr)
+	util::Status<PoolError> Pool::dealloc_bytes(uintptr_t ptr)
 	{
 		if ((ptr - this->_heap) % this->_block_sz != 0 ||
 			ptr < this->_heap ||

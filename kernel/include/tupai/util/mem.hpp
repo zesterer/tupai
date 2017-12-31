@@ -29,5 +29,4 @@ namespace tupai::util
 			tgt[i] = src[i];
 	}
 }
-
 #endif

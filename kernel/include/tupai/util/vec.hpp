@@ -24,7 +24,7 @@
 #include <tupai/util/def/vec.hpp>
 #include <tupai/util/dynarr.hpp>
 #include <tupai/util/box.hpp>
-#include <tupai/util/heap.hpp>
+#include <tupai/util/dyn.hpp>
 #include <tupai/util/cpp.hpp>
 #include <tupai/util/panic.hpp>
 

@@ -38,7 +38,7 @@ namespace tupai::util
 	// }
 
 	template <typename T>
-	DynArr<T>::DynArr(size_t len) : _items(HeapArr<T>::create(len))
+	DynArr<T>::DynArr(size_t len) : _items(Dyn<T>::create_arr(len))
 	{
 		if (this->length() == 0)
 			panic("Attempted to create DynArr<{}> with zero length", type_name<T>());
@@ -46,7 +46,7 @@ namespace tupai::util
 
 	template <typename T>
 	template <size_t N>
-	DynArr<T>::DynArr(T (&arr)[N]) : _items(HeapArr<T>::create(N))
+	DynArr<T>::DynArr(T (&arr)[N]) : _items(Dyn<T>::create_arr(N))
 	{
 		if (this->length() == 0)
 			panic("Attempted to create DynArr<{}> with zero length", type_name<T>());

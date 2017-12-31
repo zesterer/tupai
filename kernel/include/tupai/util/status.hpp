@@ -27,7 +27,7 @@ namespace tupai::util
 {
 	template <typename T>
 	template <typename ... Args>
-	void Status<T>::except(Args ... args)
+	void Status<T>::expect(Args ... args)
 	{
 		if (this->failed())
 			panic(args ...);

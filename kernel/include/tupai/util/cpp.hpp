@@ -23,7 +23,6 @@
 
 #include <tupai/util/def/cpp.hpp>
 #include <tupai/util/panic.hpp>
-#include <tupai/mem/kheap.hpp>
 #include <tupai/util/box.hpp>
 
 // Default placement versions of operator new

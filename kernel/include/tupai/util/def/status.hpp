@@ -43,7 +43,7 @@ namespace tupai::util
 		bool failed() { return !this->success(); }
 
 		template <typename ... Args>
-		void except(Args ... args);
+		void expect(Args ... args);
 
 		T error();
 	};

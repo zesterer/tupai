@@ -22,6 +22,7 @@
 #include <tupai/x86/i386/idt.hpp>
 #include <tupai/x86/pic.hpp>
 #include <tupai/util/boot.hpp>
+#include <tupai/util/panic.hpp>
 
 namespace tupai::x86::i386::isr
 {
@@ -46,10 +47,7 @@ namespace tupai::x86::i386::isr
 	extern "C" void _fault_18();
 
 	extern "C" void _isr_default_stub();
-	uintptr_t isr_default(uintptr_t stack);
-
 	extern "C" void _isr_spurious_stub();
-	uintptr_t isr_spurious(uintptr_t stack);
 
 	void init()
 	{
@@ -86,5 +84,17 @@ namespace tupai::x86::i386::isr
 
 		idt::flush();
 		util::bootlog("ISRs installed, IDT flushed");
+	}
+
+	extern "C" uintptr_t isr_stub(uintptr_t stack)
+	{
+		(void)stack;
+
+		util::panic("Unhandled interrupt");
+	}
+
+	extern "C" uintptr_t isr_spurious(uintptr_t stack)
+	{
+		return stack;
 	}
 }

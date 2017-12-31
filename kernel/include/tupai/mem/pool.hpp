@@ -21,6 +21,11 @@
 #ifndef TUPAI_MEM_POOL_HPP
 #define TUPAI_MEM_POOL_HPP
 
+namespace tupai::mem
+{
+	struct Pool;
+}
+
 #include <tupai/util/box.hpp>
 #include <tupai/util/refarr.hpp>
 #include <tupai/util/result.hpp>
@@ -65,8 +70,20 @@ namespace tupai::mem
 
 		static util::Result<Pool, PoolError> from(uintptr_t start, size_t size, size_t bs);
 
-		util::Result<uintptr_t, PoolError> alloc(size_t bytes, size_t align = 1);
-		util::Status<PoolError> dealloc(uintptr_t ptr);
+		util::Result<uintptr_t, PoolError> alloc_bytes(size_t bytes, size_t align = 1);
+		util::Status<PoolError> dealloc_bytes(uintptr_t ptr);
+
+		template <typename T>
+		util::Result<T*, PoolError> alloc(size_t n, size_t align = 1)
+		{
+			auto r = this->alloc_bytes(sizeof(T) * n, align);
+			if (r.success())
+				return util::Result<T*, PoolError>(reinterpret_cast<T*>(r.value()));
+			else
+				return util::Result<T*, PoolError>(r.error());
+		}
+
+		template <typename T> util::Status<PoolError> dealloc(T* ptr) { return this->dealloc_bytes(reinterpret_cast<uintptr_t>(ptr)); }
 
 		void display(size_t n = 256);
 

@@ -22,9 +22,12 @@
 #define TUPAI_MEM_KHEAP_HPP
 
 #include <tupai/util/type.hpp>
+#include <tupai/mem/pool.hpp>
 
 namespace tupai::mem::kheap
 {
+	extern util::Box<Pool> heap;
+
 	void init();
 	uintptr_t alloc(size_t bytes);
 	void dealloc(uintptr_t ptr);
